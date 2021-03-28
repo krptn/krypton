@@ -11,6 +11,7 @@
     <OutputPath>.</OutputPath>
     <Name>PySec</Name>
     <RootNamespace>PySec</RootNamespace>
+    <InterpreterId>MSBuild|PySecEnv|$(MSBuildProjectFullPath)</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,6 +23,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="PySec.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="PySecEnv\">
+      <Id>PySecEnv</Id>
+      <Version>3.8</Version>
+      <Description>PySecEnv (Python 3.8 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="requirements.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
