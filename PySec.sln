@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PySec", "PySec.pyproj", "{36134F74-AC31-494E-9511-685742B74B56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecDLL", "..\SecDLL\SecDLL.csproj", "{6D1A3015-CB80-491B-ADDE-08BDE9F92224}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecurityManager", "SecurityManager\SecurityManager.csproj", "{B6908C25-5001-42EC-97CA-F7810BBC00B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecurityManager", "..\SecurityManager\SecurityManager.csproj", "{BADFBF71-7E49-411A-A26C-D7189A003EA4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecurityDLL", "SecurityDLL\SecurityDLL.csproj", "{98582DE5-0785-4D53-9EE6-183AE6313CED}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,14 +17,14 @@ Global
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{36134F74-AC31-494E-9511-685742B74B56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{36134F74-AC31-494E-9511-685742B74B56}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D1A3015-CB80-491B-ADDE-08BDE9F92224}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D1A3015-CB80-491B-ADDE-08BDE9F92224}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D1A3015-CB80-491B-ADDE-08BDE9F92224}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D1A3015-CB80-491B-ADDE-08BDE9F92224}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BADFBF71-7E49-411A-A26C-D7189A003EA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BADFBF71-7E49-411A-A26C-D7189A003EA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BADFBF71-7E49-411A-A26C-D7189A003EA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BADFBF71-7E49-411A-A26C-D7189A003EA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98582DE5-0785-4D53-9EE6-183AE6313CED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98582DE5-0785-4D53-9EE6-183AE6313CED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98582DE5-0785-4D53-9EE6-183AE6313CED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98582DE5-0785-4D53-9EE6-183AE6313CED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
