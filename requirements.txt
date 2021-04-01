@@ -1,2 +1,5 @@
-pip==20.2.3
-setuptools==49.2.1
+pip==21.0.1
+pyaes==1.6.1
+pycparser==2.20
+pythonnet==2.5.2
+setuptools==54.2.0

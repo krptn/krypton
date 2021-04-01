@@ -2,7 +2,6 @@
 
 namespace SecurityDLL
 {
-    public class Class1
-    {
+    public class HSM
     }
 }
