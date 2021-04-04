@@ -1,4 +1,3 @@
-
 import hashlib
 import sqlite3
 import pyaes 
@@ -11,9 +10,56 @@ import users
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.
 
+class analyzeSecurity():
+    #This will analyze the security of the current installation - collect logs and other things
+    def __init__():
+        pass
+    def getTableRecommendation():
+        return "Example - do not trust"
+
+class crypto(kms):
+    '''
+    Ciphers and deciphers strings. Can also store strings securely and supports CRUD operations
+    '''
+    def __init__(self):
+        super().__init__(base="/&@{;:}°°%*>~/]]^^s$+!/%=((()))))))secureStore;--")
+
+    #Ciphers
+    def crypt(what):
+        rec = analyzeSecurity()
+        table = rec.getTableRecommendation()
+        del rec
+        aes = pyaes.AESModeOfOperationCTR(self.getTableKey(table))
+        del table
+        data = aes.encrypt(what)
+        del aes
+        return data
+
+    def decrypt(what):
+        rec = analyzeSecurity()
+        table = rec.getTableRecommendation()
+        del rec
+        aes = pyaes.AESModeOfOperationCTR(self.getTableKey(table))
+        del table
+        data = aes.decrypt()
+        del aes
+        return data
+
+    #CRUD
+    def secureCreate(what):
+        pass
+    def sercureRead(what):
+        pass
+    def secureUpdate(what):
+        pass
+    def sucureDelete(what):
+        pass
+
+
 def antiSQLi(name, info=True):
     #Santizes and de-santizes inputs before constructing sql cmds to avoid injections
     result = '''"'''
+
     if info is True:
         for ch in name:
             result+=str(ord(ch))
@@ -37,23 +83,14 @@ class kms():
         self.key = key
     def hsmDecipher(self):
         return self.key
-    def __init__(self, base, key,tk):
+    def __init__(self, base="defaultBase",tk=Tk()):
+        key = os.urandom(32)
+        if base == "/&@{;:}°°%*>~/]]^^s$+!/%=((()))))))secureStore;--":
+            raise ValueError("This value is reserved for class crypto.")
         self.base = base
         self.root = tk
-        question = messagebox.askyesno(master=self.root, title="Trust?", message="Do you trust this PC and the Microsoft Account linked to it?")
-        if question == True:
-            self.trust = True
-        else:
-            self.trust = False
+        self.trust = messagebox.askyesno(master=self.root, title="Trust?", message="Do you trust this PC and the Microsoft Account linked to it?")
         self.keydb = sqlite3.connect("keystore.db")
-        if self.trust:
-            self.hmsCipher(key)
-        else:
-            key = getKey(self.root)
-            messagebox.showinfo(master = self.root,title="Enter Key", message="Select OK once you have entered the PIN")
-            aes = pyaes.AESModeOfOperationCTR(key.value)
-            self.key = aes.encrypt(key)
-            del aes
         self.c = self.keydb.cursor()
         try:
             self.c.execute("SELECT * FROM "+antiSQLi(self.base))
@@ -63,8 +100,19 @@ class kms():
                 pass #Still needs to be programmed
             else:
                 self.c.execute("CREATE TABLE "+antiSQLi(self.base)+" (tbl text, key text)")
-                self.c.execute("INSERT INTO keys VALUES (?,?)",(self.base,self.key))
+                self.c.execute("INSERT INTO keys VALUES (?,?)",(self.base,key))
                 self.keydb.commit()
+        self.c.execute("SELECT key FROM keys WHERE db=?",(self.base,))
+        key = self.c.fetchone()[0]
+        if self.trust:
+            self.hmsCipher(key)
+        else:
+            key = getKey(self.root)
+            messagebox.showinfo(master = self.root,title="Enter Key", message="Select OK once you have entered the PIN")
+            aes = pyaes.AESModeOfOperationCTR(key.value)
+            self.key = aes.encrypt(key)
+            del aes
+        del key
 
     def pin(self, rebase=False, kc=None, base=True):
         if base:
@@ -94,8 +142,13 @@ class kms():
 
 
     def getTableKey(self, table):
-        r = self.c.execute("SELECT key FROM "+antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
-        r = self.c.fetchone()[0]
+        self.c.execute("SELECT key FROM "+antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
+        r = self.c.fetchone()
+        if r == None:
+            self.configTable(self, table)
+            self.c.execute("SELECT key FROM "+antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
+            r = self.c.fetchone()
+        r = r[0]
         aes = pyaes.AESModeOfOperationCTR(self.pin()) 
         r = aes.decrypt(r)
         del aes
@@ -145,6 +198,7 @@ class kms():
         del pwd
         del kc
         del bc
+
 
 
 
