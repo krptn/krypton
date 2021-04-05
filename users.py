@@ -1,5 +1,0 @@
-
-
-
-def uerID():
-    return xy
