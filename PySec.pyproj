@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>36134f74-ac31-494e-9511-685742b74b56</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>PySec\__main__.py</StartupFile>
+    <StartupFile>PySec\Basic.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,8 +22,14 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="PySec\__main__.py" />
+    <Compile Include="PySec\decorators.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PySec\Basic.py" />
     <Compile Include="PySec\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PySec\__main__.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="setup.py">
