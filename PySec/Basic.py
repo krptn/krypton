@@ -9,6 +9,18 @@ import os
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.
 
+def isBaseNameAvailable(name):
+    conn = sqlite3.connect("keystore.db")
+    c = conn.cursor()
+    falsey = False
+    for table in self.c.excecute("SELECT * FROM SQLite_master"):
+        if table[1] == name:
+            falsey = True
+    if falsey == True:
+        return False
+    else:
+        return True
+
 def antiSQLi(name, info=True):
     #Santizes and de-santizes inputs before constructing sql cmds to avoid injections
     result = '''"'''
