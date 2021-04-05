@@ -9,13 +9,6 @@ import os
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.
 
-class analyzeSecurity():
-    #This will analyze the security of the current installation - collect logs and other things
-    def __init__():
-        pass
-    def getTableRecommendation():
-        return "Example - do not trust"
-
 def antiSQLi(name, info=True):
     #Santizes and de-santizes inputs before constructing sql cmds to avoid injections
     result = '''"'''
@@ -227,3 +220,10 @@ class crypto(kms):
         pass
     def sucureDelete(what):
         pass
+
+class analyzeSecurity():
+    #This will analyze the security of the current installation - collect logs and other things
+    def __init__():
+        pass
+    def getTableRecommendation():
+        return "Example - do not trust"
