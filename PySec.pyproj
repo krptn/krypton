@@ -28,9 +28,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PySec\Basic.py" />
-    <Compile Include="PySec\settings.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="PySec\__init__.py">
       <SubType>Code</SubType>
     </Compile>
