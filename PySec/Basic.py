@@ -5,6 +5,7 @@ from tkinter import messagebox
 from tkinter import *
 import clr
 import os
+import ctypes
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.
@@ -21,25 +22,34 @@ def isBaseNameAvailable(name):
     else:
         return True
 
-def antiSQLi(name, info=True):
-    #Santizes and de-santizes inputs before constructing sql cmds to avoid injections
-    result = '''"'''
+class antiExploit():
+    @staticmethod
+    def antiSQLi(name, info=True):
+        #Santizes and de-santizes inputs before constructing sql cmds to avoid injections
+        result = '''"'''
 
-    if info is True:
-        for ch in name:
-            result+=str(ord(ch))
-            result+="/"
-        result = result[:-1]
-        result+='''"'''
-    elif info is False:
-        name = name[1:]
-        name=name[:-1]
-        t = name.split("/")
-        for i in t:
-            result+=chr(int(i))
-    else:
-        raise TypeError("Must be type str or type int")
-    return result
+        if info is True:
+            for ch in name:
+                result+=str(ord(ch))
+                result+="/"
+            result = result[:-1]
+            result+='''"'''
+        elif info is False:
+            name = name[1:]
+            name=name[:-1]
+            t = name.split("/")
+            for i in t:
+                result+=chr(int(i))
+        else:
+            raise TypeError("Must be type str or type int")
+        return result
+
+    @staticmethod
+    def overwriteMemory(stringy):
+        strlen = sys.getsizeof(stringy)
+        offset = sys.getsizeof(stringy) - strlen - 1
+        ctypes.memset(id(stringy) + offset, 0, strlen)
+        del stringy
 
 
 class kms():
