@@ -6,6 +6,7 @@ from tkinter import *
 import clr
 import os
 import ctypes
+import gc
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.
@@ -44,16 +45,27 @@ class antiExploit():
             raise TypeError("Must be type str or type int")
         return result
 
-    @staticmethod
-    def overwriteMemory(stringy=None, haslen=True, strlen=None, ids=None):
-        if haslen is True:  #You can suuply either the string as an argument or the atributed
-            strlen = len(stringy)
-            offset = sys.getsizeof(stringy) - strlen - 1
-            ctypes.memset(id(stringy) + offset, 0, strlen)
-            del stringy
-        else:
-            ctypes.memset(ids+20, 0, strlen-20)
+    class mem():
+        def __init__(self,stringy,haslen):
+            if haslen is True:  #You can suuply either the string as an argument or the atributed
+                self.strlen = sys.getsizeof(stringy)
+                self.offset = sys.getsizeof(stringy) - len(stringy) - 1
+                self.ids = id(stringy)
+                self.strlen
+                del stringy
+                self.becarefull=False
+            else:
+                self.becarefull=True
+                self.strlen = sys.getsizeof(stringy)
+                self.offset = 0
+                self.ids = id(stringy)
+                del stringy
+                return("We excpect you to 'del obj' before calling 'go'! And you should emiedetly call 'go' after 'del obj!'")
 
+        def go(self):
+            if self.becarefull:
+                gc.collect()
+            ctypes.memset(self.ids+self.offset,0,self.strlen-self.offset)
 
 class kms():
     #Needed: update table keys
