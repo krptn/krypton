@@ -45,11 +45,14 @@ class antiExploit():
         return result
 
     @staticmethod
-    def overwriteMemory(stringy):
-        strlen = sys.getsizeof(stringy)
-        offset = sys.getsizeof(stringy) - strlen - 1
-        ctypes.memset(id(stringy) + offset, 0, strlen)
-        del stringy
+    def overwriteMemory(stringy=None, haslen=True, strlen=None, ids=None):
+        if haslen is True:  #You can suuply either the string as an argument or the atributed
+            strlen = len(stringy)
+            offset = sys.getsizeof(stringy) - strlen - 1
+            ctypes.memset(id(stringy) + offset, 0, strlen)
+            del stringy
+        else:
+            ctypes.memset(ids+20, 0, strlen-20)
 
 
 class kms():
