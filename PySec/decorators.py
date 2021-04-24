@@ -5,24 +5,22 @@ import os
 
 "Decoraters to pull functions into safety/security"
 def AddSec(deco):
-    class AddSecurity():
-        def __init__(self):
-            self.base="tempy"
-            self.crypt = crypto(baseKMS=self.base)
-            self.lock()
-        def lock(self):
+    def security(self):
+        deco = self.deco
+        self = self
+        def lock():
             for a in dir(deco):
-                if a.startswith("__"):
+                if a in PySec.ignore:
                     pass
                 else:
                     b=self.crypt.crypt(getattr(deco,a))
                     setattr(deco, a, b)
                     del b
-        def set1value(self,value,x):
+        def set1value(value,x):
             setattr(deco,value,self.crypt.crypt(x))
-        def get1value(self,value):
+        def get1value(value):
             return self.crypt.decrypt(getattr(deco,value))
-        def unlock(self):
+        def unlock():
             for a in dir(deco):
                 if a.startswith("_"):
                     pass
@@ -30,11 +28,13 @@ def AddSec(deco):
                     b = self.crypt.decrypt(getattr(deco,a))
                     setattr(deco, a, b)
                     del b
+    
+    a = deco()
+    a.security = security
+    a.security.base = "tempy"
+    a.security.crypt = crypto(baseKMS=a.security.base)
+    a.security().lock()
+    return a
 
-        def __call__(self, *args, **kwargs):
-            self.unlock()
-            deco(*args,**kwargs)
-            self.lock()
-
-    return AddSecurity()
+    
 

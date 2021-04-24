@@ -6,7 +6,7 @@ from tkinter import *
 import clr
 import os
 import ctypes
-import gc
+import PySec
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.
@@ -45,27 +45,14 @@ class antiExploit():
             raise TypeError("Must be type str or type int")
         return result
 
-    class mem():
-        def __init__(self,stringy,haslen):
-            if haslen is True:  #You can suuply either the string as an argument or the atributed
-                self.strlen = sys.getsizeof(stringy)
-                self.offset = sys.getsizeof(stringy) - len(stringy) - 1
-                self.ids = id(stringy)
-                self.strlen
-                del stringy
-                self.becarefull=False
-            else:
-                self.becarefull=True
-                self.strlen = sys.getsizeof(stringy)
-                self.offset = 0
-                self.ids = id(stringy)
-                del stringy
-                return("We excpect you to 'del obj' before calling 'go'! And you should emiedetly call 'go' after 'del obj!'")
+    @staticmethod
+    def zeromem(obj):
+        depth = 0
+        for val in dir(obj):
+            if val not in PySec.ignore:
+                ctypes.memset(eval("id("+"val"+")"),0,eval("id("+"val"+") - len("+val+")"))
+            continue
 
-        def go(self):
-            if self.becarefull:
-                gc.collect()
-            ctypes.memset(self.ids+self.offset,0,self.strlen-self.offset)
 
 class kms():
     #Needed: update table keys
@@ -84,16 +71,19 @@ class kms():
         self.keydb = sqlite3.connect("keystore.db")
         self.c = self.keydb.cursor()
         try:
-            self.c.execute("SELECT * FROM "+antiSQLi(self.base))
+            self.c.execute("SELECT * FROM "+antiExploit.antiSQLi(self.base))
         except(sqlite3.OperationalError):
             if kmsport == None:
                 question = messagebox.askyesno(master=self.root, title="Keys", message="Would you like to import a kms (unsupported)?")
-            elif question == True or (kmsport != False and kmsport != None):
-                pass #Still needs to be programmed
+                if question == False:
+                    self.c.execute("CREATE TABLE "+antiExploit.antiSQLi(self.base)+" (tbl text, key text)")
+                    self.c.execute("INSERT INTO keys VALUES (?,?)",(self.base,key))
+                    self.keydb.commit()
+                else:
+                    pass
             else:
-                self.c.execute("CREATE TABLE "+antiSQLi(self.base)+" (tbl text, key text)")
-                self.c.execute("INSERT INTO keys VALUES (?,?)",(self.base,key))
-                self.keydb.commit()
+                pass
+
         self.c.execute("SELECT key FROM keys WHERE db=?",(self.base,))
         key = self.c.fetchone()[0]
         if self.trust:
@@ -139,11 +129,11 @@ class kms():
             raise ValueError("Options contain invalid values!")
 
     def getTableKey(self, table):
-        self.c.execute("SELECT key FROM "+antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
+        self.c.execute("SELECT key FROM "+antiExploit.antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
         r = self.c.fetchone()
         if r == None:
             self.configTable(self, table)
-            self.c.execute("SELECT key FROM "+antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
+            self.c.execute("SELECT key FROM "+antiExploit.antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
             r = self.c.fetchone()
         r = r[0]
         aes = pyaes.AESModeOfOperationCTR(self.pin()) 
@@ -156,14 +146,14 @@ class kms():
         aes = pyaes.AESModeOfOperationCTR(self.pin())
         k = aes.encrypt(k)
         del aes
-        self.c.execute("INSERT INTO "+antiSQLi(self.base)+" VALUES (?, ?)", (table, self.key))
+        self.c.execute("INSERT INTO "+antiExploit.antiSQLi(self.base)+" VALUES (?, ?)", (table, self.key))
         self.keydb.commit()
         del table
         del k
         return True
 
-
     def exportKeys(self, bases, tables, path, pwd=None):
+
         tmpkeystore = sqlite3.connect("keystore.db")
         tmpksys = sqlite3.connect(path)
         bk = tempkeystore.cursor() #Old
@@ -177,14 +167,14 @@ class kms():
         for base in bases:
             kc.execute("INSERT INTO keys VLUES (?, ?)", (base, self.pin(rebase=True, kc=kc)))
             for table in tables[baseCount]:
-                key = bk.execute("SELECT key FROM "+antiSQLi(base[2:])+" WHERE tbl= ?",(table))
+                key = bk.execute("SELECT key FROM "+antiExploit.antiSQLi(base[2:])+" WHERE tbl= ?",(table))
                 aes = pyaes.AESModeOfOperationCTR(self.pin(rebase=True, kc=kc, base=base))
                 key = aes.decrypt(key)
                 del aes
                 aes2 = pyaes.AESModeOfOperationCTR(self.pin(rebase=True, kc=kc, base=base))
                 key = aes2.encrypt(key)
                 del aes2
-                kc.execute("INSERT INTO "+antiSQLi(base)+" VALUES (?, ?)",(table,key))
+                kc.execute("INSERT INTO "+antiExploit.antiSQLi(base)+" VALUES (?, ?)",(table,key))
                 del key
                 tmpksys.commit()
             baseCount+=1
