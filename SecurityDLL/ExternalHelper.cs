@@ -6,7 +6,10 @@ namespace ExternalSecurity
 {
     public class HSM
     {
-
+        public HSM()
+        {
+            
+        }
     }
     
     public class helper
@@ -16,7 +19,7 @@ namespace ExternalSecurity
 
         }
 
-        public byte[] AESEncrypt(byte[] text, byte[] key)
+        public static Tuple<byte[], byte[]> AESEncrypt(byte[] text, byte[] key)
         {
             byte[] encrypted;
 
@@ -48,13 +51,11 @@ namespace ExternalSecurity
                     }
                 }
             aesAlg.Clear();
-            byte[] r;
-
-            byte[0] = encrypted;
-            byte[1] = iv;
+            var r = new Tuple<byte[], byte[]>(encrypted, iv);
 
 
             return r;
+
         }
     }
 }
