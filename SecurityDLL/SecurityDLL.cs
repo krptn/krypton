@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace ExternalSecurity
+namespace SecurityDLL
 {
     public class HSM
     {
@@ -22,7 +23,8 @@ namespace ExternalSecurity
         public static Tuple<byte[], byte[]> AESEncrypt(byte[] text, byte[] key)
         {
             byte[] encrypted;
-
+            var handle = GCHandle.Alloc(text, GCHandleType.Pinned);
+            var hand = GCHandle.Alloc(key, GCHandleType.Pinned);
             // Create an Aes object
             // with the specified key and IV.
             byte[] iv;
@@ -30,7 +32,8 @@ namespace ExternalSecurity
             {
                 iv = myAes.IV;
             }
-                Aes aesAlg = Aes.Create();
+            using (Aes aesAlg = Aes.Create())
+            {
                 aesAlg.Key = key;
                 aesAlg.IV = iv;
 
@@ -50,10 +53,15 @@ namespace ExternalSecurity
                         encrypted = msEncrypt.ToArray();
                     }
                 }
-            aesAlg.Clear();
+                aesAlg.Clear();
+            }
             var r = new Tuple<byte[], byte[]>(encrypted, iv);
-
-
+            Array.Clear(text, 0, text.Length);
+            Array.Clear(key, 0, key.Length);
+            handle.Free();
+            hand.Free();
+            text = null;
+            key = null;
             return r;
 
         }
