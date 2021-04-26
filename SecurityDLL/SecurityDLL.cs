@@ -73,6 +73,7 @@ public class helper
         // Create an Aes object
         // with the specified key and IV.
         string plaintext;
+        GCHandle hand;
         using (Aes aesAlg = Aes.Create())
         {
             aesAlg.Key = key;
@@ -92,6 +93,8 @@ public class helper
                         // Read the decrypted bytes from the decrypting stream
                         // and place them in a string.
                         plaintext = srDecrypt.ReadToEnd();
+                        hand = GCHandle.Alloc(plaintext, GCHandleType.Pinned);
+
                     }
                 }
             }
@@ -108,7 +111,19 @@ public class helper
         }
         finally
         {
-            
+            unsafe 
+            {
+                fixed (char* p = plaintext)
+                {
+                    for (int i = 0; p[i] != '\0'; i++)
+                    {
+                        char* x = p + i;
+                        *x = '0';
+                    }
+                }
+            }
+            hand.Free();
+            plaintext = null;
         }
 
     }
