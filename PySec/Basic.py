@@ -11,7 +11,7 @@ import clr
 sys.path.append(r"C:\Users\markb\source\repos\PySec\Security\bin\Realese\net5.0")
 clr.AddReference("SecurityDLL")
 
-from SecurityDLL import helper
+from Security import helper
 
 
 
