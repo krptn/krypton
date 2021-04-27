@@ -4,7 +4,8 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
 
-namespace Security{
+namespace Security
+{
     [ComVisible(true)]
     public class HSM
     {
@@ -21,7 +22,7 @@ namespace Security{
         {
 
         }
-        
+
         [ComVisible(true)]
         public static Tuple<byte[], byte[]> AESEncrypt(byte[] text, byte[] key)
         {
