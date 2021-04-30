@@ -8,7 +8,7 @@ import os
 import ctypes
 import PySec
 import clr
-sys.path.append(r"C:\Users\markb\source\repos\PySec\Security\bin\Realese\net5.0")
+sys.path.append(r"C:\Users\markb\source\repos\PySec\Security\bin\x64\Realese\net5.0")
 clr.AddReference("SecurityDLL")
 
 from Security import helper

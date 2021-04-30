@@ -6,7 +6,6 @@ using System.Security.Cryptography;
 
 namespace Security
 {
-    [ComVisible(true)]
     public class HSM
     {
         public HSM()
@@ -15,7 +14,6 @@ namespace Security
         }
     }
 
-    [ComVisible(true)]
     public class helper
     {
         public helper()
@@ -23,7 +21,6 @@ namespace Security
 
         }
 
-        [ComVisible(true)]
         public static Tuple<byte[], byte[]> AESEncrypt(byte[] text, byte[] key)
         {
             byte[] encrypted;
@@ -70,7 +67,6 @@ namespace Security
 
         }
 
-        [ComVisible(true)]
         public static String AESDecrypt(Byte[] key, Byte[] thing, Byte[] IV)
         {
             var handle = GCHandle.Alloc(key, GCHandleType.Pinned);

@@ -7,24 +7,36 @@ Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PySec", "PySec.pyproj", "{3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecurityManager", "SecurityManager\SecurityManager.csproj", "{B6908C25-5001-42EC-97CA-F7810BBC00B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Security", "Security\Security\Security.csproj", "{672750CA-99DF-42C8-BBDD-ED877AADE9EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Security", "Security\Security\Security.csproj", "{672750CA-99DF-42C8-BBDD-ED877AADE9EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{36134F74-AC31-494E-9511-685742B74B56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36134F74-AC31-494E-9511-685742B74B56}.Debug|x64.ActiveCfg = Debug|Any CPU
 		{36134F74-AC31-494E-9511-685742B74B56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36134F74-AC31-494E-9511-685742B74B56}.Release|x64.ActiveCfg = Release|Any CPU
 		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Debug|x64.Build.0 = Debug|Any CPU
 		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Release|x64.ActiveCfg = Release|Any CPU
+		{B6908C25-5001-42EC-97CA-F7810BBC00B5}.Release|x64.Build.0 = Release|Any CPU
 		{672750CA-99DF-42C8-BBDD-ED877AADE9EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{672750CA-99DF-42C8-BBDD-ED877AADE9EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{672750CA-99DF-42C8-BBDD-ED877AADE9EE}.Debug|x64.ActiveCfg = Debug|x64
+		{672750CA-99DF-42C8-BBDD-ED877AADE9EE}.Debug|x64.Build.0 = Debug|x64
 		{672750CA-99DF-42C8-BBDD-ED877AADE9EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{672750CA-99DF-42C8-BBDD-ED877AADE9EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{672750CA-99DF-42C8-BBDD-ED877AADE9EE}.Release|x64.ActiveCfg = Release|x64
+		{672750CA-99DF-42C8-BBDD-ED877AADE9EE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
