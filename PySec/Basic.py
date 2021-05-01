@@ -8,10 +8,6 @@ import os
 import ctypes
 import PySec
 import clr
-sys.path.append(r"C:\Users\markb\source\repos\PySec\Security\bin\x64\Realese\net5.0")
-clr.AddReference("SecurityDLL")
-
-from Security import helper
 
 
 
@@ -222,7 +218,7 @@ class crypto(kms):
     '''
     Ciphers and deciphers strings. Can also store strings securely and supports CRUD operations
     '''
-    def __init__(self, baseKMS="/&@{;:}°°%*>~/]]^^s$+!/%=((()))))))secureStore;--"):
+    def __init__(self, baseKMS="{secureStore"):
         super().__init__(base=baseKMS)
 
     #Ciphers

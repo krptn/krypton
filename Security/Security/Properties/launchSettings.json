@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Security": {
+      "commandName": "Project",
+      "workingDirectory": "C:\\Users\\markb\\source\\repos\\PySec",
+      "remoteDebugEnabled": false,
+      "nativeDebugging": false
+    }
+  }
+}
