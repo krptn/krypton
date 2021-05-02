@@ -2,9 +2,10 @@
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using System.Text;
 using Python.Runtime;
 
-static Tuple<byte[], byte[]> AESEncrypt(byte[] text, byte[] key)
+static (byte[], byte[]) AESEncrypt(byte[] text, byte[] key)
 {
     byte[] encrypted;
     var handle = GCHandle.Alloc(text, GCHandleType.Pinned);
@@ -38,7 +39,7 @@ static Tuple<byte[], byte[]> AESEncrypt(byte[] text, byte[] key)
             }
         }
         aesAlg.Clear();
-    }
+    } 
     var r = new Tuple<byte[], byte[]>(encrypted, iv);
     Array.Clear(text, 0, text.Length);
     Array.Clear(key, 0, key.Length);
@@ -46,11 +47,11 @@ static Tuple<byte[], byte[]> AESEncrypt(byte[] text, byte[] key)
     hand.Free();
     text = null;
     key = null;
-    return r;
+    return (encrypted, iv);
 
 }
 
-static String AESDecrypt(Byte[] key, Byte[] thing, Byte[] IV)
+static (String, GCHandle) AESDecrypt(Byte[] key, Byte[] thing, Byte[] IV)
 {
     var handle = GCHandle.Alloc(key, GCHandleType.Pinned);
     // Create an Aes object
@@ -87,37 +88,68 @@ static String AESDecrypt(Byte[] key, Byte[] thing, Byte[] IV)
     Array.Clear(key, 0, key.Length);
     handle.Free();
     key = null;
+    return (plaintext, hand);
+}
 
-    try
+
+static string GetPass()
+{
+    ConsoleKey key = ConsoleKey.Escape;
+    string pass = "00000000000000000000000000000000";
+    GCHandle handle = GCHandle.Alloc(pass, GCHandleType.Pinned);
+    ConsoleKeyInfo keyinfo;
+    int length = 0;
+    while (length < 32)
     {
-        return plaintext;
-    }
-    finally
-    {
-        unsafe
+        keyinfo = Console.ReadKey(intercept: true);
+        key = keyinfo.Key;
+        length += 1;
+
+        if ((key == ConsoleKey.Backspace) && (pass.Length != 0))
         {
-            fixed (char* p = plaintext)
+            Console.Write("\b \b");
+            pass = pass.Substring(0, pass.Length - 1);
+            unsafe
             {
-                for (int i = 0; p[i] != '\0'; i++)
+                fixed (char* p = pass)
                 {
-                    char* x = p + i;
-                    *x = '0';
+                    char* i = p + (pass.Length - 1);
+                    *i = (char)48;
                 }
             }
         }
-        hand.Free();
-        plaintext = null;
+        else if (key == ConsoleKey.Enter)
+        {
+            Console.WriteLine("");
+            break;
+        }
+        else
+        {
+            Console.Write('*');
+            unsafe
+            {
+                fixed (char* p = pass)
+                {
+                    char* i = p + (length - 1);
+                    *i = keyinfo.KeyChar;
+                }
+            }
+        }
+
+
     }
-
-}
-
-
-using (Py.GIL())
-{
-    dynamic PySec = Py.Import("PySec");
-    bool stop = true;
-    while (stop)
+    try
     {
-        
+        return pass;
+    }
+    finally
+    {
+        handle.Free();
     }
 }
+
+Console.WriteLine("Hello");
+string a = GetPass();
+
+Console.WriteLine(a);
+

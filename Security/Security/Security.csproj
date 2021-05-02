@@ -5,7 +5,7 @@
     <Platforms>AnyCPU;x64</Platforms>
     <OutputType>Exe</OutputType>
     <UserSecretsId>07a5518d-21e2-4acb-8b91-e1b984281c5f</UserSecretsId>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>mbs9.pfx</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
   </PropertyGroup>
