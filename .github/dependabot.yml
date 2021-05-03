@@ -9,14 +9,29 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    
+    automerged_updates:
+      - match:
+        dependency_type: "all"
+        update_type: "all"
 
   - package-ecosystem: "nuget" # See documentation for possible values
     directory: "SecurityDLL/" # Location of package manifests
     schedule:
       interval: "daily"
+    
+    automerged_updates:
+      - match:
+        dependency_type: "all"
+        update_type: "all"
       
   - package-ecosystem: "nuget" # See documentation for possible values
     directory: "SecurityManager/" # Location of package manifests
     schedule:
       interval: "daily"
+      
+    automerged_updates:
+      - match:
+        dependency_type: "all"
+        update_type: "all"
       
