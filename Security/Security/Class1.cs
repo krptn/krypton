@@ -95,11 +95,11 @@ static (String, GCHandle) AESDecrypt(Byte[] key, Byte[] thing, Byte[] IV)
 static string GetPass()
 {
     ConsoleKey key = ConsoleKey.Escape;
-    string pass = "00000000000000000000000000000000";
+    string pass = "000000000000000000";
     GCHandle handle = GCHandle.Alloc(pass, GCHandleType.Pinned);
     ConsoleKeyInfo keyinfo;
     int length = 0;
-    while (length < 32)
+    while (length < pass.Length)
     {
         keyinfo = Console.ReadKey(intercept: true);
         key = keyinfo.Key;
