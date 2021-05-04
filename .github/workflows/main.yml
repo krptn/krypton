@@ -28,4 +28,11 @@ jobs:
               pull_number: context.payload.pull_request.number,
               commit_title: 'Automerge Dependencies'
             })
+            
+            await octokit.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/comments', {
+              owner: context.payload.repository.owner.login,
+              repo: context.payload.repository.name,
+              pull_number: context.payload.pull_request.number,
+              body: '@dependabot merge'
+            })
 
