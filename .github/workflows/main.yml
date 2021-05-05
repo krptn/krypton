@@ -17,24 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run a multi-line script
-        uses: actions/checkout@v2
-        with: 
-          script: |
-            await octokit.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/merge', {
-              owner: context.payload.repository.owner.login,
-              repo: context.payload.repository.name,
-              pull_number: context.payload.pull_request.number,
-              commit_title: 'Automerge Dependencies'
-            }) 
-            octokit.pulls.merge({
-              github.payload.repository.name,
-              github.payload.pull_request-number,
-              "merge",
-            })
-            await octokit.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/comments', {
-              owner: context.payload.repository.owner.login,
-              repo: context.payload.repository.name,
-              pull_number: context.payload.pull_request.number,
-              body: '@dependabot merge'
-            })
-
+        run: |
+          curl \
+            -X PUT \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ context.payload.repository.owner.login }}/${{ context.payload.repository.name }}/pulls/${{ context.payload.pull_request.number }}/merge \
+            -d '{"commit_title":"auto"}'
