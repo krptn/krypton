@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Run a multi-line script
         env:
-          access:${{ secrets.OAUTH }}
+          access:${{ secrets.OAUTH1 }}
         run: |
           curl \
             -X PUT \
