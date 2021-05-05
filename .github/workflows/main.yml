@@ -25,14 +25,12 @@ jobs:
               repo: context.payload.repository.name,
               pull_number: context.payload.pull_request.number,
               commit_title: 'Automerge Dependencies'
-            })
-            
+            }) 
             octokit.pulls.merge({
               github.payload.repository.name,
               github.payload.pull_request-number,
               "merge",
             })
-          srcipt: |
             await octokit.request('POST /repos/{owner}/{repo}/pulls/{pull_number}/comments', {
               owner: context.payload.repository.owner.login,
               repo: context.payload.repository.name,
