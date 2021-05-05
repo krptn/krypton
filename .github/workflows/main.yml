@@ -15,12 +15,13 @@ jobs:
   update:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
     steps:
       - name: Run a multi-line script
         run: |
           curl \
             -X PUT \
-            -u mbs9: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 \
+            -u mbs9: ${{ secrets.OAUTH }} \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.number }}/merge \
             -d '{"commit_title":"auto"}'
