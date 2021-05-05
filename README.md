@@ -1,7 +1,7 @@
 # PySec
 - Zero trust/knowlage
 - AI based security
-- Application fingerprinting
+- Prevent Application fingerprinting
 - Encryption
 - HSM use 
 - Biometrics
