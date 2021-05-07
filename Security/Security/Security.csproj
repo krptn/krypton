@@ -33,11 +33,4 @@
     <DefineConstants></DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Reference Include="Python.Runtime">
-      <HintPath>..\..\..\..\..\VEnvs\PySec PyEnv\Lib\site-packages\Python.Runtime.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-  </ItemGroup>
-
 </Project>

@@ -25,6 +25,12 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="PySec\PyToCSharp.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="setup.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PySec\Keydb.py" />
     <Compile Include="PySec\decorators.py">
       <SubType>Code</SubType>
@@ -34,9 +40,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PySec\__main__.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="setup.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Tests\testCrypto.py">

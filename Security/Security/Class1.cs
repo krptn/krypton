@@ -3,7 +3,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
-using Python.Runtime;
 
 static (byte[], byte[]) AESEncrypt(byte[] text, byte[] key)
 {
@@ -73,12 +72,10 @@ static (String, GCHandle) AESDecrypt(Byte[] key, Byte[] thing, Byte[] IV)
             {
                 using (StreamReader srDecrypt = new StreamReader(csDecrypt))
                 {
-
                     // Read the decrypted bytes from the decrypting stream
                     // and place them in a string.
                     plaintext = srDecrypt.ReadToEnd();
                     hand = GCHandle.Alloc(plaintext, GCHandleType.Pinned);
-
                 }
             }
         }
@@ -135,8 +132,6 @@ static string GetPass()
                 }
             }
         }
-
-
     }
     try
     {
@@ -145,11 +140,8 @@ static string GetPass()
     finally
     {
         handle.Free();
+        Console.WriteLine("");
     }
 }
 
-Console.WriteLine("Hello");
-string a = GetPass();
-
-Console.WriteLine(a);
 

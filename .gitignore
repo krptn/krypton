@@ -16,6 +16,11 @@ keystore.db
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+__pycache__/
+dist/
+Package/
+PySec.egg-info/
+build/
 
 # Mono auto generated files
 mono_crash.*

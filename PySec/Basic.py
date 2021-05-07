@@ -7,9 +7,7 @@ import clr
 import os
 import ctypes
 import PySec
-import clr
-
-
+import sys
 
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 
@@ -51,11 +49,8 @@ class antiExploit():
 
     @staticmethod
     def zeromem(obj):
-        depth = 0
-        for val in dir(obj):
-            if val not in PySec.ignore:
-                ctypes.memset(eval("id("+"val"+")"),0,eval("id("+"val"+") - len("+val+")"))
-            continue
+        ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
+        del obj
 
 
 class kms():
@@ -191,9 +186,6 @@ class kms():
         del kc
         del bc
 
-
-
-
 class getKey():
     def __init__(self,master):
         self.value = " "
@@ -223,6 +215,7 @@ class crypto(kms):
 
     #Ciphers
     def crypt(what):
+        what = what.encode('utf-8')
         rec = analyzeSecurity()
         table = rec.getTableRecommendation()
         del rec
@@ -258,3 +251,4 @@ class analyzeSecurity():
         pass
     def getTableRecommendation():
         return "Example - do not trust"
+
