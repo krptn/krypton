@@ -1,4 +1,4 @@
 import sys
 import ctypes
-
-sys.exit()
+def runner(name):
+    pass
