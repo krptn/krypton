@@ -132,7 +132,7 @@ namespace PythonCSharp
         {
             this.path = path;
             name = Path.GetRandomFileName();
-            server = new NamedPipeServerStream(name);
+            server = new NamedPipeServerStream(name, PipeDirection.InOut,1,PipeTransmissionMode.Byte, PipeOptions.WriteThrough);
             process = new Process();
             process.StartInfo.FileName = path;
             process.StartInfo.Arguments = "-m PySec "+name;
@@ -141,8 +141,6 @@ namespace PythonCSharp
             server.WaitForConnection();
             reader = new StreamReader(server);
             writer = new StreamWriter(server);
-            writer.AutoFlush = true;
-
         }
 
         public PythonObject import(string name)
