@@ -137,6 +137,7 @@ namespace PythonCSharp
             process.StartInfo.FileName = path;
             process.StartInfo.Arguments = "-m PySec "+name;
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            process.StartInfo.UseShellExecute = true;
             process.Start();
             server.WaitForConnection();
             reader = new StreamReader(server);
