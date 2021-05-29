@@ -403,7 +403,6 @@ Return Value:
 
     PT_DBG_PRINT( PTDBG_TRACE_ROUTINES,
                   ("FilesystemFilter!FilesystemFilterInstanceSetup: Entered\n") );
-
     return STATUS_SUCCESS;
 }
 
@@ -617,7 +616,6 @@ Return Value:
     return STATUS_SUCCESS;
 }
 
-
 /*************************************************************************
     MiniFilter callback routines.
 *************************************************************************/
@@ -686,7 +684,18 @@ Return Value:
     // rather returns FLT_PREOP_SUCCESS_WITH_CALLBACK.
     // This passes the request down to the next miniFilter in the chain.
 
-    return FLT_PREOP_SUCCESS_WITH_CALLBACK;
+    if (Data->Iopb->TargetFileObject->FileObjectExtension == "PySec") {
+        if (AskApp(Data->Iopb->TargetFileObject->FileName)) {
+            return FLT_PREOP_SUCCESS_WITH_CALLBACK;
+        }
+        else {
+            return FLT_PREOP_SUCCESS_NO_CALLBACK;
+        }
+    }
+    else {
+        return FLT_PREOP_SUCCESS_NO_CALLBACK;
+    }
+
 }
 
 
@@ -784,6 +793,7 @@ Return Value:
     UNREFERENCED_PARAMETER( FltObjects );
     UNREFERENCED_PARAMETER( CompletionContext );
     UNREFERENCED_PARAMETER( Flags );
+
 
     PT_DBG_PRINT( PTDBG_TRACE_ROUTINES,
                   ("FilesystemFilter!FilesystemFilterPostOperation: Entered\n") );
