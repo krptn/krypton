@@ -28,12 +28,15 @@ namespace PythonCSharp
 
         }
     }
+
+    [ComVisible(true)]
     public class Crypto
     {
         public Crypto()
         {
 
         }
+        
         static (byte[], byte[]) AESEncrypt(byte[] text, byte[] key)
         {
             byte[] encrypted;
