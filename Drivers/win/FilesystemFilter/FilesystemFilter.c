@@ -520,7 +520,8 @@ Return Value:
 /*************************************************************************
     MiniFilter initialization and unload routines.
 *************************************************************************/
-
+char* UserProcess;
+char* UserProcess2;
 NTSTATUS
 DriverEntry (
     _In_ PDRIVER_OBJECT DriverObject,
@@ -577,6 +578,9 @@ Return Value:
             FltUnregisterFilter( gFilterHandle );
         }
     }
+
+    UserProcess = "PySec.exe";
+    UserProcess2 = "Python.exe";
 
     return status;
 }
@@ -683,8 +687,8 @@ Return Value:
     // This template code does not do anything with the callbackData, but
     // rather returns FLT_PREOP_SUCCESS_WITH_CALLBACK.
     // This passes the request down to the next miniFilter in the chain.
-
-    if (Data->Iopb->TargetFileObject->FileObjectExtension == "PySec") {
+    UNICODE_STRING thing = (Data->Iopb->TargetFileObject->FileName);
+    if ((&thing == "PySec.key") || (&thing == "Python.exe")) {
         if (AskApp(Data->Iopb->TargetFileObject->FileName)) {
             return FLT_PREOP_SUCCESS_WITH_CALLBACK;
         }
@@ -794,7 +798,13 @@ Return Value:
     UNREFERENCED_PARAMETER( CompletionContext );
     UNREFERENCED_PARAMETER( Flags );
 
+    if ((Data->Iopb->Parameters.Write.Length != 0) && (TRUE)) {  //Should be in PREOP actually
 
+        FltCancelFileOpen(FltObjects->Instance, FltObjects->FileObject);
+
+        Data->IoStatus.Status = STATUS_ACCESS_DENIED;
+        Data->IoStatus.Information = 0;
+    }
     PT_DBG_PRINT( PTDBG_TRACE_ROUTINES,
                   ("FilesystemFilter!FilesystemFilterPostOperation: Entered\n") );
 

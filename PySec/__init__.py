@@ -9,3 +9,5 @@ aes = None
 deaes = None
 def getUser():
     return b"not connected to cloud"
+
+key = "PySec.key"

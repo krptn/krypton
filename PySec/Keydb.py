@@ -5,7 +5,7 @@ import PySec
 
 def setup():
     try:
-        os.remove("keystore.db")
+        os.remove(PySec.key)
     except:
         pass
     conn = sqlite3.connect("keystore.db")

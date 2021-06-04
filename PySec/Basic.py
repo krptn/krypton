@@ -14,7 +14,7 @@ import sys
 # hash of the unique activation code to recognise the name of the localy stored db key.
 
 def isBaseNameAvailable(name):
-    conn = sqlite3.connect("keystore.db")
+    conn = sqlite3.connect(PySec.key)
     c = conn.cursor()
     falsey = False
     for table in self.c.excecute("SELECT * FROM SQLite_master"):
@@ -67,7 +67,7 @@ class kms():
             self.trust = messagebox.askyesno(master=self.root, title="Trust?", message="Do you trust this PC and the Microsoft Account linked to it?")
         else:
             self.trust = trust
-        self.keydb = sqlite3.connect("keystore.db")
+        self.keydb = sqlite3.connect(PySec.key)
         self.c = self.keydb.cursor()
         try:
             self.c.execute("SELECT * FROM "+antiExploit.antiSQLi(self.base))
@@ -153,7 +153,7 @@ class kms():
 
     def exportKeys(self, bases, tables, path, pwd=None):
 
-        tmpkeystore = sqlite3.connect("keystore.db")
+        tmpkeystore = sqlite3.connect(PySec.key)
         tmpksys = sqlite3.connect(path)
         bk = tempkeystore.cursor() #Old
         kc = tmpksys.cursor() #New
