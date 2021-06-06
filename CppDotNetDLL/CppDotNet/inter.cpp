@@ -1,8 +1,21 @@
 #include "inter.h"
 #include <stdio.h>
 using namespace System;
-#using ""  //Asssembly
+#using "C:\Users\markb\source\repos\PySec\PythonCSharp\bin\Release\net5.0\PythonCSharp.dll"  //Asssembly
+using namespace intdotnet;
 
-struct __declspec(dllimport) A {
-	void Test();
-};
+#pragma unmanaged
+namespace dotnet {
+	static class crypto {
+		char AESEncrypt() {
+
+		}
+
+		char AESDecrypt(char iv, char key, char ctext) {
+			char a;
+			
+			a = Crypto::AESDecrypt(&key, &ctext, &iv);
+		}
+
+	};
+}
