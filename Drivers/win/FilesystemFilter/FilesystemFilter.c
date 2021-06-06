@@ -798,7 +798,7 @@ Return Value:
     UNREFERENCED_PARAMETER( CompletionContext );
     UNREFERENCED_PARAMETER( Flags );
 
-    if ((Data->Iopb->Parameters.Write.Length != 0) && (TRUE)) {  //Should be in PREOP actually
+    if (PsGetCurrentProcessId()) {  //Should be in PREOP actually
 
         FltCancelFileOpen(FltObjects->Instance, FltObjects->FileObject);
 

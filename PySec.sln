@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PythonCSharp", "PythonCShar
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FilesystemFilter", "Drivers\win\FilesystemFilter\FilesystemFilter.vcxproj", "{7F1B0F69-11A6-4673-B0FE-1D1F11A37CDD}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppDotNet", "CppDotNetDLL\CppDotNet\CppDotNet.vcxproj", "{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +125,20 @@ Global
 		{7F1B0F69-11A6-4673-B0FE-1D1F11A37CDD}.Release|x86.ActiveCfg = Release|Win32
 		{7F1B0F69-11A6-4673-B0FE-1D1F11A37CDD}.Release|x86.Build.0 = Release|Win32
 		{7F1B0F69-11A6-4673-B0FE-1D1F11A37CDD}.Release|x86.Deploy.0 = Release|Win32
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Debug|ARM.ActiveCfg = Debug|Win32
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Debug|ARM64.ActiveCfg = Debug|Win32
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Debug|x64.ActiveCfg = Debug|x64
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Debug|x64.Build.0 = Debug|x64
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Debug|x86.ActiveCfg = Debug|Win32
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Debug|x86.Build.0 = Debug|Win32
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Release|Any CPU.ActiveCfg = Release|Win32
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Release|ARM.ActiveCfg = Release|Win32
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Release|ARM64.ActiveCfg = Release|Win32
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Release|x64.ActiveCfg = Release|x64
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Release|x64.Build.0 = Release|x64
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Release|x86.ActiveCfg = Release|Win32
+		{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

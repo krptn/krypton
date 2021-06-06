@@ -5,39 +5,12 @@ using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 
-namespace PythonCSharp
+namespace intdotnet
 {
-    public class PythonObject
+
+    public static class Crypto
     {
-        string name;
-        StreamWriter writer;
-        StreamReader reader;
-        public PythonObject(string path, StreamWriter writera, StreamReader readera)
-        {
-            name = path;
-            writer = writera;
-            reader = readera;
-
-        }
-        public void ReadVar (string var)
-        {
-
-        }
-        public void RunMethod (string var)
-        {
-
-        }
-    }
-
-    [ComVisible(true)]
-    public class Crypto
-    {
-        public Crypto()
-        {
-
-        }
-        
-        static (byte[], byte[]) AESEncrypt(byte[] text, byte[] key)
+        public static (byte[], byte[]) AESEncrypt(byte[] text, byte[] key)
         {
             byte[] encrypted;
             var handle = GCHandle.Alloc(text, GCHandleType.Pinned);
@@ -83,7 +56,7 @@ namespace PythonCSharp
 
         }
 
-        static (string, GCHandle) AESDecrypt(byte[] key, byte[] thing, byte[] IV)
+        public static string AESDecrypt(byte[] key, byte[] thing, byte[] IV)
         {
             var handle = GCHandle.Alloc(key, GCHandleType.Pinned);
             // Create an Aes object
@@ -118,59 +91,14 @@ namespace PythonCSharp
             Array.Clear(key, 0, key.Length);
             handle.Free();
             key = null;
-            return (plaintext, hand);
-        }
-    }
-
-
-    public class ToPython : IDisposable
-    {
-        private string path;
-        private NamedPipeServerStream server;
-        private Process process;
-        string name;
-        StreamReader reader;
-        StreamWriter writer;
-        public ToPython(string path)
-        {
-            this.path = path;
-            name = Path.GetRandomFileName();
-            server = new NamedPipeServerStream(name, PipeDirection.InOut,1,PipeTransmissionMode.Byte, PipeOptions.WriteThrough);
-            process = new Process();
-            process.StartInfo.FileName = path;
-            process.StartInfo.Arguments = "-m PySec "+name;
-            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            process.StartInfo.UseShellExecute = true;
-            process.Start();
-            server.WaitForConnection();
-            reader = new StreamReader(server);
-            writer = new StreamWriter(server);
-        }
-
-        public PythonObject import(string name)
-        {
-            writer.WriteLine("import " + name);
-            PythonObject b = new PythonObject(name, writer, reader);
-            return b;
-        }
-
-        public void Dispose()
-        {
-            writer.Close();
-            reader.Close();
-            server.Close();
-            process.Kill();
-            process.Close();
-            server.Dispose();
-            writer.Dispose();
-            reader.Dispose();
-            process.Dispose();
-            path = null;
-            name = null;
-            server = null;
-            process = null;
-            writer = null;
-            reader = null;
+            try
+            {
+                return plaintext;
+            }
+            finally
+            {
+                hand.Free();
+            }
         }
     }
 }
