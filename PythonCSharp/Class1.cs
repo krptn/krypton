@@ -46,8 +46,26 @@ namespace intdotnet
                 aesAlg.Clear();
             }
             var r = new Tuple<byte[], byte[]>(encrypted, iv);
-            Array.Clear(text, 0, text.Length);
-            Array.Clear(key, 0, key.Length);
+
+            unsafe
+            {
+                for (int i =0; i<text.Length; i++)
+                {
+                    fixed(byte* no = &text[i])
+                    {
+                        *no = 0;
+                    }
+
+                }
+                for (int i = 0; i < key.Length; i++)
+                {
+                    fixed (byte* no = &key[i])
+                    {
+                        *no = 0;
+                    }
+
+                }
+            }
             handle.Free();
             hand.Free();
             text = null;
@@ -87,8 +105,17 @@ namespace intdotnet
                 }
                 aesAlg.Clear();
             }
+            unsafe
+            {
+                for (int i = 0; i < key.Length; i++)
+                {
+                    fixed (byte* no = &key[i])
+                    {
+                        *no = 0;
+                    }
 
-            Array.Clear(key, 0, key.Length);
+                }
+            }
             handle.Free();
             key = null;
             try
