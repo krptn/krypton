@@ -7,18 +7,48 @@ using namespace intdotnet;
 using namespace System::Runtime::InteropServices;
 #include < stdlib.h >
 #include < vcclr.h >
+#include<tuple>
+#include <iostream> 
 #pragma unmanaged
 
 
 namespace dotnet {
 	static class crypto {
 
-		void removeVar(char var){
+		std::tuple<char, char> AESEncrypt(char text[], char key[]) {
+#pragma managed
+			array< Byte >^ bytekey = gcnew array< Byte >(strlen(key));
+			Marshal::Copy((IntPtr)key, bytekey, 0, strlen(key));
+			GCHandle handlekey = GCHandle::Alloc(bytekey, GCHandleType::Pinned);
+			for (int i = 0; i < strlen(key); i++) {
+				char* ptr = &key[i];
+				*ptr = 0;
+			}
 
-		}
 
-		char AESEncrypt() {
+			array< Byte >^ bytetext = gcnew array< Byte >(strlen(text));
+			Marshal::Copy((IntPtr)text, bytetext, 0, strlen(key));
+			GCHandle handleiv = GCHandle::Alloc(bytetext, GCHandleType::Pinned);
+			for (int i = 0; i < strlen(text); i++) {
+				char* ptr = &text[i];
+				*ptr = 0;
+			}
 
+			System::ValueTuple<array<unsigned char>^, array<unsigned char>^>  result = Crypto::AESEncrypt(bytetext, bytekey);
+			GCHandle handleresult = GCHandle::Alloc(result, GCHandleType::Pinned);
+			char* iv = new char[(result.Item1->Length) + 1];
+			char* ctext = new char[(result.Item2->Length) + 1];
+
+			for (int i = 0; i < bytekey->Length; i++) {
+				auto pbArr2 = &bytekey[i];
+				*pbArr2 = 0;
+			}
+			for (int i = 0; i < bytetext->Length; i++) {
+				auto pbArr2 = &bytetext[i];
+				*pbArr2 = 0;
+			}
+#pragma unmanaged
+			std::tuple r;  //Needs finishing
 		}
 
 		char* AESDecrypt(char iv[], char key[], char ctext[]) {
@@ -27,6 +57,10 @@ namespace dotnet {
 			array< Byte >^ bytekey = gcnew array< Byte >(strlen(key));
 			Marshal::Copy((IntPtr)key, bytekey, 0, strlen(key));
 			GCHandle handlekey = GCHandle::Alloc(bytekey,GCHandleType::Pinned);
+			for (int i = 0; i < strlen(key); i++) {
+				char* ptr = &key[i];
+				*ptr = 0;
+			}
 
 			array< Byte >^ byteiv = gcnew array< Byte >(strlen(iv));
 			Marshal::Copy((IntPtr)iv, byteiv, 0, strlen(key));
@@ -43,11 +77,14 @@ namespace dotnet {
 
 			for (int i = 0; i < result->Length; i++) {
 				r[i] = result[i];
-				Char* n = &result[i]; // Reset it to avoid memory leaks -- still needs finsihing
-				*n = 0;
+				auto *n = &result; // Reset it to avoid memory leaks -- still needs finsihing
+				*n = " ";
 			}
 
-			
+			for (int i = 0; i < bytekey->Length; i++) {
+				auto pbArr2 = &bytekey[i];
+				*pbArr2 = 0;
+			}
 
 			Array::Clear(bytekey,0,bytekey->Length);
 			Array::Clear(byteiv, 0, byteiv->Length);

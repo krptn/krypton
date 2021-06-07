@@ -70,6 +70,7 @@ namespace intdotnet
             hand.Free();
             text = null;
             key = null;
+            
             return (encrypted, iv);
 
         }
