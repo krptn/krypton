@@ -9,13 +9,15 @@ using namespace System::Runtime::InteropServices;
 #include < vcclr.h >
 #include<tuple>
 #include <iostream> 
+using namespace std;
 #pragma unmanaged
 
 
 namespace dotnet {
+	auto Systemnet5 = System;
 	static class crypto {
 
-		std::tuple<char, char> AESEncrypt(char text[], char key[]) {
+		std::tuple<char[], char[]> AESEncrypt(char text[], char key[]) {
 #pragma managed
 			array< Byte >^ bytekey = gcnew array< Byte >(strlen(key));
 			Marshal::Copy((IntPtr)key, bytekey, 0, strlen(key));
@@ -37,8 +39,15 @@ namespace dotnet {
 			System::ValueTuple<array<unsigned char>^, array<unsigned char>^>  result = Crypto::AESEncrypt(bytetext, bytekey);
 			GCHandle handleresult = GCHandle::Alloc(result, GCHandleType::Pinned);
 			char* iv = new char[(result.Item1->Length) + 1];
-			char* ctext = new char[(result.Item2->Length) + 1];
+			char* ctext = new char[(result.Item2->Length)];
 
+
+			for (int i = 0; i < result.Item1->Length; i++) {
+				ctext[i] = result.Item1[i];
+			}
+			for (int i = 0; i < result.Item2->Length; i++) {
+				ctext[i] = result.Item2[i];
+			}
 			for (int i = 0; i < bytekey->Length; i++) {
 				auto pbArr2 = &bytekey[i];
 				*pbArr2 = 0;
@@ -48,7 +57,8 @@ namespace dotnet {
 				*pbArr2 = 0;
 			}
 #pragma unmanaged
-			std::tuple r;  //Needs finishing
+			std::tuple<char[], char[]> r(ctext, &iv);  //Needs finishing
+			return r;
 		}
 
 		char* AESDecrypt(char iv[], char key[], char ctext[]) {
