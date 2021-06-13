@@ -10,17 +10,10 @@ using namespace System::Runtime::InteropServices;
 #include<tuple>
 #include <iostream> 
 using namespace std;
-#pragma unmanaged
-static class pythonconnect{
-	static std::tuple<char[], char[]> AesEncrypt(char text[], char key[]){
-		return crypto::AESEncrypt(text, key);
-	}
-	static char* AesDecrypt(char iv[], char key[], char ctext[]) {
-		return crypto::AESDecrypt(iv, key, ctext);
-	}
-};
 #pragma managed
-static class crypto {
+#define DLLEXPORT extern "C" __declspec(dllexport)
+
+class crypto {
 	public:
 		static std::tuple<char, char> AESEncrypt(char text[], char key[]) {
 			cli::array< Byte >^ bytekey = gcnew cli::array< Byte > (strlen(key));
@@ -60,12 +53,8 @@ static class crypto {
 				auto pbArr2 = &bytetext[i];
 				*pbArr2 = 0;
 			}
-			delete bytekey;
-			delete bytetext;
-			delete text;
-			delete key;
-			delete result;
-			return {*ctext, *iv};
+			std::tuple<char, char> a = { *ctext, *iv };
+			return a;
 		}
 
 		static char* AESDecrypt(char iv[], char key[], char ctext[]) {
@@ -105,16 +94,15 @@ static class crypto {
 			Array::Clear(byteiv, 0, byteiv->Length);
 			Array::Clear(bytectext, 0, bytectext->Length);
 			handlekey.Free();
-			delete bytekey;
-			delete byteiv;
-			delete bytectext;
-			delete handelkey;
-			delete result;
-			delete handelresult;
-			delete iv;
-			delete key;
-			delete ctext;
 			return r;
 		}
 
 };
+#pragma unmanaged
+
+DLLEXPORT std::tuple<char, char> AesEncrypt(char text[], char key[]) {
+	return crypto::AESEncrypt(text, key);
+}
+DLLEXPORT char* AesDecrypt(char iv[], char key[], char ctext[]) {
+	return crypto::AESDecrypt(iv, key, ctext);
+}
