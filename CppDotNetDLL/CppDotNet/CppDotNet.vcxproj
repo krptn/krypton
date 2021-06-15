@@ -100,7 +100,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files\Python39\include;C:\Program Files\Python39\libs</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Python39\include;C:\Program Files\Python39\libs;C:\Users\markb\source\repos\PySec\PythonCSharp\bin\Release\net5.0</AdditionalIncludeDirectories>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
