@@ -1,5 +1,6 @@
 #include "inter.h"
 #include <stdio.h>
+#include <python.h>
 using namespace System;
 #using "C:\Users\markb\source\repos\PySec\PythonCSharp\bin\Release\net5.0\PythonCSharp.dll"  //Asssembly
 using namespace intdotnet;

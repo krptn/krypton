@@ -1,2 +1,1 @@
 pyaes==1.6.1
-pythonnet==2.5.2
