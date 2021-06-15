@@ -100,7 +100,8 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files\Python39\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Python39\include;C:\Program Files\Python39\libs</AdditionalIncludeDirectories>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
