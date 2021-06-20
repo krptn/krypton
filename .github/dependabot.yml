@@ -20,3 +20,18 @@ updates:
     schedule:
       interval: "daily"
       
+  - package-ecosystem: "nuget" # See documentation for possible values
+    directory: "CppDotNetDLL/CppDotNet/" # Location of package manifests
+    schedule:
+      interval: "daily"
+      
+  - package-ecosystem: "nuget" # See documentation for possible values
+    directory: "Drivers/win/FilesystemFilter" # Location of package manifests
+    schedule:
+      interval: "daily"
+      
+  - package-ecosystem: "nuget" # See documentation for possible values
+    directory: "PythonCSharp" # Location of package manifests
+    schedule:
+      interval: "daily"
+
