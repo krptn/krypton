@@ -125,26 +125,30 @@ class crypto {
 DLLEXPORT int test(int a, int b) {
 	return a + b;
 }
-/*
-DLLEXPORT PyObject* AesEncryptPy(char text[], char key[]) {
-	auto a = crypto::AESEncrypt(text, key);
+
+DLLEXPORT std::tuple<char, char> AesEncryptPy(char text[], char key[]) {
+	std::tuple<char, char> a = crypto::AESEncrypt(text, key);
+	/*
 	PyObject* b = PyByteArray_FromStringAndSize((char*)std::get<0>(a), strlen((char*)get<0>(a)));
 	PyObject* c = PyByteArray_FromStringAndSize((char*)std::get<1>(a), strlen((char*)get<1>(a)));
 	PyObject* tup = PyTuple_New(2);
 	PyTuple_SetItem(tup, 0, b);
 	PyTuple_SetItem(tup, 1, c);
-	return tup;
+	*/
+	return a;
 }
-DLLEXPORT PyObject* AesDecryptPy(char iv[], char key[], char ctext[]) {
+DLLEXPORT auto* AesDecryptPy(char iv[], char key[], char ctext[]) {
 	auto a = crypto::AESDecrypt(iv, key, ctext);
+	/*
 	PyObject* result = PyByteArray_FromStringAndSize(a, strlen(a));
 	for (int i = 0; i < strlen(a); i++) {
 		auto* n = &a;
 		*n = "";
 	}
-	return result;
+	*/
+	return a;
 }
-*/
+
 DLLEXPORT void Init() {
 	crypto::Initialize();
 }

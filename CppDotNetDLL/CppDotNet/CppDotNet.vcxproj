@@ -139,7 +139,7 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
-      <IntelJCCErratum>true</IntelJCCErratum>
+      <IntelJCCErratum>false</IntelJCCErratum>
       <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
