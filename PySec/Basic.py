@@ -3,7 +3,6 @@ import sqlite3
 import pyaes 
 from tkinter import messagebox
 from tkinter import *
-import clr
 import os
 import ctypes
 import PySec

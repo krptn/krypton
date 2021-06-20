@@ -36,6 +36,9 @@
       <HintPath>..\..\PythonCSharp\bin\Release\net5.0\PythonCSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}</ProjectGuid>
@@ -67,6 +70,7 @@
     <PlatformToolset>v142</PlatformToolset>
     <CLRSupport>NetCore</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
+    <SpectreMitigation>Spectre</SpectreMitigation>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -96,16 +100,30 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetExt>.pyd</TargetExt>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <EnableClangTidyCodeAnalysis>false</EnableClangTidyCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <CopyLocalDeploymentContent>true</CopyLocalDeploymentContent>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
+    <CopyLocalDebugSymbols>true</CopyLocalDebugSymbols>
+    <CopyCppRuntimeToOutputDir>true</CopyCppRuntimeToOutputDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files\Python39\include;C:\Program Files\Python39\libs;C:\Users\markb\source\repos\PySec\PythonCSharp\bin\Release\net5.0</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files\Python39\include;C:\Program Files\Python39\libs;C:\Users\markb\source\repos\PySec\PythonCSharp\bin\Release\net5.0;C:\Program Files\Python39;C:\Program Files\Python39\DLLs</AdditionalIncludeDirectories>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>C:\Program Files\Python39\libs\python39.lib</AdditionalDependencies>
     </Link>
+    <Manifest>
+      <UpdateFileHashes>true</UpdateFileHashes>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -120,6 +138,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
+      <IntelJCCErratum>true</IntelJCCErratum>
+      <CallingConvention>Cdecl</CallingConvention>
     </ClCompile>
     <Link>
       <AdditionalDependencies />

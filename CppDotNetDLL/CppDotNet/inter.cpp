@@ -1,8 +1,10 @@
 #include "inter.h"
 #include <stdio.h>
+/*
 #include <python.h>
+*/
 using namespace System;
-#using "C:\Users\markb\source\repos\PySec\PythonCSharp\bin\Release\net5.0\PythonCSharp.dll"  //Asssembly
+#using "..\..\PythonCSharp\bin\Release\net5.0\PythonCSharp.dll"  //Asssembly
 using namespace intdotnet;
 #include <string.h>
 using namespace System::Runtime::InteropServices;
@@ -10,12 +12,32 @@ using namespace System::Runtime::InteropServices;
 #include < vcclr.h >
 #include<tuple>
 #include <iostream> 
+using namespace System::IO;
+using namespace Reflection;
 using namespace std;
-#pragma managed
+
 #define DLLEXPORT extern "C" __declspec(dllexport)
+#pragma managed
 
 class crypto {
 	public:
+		static Assembly^ AssemblyResolve(Object^ Sender, ResolveEventArgs^ args)
+		{
+			AssemblyName^ assemblyName = gcnew AssemblyName(args->Name);
+
+			if (assemblyName->Name == "PythonCSharp")
+			{
+				String^ path = Path::Combine(Path::GetDirectoryName(Assembly::GetExecutingAssembly()->Location), "PythonCSharp.dll");
+
+				return Assembly::LoadFile(path);
+			}
+
+			return nullptr;
+		}
+		static void Initialize()
+		{
+				AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(AssemblyResolve);
+		}
 		static std::tuple<char, char> AESEncrypt(char text[], char key[]) {
 			cli::array< Byte >^ bytekey = gcnew cli::array< Byte > (strlen(key));
 			Marshal::Copy((IntPtr)key, bytekey, 0, strlen(key));
@@ -100,7 +122,10 @@ class crypto {
 
 };
 #pragma unmanaged
-
+DLLEXPORT int test(int a, int b) {
+	return a + b;
+}
+/*
 DLLEXPORT PyObject* AesEncryptPy(char text[], char key[]) {
 	auto a = crypto::AESEncrypt(text, key);
 	PyObject* b = PyByteArray_FromStringAndSize((char*)std::get<0>(a), strlen((char*)get<0>(a)));
@@ -118,5 +143,9 @@ DLLEXPORT PyObject* AesDecryptPy(char iv[], char key[], char ctext[]) {
 		*n = "";
 	}
 	return result;
+}
+*/
+DLLEXPORT void Init() {
+	crypto::Initialize();
 }
 

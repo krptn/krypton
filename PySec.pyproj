@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>36134f74-ac31-494e-9511-685742b74b56</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Tests\testCrypto.py</StartupFile>
+    <StartupFile>PySec\__main__.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -15,6 +15,8 @@
     <TestFramework>Pytest</TestFramework>
     <SuppressConfigureTestFrameworkPrompt>true</SuppressConfigureTestFrameworkPrompt>
     <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <EnableNativeCodeDebugging>True</EnableNativeCodeDebugging>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>

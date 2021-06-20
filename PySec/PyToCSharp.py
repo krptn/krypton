@@ -1,13 +1,18 @@
 import sys
 import ctypes
-def runner(name):
-    read = open("\\\\.\\pipe\\" + name, 'rb', 0)
-    write = open(name, 'wb', 0)
+import os
+from ctypes import cdll
+import PySec
+a = cdll.LoadLibrary(r"x64/Debug/CppDotNet.dll")
+a.Init()
 
+#Encrypt = a.AesEncryptPy
+#Encrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+#Encrypt.restype = tuple
+adder = a.test
+adder.argtypes = [ctypes.c_int, ctypes.c_int]
 
-class activateCSharp():
-    def __init__(self, pipe):
-        self.read = open('\\\\.\\pipe\\'+pipe, 'rb', 0)
-        self.write = open('\\\\.\\pipe\\'+pipe, 'wb', 0)
-    def getcrypto(self):
-        pass
+import time
+input("go")
+print(adder(1,1))
+input("go")
