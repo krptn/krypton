@@ -20,7 +20,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FilesystemFilter", "Drivers
 		{F06C3BF0-C86B-4F86-B170-AA157711FB3A} = {F06C3BF0-C86B-4F86-B170-AA157711FB3A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppDotNet", "CppDotNetDLL\CppDotNet\CppDotNet.vcxproj", "{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppDotNet", "CppDotNetDLL\CppDotNet.vcxproj", "{26E38188-F196-4BA2-A4AC-EE424A4B8F4E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
