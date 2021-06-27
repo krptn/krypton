@@ -25,10 +25,8 @@
     <ClCompile Include="inter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\PythonCSharp\PythonCSharp.csproj">
+    <ProjectReference Include="..\PythonCSharp\PythonCSharp.csproj">
       <Project>{f06c3bf0-c86b-4f86-b170-aa157711fb3a}</Project>
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -137,13 +135,20 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG</PreprocessorDefinitions>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <IntelJCCErratum>false</IntelJCCErratum>
       <CallingConvention>Cdecl</CallingConvention>
+      <GenerateSourceDependencies>true</GenerateSourceDependencies>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <AdditionalIncludeDirectories>C:\Program Files\Python39\include;</AdditionalIncludeDirectories>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
+      <CLRThreadAttribute>DefaultThreadingAttribute</CLRThreadAttribute>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <AdditionalLibraryDirectories>C:\Program Files\Python39\libs;</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

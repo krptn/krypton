@@ -1,10 +1,10 @@
 #include "inter.h"
 #include <stdio.h>
-/*
-#include <python.h>
-*/
+#define PY_SSIZE_T_CLEAN
+#include <Python.h>
+
 using namespace System;
-#using "..\..\PythonCSharp\bin\Release\net5.0\PythonCSharp.dll"  //Asssembly
+#using "..\PythonCSharp\bin\Release\net5.0\PythonCSharp.dll"  //Asssembly
 using namespace intdotnet;
 #include <string.h>
 using namespace System::Runtime::InteropServices;
@@ -128,28 +128,22 @@ DLLEXPORT int test(int a, int b) {
 
 DLLEXPORT std::tuple<char, char> AesEncryptPy(char text[], char key[]) {
 	std::tuple<char, char> a = crypto::AESEncrypt(text, key);
-	/*
-	PyObject* b = PyByteArray_FromStringAndSize((char*)std::get<0>(a), strlen((char*)get<0>(a)));
-	PyObject* c = PyByteArray_FromStringAndSize((char*)std::get<1>(a), strlen((char*)get<1>(a)));
-	PyObject* tup = PyTuple_New(2);
-	PyTuple_SetItem(tup, 0, b);
-	PyTuple_SetItem(tup, 1, c);
-	*/
+	PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a));
 	return a;
 }
 DLLEXPORT auto* AesDecryptPy(char iv[], char key[], char ctext[]) {
 	auto a = crypto::AESDecrypt(iv, key, ctext);
-	/*
-	PyObject* result = PyByteArray_FromStringAndSize(a, strlen(a));
+
+	PyObject* result = Py_BuildValue("y", a);
 	for (int i = 0; i < strlen(a); i++) {
 		auto* n = &a;
 		*n = "";
 	}
-	*/
 	return a;
 }
 
 DLLEXPORT void Init() {
+	Py_Initialize();
 	crypto::Initialize();
 }
 
