@@ -39,7 +39,7 @@ class crypto {
 				AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(AssemblyResolve);
 		}
 		static std::tuple<char, char> AESEncrypt(char text[], char key[]) {
-			cli::array< Byte >^ bytekey = gcnew cli::array< Byte > (strlen(key));
+			cli::array< Byte >^ bytekey = gcnew cli::array< Byte > (sizeof(key)/sizeof(key[0]));
 			Marshal::Copy((IntPtr)key, bytekey, 0, strlen(key));
 			GCHandle handlekey = GCHandle::Alloc(bytekey, GCHandleType::Pinned);
 			for (int i = 0; i < strlen(key); i++) {
@@ -48,7 +48,7 @@ class crypto {
 			}
 
 
-			cli::array< Byte >^ bytetext = gcnew cli::array< Byte > (strlen(text));
+			cli::array< Byte >^ bytetext = gcnew cli::array< Byte >(sizeof(text) / sizeof(text[0]));
 			Marshal::Copy((IntPtr)text, bytetext, 0, strlen(key));
 			GCHandle handleiv = GCHandle::Alloc(bytetext, GCHandleType::Pinned);
 			for (int i = 0; i < strlen(text); i++) {
@@ -127,9 +127,10 @@ DLLEXPORT int test(int a, int b) {
 }
 
 DLLEXPORT std::tuple<char, char> AesEncryptPy(char text[], char key[]) {
-	std::tuple<char, char> a = crypto::AESEncrypt(text, key);
-	PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a));
-	return a;
+	std::tuple<char, char> a = crypto::AESEncrypt(text, key);  //convert these types to char from b""
+	PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a)); 
+	delete a;
+	return tup;
 }
 DLLEXPORT auto* AesDecryptPy(char iv[], char key[], char ctext[]) {
 	auto a = crypto::AESDecrypt(iv, key, ctext);

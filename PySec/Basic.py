@@ -8,6 +8,8 @@ import ctypes
 import PySec
 import sys
 
+## Will embrace in proper mem protection using the CppDotNet crypto and deleting mem content e.g:memoryview
+
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.
