@@ -15,6 +15,7 @@ using namespace System::Runtime::InteropServices;
 using namespace System::IO;
 using namespace Reflection;
 using namespace std;
+using namespace cli;
 
 #define DLLEXPORT extern "C" __declspec(dllexport)
 #pragma managed
@@ -132,9 +133,9 @@ DLLEXPORT PyObject* AesEncryptPy(PyObject textb, PyObject keyb) {
 DLLEXPORT PyObject* AesDecryptPy(PyObject ivb, PyObject keyb, PyObject ctextb) {
 	char *ctext = PyBytes_AsString(&ctextb);
 	char *key = PyBytes_AsString(&keyb);
-	char *iv = PyBytes_AsString(&ivb);
-
+	char* iv = PyBytes_AsString(&ivb);
 	char *a = AESDecrypt(iv, key, ctext);
+	memset(key,0,strlen(key));
 	PyObject* result = Py_BuildValue("y", a);
 	memset(a, 0, strlen(a));
 	delete &ctext;
