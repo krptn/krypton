@@ -38,27 +38,21 @@ class crypto {
 		{
 				AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(AssemblyResolve);
 		}
-		static std::tuple<char, char> AESEncrypt(char text[], char key[]) {
-			cli::array< Byte >^ bytekey = gcnew cli::array< Byte > (sizeof(key)/sizeof(key[0]));
-			Marshal::Copy((IntPtr)key, bytekey, 0, strlen(key));
+		static std::tuple<char, char> AESEncrypt(char* text, char* key) {
+			cli::array< Byte >^ bytekey = gcnew cli::array< Byte >((strlen(key) + 1);
+			Marshal::Copy((IntPtr)*key, bytekey, 0, strlen(*key));
 			GCHandle handlekey = GCHandle::Alloc(bytekey, GCHandleType::Pinned);
-			for (int i = 0; i < strlen(key); i++) {
-				char* ptr = &key[i];
-				*ptr = 0;
-			}
+			memset(key, 0, strlen(*key));
 
 
-			cli::array< Byte >^ bytetext = gcnew cli::array< Byte >(sizeof(text) / sizeof(text[0]));
+			cli::array< Byte > ^ bytetext = gcnew cli::array< Byte >(strlen(text) + 1);
 			Marshal::Copy((IntPtr)text, bytetext, 0, strlen(key));
 			GCHandle handleiv = GCHandle::Alloc(bytetext, GCHandleType::Pinned);
-			for (int i = 0; i < strlen(text); i++) {
-				char* ptr = &text[i];
-				*ptr = 0;
-			}
+			memset(text, 0, strlen(text));
 
 			ValueTuple<cli::array <unsigned char>^, cli::array <unsigned char>^>  result = Crypto::AESEncrypt(bytetext, bytekey);
 			GCHandle handleresult = GCHandle::Alloc(result, GCHandleType::Pinned);
-			char* iv = new char[(result.Item1->Length) + 1];
+			char* iv = new char[(result.Item1->Length)];
 			char* ctext = new char[(result.Item2->Length)];
 
 
@@ -68,57 +62,54 @@ class crypto {
 			for (int i = 0; i < result.Item2->Length; i++) {
 				ctext[i] = result.Item2[i];
 			}
-			for (int i = 0; i < bytekey->Length; i++) {
-				auto pbArr2 = &bytekey[i];
-				*pbArr2 = 0;
-			}
-			for (int i = 0; i < bytetext->Length; i++) {
-				auto pbArr2 = &bytetext[i];
-				*pbArr2 = 0;
-			}
+			memset(&bytekey, 0, bytekey->Length);
+			memset(&bytetext, 0, bytetext->Length);
+			delete bytekey;
+			delete bytetext;
+			memset(&text, 0, strlen(text));
+			memset(&key, 0, strlen(key));
+			delete key;
+			delete text;
+			delete result;
 			std::tuple<char, char> a = { *ctext, *iv };
 			return a;
-		}
+		};
 
-		static char* AESDecrypt(char iv[], char key[], char ctext[]) {
-			cli::array< Byte >^ bytekey = gcnew cli::array< Byte > (strlen(key));
-			Marshal::Copy((IntPtr)key, bytekey, 0, strlen(key));
+		static char* AESDecrypt(char* iv, char* key, char* ctext) {
+			cli::array< Byte >^ bytekey = gcnew cli::array< Byte >((strlen(key) + 1));
+			Marshal::Copy((IntPtr)*key, bytekey, 0, strlen(*key));
 			GCHandle handlekey = GCHandle::Alloc(bytekey, GCHandleType::Pinned);
-			for (int i = 0; i < strlen(key); i++) {
-				char* ptr = &key[i];
-				*ptr = 0;
-			}
-
-			cli::array< Byte >^ byteiv = gcnew cli::array< Byte > (strlen(iv));
-			Marshal::Copy((IntPtr)iv, byteiv, 0, strlen(key));
+			memset(*key, 0, strlen(*key));
+			cli::array< Byte >^ byteiv = gcnew cli::array< Byte >(strlen(iv) + 1);
+			Marshal::Copy((IntPtr)*iv, byteiv, 0, strlen(*key));
 			GCHandle handleiv = GCHandle::Alloc(byteiv, GCHandleType::Pinned);
 
-			cli::array< Byte >^ bytectext = gcnew cli::array< Byte > (strlen(ctext));
-			Marshal::Copy((IntPtr)ctext, bytectext, 0, strlen(ctext));
+			cli::array< Byte >^ bytectext = gcnew cli::array< Byte >(strlen(ctext) + 1);
+			Marshal::Copy((IntPtr)*ctext, bytectext, 0, strlen(*ctext));
 			GCHandle handlectext = GCHandle::Alloc(bytectext, GCHandleType::Pinned);
 
-			String^ result = Crypto::AESDecrypt(bytekey, bytectext, byteiv);
+			String^ result = Crypto::AESDecrypt(*bytekey, *bytectext, *byteiv);
 			GCHandle handleresult = GCHandle::Alloc(result, GCHandleType::Pinned);
 
-			char* r = new char[(result->Length) + 1];
+			char* r = new char[(result->Length)];
 
 			for (int i = 0; i < result->Length; i++) {
 				r[i] = result[i];
-				auto* n = &result;
-				*n = "";
 			}
 
-			for (int i = 0; i < bytekey->Length; i++) {
-				auto pbArr2 = &bytekey[i];
-				*pbArr2 = 0;
-			}
+			memset(&result, 0, result->Length);
+			memset(&bytekey, 0, bytekey->Length);
 
-			Array::Clear(bytekey, 0, bytekey->Length);
-			Array::Clear(byteiv, 0, byteiv->Length);
-			Array::Clear(bytectext, 0, bytectext->Length);
+			delete bytectext;
+			delete byteiv;
+			delete bytekey;
+			delete key;
+			delete iv;
+			delete ctext;
 			handlekey.Free();
+			delete handlekey;
 			return r;
-		}
+		};
 
 };
 #pragma unmanaged
@@ -126,21 +117,27 @@ DLLEXPORT int test(int a, int b) {
 	return a + b;
 }
 
-DLLEXPORT std::tuple<char, char> AesEncryptPy(char text[], char key[]) {
-	std::tuple<char, char> a = crypto::AESEncrypt(text, key);  //convert these types to char from b""
+DLLEXPORT PyObject* AesEncryptPy(PyObject textb, PyObject keyb) {
+	char *text = PyBytes_AsString(&textb);
+	char *key = PyBytes_AsString(&keyb);
+	std::tuple<char, char> a = crypto::AESEncrypt(*text,*key);
 	PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a)); 
+	memset(text,0,strlen(text));
+	memset(key, 0, strlen(key));
+	delete key;
+	delete text;
 	delete a;
 	return tup;
 }
-DLLEXPORT auto* AesDecryptPy(char iv[], char key[], char ctext[]) {
-	auto a = crypto::AESDecrypt(iv, key, ctext);
+DLLEXPORT PyObject* AesDecryptPy(PyObject ivb, PyObject keyb, PyObject ctextb) {
+	char *ctext = PyBytes_AsString(&ctextb);
+	char *key = PyBytes_AsString(&keyb);
+	char *iv = PyBytes_AsString(&ivb);
 
+	char *a = crypto::AESDecrypt(iv, key, ctext);
 	PyObject* result = Py_BuildValue("y", a);
-	for (int i = 0; i < strlen(a); i++) {
-		auto* n = &a;
-		*n = "";
-	}
-	return a;
+	memset(a, 0, strlen(a));
+	return result;
 }
 
 DLLEXPORT void Init() {
