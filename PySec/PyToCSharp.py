@@ -14,5 +14,6 @@ Encrypt.restype = tuple
 input("Go")
 a = os.urandom(32)
 print(a)
+strbuff = ctypes.create_string_buffer
 print(b"fgf")
-print(Encrypt(b"fgf",os.urandom(32)))
+print(Encrypt(strbuff(b"fgf"),strbuff(os.urandom(32))))

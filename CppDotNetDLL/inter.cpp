@@ -37,16 +37,27 @@ static Assembly^ AssemblyResolve(Object^ Sender, ResolveEventArgs^ args)
 static void Initialize()
 {
 		AppDomain::CurrentDomain->AssemblyResolve += gcnew ResolveEventHandler(AssemblyResolve);
+		String^ path = Path::Combine(Path::GetDirectoryName(Assembly::GetExecutingAssembly()->Location), "PythonCSharp.dll");
+		auto deb =  Assembly::LoadFile(path);
 }
 static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	cli::array< Byte >^ bytekey = gcnew cli::array< Byte >(strlen(key) + 1);
+	/*
 	Marshal::Copy((IntPtr)*key, bytekey, 0, strlen(key));
+	*/
+	pin_ptr<Byte> data_array_start = &bytekey[0];
+	memcpy(data_array_start, &key, strlen(key));
 	GCHandle handlekey = GCHandle::Alloc(bytekey, GCHandleType::Pinned);
 	memset(key, 0, strlen(key));
 
 
 	cli::array< Byte > ^ bytetext = gcnew cli::array< Byte >(strlen(text) + 1);
+	/*
 	Marshal::Copy((IntPtr)text, bytetext, 0, strlen(key));
+	*/
+	
+	pin_ptr<Byte> data_two_array_start = &bytetext[0];
+	memcpy(data_two_array_start, &text, strlen(text));
 	GCHandle handleiv = GCHandle::Alloc(bytetext, GCHandleType::Pinned);
 	memset(text, 0, strlen(text));
 
@@ -117,15 +128,17 @@ DLLEXPORT int test(int a, int b) {
 	return a + b;
 }
 
-DLLEXPORT PyObject* AesEncryptPy(PyObject textb, PyObject keyb) {
+DLLEXPORT PyObject* AesEncryptPy(char* textb, char* keyb) {
+	/*
 	char *text = PyBytes_AsString(&textb);
 	char *key = PyBytes_AsString(&keyb);
-	std::tuple<char, char> a = AESEncrypt(text,key);
+	*/
+	std::tuple<char, char> a = AESEncrypt(textb,keyb);
 	PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a)); 
-	memset(text,0,strlen(text));
-	memset(key, 0, strlen(key));
-	delete &key;
-	delete &text;
+	memset(textb,0,strlen(textb));
+	memset(keyb, 0, strlen(keyb));
+	delete &keyb;
+	delete &textb;
 	delete &a;
 
 	return tup;
