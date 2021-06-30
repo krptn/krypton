@@ -47,7 +47,6 @@ static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	*/
 	pin_ptr<Byte> data_array_start = &bytekey[0];
 	memcpy(data_array_start, &key, strlen(key));
-	GCHandle handlekey = GCHandle::Alloc(bytekey, GCHandleType::Pinned);
 	memset(key, 0, strlen(key));
 
 
@@ -58,11 +57,10 @@ static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	
 	pin_ptr<Byte> data_two_array_start = &bytetext[0];
 	memcpy(data_two_array_start, &text, strlen(text));
-	GCHandle handleiv = GCHandle::Alloc(bytetext, GCHandleType::Pinned);
 	memset(text, 0, strlen(text));
 
 	ValueTuple<cli::array <unsigned char>^, cli::array <unsigned char>^>  result = Crypto::AESEncrypt(bytetext, bytekey);
-	GCHandle handleresult = GCHandle::Alloc(result, GCHandleType::Pinned);
+	pin_ptr<ValueTuple<cli::array <unsigned char>^, cli::array <unsigned char>^>> result_pin = &result;
 	char* iv = new char[(result.Item1->Length)];
 	char* ctext = new char[(result.Item2->Length)];
 
@@ -88,19 +86,21 @@ static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 
 static char* AESDecrypt(char* iv, char* key, char* ctext) {
 	cli::array< Byte >^ bytekey = gcnew cli::array< Byte >((strlen(key) + 1));
-	Marshal::Copy((IntPtr)*key, bytekey, 0, strlen(key));
-	GCHandle handlekey = GCHandle::Alloc(bytekey, GCHandleType::Pinned);
+	pin_ptr<Byte> data_array_start = &bytekey[0];
+	memcpy(data_array_start, &key, strlen(key));
 	memset(key, 0, strlen(key));
+
+
 	cli::array< Byte >^ byteiv = gcnew cli::array< Byte >(strlen(iv) + 1);
-	Marshal::Copy((IntPtr)*iv, byteiv, 0, strlen(key));
-	GCHandle handleiv = GCHandle::Alloc(byteiv, GCHandleType::Pinned);
+	pin_ptr<Byte> data_array_starti = &byteiv[0];
+	memcpy(data_array_starti, &iv, strlen(iv));
 
 	cli::array< Byte >^ bytectext = gcnew cli::array< Byte >(strlen(ctext) + 1);
-	Marshal::Copy((IntPtr)*ctext, bytectext, 0, strlen(ctext));
-	GCHandle handlectext = GCHandle::Alloc(bytectext, GCHandleType::Pinned);
+	pin_ptr<Byte> data_array_startii = &bytectext[0];
+	memcpy(data_array_startii, &iv, strlen(iv));
 
 	String^ result = Crypto::AESDecrypt(bytekey, bytectext, byteiv);
-	GCHandle handleresult = GCHandle::Alloc(result, GCHandleType::Pinned);
+	pin_ptr<String^> resulthandler = &result;
 
 	char* r = new char[(result->Length)];
 
@@ -117,8 +117,6 @@ static char* AESDecrypt(char* iv, char* key, char* ctext) {
 	delete &key;
 	delete &iv;
 	delete &ctext;
-	handlekey.Free();
-	delete &handlekey;
 	return r;
 };
 
