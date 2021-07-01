@@ -45,6 +45,7 @@ static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	/*
 	Marshal::Copy((IntPtr)*key, bytekey, 0, strlen(key));
 	*/
+
 	pin_ptr<Byte> data_array_start = &bytekey[0];
 	memcpy(data_array_start, &key, strlen(key));
 	memset(key, 0, strlen(key));
@@ -59,18 +60,21 @@ static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	memcpy(data_two_array_start, &text, strlen(text));
 	memset(text, 0, strlen(text));
 
+
 	ValueTuple<cli::array <unsigned char>^, cli::array <unsigned char>^>  result = Crypto::AESEncrypt(bytetext, bytekey);
+
+	// pin them here
 	pin_ptr<ValueTuple<cli::array <unsigned char>^, cli::array <unsigned char>^>> result_pin = &result;
+	pin_ptr<Byte> result_arr1 = &result.Item1[0];
+	pin_ptr<Byte> result_arr2 = &result.Item2[0];
+
 	char* iv = new char[(result.Item1->Length)];
 	char* ctext = new char[(result.Item2->Length)];
 
+	memcpy(iv,result_arr1,result.Item1->Length);
+	memcpy(ctext,result_arr2,result.Item2->Length);
 
-	for (int i = 0; i < result.Item1->Length; i++) {
-		ctext[i] = result.Item1[i];
-	}
-	for (int i = 0; i < result.Item2->Length; i++) {
-		ctext[i] = result.Item2[i];
-	}
+	//Safely delete them from mem
 	memset(&bytekey, 0, bytekey->Length);
 	memset(&bytetext, 0, bytetext->Length);
 	delete &bytekey;
@@ -104,9 +108,7 @@ static char* AESDecrypt(char* iv, char* key, char* ctext) {
 
 	char* r = new char[(result->Length)];
 
-	for (int i = 0; i < result->Length; i++) {
-		r[i] = result[i];
-	}
+	memcpy(r,resulthandler,result->Length);
 
 	memset(&result, 0, result->Length);
 	memset(&bytekey, 0, bytekey->Length);
