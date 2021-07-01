@@ -145,7 +145,8 @@
       <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
-      <AdditionalDependencies />
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <CLRThreadAttribute>DefaultThreadingAttribute</CLRThreadAttribute>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
       <AdditionalLibraryDirectories>C:\Program Files\Python39\libs;</AdditionalLibraryDirectories>

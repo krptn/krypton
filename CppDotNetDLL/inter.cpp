@@ -48,7 +48,7 @@ static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 
 	pin_ptr<Byte> data_array_start = &bytekey[0];
 	memcpy(data_array_start, &key, strlen(key));
-	memset(key, 0, strlen(key));
+	memset(&key[0], 0, strlen(key));
 
 
 	cli::array< Byte > ^ bytetext = gcnew cli::array< Byte >(strlen(text) + 1);
@@ -58,8 +58,7 @@ static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	
 	pin_ptr<Byte> data_two_array_start = &bytetext[0];
 	memcpy(data_two_array_start, &text, strlen(text));
-	memset(text, 0, strlen(text));
-
+	memset(&text[0], 0, strlen(text));
 
 	ValueTuple<cli::array <unsigned char>^, cli::array <unsigned char>^>  result = Crypto::AESEncrypt(bytetext, bytekey);
 
@@ -75,14 +74,12 @@ static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	memcpy(ctext,result_arr2,result.Item2->Length);
 
 	//Safely delete them from mem
-	memset(&bytekey, 0, bytekey->Length);
-	memset(&bytetext, 0, bytetext->Length);
+	memset(data_array_start, 0, bytekey->Length);
+	memset(data_two_array_start, 0, bytetext->Length);
 	delete &bytekey;
 	delete &bytetext;
-	memset(&text, 0, strlen(text));
-	memset(&key, 0, strlen(key));
-	delete &key;
-	delete &text;
+	memset(&text[0], 0, strlen(text));
+	memset(&key[0], 0, strlen(key));
 	delete &result;
 	std::tuple<char, char> a = { *ctext, *iv };
 	return a;
@@ -92,7 +89,7 @@ static char* AESDecrypt(char* iv, char* key, char* ctext) {
 	cli::array< Byte >^ bytekey = gcnew cli::array< Byte >((strlen(key) + 1));
 	pin_ptr<Byte> data_array_start = &bytekey[0];
 	memcpy(data_array_start, &key, strlen(key));
-	memset(key, 0, strlen(key));
+	memset(&key[0], 0, strlen(key));
 
 
 	cli::array< Byte >^ byteiv = gcnew cli::array< Byte >(strlen(iv) + 1);
@@ -110,15 +107,12 @@ static char* AESDecrypt(char* iv, char* key, char* ctext) {
 
 	memcpy(r,resulthandler,result->Length);
 
-	memset(&result, 0, result->Length);
-	memset(&bytekey, 0, bytekey->Length);
+	memset(resulthandler, 0, result->Length);
+	memset(data_array_start, 0, bytekey->Length);
 
 	delete &bytectext;
 	delete &byteiv;
 	delete &bytekey;
-	delete &key;
-	delete &iv;
-	delete &ctext;
 	return r;
 };
 
@@ -147,7 +141,7 @@ DLLEXPORT PyObject* AesDecryptPy(PyObject ivb, PyObject keyb, PyObject ctextb) {
 	char *ctext = PyBytes_AsString(&ctextb);
 	char *key = PyBytes_AsString(&keyb);
 	char* iv = PyBytes_AsString(&ivb);
-	char *a = AESDecrypt(iv, key, ctext);
+	char *a = AESDecrypt(iv, key, ctext);  //We believe it is unecesary to delete arguments passed inside functions as it is passed as reference
 	memset(key,0,strlen(key));
 	PyObject* result = Py_BuildValue("y", a);
 	memset(a, 0, strlen(a));
