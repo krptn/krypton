@@ -4,7 +4,7 @@
 #include <Python.h>
 
 using namespace System;
-#using "..\PythonCSharp\bin\Release\net5.0\PythonCSharp.dll"  //Asssembly
+#using "C:\Users\markb\source\repos\PySec\PythonCSharp\bin\Debug\net5.0\PythonCSharp.dll"  //Asssembly
 using namespace intdotnet;
 #include <string.h>
 using namespace System::Runtime::InteropServices;
