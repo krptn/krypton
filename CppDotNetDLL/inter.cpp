@@ -14,7 +14,7 @@ using namespace System::IO;
 using namespace std;
 using namespace cli;
 
-#define DLLEXPORT extern "C" __declspec(dllexport)
+//#define DLLEXPORT extern "C" __declspec(dllexport)  <- expanded it already for perfromance reasons
 #pragma managed
 
 /*
@@ -141,42 +141,40 @@ static char* AESDecrypt(char* iv, char* key, char* ctext) {
 
 
 #pragma unmanaged
-DLLEXPORT int test(int a, int b) {
-	return a + b;
-}
 
-DLLEXPORT PyObject* AesEncryptPy(char* textb, char* keyb) {
-	/*
-	char *text = PyBytes_AsString(&textb);
-	char *key = PyBytes_AsString(&keyb);
-	*/
-	std::tuple<char, char> a = AESEncrypt(textb,keyb);
-	PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a)); 
-	memset(textb,0,strlen(textb));
-	memset(keyb, 0, strlen(keyb));
-	delete keyb;
-	delete textb;
-	delete &a;
+extern "C" {
+	__declspec(dllexport) PyObject* AesEncryptPy(char* textb, char* keyb) {
+		/*
+		char *text = PyBytes_AsString(&textb);
+		char *key = PyBytes_AsString(&keyb);
+		*/
+		std::tuple<char, char> a = AESEncrypt(textb, keyb);
+		PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a));
+		memset(textb, 0, strlen(textb));
+		memset(keyb, 0, strlen(keyb));
+		delete keyb;
+		delete textb;
+		delete& a;
 
-	return tup;
-}
-DLLEXPORT PyObject* AesDecryptPy(PyObject ivb, PyObject keyb, PyObject ctextb) {
-	char *ctext = PyBytes_AsString(&ctextb);
-	char *key = PyBytes_AsString(&keyb);
-	char* iv = PyBytes_AsString(&ivb);
-	char *a = AESDecrypt(iv, key, ctext);  //We believe it is unecesary to delete arguments passed inside functions as it is passed as reference
-	memset(key,0,strlen(key));
-	PyObject* result = Py_BuildValue("y", a);
-	memset(a, 0, strlen(a));
-	delete ctext;
-	delete key;
-	delete iv;
-	delete a;
-	return result;
-}
+		return tup;
+	}
+	__declspec(dllexport) PyObject* AesDecryptPy(PyObject ivb, PyObject keyb, PyObject ctextb) {
+		char* ctext = PyBytes_AsString(&ctextb);
+		char* key = PyBytes_AsString(&keyb);
+		char* iv = PyBytes_AsString(&ivb);
+		char* a = AESDecrypt(iv, key, ctext);  //We believe it is unecesary to delete arguments passed inside functions as it is passed as reference
+		memset(key, 0, strlen(key));
+		PyObject* result = Py_BuildValue("y", a);
+		memset(a, 0, strlen(a));
+		delete ctext;
+		delete key;
+		delete iv;
+		delete a;
+		return result;
+	}
 
-DLLEXPORT void Init() {
-	Py_Initialize();
-	//Initialize();
+	__declspec(dllexport) void Init() {
+		Py_Initialize();
+		//Initialize();
+	}
 }
-
