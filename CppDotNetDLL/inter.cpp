@@ -4,23 +4,20 @@
 #include <Python.h>
 
 using namespace System;
-#using "C:\Users\markb\source\repos\PySec\PythonCSharp\bin\Debug\net5.0\PythonCSharp.dll"  //Asssembly
-using namespace intdotnet;
 #include <string.h>
-using namespace System::Runtime::InteropServices;
+using namespace System::Security::Cryptography;
 #include < stdlib.h >
 #include < vcclr.h >
 #include<tuple>
 #include <iostream> 
 using namespace System::IO;
-using namespace Reflection;
 using namespace std;
 using namespace cli;
 
 #define DLLEXPORT extern "C" __declspec(dllexport)
 #pragma managed
 
-
+/*
 static Assembly^ AssemblyResolve(Object^ Sender, ResolveEventArgs^ args)
 {
 	AssemblyName^ assemblyName = gcnew AssemblyName(args->Name);
@@ -40,6 +37,7 @@ static void Initialize()
 		String^ path = Path::Combine(Path::GetDirectoryName(Assembly::GetExecutingAssembly()->Location), "PythonCSharp.dll");
 		auto deb =  Assembly::LoadFile(path);
 }
+*/
 static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	cli::array< Byte >^ bytekey = gcnew cli::array< Byte >(strlen(key) + 1);
 	/*
@@ -59,28 +57,42 @@ static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	pin_ptr<Byte> data_two_array_start = &bytetext[0];
 	memcpy(data_two_array_start, &text, strlen(text));
 	memset(&text[0], 0, strlen(text));
-
+	/*
 	ValueTuple<cli::array <unsigned char>^, cli::array <unsigned char>^>  result = Crypto::AESEncrypt(bytetext, bytekey);
+	*/
+	cli::array<Byte>^ encrypted;
+	cli::array<Byte>^ biv;
 
-	// pin them here
-	pin_ptr<ValueTuple<cli::array <unsigned char>^, cli::array <unsigned char>^>> result_pin = &result;
-	pin_ptr<Byte> result_arr1 = &result.Item1[0];
-	pin_ptr<Byte> result_arr2 = &result.Item2[0];
+	Aes^ myAes = Aes::Create();
+		biv = myAes->IV;
+		pin_ptr<Byte> result_arr2 = &biv[0];
+		myAes->Clear();
 
-	char* iv = new char[(result.Item1->Length)];
-	char* ctext = new char[(result.Item2->Length)];
+	Aes^ aesAlg = Aes::Create();
+		aesAlg->Key = bytekey;
+		aesAlg->IV = biv;
+		memset(data_array_start, 0, bytekey->Length); //Get rid of it
+		ICryptoTransform^ encryptor = aesAlg->CreateEncryptor(aesAlg->Key, aesAlg->IV);
+		MemoryStream^ msEncrypt = gcnew MemoryStream();
+		CryptoStream^ csEncrypt = gcnew CryptoStream(msEncrypt,encryptor, CryptoStreamMode::Write);
+		StreamWriter^ swEncrypt = gcnew StreamWriter(csEncrypt);
+			swEncrypt->Write(bytetext);
+			memset(data_two_array_start, 0, bytetext->Length);
+			swEncrypt->Close();
+			encrypted = msEncrypt->ToArray();
+			pin_ptr<Byte> result_arr1 = &encrypted[0];
+			csEncrypt->Clear();
+			msEncrypt->Close();
+		aesAlg->Clear();
 
-	memcpy(iv,result_arr1,result.Item1->Length);
-	memcpy(ctext,result_arr2,result.Item2->Length);
+	char* iv = new char[(encrypted->Length)];
+	char* ctext = new char[(biv->Length)];
 
-	//Safely delete them from mem
-	memset(data_array_start, 0, bytekey->Length);
-	memset(data_two_array_start, 0, bytetext->Length);
-	delete &bytekey;
-	delete &bytetext;
-	memset(&text[0], 0, strlen(text));
-	memset(&key[0], 0, strlen(key));
-	delete &result;
+	memcpy(iv,result_arr1,encrypted->Length);
+	memcpy(ctext,result_arr2,biv->Length);
+
+	delete text;
+	delete key;
 	std::tuple<char, char> a = { *ctext, *iv };
 	return a;
 };
@@ -100,19 +112,30 @@ static char* AESDecrypt(char* iv, char* key, char* ctext) {
 	pin_ptr<Byte> data_array_startii = &bytectext[0];
 	memcpy(data_array_startii, &iv, strlen(iv));
 
-	String^ result = Crypto::AESDecrypt(bytekey, bytectext, byteiv);
-	pin_ptr<String^> resulthandler = &result;
+
+	Aes^ aesAlg = Aes::Create();
+	aesAlg->Key = bytekey;
+	memset(data_array_start, 0, bytekey->Length);
+	aesAlg->IV = byteiv;
+	ICryptoTransform^ decryptor = aesAlg->CreateDecryptor(aesAlg->Key, aesAlg->IV);
+	MemoryStream^ msDecrypt = gcnew MemoryStream(bytectext);
+	CryptoStream^ csDecrypt = gcnew CryptoStream(msDecrypt, decryptor, CryptoStreamMode::Read);
+	StreamReader^ srDecrypt = gcnew StreamReader(csDecrypt);
+		System::String^ result = srDecrypt->ReadToEnd();
+		pin_ptr<String^> resulthandler = &result;
+		srDecrypt->Close();
+	csDecrypt->Clear();
+	csDecrypt->Clear();
+	srDecrypt->Close();
+	aesAlg->Clear();
 
 	char* r = new char[(result->Length)];
 
 	memcpy(r,resulthandler,result->Length);
-
 	memset(resulthandler, 0, result->Length);
-	memset(data_array_start, 0, bytekey->Length);
-
-	delete &bytectext;
-	delete &byteiv;
-	delete &bytekey;
+	delete iv;
+	delete key;
+	delete ctext;
 	return r;
 };
 
@@ -131,8 +154,8 @@ DLLEXPORT PyObject* AesEncryptPy(char* textb, char* keyb) {
 	PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a)); 
 	memset(textb,0,strlen(textb));
 	memset(keyb, 0, strlen(keyb));
-	delete &keyb;
-	delete &textb;
+	delete keyb;
+	delete textb;
 	delete &a;
 
 	return tup;
@@ -145,15 +168,15 @@ DLLEXPORT PyObject* AesDecryptPy(PyObject ivb, PyObject keyb, PyObject ctextb) {
 	memset(key,0,strlen(key));
 	PyObject* result = Py_BuildValue("y", a);
 	memset(a, 0, strlen(a));
-	delete &ctext;
-	delete &key;
-	delete &iv;
-	delete &a;
+	delete ctext;
+	delete key;
+	delete iv;
+	delete a;
 	return result;
 }
 
 DLLEXPORT void Init() {
 	Py_Initialize();
-	Initialize();
+	//Initialize();
 }
 
