@@ -11,8 +11,6 @@ using namespace System::Security::Cryptography;
 #include<tuple>
 #include <iostream> 
 using namespace System::IO;
-using namespace std;
-using namespace cli;
 
 //#define DLLEXPORT extern "C" __declspec(dllexport)  <- expanded it already for perfromance reasons
 #pragma managed
