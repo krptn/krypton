@@ -25,16 +25,6 @@
     <ClCompile Include="inter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PythonCSharp\PythonCSharp.csproj">
-      <Project>{f06c3bf0-c86b-4f86-b170-aa157711fb3a}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="PythonCSharp">
-      <HintPath>..\..\PythonCSharp\bin\Release\net5.0\PythonCSharp.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="app.config" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
