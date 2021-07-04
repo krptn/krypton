@@ -1,3 +1,5 @@
+#include "pch.h"
+#include "crypto.h"
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 using namespace System;
@@ -29,58 +31,50 @@ static void Initialize()
 		auto deb =  Assembly::LoadFile(path);
 }
 */
+
 static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	cli::array< Byte >^ bytekey = gcnew cli::array< Byte >(strlen(key) + 1);
-	/*
-	Marshal::Copy((IntPtr)*key, bytekey, 0, strlen(key));
-	*/
 
 	pin_ptr<Byte> data_array_start = &bytekey[0];
 	memcpy(data_array_start, &key, strlen(key));
 	memset(&key[0], 0, strlen(key));
 
 
-	cli::array< Byte > ^ bytetext = gcnew cli::array< Byte >(strlen(text) + 1);
-	/*
-	Marshal::Copy((IntPtr)text, bytetext, 0, strlen(key));
-	*/
-	
+	cli::array< Byte >^ bytetext = gcnew cli::array< Byte >(strlen(text) + 1);
+
 	pin_ptr<Byte> data_two_array_start = &bytetext[0];
 	memcpy(data_two_array_start, &text, strlen(text));
 	memset(&text[0], 0, strlen(text));
-	/*
-	ValueTuple<cli::array <unsigned char>^, cli::array <unsigned char>^>  result = Crypto::AESEncrypt(bytetext, bytekey);
-	*/
 	cli::array<Byte>^ encrypted;
 	cli::array<Byte>^ biv;
 
 	Aes^ myAes = Aes::Create();
-		biv = myAes->IV;
-		pin_ptr<Byte> result_arr2 = &biv[0];
-		myAes->Clear();
+	biv = myAes->IV;
+	pin_ptr<Byte> result_arr2 = &biv[0];
+	myAes->Clear();
 
 	Aes^ aesAlg = Aes::Create();
-		aesAlg->Key = bytekey;
-		aesAlg->IV = biv;
-		memset(data_array_start, 0, bytekey->Length); //Get rid of it
-		ICryptoTransform^ encryptor = aesAlg->CreateEncryptor(aesAlg->Key, aesAlg->IV);
-		MemoryStream^ msEncrypt = gcnew MemoryStream();
-		CryptoStream^ csEncrypt = gcnew CryptoStream(msEncrypt,encryptor, CryptoStreamMode::Write);
-		StreamWriter^ swEncrypt = gcnew StreamWriter(csEncrypt);
-			swEncrypt->Write(bytetext);
-			memset(data_two_array_start, 0, bytetext->Length);
-			swEncrypt->Close();
-			encrypted = msEncrypt->ToArray();
-			pin_ptr<Byte> result_arr1 = &encrypted[0];
-			csEncrypt->Clear();
-			msEncrypt->Close();
-		aesAlg->Clear();
+	aesAlg->Key = bytekey;
+	aesAlg->IV = biv;
+	memset(data_array_start, 0, bytekey->Length); //Get rid of it
+	ICryptoTransform^ encryptor = aesAlg->CreateEncryptor(aesAlg->Key, aesAlg->IV);
+	MemoryStream^ msEncrypt = gcnew MemoryStream();
+	CryptoStream^ csEncrypt = gcnew CryptoStream(msEncrypt, encryptor, CryptoStreamMode::Write);
+	StreamWriter^ swEncrypt = gcnew StreamWriter(csEncrypt);
+	swEncrypt->Write(bytetext);
+	memset(data_two_array_start, 0, bytetext->Length);
+	swEncrypt->Close();
+	encrypted = msEncrypt->ToArray();
+	pin_ptr<Byte> result_arr1 = &encrypted[0];
+	csEncrypt->Clear();
+	msEncrypt->Close();
+	aesAlg->Clear();
 
 	char* iv = new char[(encrypted->Length)];
 	char* ctext = new char[(biv->Length)];
 
-	memcpy(iv,result_arr1,encrypted->Length);
-	memcpy(ctext,result_arr2,biv->Length);
+	memcpy(iv, result_arr1, encrypted->Length);
+	memcpy(ctext, result_arr2, biv->Length);
 
 	delete text;
 	delete key;
@@ -110,9 +104,9 @@ static char* AESDecrypt(char* iv, char* key, char* ctext) {
 	MemoryStream^ msDecrypt = gcnew MemoryStream(bytectext);
 	CryptoStream^ csDecrypt = gcnew CryptoStream(msDecrypt, decryptor, CryptoStreamMode::Read);
 	StreamReader^ srDecrypt = gcnew StreamReader(csDecrypt);
-		System::String^ result = srDecrypt->ReadToEnd();
-		pin_ptr<String^> resulthandler = &result;
-		srDecrypt->Close();
+	System::String^ result = srDecrypt->ReadToEnd();
+	pin_ptr<String^> resulthandler = &result;
+	srDecrypt->Close();
 	csDecrypt->Clear();
 	csDecrypt->Clear();
 	srDecrypt->Close();
@@ -120,7 +114,7 @@ static char* AESDecrypt(char* iv, char* key, char* ctext) {
 
 	char* r = new char[(result->Length)];
 
-	memcpy(r,resulthandler,result->Length);
+	memcpy(r, resulthandler, result->Length);
 	memset(resulthandler, 0, result->Length);
 	delete iv;
 	delete key;
@@ -133,10 +127,6 @@ static char* AESDecrypt(char* iv, char* key, char* ctext) {
 
 extern "C" {
 	__declspec(dllexport) PyObject* AesEncryptPy(char* textb, char* keyb) {
-		/*
-		char *text = PyBytes_AsString(&textb);
-		char *key = PyBytes_AsString(&keyb);
-		*/
 		std::tuple<char, char> a = AESEncrypt(textb, keyb);
 		PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a));
 		memset(textb, 0, strlen(textb));
@@ -166,4 +156,9 @@ extern "C" {
 		Py_Initialize();
 		//Initialize();
 	}
+}
+
+
+extern "C" __declspec(dllexport) int test(int a, int b) {
+	return a + b;
 }
