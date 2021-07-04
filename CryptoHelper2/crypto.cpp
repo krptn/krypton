@@ -133,7 +133,7 @@ extern "C" {
 		memset(keyb, 0, strlen(keyb));
 		delete keyb;
 		delete textb;
-		delete& a;
+		delete a;
 
 		return tup;
 	}
