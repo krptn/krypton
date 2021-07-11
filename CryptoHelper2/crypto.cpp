@@ -6,6 +6,7 @@ using namespace System;
 using namespace System::Security::Cryptography;
 using namespace System::IO;
 #include <tuple>
+#include "aes.h"
 
 //#define DLLEXPORT extern "C" __declspec(dllexport)  <- expanded it already for perfromance reasons
 #pragma managed
@@ -82,6 +83,7 @@ static std::tuple<char, char> AESEncrypt(char* text, char* key) {
 	return a;
 };
 
+
 static char* AESDecrypt(char* iv, char* key, char* ctext) {
 	cli::array< Byte >^ bytekey = gcnew cli::array< Byte >((strlen(key) + 1));
 	pin_ptr<Byte> data_array_start = &bytekey[0];
@@ -127,15 +129,18 @@ static char* AESDecrypt(char* iv, char* key, char* ctext) {
 
 extern "C" {
 	__declspec(dllexport) PyObject* AesEncryptPy(char* textb, char* keyb) {
+		/*
 		std::tuple<char, char> a = AESEncrypt(textb, keyb);
 		PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a));
 		memset(textb, 0, strlen(textb));
 		memset(keyb, 0, strlen(keyb));
 		delete keyb;
 		delete textb;
-		delete a;
+		delete &a;
 
 		return tup;
+		*/
+
 	}
 	__declspec(dllexport) PyObject* AesDecryptPy(PyObject ivb, PyObject keyb, PyObject ctextb) {
 		char* ctext = PyBytes_AsString(&ctextb);

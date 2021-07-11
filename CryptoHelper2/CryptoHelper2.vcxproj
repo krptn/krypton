@@ -86,6 +86,7 @@
       <AdditionalIncludeDirectories>C:\Program Files\Python39\include</AdditionalIncludeDirectories>
       <ControlFlowGuard>false</ControlFlowGuard>
       <CallingConvention>Cdecl</CallingConvention>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
@@ -123,6 +124,8 @@
       <AdditionalIncludeDirectories>C:\Program Files\Python39\include</AdditionalIncludeDirectories>
       <ControlFlowGuard>false</ControlFlowGuard>
       <CallingConvention>Cdecl</CallingConvention>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <AdditionalDependencies />
