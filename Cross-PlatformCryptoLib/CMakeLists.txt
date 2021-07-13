@@ -8,5 +8,4 @@ project ("Cross-PlatformCryptoLib")
 # Add source to this project's executable.
 add_library(Cross-PlatformCryptoLib SHARED "Cross-PlatformCryptoLib.cpp" "Cross-PlatformCryptoLib.h")
 
-
 # TODO: Add tests and install targets if needed.

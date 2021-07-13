@@ -38,7 +38,7 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "C:\\\\Users\\markb\\source\\other-repos\\Linux\\MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+          "value": "//mnt//c//Users//markb//source//other-repos//Linux//MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
         }
       ]
     },
@@ -80,7 +80,7 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "C:\\Users\\markb\\source\\other-repos\\Linux\\MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+          "value": "//mnt//c//Users//markb//source//other-repos//Linux//MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
         }
       ]
     }
