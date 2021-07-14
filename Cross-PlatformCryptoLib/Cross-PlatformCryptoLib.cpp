@@ -84,4 +84,4 @@ PyObject* AESDecryptPy(char* iv, char* key, char* ctext) {
 void Init() {
 	Py_Initialize();
 	//Initialize();
-
+}

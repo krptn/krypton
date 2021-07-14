@@ -2,8 +2,9 @@
 // or project specific include files.
 
 #pragma once
-#include <tuple>
 
+#include <tuple>
+#include <Python.h>
 // TODO: Reference additional headers your program requires here.
 
 std::tuple<char*, char> AESEncrypt(unsigned char* text, unsigned char* key);

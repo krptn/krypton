@@ -18,6 +18,14 @@
         {
           "name": "PyLoc",
           "value": "C:\\Program Files\\Python39\\include"
+        },
+        {
+          "name": "PyLib",
+          "value": "C:\\Program Files\\Python39\\libs"
+        },
+        {
+          "name": "OPENSSL_ROOT_DIR",
+          "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\installed\\x64-windows"
         }
       ]
     },
@@ -42,11 +50,15 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "//mnt//c//Users//markb//source//other-repos//Linux//MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+          "value": "/home/markbs/vcpkg/scripts/buildsystems/vcpkg.cmake"
         },
         {
           "name": "PyLoc",
-          "value": "/usr/include/python3.7"
+          "value": "//usr//include//python3.7"
+        },
+        {
+          "name": "OPENSSL_ROOT_DIR",
+          "value": "/home/markbs/vcpkg/installed/x64-windows"
         }
       ]
     },
@@ -68,6 +80,14 @@
         {
           "name": "PyLoc",
           "value": "C:\\Program Files\\Python39\\include"
+        },
+        {
+          "name": "OPENSSL_ROOT_DIR",
+          "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\installed\\x64-windows"
+        },
+        {
+          "name": "PyLib",
+          "value": "C:\\Program Files\\Python39\\libs"
         }
       ]
     },
@@ -92,11 +112,15 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "//mnt//c//Users//markb//source//other-repos//Linux//MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+          "value": "/home/markbs/vcpkg/scripts/buildsystems/vcpkg.cmake"
         },
         {
           "name": "PyLoc",
-          "value": "/usr/include/python3.7"
+          "value": "//usr//include//python3.7"
+        },
+        {
+          "name": "OPENSSL_ROOT_DIR",
+          "value": "/home/markbs/vcpkg/installed/x64-windows"
         }
       ]
     }
