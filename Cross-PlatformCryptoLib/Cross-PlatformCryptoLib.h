@@ -2,17 +2,13 @@
 // or project specific include files.
 
 #pragma once
-
-#include <iostream>
-
+#include <tuple>
 
 // TODO: Reference additional headers your program requires here.
 
-static std::tuple<char*, char> AESEncrypt(unsigned char* text, unsigned char* key);
-static char* AESDecrypt(unsigned char* iv, unsigned char* key, unsigned char* ctext);
+std::tuple<char*, char> AESEncrypt(unsigned char* text, unsigned char* key);
+char* AESDecrypt(unsigned char* iv, unsigned char* key, unsigned char* ctext);
 
-extern "C" {
-	__declspec(dllexport) PyObject* AesEncryptPy(char* textb, char* keyb);
-	__declspec(dllexport) PyObject* AesDecryptPy(char* iv, char* key, char* ctext);
-	__declspec(dllexport) void Init();
-}
+PyObject* AESEncryptPy(char* textb, char* keyb);
+PyObject* AESDecryptPy(char* iv, char* key, char* ctext);
+

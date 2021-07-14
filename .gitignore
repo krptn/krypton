@@ -21,6 +21,7 @@ dist/
 Package/
 PySec.egg-info/
 build/
+ou/
 
 # Mono auto generated files
 mono_crash.*
