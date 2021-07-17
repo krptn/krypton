@@ -128,7 +128,7 @@
         },
         {
           "name": "PyLoc",
-          "value": "//usr//include//python3.7",
+          "value": "/usr/include/python3.7",
           "type": "STRING"
         },
         {
