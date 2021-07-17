@@ -21,12 +21,12 @@ std::tuple<char*, char> AESEncrypt(unsigned char* text, unsigned char* key) {
 	AES_set_encrypt_key(key, 128, &aes_key);
 
 	AES_cbc_encrypt(text, out, msglen, &aes_key, iv, AES_ENCRYPT);
-	memset((void*)text, 0, strlen((const char*)text));
-	memset((void*)key, 0, strlen((const char*)key));
-	memset(&aes_key, 0, sizeof(aes_key));
+	memset_s((void*)text, 0, strlen((const char*)text));
+	memset_s((void*)key, 0, strlen((const char*)key));
+	memset_s(&aes_key, 0, sizeof(aes_key));
 	char* result = new char[msglen];
 	memcpy(result, out, msglen);
-	memset(out, 0, msglen);
+	memset_s(out, 0, msglen);
 	delete out;
 	delete text;
 	delete key;
@@ -40,13 +40,13 @@ char* AESDecrypt(unsigned char* iv, unsigned char* key, unsigned char* ctext) {
 	unsigned char* out = new unsigned char[msglen];
 	AES_KEY aes_key;
 	AES_cbc_encrypt(ctext, out, msglen, &aes_key, iv, AES_DECRYPT);
-	memset((void*)ctext, 0, strlen((const char*)ctext));
-	memset((void*)key, 0, strlen((const char*)key));
-	memset(&aes_key, 0, sizeof(aes_key));
-	memset(&iv, 0, sizeof(iv));
+	memset_s((void*)ctext, 0, strlen((const char*)ctext));
+	memset_s((void*)key, 0, strlen((const char*)key));
+	memset_s(&aes_key, 0, sizeof(aes_key));
+	memset_s(&iv, 0, sizeof(iv));
 	char* result = new char[msglen];
 	memcpy(result, out, msglen);
-	memset(out, 0, msglen);
+	memset_s(out, 0, msglen);
 	return result;
 }
 
@@ -54,8 +54,8 @@ PyObject* AESEncryptPy(char* textb, char* keyb) {
 
 	std::tuple<char*, char> a = AESEncrypt((unsigned char*)textb, (unsigned char*)keyb);
 	PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a));
-	memset(textb, 0, strlen(textb));
-	memset(keyb, 0, strlen(keyb));
+	memset_s(textb, 0, strlen(textb));
+	memset_s(keyb, 0, strlen(keyb));
 	delete keyb;
 	delete textb;
 	delete& a;
@@ -71,9 +71,9 @@ PyObject* AESDecryptPy(char* iv, char* key, char* ctext) {
 	char* iv = PyBytes_AsString(&ivb);
 	*/
 	char* a = AESDecrypt((unsigned char*)iv, (unsigned char*)key, (unsigned char*)ctext);  //We believe it is unecesary to delete arguments passed inside functions as it is passed as reference
-	memset(key, 0, strlen(key));
+	memset_s(key, 0, strlen(key));
 	PyObject* result = Py_BuildValue("y", a);
-	memset(a, 0, strlen(a));
+	memset_s(a, 0, strlen(a));
 	delete ctext;
 	delete key;
 	delete iv;

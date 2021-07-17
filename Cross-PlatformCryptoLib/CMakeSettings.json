@@ -13,19 +13,23 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+          "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
+          "type": "STRING"
         },
         {
           "name": "PyLoc",
-          "value": "C:\\Program Files\\Python39\\include"
+          "value": "C:\\Program Files\\Python39\\include",
+          "type": "STRING"
         },
         {
           "name": "PyLib",
-          "value": "C:\\Program Files\\Python39\\libs"
+          "value": "C:\\Program Files\\Python39\\libs",
+          "type": "STRING"
         },
         {
           "name": "OPENSSL_ROOT_DIR",
-          "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\installed\\x64-windows"
+          "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\installed\\x64-windows",
+          "type": "STRING"
         }
       ]
     },
@@ -50,15 +54,18 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          "value": "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "STRING"
         },
         {
           "name": "PyLoc",
-          "value": "/usr/include/python3.7/"
+          "value": "/usr/include/python3.7/",
+          "type": "STRING"
         },
         {
           "name": "OPENSSL_ROOT_DIR",
-          "value": "/home/markbs/vcpkg/installed/x64-windows"
+          "value": "/home/markbs/vcpkg/installed/x64-windows",
+          "type": "STRING"
         }
       ]
     },
@@ -75,19 +82,23 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+          "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
+          "type": "STRING"
         },
         {
           "name": "PyLoc",
-          "value": "C:\\Program Files\\Python39\\include"
+          "value": "C:\\Program Files\\Python39\\include",
+          "type": "STRING"
         },
         {
           "name": "OPENSSL_ROOT_DIR",
-          "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\installed\\x64-windows"
+          "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\installed\\x64-windows",
+          "type": "STRING"
         },
         {
           "name": "PyLib",
-          "value": "C:\\Program Files\\Python39\\libs"
+          "value": "C:\\Program Files\\Python39\\libs",
+          "type": "STRING"
         }
       ]
     },
@@ -112,15 +123,90 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          "value": "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "STRING"
         },
         {
           "name": "PyLoc",
-          "value": "//usr//include//python3.7"
+          "value": "//usr//include//python3.7",
+          "type": "STRING"
         },
         {
           "name": "OPENSSL_ROOT_DIR",
-          "value": "/home/markbs/vcpkg/installed/x64-windows"
+          "value": "/home/markbs/vcpkg/installed/x64-windows",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "Linux-GCC-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "cmakeExecutable": "cmake",
+      "remoteCopySourcesExclusionList": [ ".vs", ".git", "out" ],
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "linux_x64" ],
+      "remoteMachineName": "${defaultRemoteMachineName}",
+      "remoteCMakeListsRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/src",
+      "remoteBuildRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/build/${name}",
+      "remoteInstallRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/install/${name}",
+      "remoteCopySources": true,
+      "rsyncCommandArgs": "-t --delete --delete-excluded",
+      "remoteCopyBuildOutput": false,
+      "remoteCopySourcesMethod": "rsync",
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "STRING"
+        },
+        {
+          "name": "PyLoc",
+          "value": "/usr/include/python3.7/",
+          "type": "STRING"
+        },
+        {
+          "name": "OPENSSL_ROOT_DIR",
+          "value": "/home/markbs/vcpkg/installed/x64-windows",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "Linux-GCC-Release",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "cmakeExecutable": "cmake",
+      "remoteCopySourcesExclusionList": [ ".vs", ".git", "out" ],
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "linux_x64" ],
+      "remoteMachineName": "${defaultRemoteMachineName}",
+      "remoteCMakeListsRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/src",
+      "remoteBuildRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/build/${name}",
+      "remoteInstallRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/install/${name}",
+      "remoteCopySources": true,
+      "rsyncCommandArgs": "-t --delete --delete-excluded",
+      "remoteCopyBuildOutput": false,
+      "remoteCopySourcesMethod": "rsync",
+      "variables": [
+        {
+          "name": "CMAKE_TOOLCHAIN_FILE",
+          "value": "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/scripts/buildsystems/vcpkg.cmake",
+          "type": "STRING"
+        },
+        {
+          "name": "PyLoc",
+          "value": "/usr/include/python3.7/",
+          "type": "STRING"
+        },
+        {
+          "name": "OPENSSL_ROOT_DIR",
+          "value": "/home/markbs/vcpkg/installed/x64-windows",
+          "type": "STRING"
         }
       ]
     }
