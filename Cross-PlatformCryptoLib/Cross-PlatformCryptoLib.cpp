@@ -9,6 +9,7 @@
 #include <openssl/rand.h>
 #include <tuple>
 #include <openssl/aes.h>
+#include <string.h>
 
 
 std::tuple<char*, char> AESEncrypt(unsigned char* text, unsigned char* key) {
@@ -21,12 +22,12 @@ std::tuple<char*, char> AESEncrypt(unsigned char* text, unsigned char* key) {
 	AES_set_encrypt_key(key, 128, &aes_key);
 
 	AES_cbc_encrypt(text, out, msglen, &aes_key, iv, AES_ENCRYPT);
-	memset_s((void*)text, 0, strlen((const char*)text));
-	memset_s((void*)key, 0, strlen((const char*)key));
-	memset_s(&aes_key, 0, sizeof(aes_key));
+	OPENSSL_cleanse((void*)text, strlen((const char*)text));
+	OPENSSL_cleanse((void*)key, strlen((const char*)key));
+	OPENSSL_cleanse(&aes_key, sizeof(aes_key));
 	char* result = new char[msglen];
 	memcpy(result, out, msglen);
-	memset_s(out, 0, msglen);
+	OPENSSL_cleanse(out, msglen);
 	delete out;
 	delete text;
 	delete key;
@@ -40,13 +41,13 @@ char* AESDecrypt(unsigned char* iv, unsigned char* key, unsigned char* ctext) {
 	unsigned char* out = new unsigned char[msglen];
 	AES_KEY aes_key;
 	AES_cbc_encrypt(ctext, out, msglen, &aes_key, iv, AES_DECRYPT);
-	memset_s((void*)ctext, 0, strlen((const char*)ctext));
-	memset_s((void*)key, 0, strlen((const char*)key));
-	memset_s(&aes_key, 0, sizeof(aes_key));
-	memset_s(&iv, 0, sizeof(iv));
+	OPENSSL_cleanse((void*)ctext, strlen((const char*)ctext));
+	OPENSSL_cleanse((void*)key, strlen((const char*)key));
+	OPENSSL_cleanse(&aes_key, sizeof(aes_key));
+	OPENSSL_cleanse(&iv, sizeof(iv));
 	char* result = new char[msglen];
 	memcpy(result, out, msglen);
-	memset_s(out, 0, msglen);
+	OPENSSL_cleanse(out, msglen);
 	return result;
 }
 
@@ -54,8 +55,8 @@ PyObject* AESEncryptPy(char* textb, char* keyb) {
 
 	std::tuple<char*, char> a = AESEncrypt((unsigned char*)textb, (unsigned char*)keyb);
 	PyObject* tup = Py_BuildValue("(yy)", std::get<0>(a), std::get<1>(a));
-	memset_s(textb, 0, strlen(textb));
-	memset_s(keyb, 0, strlen(keyb));
+	OPENSSL_cleanse(textb, strlen(textb));
+	OPENSSL_cleanse(keyb, strlen(keyb));
 	delete keyb;
 	delete textb;
 	delete& a;
@@ -71,9 +72,9 @@ PyObject* AESDecryptPy(char* iv, char* key, char* ctext) {
 	char* iv = PyBytes_AsString(&ivb);
 	*/
 	char* a = AESDecrypt((unsigned char*)iv, (unsigned char*)key, (unsigned char*)ctext);  //We believe it is unecesary to delete arguments passed inside functions as it is passed as reference
-	memset_s(key, 0, strlen(key));
+	OPENSSL_cleanse(key, strlen(key));
 	PyObject* result = Py_BuildValue("y", a);
-	memset_s(a, 0, strlen(a));
+	OPENSSL_cleanse(a, strlen(a));
 	delete ctext;
 	delete key;
 	delete iv;

@@ -64,7 +64,7 @@
         },
         {
           "name": "OPENSSL_ROOT_DIR",
-          "value": "/home/markbs/vcpkg/installed/x64-windows",
+          "value": "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/installed/x64-windows",
           "type": "STRING"
         }
       ]
@@ -133,7 +133,7 @@
         },
         {
           "name": "OPENSSL_ROOT_DIR",
-          "value": "/home/markbs/vcpkg/installed/x64-windows",
+          "value": "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/installed/x64-windows",
           "type": "STRING"
         }
       ]

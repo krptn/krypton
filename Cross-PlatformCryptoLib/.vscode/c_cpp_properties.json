@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${vcpkgRoot}/x64-windows/include",
-                "C:\\Program Files\\Python39\\include"
+                "C:\\Program Files\\Python39\\include",
+                "${vcpkgRoot}/x64-windows/include/openssl"
             ],
             "defines": [
                 "NDEBUG",
@@ -17,14 +18,26 @@
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "windows-msvc-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "configurationProvider": "ms-vscode.cmake-tools",
+            "compilerArgs": [],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**",
+                    "${vcpkgRoot}/x64-windows/include",
+                    "C:\\Program Files\\Python39\\include",
+                    "${vcpkgRoot}/x64-windows/include/openssl"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            }
         },
         {
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "~/vcpkg/installed/x64-linux/include",
-                "/usr/include/python3.7"
+                "/mnt/c/Users/markb/vcpkg/installed/x64-linux/include",
+                "/usr/include/python3.7",
+                "/mnt/c/Users/markb/vcpkg/installed/x64-linux/include/openssl",
+                "/usr/include/python3.7m"
             ],
             "defines": [
                 "NDEBUG",
@@ -35,7 +48,18 @@
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
             "cppStandard": "c++17",
-            "intelliSenseMode": "linux-clang-x64"
+            "intelliSenseMode": "linux-clang-x64",
+            "compilerArgs": [],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/**",
+                    "C:\\Users\\markb/vcpkg/installed/x64-linux/include",
+                    "/usr/include/python3.7",
+                    "/usr/include/python3.7m"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json"
         }
     ],
     "version": 4

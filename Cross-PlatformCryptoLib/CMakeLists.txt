@@ -7,11 +7,13 @@ project ("Cross-PlatformCryptoLib")
 # Add source to this project's executable.
 find_package(OpenSSL REQUIRED)
 link_directories(${PyLib})
+include_directories(${PyLoc} include src)
 add_library(Cross-PlatformCryptoLib SHARED "Cross-PlatformCryptoLib.cpp" "Cross-PlatformCryptoLib.h")
 
+find_package(PythonLibs REQUIRED)
+find_package(Python3 REQUIRED)
 target_link_libraries(Cross-PlatformCryptoLib PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 target_include_directories(Cross-PlatformCryptoLib PRIVATE ${Pyloc})
-include(${PyLoc}/Python.h )
 target_link_libraries(Cross-PlatformCryptoLib PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 include(GenerateExportHeader)
 
