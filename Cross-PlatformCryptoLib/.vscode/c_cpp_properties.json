@@ -34,9 +34,9 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/mnt/c/Users/markb/vcpkg/installed/x64-linux/include",
+                "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/installed/x64-linux/include",
                 "/usr/include/python3.7",
-                "/mnt/c/Users/markb/vcpkg/installed/x64-linux/include/openssl",
+                "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/installed/x64-linux/include/openssl",
                 "/usr/include/python3.7m"
             ],
             "defines": [
