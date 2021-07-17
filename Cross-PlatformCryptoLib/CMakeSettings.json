@@ -50,11 +50,11 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "/home/markbs/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          "value": "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/scripts/buildsystems/vcpkg.cmake"
         },
         {
           "name": "PyLoc",
-          "value": "//usr//include//python3.7"
+          "value": "/usr/include/python3.7/"
         },
         {
           "name": "OPENSSL_ROOT_DIR",
@@ -112,7 +112,7 @@
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "/home/markbs/vcpkg/scripts/buildsystems/vcpkg.cmake"
+          "value": "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/scripts/buildsystems/vcpkg.cmake"
         },
         {
           "name": "PyLoc",
