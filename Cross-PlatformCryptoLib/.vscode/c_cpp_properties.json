@@ -5,7 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${vcpkgRoot}/x64-windows/include",
-                "C:\\Program Files\\Python39\\include",
+                "C:/Program Files/Python39/**",
                 "${vcpkgRoot}/x64-windows/include/openssl"
             ],
             "defines": [
@@ -36,9 +36,11 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/installed/x64-linux/include",
-                "/usr/include/python3.7",
+                "/usr/include/python3.7/**",
                 "/mnt/c/Users/markb/source/other-repos/MS/vcpkg/installed/x64-linux/include/openssl",
-                "/usr/include/python3.7m"
+                "/usr/include/python3.7m/**",
+                "/usr/include/python3.7m",
+                "/usr/include/python3.7"
             ],
             "defines": [
                 "NDEBUG",

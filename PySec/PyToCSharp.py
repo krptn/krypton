@@ -6,9 +6,10 @@ import PySec
 input("Go")
 a = cdll.LoadLibrary(r"C:\Users\markb\source\repos\PySec\Cross-PlatformCryptoLib\out\build\x64-Debug\Cross-PlatformCryptoLib.dll")
 input("Go")
-a.Init()
-input("Go")
-Encrypt = a.AesEncryptPy
+
+if a.Init() ==0:
+    print("Error")
+Encrypt = a.AESEncrypt
 Encrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 Encrypt.restype = tuple
 input("Go")
@@ -16,4 +17,7 @@ a = os.urandom(32)
 print(a)
 strbuff = ctypes.create_string_buffer
 print(b"fgf")
-print(Encrypt(strbuff(b"fgf"),strbuff(os.urandom(32))))
+buff = strbuff(b"fgf")
+buffa=strbuff(os.urandom(32))
+result = Encrypt(buff,buffa)
+print(result)
