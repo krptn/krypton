@@ -4,7 +4,7 @@ import os
 from ctypes import cdll
 import PySec
 input("Go")
-a = cdll.LoadLibrary(r"x64/Debug/CryptoHelper.dll")
+a = cdll.LoadLibrary(r"C:\Users\markb\source\repos\PySec\Cross-PlatformCryptoLib\out\build\x64-Debug\Cross-PlatformCryptoLib.dll")
 input("Go")
 a.Init()
 input("Go")

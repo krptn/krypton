@@ -11,7 +11,8 @@
             "defines": [
                 "NDEBUG",
                 "UNICODE",
-                "_UNICODE"
+                "_UNICODE",
+                "Win"
             ],
             "windowsSdkVersion": "10.0.19041.0",
             "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30037/bin/Hostx64/x64/cl.exe",
@@ -42,7 +43,8 @@
             "defines": [
                 "NDEBUG",
                 "UNICODE",
-                "_UNICODE"
+                "_UNICODE",
+                "Linux"
             ],
             "windowsSdkVersion": "10.0.19041.0",
             "compilerPath": "/usr/bin/clang",

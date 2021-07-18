@@ -9,7 +9,7 @@ find_package(OpenSSL REQUIRED)
 link_directories(${PyLib})
 include_directories(${PyLoc} include src)
 add_library(Cross-PlatformCryptoLib SHARED "Cross-PlatformCryptoLib.cpp" "Cross-PlatformCryptoLib.h")
-
+add_compile_definitions(${Platform})
 find_package(PythonLibs REQUIRED)
 find_package(Python3 REQUIRED)
 target_link_libraries(Cross-PlatformCryptoLib PRIVATE OpenSSL::SSL OpenSSL::Crypto)
