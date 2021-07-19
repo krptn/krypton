@@ -16,12 +16,16 @@
 #include <openssl/rand.h>
 #include <openssl/aes.h>
 #include <string.h>
+#include <cmath>
+#include <string>
 
 // TODO: Reference additional headers your program requires here.
 extern "C" {
-	DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, char* ivbuff);
-	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* iv, unsigned char* key, unsigned char* ctext);
-	DLLEXPORT PyObject* __cdecl AESEncryptPy(char* textb, char* keyb);
-	DLLEXPORT PyObject* __cdecl AESDecryptPy(char* iv, char* key, char* ctext);
+	DLLEXPORT unsigned char* __cdecl CAESEncrypt(unsigned char* text, unsigned char* key, char* ivbuff);
+	DLLEXPORT unsigned char* __cdecl CAESDecrypt(unsigned char* iv, unsigned char* key, unsigned char* ctext);
 	DLLEXPORT int __cdecl Init();
 }
+
+std::initializer_list<std::string> AESEncrypt(char* textb, char* keyb);
+std::string AESDecrypt(char* iv, char* key, char* ctext);
+
