@@ -2,7 +2,7 @@
   "configurations": [
     {
       "name": "x64-Debug",
-      "generator": "Visual Studio 16 2019 Win64",
+      "generator": "Ninja",
       "configurationType": "Debug",
       "inheritEnvironments": [ "msvc_x64" ],
       "buildRoot": "${projectDir}\\out\\build\\${name}",
@@ -35,27 +35,32 @@
           "name": "Platform",
           "value": "Win",
           "type": "STRING"
+        },
+        {
+          "name": "Conf",
+          "value": "..\\Cross-PlatformCryptoLib\\out\\build\\x64-Debug",
+          "type": "STRING"
         }
       ]
     },
     {
-      "buildCommandArgs": "-fdeclspec -cfguard",
-      "cmakeCommandArgs": "",
-      "cmakeExecutable": "cmake",
-      "configurationType": "Debug",
-      "ctestCommandArgs": "",
-      "generator": "Ninja",
-      "inheritEnvironments": [ "linux_clang_x64" ],
       "name": "Linux-Clang-Debug",
-      "remoteBuildRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/build/${name}",
-      "remoteCMakeListsRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/src",
-      "remoteCopyBuildOutput": false,
-      "remoteCopySources": true,
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "cmakeExecutable": "cmake",
       "remoteCopySourcesExclusionList": [ ".vs", ".git", "out" ],
-      "remoteCopySourcesMethod": "rsync",
-      "remoteInstallRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/install/${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-fdeclspec -cfguard",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "linux_clang_x64" ],
       "remoteMachineName": "${defaultRemoteMachineName}",
+      "remoteCMakeListsRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/src",
+      "remoteBuildRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/build/${name}",
+      "remoteInstallRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/install/${name}",
+      "remoteCopySources": true,
       "rsyncCommandArgs": "-t --delete --delete-excluded",
+      "remoteCopyBuildOutput": false,
+      "remoteCopySourcesMethod": "rsync",
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
@@ -76,12 +81,17 @@
           "name": "Platform",
           "value": "Linux",
           "type": "STRING"
+        },
+        {
+          "name": "Conf",
+          "value": "..\\Cross-PlatformCryptoLib\\out\\build\\Linux-Clang-Debug",
+          "type": "STRING"
         }
       ]
     },
     {
       "name": "x64-Release",
-      "generator": "Visual Studio 16 2019 Win64",
+      "generator": "Ninja",
       "configurationType": "RelWithDebInfo",
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
@@ -113,6 +123,11 @@
         {
           "name": "Platform",
           "value": "Win",
+          "type": "STRING"
+        },
+        {
+          "name": "Conf",
+          "value": "..\\Cross-PlatformCryptoLib\\out\\build\\x64-Release",
           "type": "STRING"
         }
       ]
@@ -154,6 +169,11 @@
         {
           "name": "Platform",
           "value": "Linux",
+          "type": "STRING"
+        },
+        {
+          "name": "Conf",
+          "value": "..\\Cross-PlatformCryptoLib\\out\\build\\x64/Linux-Clang-Release",
           "type": "STRING"
         }
       ]

@@ -11,13 +11,14 @@
 #endif
 #define PY_SSIZE_T_CLEAN
 
-#include <Python.h>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
-#include <openssl/aes.h>
 #include <string.h>
 #include <cmath>
 #include <string>
+#include <openssl/conf.h>
+#include <openssl/evp.h>
+#include <openssl/err.h>
 
 // TODO: Reference additional headers your program requires here.
 extern "C" {

@@ -1,20 +1,21 @@
+from PySec.PyToCSharp import Adrr
 import hashlib
 import sqlite3
-import pyaes 
+#import pyaes 
 from tkinter import messagebox
 from tkinter import *
 import os
 import ctypes
 import PySec
 import sys
-
+from PySec import RestDecrypt, RestEncrypt, StrAdd
 ## Will embrace in proper mem protection using the CppDotNet crypto and deleting mem content e.g:memoryview
 
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.
 
-def isBaseNameAvailable(name):
+def isBaseNameAvailable(self,name):
     conn = sqlite3.connect(PySec.key)
     c = conn.cursor()
     falsey = False
@@ -30,20 +31,23 @@ class antiExploit():
     @staticmethod
     def antiSQLi(name, info=True):
         #Santizes and de-santizes inputs before constructing sql cmds to avoid injections
-        result = '''"'''
 
         if info is True:
+            a = PySec.NewStrBuilder(len(name)*4+3)
+            StrAdd(a,b'"')
             for ch in name:
-                result+=str(ord(ch))
-                result+="/"
-            result = result[:-1]
-            result+='''"'''
+                StrAdd(a,str(ord(ch))+"/")
+            result = a.value[:-1]
+            result+='"'
+            ctypes.memset(Adrr(a),0,90)
         elif info is False:
+            a = PySec.NewStrBuilder(round((len(name)-3)/4))
+            StrAdd(a,b'"')
             name = name[1:]
             name=name[:-1]
             t = name.split("/")
             for i in t:
-                result+=chr(int(i))
+                StrAdd(a,chr(int(i)))
         else:
             raise TypeError("Must be type str or type int")
         return result
@@ -87,17 +91,14 @@ class kms():
         self.c.execute("SELECT key FROM keys WHERE db=?",(self.base,))
         key = self.c.fetchone()[0]
         if self.trust:
-            self.hmsCipher(key)
+            self.key = self.hmsCipher(key)
         else:
             if trustKey is None:
-                key = getKey(self.root)
+                keyr = getKey(self.root)
                 messagebox.showinfo(master = self.root,title="Enter Key", message="Select OK once you have entered the PIN")
-                aes = pyaes.AESModeOfOperationCTR(key.value)
+                self.key = PySec.RestEncrypt(key,keyr.value,True)
             else:
-                aes = pyaes.AESModeOfOperationCTR(trustKey)
-            self.key = aes.encrypt(key)
-            del aes
-        del key
+                self.key = PySec.RestEncrypt(key,trustKey,True)
 
     def pin(self, rebase=False, kc=None, base=True, trustKey=None):
         if base:
@@ -106,23 +107,17 @@ class kms():
         r = self.c.fetchone()
         r = r[0]
         if self.trust and not rebase:
-            aes = pyaes.AESModeOfOperationCTR(self.hsmDecipher())
-            return aes.decrypt(r) #None
+            return PySec.RestEncrypt(r,self.hsmDecipher(),True)
         elif self.trust and rebase:
-            rekey = os.urandom(32)
-            aes = pyaes.AESModeOfOperationCTR(pwd)
-            r = kc.execute("INSERT INTO keys VALUES (?,?)", (base, aes.encrypt(rekey)))
+            r = kc.execute("INSERT INTO keys VALUES (?,?)", (base, PySec.RestEncrypt(os.urandom(32),getKey(self.root).value,True,True)))
         elif not self.trust and not rebase:
             if trustKey is None:
                 key = getKey(self.root)
                 messagebox.showinfo(master = self.root,title="Enter Key", message="Select OK once you have entered the PIN")
-                aes = pyaes.AESModeOfOperationCTR(key.value)
+                key = PySec.RestDecrypt(self.key,getKey(self.root).value,False)
             else:
-                aes = pyaes.AESModeOfOperationCTR(trustKey)
-            key = aes.decrypt(self.key)
-            del aes
+                key = PySec.RestDecrypt(trustKey,getKey(self.root).value,False)
             return key
-            del key 
         elif not self.trust and rebase:
             raise ValueError("You cannot not trust and recrypt keys simultaniously!")
         else:
@@ -135,32 +130,27 @@ class kms():
             self.configTable(self, table)
             self.c.execute("SELECT key FROM "+antiExploit.antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
             r = self.c.fetchone()
+        self.c.execute()
         r = r[0]
-        aes = pyaes.AESModeOfOperationCTR(self.pin()) 
-        r = aes.decrypt(r)
-        del aes
+        r = RestDecrypt(r,self.pin(),True)
         return r
 
     def configTable(self,table):
         k = os.urandom(32)
-        aes = pyaes.AESModeOfOperationCTR(self.pin())
-        k = aes.encrypt(k)
-        del aes
+        k = RestEncrypt(k,self.pin(),True,True)
         self.c.execute("INSERT INTO "+antiExploit.antiSQLi(self.base)+" VALUES (?, ?)", (table, self.key))
         self.keydb.commit()
-        del table
-        del k
         return True
 
     def exportKeys(self, bases, tables, path, pwd=None):
 
         tmpkeystore = sqlite3.connect(PySec.key)
         tmpksys = sqlite3.connect(path)
-        bk = tempkeystore.cursor() #Old
+        bk = tmpkeystore.cursor() #Old
         kc = tmpksys.cursor() #New
         if pwd == None:
-            pwd = getKey(tk.self.root)
-            messagebox.showinfo(master=tk.self.root, title="Password", message="Please enter the password needed to import the keys on the other machine.")
+            pwd = getKey(self.root)
+            messagebox.showinfo(master=self.root, title="Password", message="Please enter the password needed to import the keys on the other machine.")
             pwd = pwd.value
         kc.execute("CREATE TABLE keys (db text, key text)")
         baseCount=0
@@ -168,24 +158,13 @@ class kms():
             kc.execute("INSERT INTO keys VLUES (?, ?)", (base, self.pin(rebase=True, kc=kc)))
             for table in tables[baseCount]:
                 key = bk.execute("SELECT key FROM "+antiExploit.antiSQLi(base[2:])+" WHERE tbl= ?",(table))
-                aes = pyaes.AESModeOfOperationCTR(self.pin(rebase=True, kc=kc, base=base))
-                key = aes.decrypt(key)
-                del aes
-                aes2 = pyaes.AESModeOfOperationCTR(self.pin(rebase=True, kc=kc, base=base))
-                key = aes2.encrypt(key)
-                del aes2
+                key = RestDecrypt(key,self.pin(rebase=True, kc=kc, base=base),True,True)
+                key = RestEncrypt(key,self.pin(rebase=True, kc=kc, base=base),True,True)
                 kc.execute("INSERT INTO "+antiExploit.antiSQLi(base)+" VALUES (?, ?)",(table,key))
-                del key
                 tmpksys.commit()
             baseCount+=1
-        del baseCount
         tmpkeystore.close()
-        del tmpkeystore
         tmpksys.close()
-        del tmpksys
-        del pwd
-        del kc
-        del bc
 
 class getKey():
     def __init__(self,master):
@@ -215,35 +194,26 @@ class crypto(kms):
         super().__init__(base=baseKMS)
 
     #Ciphers
-    def crypt(what):
-        what = what.encode('utf-8')
+    def crypt(self,what):
         rec = analyzeSecurity()
         table = rec.getTableRecommendation()
-        del rec
-        aes = pyaes.AESModeOfOperationCTR(self.getTableKey(table))
-        del table
-        data = aes.encrypt(what)
-        del aes
+        data = RestEncrypt(what,self.getTableKey(table),True,True)
         return data
 
-    def decrypt(what):
+    def decrypt(self,what):
         rec = analyzeSecurity()
         table = rec.getTableRecommendation()
-        del rec
-        aes = pyaes.AESModeOfOperationCTR(self.getTableKey(table))
-        del table
-        data = aes.decrypt()
-        del aes
+        data = RestDecrypt(what,self.getTableKey(table),True,True)
         return data
 
     #CRUD
-    def secureCreate(what):
+    def secureCreate(self,what):
         pass
-    def sercureRead(what):
+    def sercureRead(self,what):
         pass
-    def secureUpdate(what):
+    def secureUpdate(self,what):
         pass
-    def sucureDelete(what):
+    def sucureDelete(self,what):
         pass
 
 class analyzeSecurity():
