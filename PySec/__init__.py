@@ -37,9 +37,7 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     result = Encrypt(buff, kbuff, iv)
     a = NewStrBuilder(len(result)+len(iv.value))
     StrAdd(a,result)
-    StrAdd(a,iv.value)
-    ctypes.memset(id(result)+33,0,len(result))
-    ctypes.memset(id(iv)+33,0,len(iv))
+    StrAdd(a,iv)
     return a.value
 
 Decrypt = a.AESDecrypt
