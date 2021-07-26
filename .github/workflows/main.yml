@@ -21,7 +21,7 @@ jobs:
         run: |
           curl \
             -X PUT \
-            -u Iv1.e98aa53c9e9bf32a:${{ secrets.App }} \
+            -u 128488:${{ secrets.App }} \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.issue.number }}/merge \
             -d '{"commit_title":"auto"}'
