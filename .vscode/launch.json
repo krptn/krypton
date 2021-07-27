@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: Module",
+            "type": "python",
+            "request": "launch",
+            "module": "PySec"
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
