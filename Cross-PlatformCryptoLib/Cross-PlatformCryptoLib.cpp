@@ -24,26 +24,25 @@ extern "C" {
 		//Add to log here
 		*err = *err + 1;
 	}
-		DLLEXPORT int __cdecl AddToStrBuilder(char* buffer,char* content) {
-			int len = strlen(buffer);
+		DLLEXPORT int __cdecl AddToStrBuilder(char* buffer,char* content, int len) {
 			memcpy_s(buffer+len, strlen(content), content, strlen(content));
 			return 0;
 		}
 
-		DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, char* ivbuff, char* tag) {
+		DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* texta, unsigned char* key, char* ivbuff, char* tag) {
 			int errcnt = 0;
-			int msglen = strlen((char*)text);
-			/*
+			int msglen = strlen((char*)texta);
+			
 			int rem = 16 - remainder(msglen, 16);
-			unsigned char* text = new unsigned char[msglen];
+			unsigned char* text = new unsigned char[msglen+(long long)rem];
 			memcpy_s(text, msglen, texta, msglen);
 			memset(text + msglen, 0, rem);
 			OPENSSL_cleanse(texta, strlen((char*)texta));
-			*/
+			
 			unsigned char iv[12];
 			RAND_bytes(iv, 12);
 			memcpy_s(ivbuff, 12, iv, 12);
-			unsigned char* out = new unsigned char[msglen];
+			unsigned char* out = new unsigned char[msglen+(long long)rem];
 			/*
 			AES_KEY aes_key;
 			AES_set_encrypt_key(key, 256, &aes_key);

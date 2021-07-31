@@ -21,6 +21,7 @@ Encrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p,ctypes.c_c
 Encrypt.restype = ctypes.c_char_p
 strbuff = ctypes.create_string_buffer
 NewStrBuilder = ctypes.create_string_buffer
+
 def RestEncrypt(text, key, keydel = False,condel=False):
     buff = strbuff(text)
     iv = ctypes.create_string_buffer(12)
@@ -31,11 +32,14 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     if condel is True:
         ctypes.memset(id(text)+33,0,len(text)-1)
     result = Encrypt(buff, kbuff, iv, tagbuff)
-    a = NewStrBuilder(len(result)+len(iv.value)+1)
-    StrAdd(a,result)
-    StrAdd(a,iv)
-    StrAdd(a,tagbuff)
-    return a.value
+    b = len(result)
+    c = b+len(iv.value)
+    a = NewStrBuilder(b+c+len(tagbuff.value))
+    StrAdd(a,result,0)
+    StrAdd(a,iv,b)
+    StrAdd(a,tagbuff,b+c) #Error on excecute - perhaps not
+    result = a.value
+    return result
 
 Decrypt = a.AESDecrypt
 Decrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
@@ -59,9 +63,8 @@ def getUser():
     return b"not connected to cloud"
 
 key = "PySec.key"
-
 DEBUG = True
 
 StrAdd = a.AddToStrBuilder
-StrAdd.argtypes = [ctypes.c_char_p,ctypes.c_char_p]
+StrAdd.argtypes = [ctypes.c_char_p,ctypes.c_char_p,ctypes.c_int]
 StrAdd.restype = ctypes.c_int
