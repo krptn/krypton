@@ -20,6 +20,7 @@ jobs:
         with:
           output-filename: devskim-results.sarif
           output-directory: security
+      
       - name: Set Env
         env:
           WORKFOLDER: $GITHUB_WORKSPACE
