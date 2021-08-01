@@ -17,7 +17,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: microsoft/DevSkim-Action@v1
-      - uses: github/codeql-action/upload-sarif@v1
         with:
-          sarif_file: devskim-results.sarif
+          output-filename: devskim-results.sarif
+          output-directory: security
+      #- uses: github/codeql-action/upload-sarif@v1
+        #with:
+          #sarif_file: devskim-results.sarif
       # Steps represent a sequence of tasks that will be executed as part of the job
