@@ -1,7 +1,8 @@
 name: Code Quality chk
 
 # This is a basic workflow to help you get started with Actions
-
+env:
+  WORKFOLDER: $GITHUB_WORKSPACE
 # Controls when the action will run. 
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
@@ -20,11 +21,7 @@ jobs:
         with:
           output-filename: devskim-results.sarif
           output-directory: security
-      
-      - name: Set Env
-        env:
-          WORKFOLDER: $GITHUB_WORKSPACE
-          
+
       - name: Upload File
         run: |
           cd '${{ env.WORKFOLDER }}/security'
