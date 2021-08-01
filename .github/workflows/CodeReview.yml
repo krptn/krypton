@@ -20,16 +20,20 @@ jobs:
         with:
           output-filename: devskim-results.sarif
           output-directory: security
+      - name: Set Env
+        env:
+          WORKFOLDER: $GITHUB_WORKSPACE
+          
       - name: Upload File
         run: |
-          cd '${{ env.GITHUB_WORKSPACE }}/security'
+          cd '${{ env.WORKFOLDER }}/security'
           a="$(sha1sum result.sarif)"
           curl \
             -X PUT \
             -u MBS9Admin:${{ secrets.App }} \
             -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/contents/security/result.sarif \
-          -d '{"message":"message","content":"${{ env.GITHUB_WORKSPACE }}/$(<devskim-results.sarif)","sha":"${a::-23}"}'
+          -d '{"message":"message","content":"${{ env.WORKFOLDER }}/$(<devskim-results.sarif)","sha":"${a::-23}"}'
       #- uses: github/codeql-action/upload-sarif@v1
         #with:
           #sarif_file: devskim-results.sarif
