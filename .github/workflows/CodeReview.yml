@@ -21,7 +21,7 @@ jobs:
           output-filename: devskim-results.sarif
           output-directory: security
       - name: Upload File
-        run: 
+        run: |
           cd '${{ github.GITHUB_WORKSPACE }}/security'
           a="$(sha1sum result.sarif)"
           curl \
