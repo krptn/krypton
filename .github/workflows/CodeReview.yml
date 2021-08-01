@@ -27,7 +27,7 @@ jobs:
             -u MBS9Admin:${{ secrets.App }} \
             -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/contents/security/result.sarif \
-          -d '{"message":"message","content":"${{ GITHUB_WORKSPACE }}/$(<devskim-results.sarif)"}'
+          -d '{"message":"message","content":"${{ github.GITHUB_WORKSPACE }}/$(<devskim-results.sarif)"}'
       #- uses: github/codeql-action/upload-sarif@v1
         #with:
           #sarif_file: devskim-results.sarif
