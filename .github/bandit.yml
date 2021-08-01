@@ -1,0 +1,31 @@
+name: Stale
+
+# This is a basic workflow to help you get started with Actions
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push or pull request events but only for the master branch
+    schedule:
+      - cron: '1 9 * * 1'
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Runs a set of commands using the runners shell
+      - name: Close Stale Issues
+        uses: actions/stale@v4.0.0
+        with:
+          # Token for the repository. Can be passed in using `{{ secrets.GITHUB_TOKEN }}`.
+          repo-token: ${{secrets.App}}  
+          stale-issue-message: Closing issue in 7 days, this is a stale issue.
+          stale-pr-message: Closing PR in 7 days, this is a stale issue.
+          close-issue-message: Closed due to inactivity.
+          close-pr-message: Closed due to inactivity.
+          close-pr-label: Closed on stale
+          close-issue-label: Closed on stale
+  
