@@ -24,7 +24,7 @@ jobs:
           a="$(jq .sha result.json)"
           echo 'sha is '$a
           h="$(echo "$(<devskim-results.sarif)" | sed 's/"/\\"/g')"
-          result='{"message":"message","content":"'$h'","sha":"'$a'"}'
+          result='{"message":"message","content":'$h',"sha":"'$a'"}'
           echo 'result is '$result
           curl \
             -X PUT \
