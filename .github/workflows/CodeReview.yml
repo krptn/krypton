@@ -22,7 +22,7 @@ jobs:
           output-directory: security
       - name: Upload File
         run: |
-          cd ${{ github.GITHUB_WORKSPACE }}/security
+          cd "${{ github.GITHUB_WORKSPACE }}/security"
           a="$(sha1sum result.sarif)"
           curl \
             -X PUT \
