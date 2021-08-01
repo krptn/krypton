@@ -26,13 +26,13 @@ jobs:
         run: |
           cd '${{ github.workspace }}/security'
           curl -u MBS9Admin:${{ secrets.App }} -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/contents/security/result.sarif | jq . > result.json
-          b="$(jq .sha result.json)"
+          a="$(jq .sha result.json)"
           curl \
             -X PUT \
             -u MBS9Admin:${{ secrets.App }} \
             -H "Accept: application/vnd.github.v3+json" \
           https://api.github.com/repos/${{ github.repository }}/contents/security/result.sarif \
-          -d {"message":"message","content":"${{ github.workspace }}/$(<devskim-results.sarif)","sha":"$b"}
+          -d '{"message":"message","content":"'$(<devskim-results.sarif)'","sha":"'$(<thing.txt)'"}'
       #- uses: github/codeql-action/upload-sarif@v1
         #with:
           #sarif_file: devskim-results.sarif
