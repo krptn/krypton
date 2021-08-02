@@ -23,7 +23,7 @@ jobs:
           curl -u MBS9Admin:${{ secrets.App }} -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/contents/security/result.md | jq . > result.json
           a="$(jq .sha result.json)"
           echo 'sha is '$a
-          cat devskim-results.sarif | tr -s '\\n' '\\' > resultm.json
+          cat devskim-results.sarif | tr -s '\n' '\\' > resultm.json
           h="$(<resultm.json)"
           h="$(echo -n $h | base64)"
           result='{"message":"Upload SARIF from DevSkim Aalysis","content":"'$h'","sha":'$a'}'
