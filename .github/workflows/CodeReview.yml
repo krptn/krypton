@@ -27,7 +27,7 @@ jobs:
           result='{"message":"Upload SARIF from DevSkim Aalysis","content":"'$h'","sha":'$a'}'
           echo "result is ${result}"
           echo "${result}" > resultm.json
-          echo "$(tr -d '\n' < resultm.json)" > resultm.json
+          echo "$(sed 's#\\n#\r\n#g' < resultm.json)" > resultm.json
           result="$(<resultm.json)"
           curl \
             -X PUT \
