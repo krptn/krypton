@@ -37,7 +37,7 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     a = NewStrBuilder(b+c+len(tagbuff.value))
     StrAdd(a,result,0)
     StrAdd(a,iv,b)
-    StrAdd(a,tagbuff,b+c) #Error on excecute - perhaps not
+    StrAdd(a,tagbuff,b+c)
     result = a.value
     return result
 
