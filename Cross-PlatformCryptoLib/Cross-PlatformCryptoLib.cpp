@@ -25,7 +25,8 @@ extern "C" {
 		*err = *err + 1;
 	}
 		DLLEXPORT int __cdecl AddToStrBuilder(char* buffer,char* content, int len) {
-			memcpy_s(buffer+len, strlen(content), content, strlen(content));
+			//memcpy_s(buffer+len,strlen(buffer)-len,content,strlen(content));
+			OPENSSL_strlcpy(buffer+len,content,strlen(content));
 			return 0;
 		}
 

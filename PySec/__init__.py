@@ -24,7 +24,7 @@ NewStrBuilder = ctypes.create_string_buffer
 
 def RestEncrypt(text, key, keydel = False,condel=False):
     buff = strbuff(text)
-    iv = ctypes.create_string_buffer(12)
+    iv = strbuff(12)
     kbuff=strbuff(key)
     tagbuff = strbuff(16)
     if keydel is True:
@@ -32,13 +32,19 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     if condel is True:
         ctypes.memset(id(text)+33,0,len(text)-1)
     result = Encrypt(buff, kbuff, iv, tagbuff)
+    print("Ctext:", result)
+    print("IV:", iv.value)
+    print("Tag:", tagbuff.value)
     b = len(result)
-    c = b+len(iv.value)
-    a = NewStrBuilder(b+c+len(tagbuff.value))
+    c = len(tagbuff)
+    a = NewStrBuilder(b+c+len(tagbuff.value)+4)
     StrAdd(a,result,0)
-    StrAdd(a,iv,b)
-    StrAdd(a,tagbuff,b+c)
+    StrAdd(a,tagbuff,b)
+    StrAdd(a,iv,c+b)
+    StrAdd(a,strbuff(str(c).encode("utf-8")),c+b)
+    StrAdd(a,strbuff(str(len(iv)).encode("utf-8")),c+b+2)
     result = a.value
+    print(result)
     return result
 
 Decrypt = a.AESDecrypt
@@ -46,10 +52,17 @@ Decrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_
 Decrypt.restype = ctypes.c_char_p
 
 def RestDecrypt(ctext, key, keydel = False):
-    cbuff = strbuff(ctext[:-12-16])
+    num = (ctext[-4:-2])
+    num2 = num.decode("utf-8")
+    tagpos = int((ctext[-4:-2]).decode("utf-8"))
+    ivpos = int(ctext[-2:].decode("utf-8"))
+    cbuff = strbuff(ctext[:-tagpos-ivpos])
     kbuff=strbuff(key)
-    iv = ctext[-12:]
-    tag = ctext[-12-16:-12]
+    iv = ctext[-ivpos:]
+    tag = ctext[-ivpos-tagpos:-ivpos]
+    print("IV:", iv)
+    print("Tag:", tag)
+    print("Ctext:", cbuff.value)
     if keydel is True:
         ctypes.memset(id(key)+33,0,len(key)-1)
     return Decrypt(iv,kbuff,cbuff,strbuff(tag))
