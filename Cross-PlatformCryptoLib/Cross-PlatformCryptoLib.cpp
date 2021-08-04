@@ -1,5 +1,5 @@
 ﻿// Cross-PlatformCryptoLib.cpp : Defines the entry point for the application.
-
+// -fdeclspec -cfguard" for ninja buildArgs
 #include "Cross-PlatformCryptoLib.h"
 #ifndef Win
 #define DLLEXPORT
