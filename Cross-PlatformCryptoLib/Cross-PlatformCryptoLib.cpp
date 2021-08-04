@@ -25,25 +25,40 @@ extern "C" {
 		*err = *err + 1;
 	}
 		DLLEXPORT int __cdecl AddToStrBuilder(char* buffer,char* content, int len) {
-			//memcpy_s(buffer+len,strlen(buffer)-len,content,strlen(content));
-			OPENSSL_strlcpy(buffer+len,content,strlen(content));
+			memcpy_s(buffer + len, strlen(content), content, strlen(content));
 			return 0;
 		}
 
-		DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* texta, unsigned char* key, char* ivbuff, char* tag) {
+		DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, char* ivbuff, char* tag) {
+			try{
+			/*
+			OSSL_PROVIDER *fips;
+			OSSL_PROVIDER *base;
+
+			fips = OSSL_PROVIDER_load(NULL, "fips");
+			if (fips == NULL) {
+			printf("Failed to load FIPS provider\n");
+			}
+			base = OSSL_PROVIDER_load(NULL, "base");
+			if (base == NULL) {
+			OSSL_PROVIDER_unload(fips);
+			printf("Failed to load base provider\n");
+			}
+			*/
 			int errcnt = 0;
-			int msglen = strlen((char*)texta);
+			int msglen = strlen((char*)text);
 			
 			int rem = 16 - remainder(msglen, 16);
+			/*
 			unsigned char* text = new unsigned char[msglen+(long long)rem];
 			memcpy_s(text, msglen, texta, msglen);
 			memset(text + msglen, 0, rem);
-			OPENSSL_cleanse(texta, strlen((char*)texta));
-			
+			OPENSSL_cleanse(texta,msglen);
+			*/
 			unsigned char iv[12];
 			RAND_bytes(iv, 12);
 			memcpy_s(ivbuff, 12, iv, 12);
-			unsigned char* out = new unsigned char[msglen+(long long)rem];
+			unsigned char* out = new unsigned char[msglen+(long long)rem+(long long)1];
 			/*
 			AES_KEY aes_key;
 			AES_set_encrypt_key(key, 256, &aes_key);
@@ -63,10 +78,9 @@ extern "C" {
 				handleErrors(&errcnt);
 			if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
 				handleErrors(&errcnt);
-
+			//EVP_CIPHER_CTX_set_padding(ctx, 0);
 			if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv))
 				handleErrors(&errcnt);
-
 			if (1 != EVP_EncryptUpdate(ctx, out, &len, text, msglen))
 				handleErrors(&errcnt);
 			ciphertext_len = len;
@@ -78,61 +92,97 @@ extern "C" {
 				handleErrors(&errcnt);
 			ciphertext_len += len;
 			EVP_CIPHER_CTX_free(ctx);
-
-			OPENSSL_cleanse((void*)text, sizeof((const char*)text));
-			OPENSSL_cleanse((void*)key, sizeof((const char*)key));
+			text[msglen] = '/0';
+			key[32] = '/0';
+			OPENSSL_cleanse((void*)text, strlen((const char*)text));
+			OPENSSL_cleanse((void*)key, strlen((const char*)key));
 			if (errcnt != 0) {
 				unsigned char error[] = "Error";
 				return error;
 			}
 			return out;
+			/*
+			OSSL_PROVIDER_unload(base);
+			OSSL_PROVIDER_unload(fips);
+			*/
+
+			}
+			catch (...) {
+				unsigned char error[] = "Non-Crypto error";
+				return error;
+			}
 		}
 
 		DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* iv, unsigned char* key, unsigned char* ctext, char* tag) {
-			int errcnt = 0;
-			int msglen = strlen((char*)ctext);
-			/*
-			unsigned char* ctext = new unsigned char[msglen];
-			memcpy(ctext, ctexta, msglen);
-			*/
-			unsigned char* out = new unsigned char[msglen];
-			/*
-			AES_KEY aes_key;
-			AES_cbc_encrypt(ctext, out, msglen + (long long)rem, &aes_key, iv, AES_DECRYPT);
-			*/
-			EVP_CIPHER_CTX* ctx;
-			int len;
-			int plaintext_len;
-			if (!(ctx = EVP_CIPHER_CTX_new()))
-				handleErrors(&errcnt);
-			if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
-				handleErrors(&errcnt);
-			if (!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv))
-				handleErrors(&errcnt);
-			if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
-				handleErrors(&errcnt);
-			if (1 != EVP_DecryptUpdate(ctx, out, &len, ctext, msglen))
-				handleErrors(&errcnt);
-			plaintext_len = len;
-			if (1 != EVP_DecryptFinal_ex(ctx, out + len, &len))
-				handleErrors(&errcnt);
-			plaintext_len += len;
-			int ret = EVP_DecryptFinal_ex(ctx, out + len, &len);
-			
-			EVP_CIPHER_CTX_free(ctx);
-			OPENSSL_cleanse((void*)ctext, sizeof((const char*)ctext));
-			OPENSSL_cleanse((void*)key, sizeof((const char*)key));
-			OPENSSL_cleanse(&iv, sizeof(iv));
+			try {
+				/*
+				OSSL_PROVIDER *fips;
+				OSSL_PROVIDER *base;
 
-			if (ret>0) {
-				unsigned char error[] = "Error";
+				fips = OSSL_PROVIDER_load(NULL, "fips");
+				if (fips == NULL) {
+				printf("Failed to load FIPS provider\n");
+				exit(EXIT_FAILURE);
+				}
+				base = OSSL_PROVIDER_load(NULL, "base");
+				if (base == NULL) {
+				OSSL_PROVIDER_unload(fips);
+				printf("Failed to load base provider\n");
+				exit(EXIT_FAILURE);
+				}
+				*/
+				int errcnt = 0;
+				int msglen = strlen((char*)ctext);
+				/*
+				unsigned char* ctext = new unsigned char[msglen];
+				memcpy(ctext, ctexta, msglen);
+				*/
+				unsigned char* out = new unsigned char[msglen];
+				/*
+				AES_KEY aes_key;
+				AES_cbc_encrypt(ctext, out, msglen + (long long)rem, &aes_key, iv, AES_DECRYPT);
+				*/
+				EVP_CIPHER_CTX* ctx;
+				int len;
+				int plaintext_len;
+				if (!(ctx = EVP_CIPHER_CTX_new()))
+					handleErrors(&errcnt);
+				if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
+					handleErrors(&errcnt);
+				if (!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv))
+					handleErrors(&errcnt);
+				if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
+					handleErrors(&errcnt);
+				if (1 != EVP_DecryptUpdate(ctx, out, &len, ctext, msglen))
+					handleErrors(&errcnt);
+				plaintext_len = len;
+				int ret = EVP_DecryptFinal_ex(ctx, out + len, &len);
+				plaintext_len += len;
+				//int ret = EVP_DecryptFinal_ex(ctx, out + len, &len);
+
+				EVP_CIPHER_CTX_free(ctx);
+				OPENSSL_cleanse((void*)ctext, sizeof((const char*)ctext));
+				OPENSSL_cleanse((void*)key, sizeof((const char*)key));
+				OPENSSL_cleanse(&iv, sizeof(iv));
+				
+				if (!(ret >= 0)) {
+					unsigned char error[] = "Integrity Violation";
+					return error;
+				}
+				
+				if (errcnt > 0) {
+					return (unsigned char*)ERR_error_string(ERR_get_error(), NULL);
+				}
+				/*
+				OSSL_PROVIDER_unload(base);
+				OSSL_PROVIDER_unload(fips);
+				*/
+				return out;
+			}
+			catch (...) {
+				unsigned char error[] = "Non-Crypto error";
 				return error;
 			}
-			if (errcnt > 0) {
-				unsigned char error[] = "Error";
-				return error;
-			}
-			return out;
 		}
 	
 }
@@ -161,6 +211,7 @@ namespace Cpp {
 }
 */
 DLLEXPORT int __cdecl Init() {
+	//EVP_set_default_properties(NULL, "fips=yes");
 	EVP_add_cipher(EVP_aes_256_gcm());
 	if (FIPS_mode_set(2) == 0) {
 		return 0;
