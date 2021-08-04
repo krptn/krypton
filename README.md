@@ -1,4 +1,5 @@
-![DevSkim Analysis](https://github.com/mbs9org/PySec/actions/workflows/CodeReview.yml/badge.svg)
+![DevSkim Analysis](https://github.com/mbs9org/PySec/actions/workflows/CodeReview.yml/badge.svg) -> see security result.sarif for JSON representation (analysis by https://github.com/marketplace/actions/devskim). 
+
 # PySec
 - Secure Server with Secure Authentication: The Zeros...
 - Secure Storage of Data
