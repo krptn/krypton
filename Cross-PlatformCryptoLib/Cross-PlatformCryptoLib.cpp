@@ -169,13 +169,9 @@ extern "C" {
 				OPENSSL_cleanse((void*)key, sizeof((const char*)key));
 				OPENSSL_cleanse(&iv, sizeof(iv));
 				
-				if (!(ret >= 0)) {
-					unsigned char error[] = "Error: Integrity Violation";
+				if ((!(ret >= 0))|| (errcnt > 0)) {
+					unsigned char error[] = "Error: Crypto-Error: Unable to decrypt data";
 					return error;
-				}
-				
-				if (errcnt > 0) {
-					return (unsigned char*)ERR_error_string(ERR_get_error(), NULL);
 				}
 				/*
 				OSSL_PROVIDER_unload(base);
@@ -184,7 +180,7 @@ extern "C" {
 				return out;
 			}
 			catch (...) {
-				unsigned char error[] = "Error: Non-Crypto error";
+				unsigned char error[] = "Error: Non-Crypto error (there is a bug in this software)";
 				return error;
 			}
 		}
