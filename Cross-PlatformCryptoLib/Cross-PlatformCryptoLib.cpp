@@ -31,6 +31,10 @@ extern "C" {
 
 		DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, char* ivbuff, char* tag) {
 			try{
+				if (strlen((char*)text) > 549755813632) {
+					unsigned char error[] = "Error: The data is too long";
+					return error;
+				}
 			/*
 			OSSL_PROVIDER *fips;
 			OSSL_PROVIDER *base;
@@ -97,7 +101,7 @@ extern "C" {
 			OPENSSL_cleanse((void*)text, strlen((const char*)text));
 			OPENSSL_cleanse((void*)key, strlen((const char*)key));
 			if (errcnt != 0) {
-				unsigned char error[] = "Error";
+				unsigned char error[] = "Error: Crypto Error";
 				return error;
 			}
 			return out;
@@ -108,7 +112,7 @@ extern "C" {
 
 			}
 			catch (...) {
-				unsigned char error[] = "Non-Crypto error";
+				unsigned char error[] = "Error: Non-Crypto error";
 				return error;
 			}
 		}
@@ -166,7 +170,7 @@ extern "C" {
 				OPENSSL_cleanse(&iv, sizeof(iv));
 				
 				if (!(ret >= 0)) {
-					unsigned char error[] = "Integrity Violation";
+					unsigned char error[] = "Error: Integrity Violation";
 					return error;
 				}
 				
@@ -180,7 +184,7 @@ extern "C" {
 				return out;
 			}
 			catch (...) {
-				unsigned char error[] = "Non-Crypto error";
+				unsigned char error[] = "Error: Non-Crypto error";
 				return error;
 			}
 		}
