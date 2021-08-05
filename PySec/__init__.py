@@ -2,11 +2,11 @@
 #from PySec import decorators
 import hashlib
 import sys
-import sys
 import ctypes
 import os
 import re
 from functools import reduce
+import base64
 #import PySec
 DEBUG = True
 if sys.platform == "win32" and DEBUG:
@@ -19,7 +19,7 @@ else:
     a = ctypes.cdll.LoadLibrary(r"Cross-PlatformCryptoLib\out\build\Linux-Clang-Release\Cross-PlatformCryptoLib.dll")
 
 Encrypt = a.AESEncrypt
-Encrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p,ctypes.c_char_p]
+Encrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p,ctypes.c_char_p, ctypes.c_bool]
 Encrypt.restype = ctypes.c_char_p
 strbuff = ctypes.create_string_buffer
 NewStrBuilder = ctypes.create_string_buffer
@@ -30,10 +30,10 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     kbuff=strbuff(key)
     tagbuff = strbuff(16)
     if keydel is True:
-        ctypes.memset(id(key)+33,0,len(key)-1)
+        ctypes.memset(id(key)+32,0,len(key))
     if condel is True:
-        ctypes.memset(id(text)+33,0,len(text)-1)
-    result = Encrypt(buff, kbuff, iv, tagbuff)
+        ctypes.memset(id(text)+32,0,len(text))
+    result = Encrypt(buff, kbuff, iv, tagbuff, True)
     print("Ctext:", result)
     print("IV:", iv.value)
     print("Tag:", tagbuff.value)
@@ -44,15 +44,10 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     StrAdd(a,result,0)
     StrAdd(a,tagbuff,b)
     StrAdd(a,iv,c+b)
-    #StrAdd(a,strbuff(str(c).encode("utf-8")),c+b)
-    #StrAdd(a,strbuff(str(len(iv)).encode("utf-8")),c+b+2)
-    result = a.value
-   # result = result + b"C" + str(len(ctext)).encode("utf-8")
-    print(result)
-    return result
+    return a.value
 
 Decrypt = a.AESDecrypt
-Decrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p]
+Decrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_bool]
 Decrypt.restype = ctypes.c_char_p
 """
 def aftersym(l,i):
@@ -81,8 +76,8 @@ def RestDecrypt(ctext, key, keydel = False):
     print("Tag:", tag)
     print("Ctext:", cbuff.value)
     if keydel is True:
-        ctypes.memset(id(key)+33,0,len(key)-1)
-    return Decrypt(iv,kbuff,cbuff,strbuff(tag))
+        ctypes.memset(id(key)+32,0,len(key))
+    return Decrypt(iv,kbuff,cbuff,strbuff(tag),True)
 
 __all__ = ["Basic","decorators"]
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']

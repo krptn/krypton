@@ -29,7 +29,7 @@ extern "C" {
 			return 0;
 		}
 
-		DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, char* ivbuff, char* tag) {
+		DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, char* ivbuff, char* tag, bool del) {
 			try{
 				if (strlen((char*)text) > 549755813632) {
 					unsigned char error[] = "Error: The data is too long";
@@ -95,11 +95,13 @@ extern "C" {
 			if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, tag))
 				handleErrors(&errcnt);
 			ciphertext_len += len;
+			if (del == true) {
+				OPENSSL_cleanse(key,strnlen((const char*)key,32));
+				OPENSSL_cleanse(text,msglen);
+			}
 			EVP_CIPHER_CTX_free(ctx);
 			text[msglen] = '/0';
 			key[32] = '/0';
-			OPENSSL_cleanse((void*)text, strlen((const char*)text));
-			OPENSSL_cleanse((void*)key, strlen((const char*)key));
 			if (errcnt != 0) {
 				unsigned char error[] = "Error: Crypto Error";
 				return error;
@@ -117,7 +119,7 @@ extern "C" {
 			}
 		}
 
-		DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* iv, unsigned char* key, unsigned char* ctext, char* tag) {
+		DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* iv, unsigned char* key, unsigned char* ctext, char* tag, bool del) {
 			try {
 				/*
 				OSSL_PROVIDER *fips;
@@ -162,13 +164,10 @@ extern "C" {
 				plaintext_len = len;
 				int ret = EVP_DecryptFinal_ex(ctx, out + len, &len);
 				plaintext_len += len;
-				//int ret = EVP_DecryptFinal_ex(ctx, out + len, &len);
-
+				if (del == true){
+					OPENSSL_cleanse(key,strnlen((const char*)key,32));
+				}
 				EVP_CIPHER_CTX_free(ctx);
-				OPENSSL_cleanse((void*)ctext, sizeof((const char*)ctext));
-				OPENSSL_cleanse((void*)key, sizeof((const char*)key));
-				OPENSSL_cleanse(&iv, sizeof(iv));
-				
 				if ((!(ret >= 0))|| (errcnt > 0)) {
 					unsigned char error[] = "Error: Crypto-Error: Unable to decrypt data";
 					return error;
@@ -177,10 +176,14 @@ extern "C" {
 				OSSL_PROVIDER_unload(base);
 				OSSL_PROVIDER_unload(fips);
 				*/
-				return out;
+				unsigned char* result = new unsigned char[strnlen((const char*)out,plaintext_len)];
+				memcpy_s(result, strnlen((const char*)out, plaintext_len),out, strnlen((const char*)out, plaintext_len));
+				OPENSSL_cleanse(out,msglen);
+				delete[] out;
+				return result;
 			}
 			catch (...) {
-				unsigned char error[] = "Error: Non-Crypto error (there is a bug in this software)";
+				unsigned char error[] = "Error: Non-Crypto error";
 				return error;
 			}
 		}
@@ -217,4 +220,4 @@ DLLEXPORT int __cdecl Init() {
 		return 0;
 	}
 	return 1;
-}
+};
