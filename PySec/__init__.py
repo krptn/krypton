@@ -45,11 +45,11 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     StrAdd(a,tagbuff,b)
     StrAdd(a,iv,c+b)
     num = bytearray("000000000000","utf-8")
-    thingy = str(len(result))
+    thingy = str(len(text))
     thing = memoryview(num)
     for i in range(len(thingy)):
         thing[i]=ord(thingy[i])
-    result = num + a.value
+    result = bytes(num) + a.value
     return result
 
 Decrypt = a.AESDecrypt
@@ -86,14 +86,12 @@ def RestDecrypt(ctext, key, keydel = False):
         ctypes.memset(id(key)+32,0,len(key))
     a = Decrypt(iv,kbuff,cbuff,strbuff(tag),True)
     result = a[:lena]
-    ctypes.memset(id(a)+32,0,len(a))
+    #ctypes.memset(id(a)+32,0,len(a))
     return result
 
 __all__ = ["Basic","decorators"]
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
 search = 9
-aes = None
-deaes = None
 def getUser():
     return b"not connected to cloud"
 
