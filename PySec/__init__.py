@@ -34,13 +34,14 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     if condel is True:
         ctypes.memset(id(text)+32,0,len(text))
     result = Encrypt(buff, kbuff, iv, tagbuff, True)
+    """
     print("Ctext:", result)
     print("IV:", iv.value)
     print("Tag:", tagbuff.value)
     b = len(result)
     ctext = result
     c = len(tagbuff)
-    a = NewStrBuilder(b+c+len(tagbuff.value))
+    a = NewStrBuilder(b+c+len(iv.value))
     StrAdd(a,result,0)
     StrAdd(a,tagbuff,b)
     StrAdd(a,iv,c+b)
@@ -51,6 +52,7 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     for i in range(len(thingy)):
         thing[offset+i]=ord(thingy[i])
     result = bytes(num) + a.value
+    """
     return result
 
 Decrypt = a.AESDecrypt

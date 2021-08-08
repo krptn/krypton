@@ -106,12 +106,33 @@ extern "C" {
 				unsigned char error[] = "Error: Crypto Error";
 				return error;
 			}
-			return out;
+			unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)12];
+			AddToStrBuilder((char*)result, (char*)out,12);
+			AddToStrBuilder((char*)result, tag,12+ciphertext_len);
+			AddToStrBuilder((char*)result, (char*)iv, 12 + ciphertext_len+16);
+			int i = 0;
+			int u = 0;
+			char num[12];
+			int msglena = msglen;
+			int h = 0;
+			while (msglena > 0)
+			{
+				msglena = msglena / 10;
+				h++;
+			}
+			for (u; u < h;++u) {
+				num[11-i] = '0'+ *(&msglen + u);
+			}
+			memset(num,48,(long long)12-h);
+			for (i; i < 12; ++i) {
+				result[i] = num[i];
+			}
 			/*
 			OSSL_PROVIDER_unload(base);
 			OSSL_PROVIDER_unload(fips);
 			*/
-
+			delete[] out;
+			return result;
 			}
 			catch (...) {
 				unsigned char error[] = "Error: Non-Crypto error";
