@@ -47,8 +47,9 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     num = bytearray("000000000000","utf-8")
     thingy = str(len(text))
     thing = memoryview(num)
+    offset = 12-len(thingy)
     for i in range(len(thingy)):
-        thing[i]=ord(thingy[i])
+        thing[offset+i]=ord(thingy[i])
     result = bytes(num) + a.value
     return result
 
