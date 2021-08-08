@@ -44,7 +44,13 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     StrAdd(a,result,0)
     StrAdd(a,tagbuff,b)
     StrAdd(a,iv,c+b)
-    return a.value
+    num = bytearray("000000000000","utf-8")
+    thingy = str(len(result))
+    thing = memoryview(num)
+    for i in range(len(thingy)):
+        thing[i]=ord(thingy[i])
+    result = num + a.value
+    return result
 
 Decrypt = a.AESDecrypt
 Decrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_bool]
@@ -68,7 +74,8 @@ def RestDecrypt(ctext, key, keydel = False):
     #num2 = num.decode("utf-8")
     #tagpos = int((ctext[:]))
     #ivpos = int(ctext[-2:].decode("utf-8"))
-    cbuff = strbuff(ctext[:-16-12])
+    lena = int(ctext[:12])
+    cbuff = strbuff(ctext[12:-16-12])
     kbuff=strbuff(key)
     iv = ctext[-12:]
     tag = ctext[-12-16:-12]
@@ -77,7 +84,10 @@ def RestDecrypt(ctext, key, keydel = False):
     print("Ctext:", cbuff.value)
     if keydel is True:
         ctypes.memset(id(key)+32,0,len(key))
-    return Decrypt(iv,kbuff,cbuff,strbuff(tag),True)
+    a = Decrypt(iv,kbuff,cbuff,strbuff(tag),True)
+    result = a[:lena]
+    ctypes.memset(id(a)+32,0,len(a))
+    return result
 
 __all__ = ["Basic","decorators"]
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
