@@ -230,7 +230,11 @@ extern "C" {
 //Libs for C++ code
 namespace Cpp {
 	std::string EncryptAES(std::string textb, std::string keyb) {
-		unsigned char* a = AESEncrypt((unsigned char*)textb.c_str(), (unsigned char*)keyb.c_str(),true);
+		unsigned char* text = (unsigned char*)textb.c_str();
+		unsigned char* key = (unsigned char*)keyb.c_str();
+		unsigned char* a = AESEncrypt(text, key, true);
+		delete[] key;
+		delete[] text;
 		auto result = std::string((char*)a);
 		delete[] a;
 		return result;
@@ -238,7 +242,11 @@ namespace Cpp {
 
 
 	std::string DecryptAES(std::string key, std::string ctext) {
-		unsigned char* a = AESDecrypt((unsigned char*)key.c_str(), (unsigned char*)ctext.c_str(),true);  //We believe it is unecesary to delete arguments passed inside functions as it is passed as reference
+		unsigned char* keyc = (unsigned char*)key.c_str();
+		unsigned char* ctextc = (unsigned char*)ctext.c_str();
+		unsigned char* a = AESDecrypt(keyc, ctextc,true);
+		delete[] keyc;
+		delete[] ctextc;
 		std::string result = std::string((char*)a);
 		OPENSSL_cleanse(a,strnlen((const char*)a, 549755813632));
 		delete[] a;
