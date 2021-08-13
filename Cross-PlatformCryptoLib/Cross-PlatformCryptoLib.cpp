@@ -108,7 +108,7 @@ extern "C" {
 			unsigned char error[] = "Error: Crypto Error";
 			return error;
 		}
-		unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)12];
+		unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)12+(long long)1];
 		AddToStrBuilder((char*)result, (char*)out,12);
 		AddToStrBuilder((char*)result, (char*)&tag,12+ciphertext_len);
 		AddToStrBuilder((char*)result, (char*)&iv, 12 + ciphertext_len+16);
@@ -130,6 +130,7 @@ extern "C" {
 		OSSL_PROVIDER_unload(fips);
 		*/
 		delete[] out;
+		result[ciphertext_len + (long long)16 + (long long)12 + (long long)12] = '/0';
 		return result;
 		}
 		catch (...) {
@@ -157,6 +158,7 @@ extern "C" {
 			}
 			*/
 			int errcnt = 0;
+			int leny = strlen((char*)ctext);
 			int msglen = strlen((char*)ctext) -12-12-16;
 			int lena = 0;
 			for (int i = 0; i < 12; ++i) {

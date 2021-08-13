@@ -1,7 +1,7 @@
-from PySec import RestDecrypt,RestEncrypt
+from PySec import Encrypt, Decrypt
 import os
 input("Go")
 key = os.urandom(32)
 text = b"Hello!"
 print("Text: ",text)
-print(RestDecrypt(RestEncrypt(text,key),key))
+print(Decrypt(Encrypt(text,key, True),key,True))

@@ -18,12 +18,14 @@ elif sys.platform != "win32" and DEBUG:
 else:
     a = ctypes.cdll.LoadLibrary(r"Cross-PlatformCryptoLib\out\build\Linux-Clang-Release\Cross-PlatformCryptoLib.dll")
 
+
 Encrypt = a.AESEncrypt
-Encrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p,ctypes.c_char_p, ctypes.c_bool]
-Encrypt.restype = ctypes.c_char_p
+Encrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_bool]
+Encrypt.restype = ctypes.POINTER(ctypes.c_char)
 strbuff = ctypes.create_string_buffer
 NewStrBuilder = ctypes.create_string_buffer
 
+"""
 def RestEncrypt(text, key, keydel = False,condel=False):
     buff = strbuff(text)
     iv = strbuff(12)
@@ -34,7 +36,7 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     if condel is True:
         ctypes.memset(id(text)+32,0,len(text))
     result = Encrypt(buff, kbuff, iv, tagbuff, True)
-    """
+ 
     print("Ctext:", result)
     print("IV:", iv.value)
     print("Tag:", tagbuff.value)
@@ -52,11 +54,11 @@ def RestEncrypt(text, key, keydel = False,condel=False):
     for i in range(len(thingy)):
         thing[offset+i]=ord(thingy[i])
     result = bytes(num) + a.value
-    """
+    
     return result
-
+"""
 Decrypt = a.AESDecrypt
-Decrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_bool]
+Decrypt.argtypes = [ctypes.POINTER(ctypes.c_char), ctypes.c_char_p, ctypes.c_bool]
 Decrypt.restype = ctypes.c_char_p
 """
 def aftersym(l,i):
@@ -71,7 +73,7 @@ def beforsym(l,i):
     elif l[0] is True:
         l.append(chr(i).encode("utf-8"))
     return l
-"""
+
 def RestDecrypt(ctext, key, keydel = False):
     #num = (ctext[-4:-2])
     #num2 = num.decode("utf-8")
@@ -90,7 +92,10 @@ def RestDecrypt(ctext, key, keydel = False):
     a = Decrypt(iv,kbuff,cbuff,strbuff(tag),True)
     result = a[:lena]
     #ctypes.memset(id(a)+32,0,len(a))
-    return result
+    return Decrypt(key,ctext,True)
+        """
+        
+RestDecrypt = Decrypt
 
 __all__ = ["Basic","decorators"]
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
