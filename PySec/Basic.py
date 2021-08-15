@@ -1,3 +1,4 @@
+from typing import Iterable
 from PySec.PyToCSharp import Adrr
 import hashlib
 import sqlite3
@@ -8,14 +9,14 @@ import os
 import ctypes
 import PySec
 import sys
-from PySec import RestDecrypt, RestEncrypt, StrAdd
+from PySec import RestDecrypt, RestEncrypt, StrBuilder
 ## Will embrace in proper mem protection using the CppDotNet crypto and deleting mem content e.g:memoryview
 
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.
 
-def isBaseNameAvailable(self,name):
+def isBaseNameAvailable(self,name:bytes)->bool:
     conn = sqlite3.connect(PySec.key)
     c = conn.cursor()
     falsey = False
@@ -27,35 +28,36 @@ def isBaseNameAvailable(self,name):
     else:
         return True
 
-class antiExploit():
-    @staticmethod
-    def antiSQLi(name, info=True):
+def antiExploit():
+    def antiSQLi(name:Iterable, info:bool=True)->bytes:
         #Santizes and de-santizes inputs before constructing sql cmds to avoid injections
-
-        if info is True:
-            a = PySec.NewStrBuilder(len(name)*4+3)
-            StrAdd(a,b'"')
+        if info:
+            a = StrBuilder(len(name)*4+3)
+            a.StringAdd(b'"')
             for ch in name:
-                StrAdd(a,str(ord(ch))+"/")
-            result = a.value[:-1]
+                a.StringAdd(str(ord(ch))+"/")
+            result = a.StrValue[:-1]
             result+='"'
+            a.Clear()
             ctypes.memset(Adrr(a),0,90)
-        elif info is False:
-            a = PySec.NewStrBuilder(round((len(name)-3)/4))
-            StrAdd(a,b'"')
-            name = name[1:]
-            name=name[:-1]
+        elif not info:
+            a = StrBuilder(round((len(name)-3)/4))
+            a.StringAdd(b'"')
+            nameb = name[1:]
+            zeromem(name)
+            name=nameb[:-1]
+            zeromem(nameb)
             t = name.split("/")
             for i in t:
-                StrAdd(a,chr(int(i)))
+                a.StringAdd(chr(int(i)))
+            result = a.StrValue
+            a.Clear()
         else:
             raise TypeError("Must be type str or type int")
         return result
 
-    @staticmethod
-    def zeromem(obj):
+    def zeromem(obj:Iterable)->None:
         ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
-        del obj
 
 
 class kms():
@@ -64,7 +66,7 @@ class kms():
         self.key = key
     def hsmDecipher(self):
         return self.key
-    def __init__(self, base="defaultBase",tk=Tk(), trust=None, kmsport=None,kmsPath=None, trustKey=None):
+    def __init__(self, base="defaultBase",tk=Tk(), trust:bool=None, kmsport:bool=None,trustKey:bytes=None)->None:
         key = os.urandom(32)
         self.base = base
         self.root = tk
@@ -100,7 +102,7 @@ class kms():
             else:
                 self.key = PySec.RestEncrypt(key,trustKey,True)
 
-    def pin(self, rebase=False, kc=None, base=True, trustKey=None):
+    def pin(self, rebase:bool=False, kc:sqlite3.Connection=None, base:bool=True, trustKey:bytes=None) -> bytes:
         if base:
             base=self.base
         r = self.c.execute("SELECT key FROM keys WHERE db = ?", (self.base,))
@@ -123,7 +125,7 @@ class kms():
         else:
             raise ValueError("Options contain invalid values!")
 
-    def getTableKey(self, table):
+    def getTableKey(self, table : str) -> bytes:
         self.c.execute("SELECT key FROM "+antiExploit.antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
         r = self.c.fetchone()
         if r == None:
@@ -135,14 +137,14 @@ class kms():
         r = RestDecrypt(r,self.pin(),True)
         return r
 
-    def configTable(self,table):
+    def configTable(self,table : (str or bytes)) -> None:
         k = os.urandom(32)
         k = RestEncrypt(k,self.pin(),True,True)
         self.c.execute("INSERT INTO "+antiExploit.antiSQLi(self.base)+" VALUES (?, ?)", (table, self.key))
         self.keydb.commit()
-        return True
+        return None
 
-    def exportKeys(self, bases, tables, path, pwd=None):
+    def exportKeys(self, bases : str, tables : bytes, path : bytes, pwd : bytes):
 
         tmpkeystore = sqlite3.connect(PySec.key)
         tmpksys = sqlite3.connect(path)
@@ -194,26 +196,26 @@ class crypto(kms):
         super().__init__(base=baseKMS)
 
     #Ciphers
-    def crypt(self,what):
+    def crypt(self,what:bytes) -> bytes:
         rec = analyzeSecurity()
         table = rec.getTableRecommendation()
         data = RestEncrypt(what,self.getTableKey(table),True,True)
         return data
 
-    def decrypt(self,what):
+    def decrypt(self,what:bytes)->bytes:
         rec = analyzeSecurity()
         table = rec.getTableRecommendation()
         data = RestDecrypt(what,self.getTableKey(table),True,True)
         return data
 
     #CRUD
-    def secureCreate(self,what):
+    def secureCreate(self,what:bytes):
         pass
-    def sercureRead(self,what):
+    def sercureRead(self,what:bytes):
         pass
-    def secureUpdate(self,what):
+    def secureUpdate(self,what:bytes):
         pass
-    def sucureDelete(self,what):
+    def sucureDelete(self,what:bytes):
         pass
 
 class analyzeSecurity():

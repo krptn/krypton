@@ -11,12 +11,17 @@
 
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
-#include <string.h>
 #include <cmath>
 #include <string>
 #include <openssl/conf.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
+#include <sstream>
+
+struct NonNative {
+	unsigned char* data;
+	int len;
+};
 
 extern "C" {
 
@@ -108,29 +113,16 @@ extern "C" {
 			unsigned char error[] = "Error: Crypto Error";
 			return error;
 		}
-		unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)12+(long long)1];
-		AddToStrBuilder((char*)result, (char*)out,12);
-		AddToStrBuilder((char*)result, (char*)&tag,12+ciphertext_len);
-		AddToStrBuilder((char*)result, (char*)&iv, 12 + ciphertext_len+16);
-		int i = 0;
-		int u = 0;
-		int msglena = msglen;
-		int h = 0;
-		while (msglena > 0)
-		{
-			msglena = msglena / 10;
-			h++;
-		}
-		for (u; u < h;++u) {
-			result[11-i] = '0'+ *(&msglen + u);
-		}
-		memset(result,48,(long long)12-h);
+		unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
+		AddToStrBuilder((char*)result, (char*)out,0);
+		AddToStrBuilder((char*)result, (char*)&tag,ciphertext_len);
+		AddToStrBuilder((char*)result, (char*)&iv,ciphertext_len+16);
 		/*
 		OSSL_PROVIDER_unload(base);
 		OSSL_PROVIDER_unload(fips);
 		*/
 		delete[] out;
-		result[ciphertext_len + (long long)16 + (long long)12 + (long long)12] = '/0';
+		result[ciphertext_len + (long long)16 + (long long)12] = '/0';
 		return result;
 		}
 		catch (...) {
@@ -139,7 +131,7 @@ extern "C" {
 		}
 	}
 
-	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* key ,unsigned char* ctext, bool del) {
+	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext ,unsigned char* key, bool del) {
 		try {
 			/*
 			OSSL_PROVIDER *fips;
@@ -160,22 +152,19 @@ extern "C" {
 			int errcnt = 0;
 			int leny = strlen((char*)ctext);
 			int msglen = strlen((char*)ctext) -12-12-16;
+			/*
+			unsigned char num[12];
+			memcpy_s(&num, 12, ctext, 12);
 			int lena = 0;
-			for (int i = 0; i < 12; ++i) {
-				int len = (*(ctext-i+12)-'0');
-				if (i == 0) {
-					lena += len;
-				}
-				else {
-					lena += len * i * 10;
-				}
-			}
+			stringstream thing(num);
+			thing >> lena;
+			*/
 			unsigned char* msg = new unsigned char[msglen];
-			memcpy_s(msg, msglen, ctext + 12, msglen);
+			memcpy_s(msg, msglen, ctext, msglen);
 			unsigned char iv[12];
-			memcpy_s(iv, 12, ctext + msglen + 12+16-1, 12);
+			memcpy_s(iv, 12, ctext + msglen+16-1, 12);
 			unsigned char tag[16];
-			memcpy_s(tag, 16, ctext + 12 + msglen-1, 16);
+			memcpy_s(tag, 16, ctext + msglen-1, 16);
 			delete[] ctext;
 			/*
 			unsigned char* ctext = new unsigned char[msglen];
@@ -215,10 +204,11 @@ extern "C" {
 			OSSL_PROVIDER_unload(base);
 			OSSL_PROVIDER_unload(fips);
 			*/
-			unsigned char* result = new unsigned char[strnlen((const char*)out,plaintext_len)];
+			unsigned char* result = new unsigned char[plaintext_len+(long long)1];
 			memcpy_s(result, strnlen((const char*)out, plaintext_len),out, strnlen((const char*)out, plaintext_len));
 			OPENSSL_cleanse(out,msglen);
 			delete[] out;
+			result[plaintext_len] = '/0';
 			return result;
 		}
 		catch (...) {
@@ -226,7 +216,19 @@ extern "C" {
 			return error;
 		}
 	}
-	
+	DLLEXPORT NonNative __cdecl NonNativeAESEncrypt(unsigned char* ctext, unsigned char* key) {
+		unsigned char* ret = AESEncrypt(ctext, key, true);
+		NonNative result;
+		result.data = ret;
+		result.len = strlen((const char*)ret);
+		return result;
+	}
+	DLLEXPORT unsigned char* __cdecl NonNativeAESDecrypt(NonNative ctext, unsigned char* key) {
+		unsigned char* text = new unsigned char[ctext.len];
+		memcpy_s(text, ctext.len, ctext.data, ctext.len);
+		unsigned char* ret = AESDecrypt(text, key, true);
+		return ret;
+	}
 }
 
 //Libs for C++ code
@@ -256,7 +258,7 @@ namespace Cpp {
 	}
 }
 
-DLLEXPORT int __cdecl Init() {
+extern "C" DLLEXPORT int __cdecl Init() {
 	//EVP_set_default_properties(NULL, "fips=yes");
 	EVP_add_cipher(EVP_aes_256_gcm());
 	if (FIPS_mode_set(2) == 0) {
