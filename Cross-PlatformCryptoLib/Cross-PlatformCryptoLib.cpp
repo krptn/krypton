@@ -17,6 +17,8 @@
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <sstream>
+#include <memory>
+using namespace std;
 
 struct NonNative {
 	unsigned char* data;
@@ -24,7 +26,6 @@ struct NonNative {
 };
 
 extern "C" {
-
 	void handleErrors(int* err) {
 		//Add to log here
 		*err = *err + 1;
@@ -69,7 +70,8 @@ extern "C" {
 		unsigned char iv[12];
 		RAND_bytes(iv, 12);
 		memcpy_s(&ivbuff, 12, iv, 12);
-		unsigned char* out = new unsigned char[msglen+(long long)rem+(long long)1];
+		unique_ptr<unsigned char[]> out(new unsigned char[msglen + (long long)rem + (long long)1]);
+		//unsigned char* out = new unsigned char[msglen+(long long)rem+(long long)1];
 		/*
 		AES_KEY aes_key;
 		AES_set_encrypt_key(key, 256, &aes_key);
@@ -92,11 +94,11 @@ extern "C" {
 		//EVP_CIPHER_CTX_set_padding(ctx, 0);
 		if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv))
 			handleErrors(&errcnt);
-		if (1 != EVP_EncryptUpdate(ctx, out, &len, text, msglen))
+		if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, text, msglen))
 			handleErrors(&errcnt);
 		ciphertext_len = len;
 
-		if (1 != EVP_EncryptFinal_ex(ctx, out + len, &len))
+		if (1 != EVP_EncryptFinal_ex(ctx, out.get() + len, &len))
 			handleErrors(&errcnt);
 
 		if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, &tag))
@@ -111,20 +113,21 @@ extern "C" {
 		key[31] = '/0';
 		if (errcnt != 0) {
 			unsigned char error[] = "Error: Crypto Error";
-			delete[] out;
 			return error;
 		}
-		unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
-		AddToStrBuilder((char*)result, (char*)out,0);
-		AddToStrBuilder((char*)result, (char*)&tag,ciphertext_len);
-		AddToStrBuilder((char*)result, (char*)&iv,ciphertext_len+16);
+		unique_ptr<unsigned char[]> result(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1]);
+		//unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
+		AddToStrBuilder((char*)result.get(), (char*)&*out,0);
+		AddToStrBuilder((char*)result.get(), (char*)&tag,ciphertext_len);
+		AddToStrBuilder((char*)result.get(), (char*)&iv,ciphertext_len+16);
 		/*
 		OSSL_PROVIDER_unload(base);
 		OSSL_PROVIDER_unload(fips);
 		*/
-		delete[] out;
 		result[ciphertext_len + (long long)16 + (long long)12] = '/0';
-		return result;
+		unsigned char* final = new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1];
+		memcpy_s(final, ciphertext_len + (long long)16 + (long long)12 + (long long)1, result.get(), ciphertext_len + (long long)16 + (long long)12 + (long long)1);
+		return final;
 		}
 		catch (...) {
 			unsigned char error[] = "Error: Non-Crypto error";
@@ -160,8 +163,9 @@ extern "C" {
 			stringstream thing(num);
 			thing >> lena;
 			*/
-			unsigned char* msg = new unsigned char[msglen];
-			memcpy_s(msg, msglen, ctext, msglen);
+			unique_ptr<unsigned char[]> msg(new unsigned char[msglen]);
+			//unsigned char* msg = new unsigned char[msglen];
+			memcpy_s(msg.get(), msglen, ctext, msglen);
 			unsigned char iv[12];
 			memcpy_s(iv, 12, ctext + msglen+16-1, 12);
 			unsigned char tag[16];
@@ -171,7 +175,8 @@ extern "C" {
 			unsigned char* ctext = new unsigned char[msglen];
 			memcpy(ctext, ctexta, msglen);
 			*/
-			unsigned char* out = new unsigned char[msglen];
+			unique_ptr<unsigned char[]> out(new unsigned char[msglen]);
+			//unsigned char* out = new unsigned char[msglen];
 			/*
 			AES_KEY aes_key;
 			AES_cbc_encrypt(ctext, out, msglen + (long long)rem, &aes_key, iv, AES_DECRYPT);
@@ -187,11 +192,11 @@ extern "C" {
 				handleErrors(&errcnt);
 			if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
 				handleErrors(&errcnt);
-			if (1 != EVP_DecryptUpdate(ctx, out, &len, msg, msglen))
+			if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
 				handleErrors(&errcnt);
 			delete[] msg;
 			plaintext_len = len;
-			int ret = EVP_DecryptFinal_ex(ctx, out + len, &len);
+			int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
 			plaintext_len += len;
 			if (del == true){
 				OPENSSL_cleanse(key,strnlen((const char*)key,32));
@@ -199,7 +204,6 @@ extern "C" {
 			EVP_CIPHER_CTX_free(ctx);
 			if ((!(ret >= 0))|| (errcnt > 0)) {
 				unsigned char error[] = "Error: Crypto-Error: Unable to decrypt data";
-				delete[] out;
 				return error;
 			}
 			/*
@@ -207,9 +211,8 @@ extern "C" {
 			OSSL_PROVIDER_unload(fips);
 			*/
 			unsigned char* result = new unsigned char[plaintext_len+(long long)1];
-			memcpy_s(result, strnlen((const char*)out, plaintext_len),out, strnlen((const char*)out, plaintext_len));
-			OPENSSL_cleanse(out,msglen);
-			delete[] out;
+			memcpy_s(result, strnlen((const char*)out.get(), plaintext_len),out.get(), strnlen((const char*)out.get(), plaintext_len));
+			OPENSSL_cleanse(out.get(),msglen);
 			result[plaintext_len] = '/0';
 			return result;
 		}

@@ -13,20 +13,23 @@
 
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
-#include <string.h>
 #include <cmath>
 #include <string>
 #include <openssl/conf.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
+#include <sstream>
+#include <memory>
 
-// TODO: Reference additional headers your program requires here.
 extern "C" {
-	DLLEXPORT unsigned char* __cdecl CAESEncrypt(unsigned char* text, unsigned char* key, char* ivbuff);
-	DLLEXPORT unsigned char* __cdecl CAESDecrypt(unsigned char* iv, unsigned char* key, unsigned char* ctext);
-	DLLEXPORT int __cdecl Init();
+	DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len);
+	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del);
+	DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del);
 }
 
-std::initializer_list<std::string> AESEncrypt(char* textb, char* keyb);
-std::string AESDecrypt(char* iv, char* key, char* ctext);
+namespace Cpp {
+	std::string EncryptAES(std::string textb, std::string keyb);
+	std::string DecryptAES(std::string key, std::string ctext);
+}
 
+extern "C" DLLEXPORT int __cdecl Init();
