@@ -111,6 +111,7 @@ extern "C" {
 		key[31] = '/0';
 		if (errcnt != 0) {
 			unsigned char error[] = "Error: Crypto Error";
+			delete[] out;
 			return error;
 		}
 		unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
@@ -198,6 +199,7 @@ extern "C" {
 			EVP_CIPHER_CTX_free(ctx);
 			if ((!(ret >= 0))|| (errcnt > 0)) {
 				unsigned char error[] = "Error: Crypto-Error: Unable to decrypt data";
+				delete[] out;
 				return error;
 			}
 			/*
