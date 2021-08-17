@@ -7,7 +7,7 @@
 #ifdef Win
 #define DLLEXPORT __declspec(dllexport)
 #endif
-#define PY_SSIZE_T_CLEAN
+//#define PY_SSIZE_T_CLEAN
 
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
@@ -60,7 +60,7 @@ extern "C" {
 		int errcnt = 0;
 		int msglen = strlen((char*)text);
 			
-		int rem = 16 - remainder(msglen, 16);
+		int rem = 16 - (msglen % 16);
 		/*
 		unsigned char* text = new unsigned char[msglen+(long long)rem];
 		memcpy_s(text, msglen, texta, msglen);
@@ -72,18 +72,6 @@ extern "C" {
 		memcpy_s(&ivbuff, 12, iv, 12);
 		unique_ptr<unsigned char[]> out(new unsigned char[msglen + (long long)rem + (long long)1]);
 		//unsigned char* out = new unsigned char[msglen+(long long)rem+(long long)1];
-		/*
-		AES_KEY aes_key;
-		AES_set_encrypt_key(key, 256, &aes_key);
-		AES_cbc_encrypt(text, out, msglen + (long long)rem, &aes_key, iv, AES_ENCRYPT);
-
-		OPENSSL_cleanse((void*)text, sizeof((const char*)text));
-		OPENSSL_cleanse((void*)key, sizeof((const char*)key));
-		OPENSSL_cleanse(&aes_key, sizeof(aes_key));
-		delete[] text;
-
-		return out;
-		*/
 		EVP_CIPHER_CTX* ctx;
 		int len;
 		int ciphertext_len;
@@ -91,7 +79,6 @@ extern "C" {
 			handleErrors(&errcnt);
 		if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
 			handleErrors(&errcnt);
-		//EVP_CIPHER_CTX_set_padding(ctx, 0);
 		if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv))
 			handleErrors(&errcnt);
 		if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, text, msglen))
@@ -156,13 +143,6 @@ extern "C" {
 			int errcnt = 0;
 			int leny = strlen((char*)ctext);
 			int msglen = strlen((char*)ctext) -12-12-16;
-			/*
-			unsigned char num[12];
-			memcpy_s(&num, 12, ctext, 12);
-			int lena = 0;
-			stringstream thing(num);
-			thing >> lena;
-			*/
 			unique_ptr<unsigned char[]> msg(new unsigned char[msglen]);
 			//unsigned char* msg = new unsigned char[msglen];
 			memcpy_s(msg.get(), msglen, ctext, msglen);
@@ -177,10 +157,6 @@ extern "C" {
 			*/
 			unique_ptr<unsigned char[]> out(new unsigned char[msglen]);
 			//unsigned char* out = new unsigned char[msglen];
-			/*
-			AES_KEY aes_key;
-			AES_cbc_encrypt(ctext, out, msglen + (long long)rem, &aes_key, iv, AES_DECRYPT);
-			*/
 			EVP_CIPHER_CTX* ctx;
 			int len;
 			int plaintext_len;
