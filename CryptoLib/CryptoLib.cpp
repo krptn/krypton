@@ -104,6 +104,7 @@ extern "C" {
 			unique_ptr<unsigned char[]> result(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1]);
 			//unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
 			AddToStrBuilder((char*)result.get(), (char*)out.get(), 0);
+			delete[] out.release();
 			AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len);
 			AddToStrBuilder((char*)result.get(), (char*)&iv, ciphertext_len + 16);
 			/*
@@ -111,9 +112,7 @@ extern "C" {
 			OSSL_PROVIDER_unload(fips);
 			*/
 			result[ciphertext_len + (long long)16 + (long long)12] = '/0';
-			unsigned char* final = new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1];
-			memcpy_s(final, ciphertext_len + (long long)16 + (long long)12 + (long long)1, result.get(), ciphertext_len + (long long)16 + (long long)12 + (long long)1);
-			return final;
+			return result.release();
 		}
 		catch (...) {
 			unsigned char error[] = "Error: Non-Crypto error";
