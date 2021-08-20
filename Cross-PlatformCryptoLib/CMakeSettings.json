@@ -8,7 +8,7 @@
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "/ZI",
-      "buildCommandArgs": "",
+      "buildCommandArgs": "/O2 /GS /QIntel-jcc-erratum /analyze /sdl",
       "ctestCommandArgs": "",
       "variables": [
         {
@@ -86,7 +86,7 @@
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "",
+      "buildCommandArgs": "/O2 /GS /QIntel-jcc-erratum /analyze /sdl",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "variables": [
