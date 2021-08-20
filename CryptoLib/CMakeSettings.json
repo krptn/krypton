@@ -7,8 +7,8 @@
       "inheritEnvironments": [ "msvc_x64" ],
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeCommandArgs": "/ZI",
-      "buildCommandArgs": "/O2 /GS /QIntel-jcc-erratum /analyze /sdl",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "variables": [
         {
@@ -44,7 +44,7 @@
       "cmakeExecutable": "cmake",
       "configurationType": "Debug",
       "ctestCommandArgs": "",
-      "generator": "Ninja",
+      "generator": "Unix Makefiles",
       "inheritEnvironments": [ "linux_clang_x64" ],
       "name": "Linux-Clang-Debug",
       "remoteBuildRoot": "$HOME/.vs/${projectDirName}/${workspaceHash}/out/build/${name}",
@@ -86,7 +86,7 @@
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
-      "buildCommandArgs": "/O2 /GS /QIntel-jcc-erratum /analyze /sdl",
+      "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x64_x64" ],
       "variables": [
@@ -119,7 +119,7 @@
     },
     {
       "name": "Linux-Clang-Release",
-      "generator": "Ninja",
+      "generator": "Unix Makefiles",
       "configurationType": "RelWithDebInfo",
       "cmakeExecutable": "cmake",
       "remoteCopySourcesExclusionList": [ ".vs", ".git", "out" ],

@@ -6,13 +6,13 @@ import ctypes
 #import PySec
 DEBUG = True
 if sys.platform == "win32" and DEBUG:
-    a = ctypes.cdll.LoadLibrary(r"Cross-PlatformCryptoLib\out\build\x64-Debug\Debug/Cross-PlatformCryptoLib.dll")
+    a = ctypes.cdll.LoadLibrary(r"CryptoLib\out\build\x64-Debug\Debug/CryptoLib.dll")
 elif sys.platform == "win32" and not DEBUG:
-    a = ctypes.cdll.LoadLibrary(r"Cross-PlatformCryptoLib\out\build\x64-Release\RelWithDebInfo/Cross-PlatformCryptoLib.dll")
+    a = ctypes.cdll.LoadLibrary(r"CryptoLib\out\build\x64-Release\RelWithDebInfo/CryptoLib.dll")
 elif sys.platform != "win32" and DEBUG:
-    a = ctypes.cdll.LoadLibrary(r"Cross-PlatformCryptoLib\out\build\Linux-Clang-Debug\Cross-PlatformCryptoLib.so")
+    a = ctypes.cdll.LoadLibrary(r"CryptoLib\out\build\Linux-Clang-Debug\CryptoLib.so")
 else:
-    a = ctypes.cdll.LoadLibrary(r"Cross-PlatformCryptoLib\out\build\Linux-Clang-Release\Cross-PlatformCryptoLib.so")
+    a = ctypes.cdll.LoadLibrary(r"CryptoLib\out\build\Linux-Clang-Release\CryptoLib.so")
 
 class ret(ctypes.Structure):
     _fields_ = [("data", ctypes.POINTER(ctypes.c_ubyte)),
@@ -55,11 +55,11 @@ StrAdd = a.AddToStrBuilder
 StrAdd.argtypes = [ctypes.c_char_p,ctypes.c_char_p,ctypes.c_int]
 StrAdd.restype = ctypes.c_int
 class StrBuilder():
-    def __init__(self,len):
-        self.len = len
-        self.data = ctypes.create_string_buffer(len)
-    def StringAdd(self, data,len) -> None:
-        StrAdd(self.data,data,len)
+    def __init__(self,lenNum : int):
+        self.len = lenNum
+        self.data = ctypes.create_string_buffer(lenNum)
+    def StringAdd(self, data : bytes, lenNum : int) -> None:
+        StrAdd(self.data,data,lenNum)
     StrValue = lambda self: self.data.value
     def Clear(self):
         ctypes.memset(self.data,0,self.len)
