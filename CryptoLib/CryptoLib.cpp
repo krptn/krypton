@@ -11,7 +11,6 @@
 
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
-#include <cmath>
 #include <string>
 #include <openssl/conf.h>
 #include <openssl/evp.h>
@@ -153,7 +152,7 @@ extern "C" {
 			unsigned char* ctext = new unsigned char[msglen];
 			memcpy(ctext, ctexta, msglen);
 			*/
-			unique_ptr<unsigned char[]> out(new unsigned char[msglen]);
+			unique_ptr<unsigned char[]> out(new unsigned char[msglen+(long long)1]);
 			//unsigned char* out = new unsigned char[msglen];
 			EVP_CIPHER_CTX* ctx;
 			int len;
@@ -183,11 +182,8 @@ extern "C" {
 			OSSL_PROVIDER_unload(base);
 			OSSL_PROVIDER_unload(fips);
 			*/
-			unsigned char* result = new unsigned char[plaintext_len + (long long)1];
-			memcpy_s(result, strnlen((const char*)out.get(), plaintext_len), out.get(), strnlen((const char*)out.get(), plaintext_len));
-			OPENSSL_cleanse(out.get(), msglen);
-			result[plaintext_len] = '/0';
-			return result;
+			out[msglen] = '/0';
+			return out.release();
 		}
 		catch (...) {
 			unsigned char error[] = "Error: Non-Crypto error";
