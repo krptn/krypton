@@ -22,6 +22,7 @@ using namespace std;
 struct NonNative {
 	unsigned char* data;
 	int len;
+	bool str;
 };
 
 void handleErrors(int* err) {
@@ -201,10 +202,18 @@ extern "C" {
 		NonNative result;
 		result.data = ret;
 		result.len = strlen((const char*)ret);
+		result.str = true;
 		return result;
 	}
 	DLLEXPORT unsigned char* __cdecl NonNativeAESDecrypt(NonNative ctext, unsigned char* key) {
-		unsigned char* text = new unsigned char[ctext.len];
+		int lena;
+		if (ctext.str) {
+			lena = strlen((const char*)ctext.data);
+		}
+		else {
+			lena = ctext.len;
+		}
+		unsigned char* text = new unsigned char[lena];
 		memcpy_s(text, ctext.len, ctext.data, ctext.len);
 		unsigned char* ret = AESDecrypt(text, key, true);
 		return ret;
