@@ -1,6 +1,7 @@
 ﻿// Cross-PlatformCryptoLib.cpp : Defines the entry point for the application.
 // -fdeclspec -cfguard" for ninja buildArgs
 #include "CryptoLib.h"
+#define _CRT_SECURE_DEPRECATE_MEMORY
 #ifndef Win
 #define DLLEXPORT
 #endif
@@ -22,14 +23,24 @@ struct NonNative {
 	unsigned char* data;
 	int len;
 };
+void ArrDelete(unsigned char* arr) {
+	delete[] arr;
+}
 
 extern "C" {
 	void handleErrors(int* err) {
 		//Add to log here
 		*err = *err + 1;
 	}
-	DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len) {
-		memcpy_s(buffer + len, strlen(content), content, strlen(content));
+	DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int strl = 0) {
+		int lena;
+		if (strl == 0) {
+			lena = strlen(content);
+		}
+		else {
+			lena = strl;
+		}
+		memcpy_s(buffer + len, lena, content, lena);
 		return 0;
 	}
 
@@ -68,7 +79,8 @@ extern "C" {
 			unsigned char iv[12];
 			RAND_bytes(iv, 12);
 			memcpy_s(&ivbuff, 12, iv, 12);
-			unique_ptr<unsigned char[]> out(new unsigned char[msglen + (long long)rem + (long long)1]);
+			auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)rem + (long long)1]);
+			
 			//unsigned char* out = new unsigned char[msglen+(long long)rem+(long long)1];
 			EVP_CIPHER_CTX* ctx;
 			int len;
@@ -100,12 +112,11 @@ extern "C" {
 				unsigned char error[] = "Error: Crypto Error";
 				return error;
 			}
-			unique_ptr<unsigned char[]> result(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1]);
+			auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1]);
 			//unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
-			AddToStrBuilder((char*)result.get(), (char*)out.get(), 0);
-			delete[] out.release();
-			AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len);
-			AddToStrBuilder((char*)result.get(), (char*)&iv, ciphertext_len + 16);
+			AddToStrBuilder((char*)result.get(), (char*)out.get(), 0, ciphertext_len);
+			AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len,16);
+			AddToStrBuilder((char*)result.get(), (char*)&iv, ciphertext_len + 16,12);
 			/*
 			OSSL_PROVIDER_unload(base);
 			OSSL_PROVIDER_unload(fips);
@@ -140,19 +151,18 @@ extern "C" {
 			int errcnt = 0;
 			int leny = strlen((char*)ctext);
 			int msglen = strlen((char*)ctext) - 12 - 12 - 16;
-			unique_ptr<unsigned char[]> msg(new unsigned char[msglen]);
+			auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
 			//unsigned char* msg = new unsigned char[msglen];
 			memcpy_s(msg.get(), msglen, ctext, msglen);
 			unsigned char iv[12];
 			memcpy_s(iv, 12, ctext + msglen + 16 - 1, 12);
 			unsigned char tag[16];
 			memcpy_s(tag, 16, ctext + msglen - 1, 16);
-			delete[] ctext;
 			/*
 			unsigned char* ctext = new unsigned char[msglen];
 			memcpy(ctext, ctexta, msglen);
 			*/
-			unique_ptr<unsigned char[]> out(new unsigned char[msglen+(long long)1]);
+			auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen+(long long)1]);
 			//unsigned char* out = new unsigned char[msglen];
 			EVP_CIPHER_CTX* ctx;
 			int len;
