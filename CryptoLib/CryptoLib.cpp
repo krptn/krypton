@@ -23,22 +23,20 @@ struct NonNative {
 	unsigned char* data;
 	int len;
 };
-void ArrDelete(unsigned char* arr) {
-	delete[] arr;
+
+void handleErrors(int* err) {
+	//Add to log here
+	*err = *err + 1;
 }
 
 extern "C" {
-	void handleErrors(int* err) {
-		//Add to log here
-		*err = *err + 1;
-	}
-	DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int strl = 0) {
+	DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen = 0) {
 		int lena;
-		if (strl == 0) {
+		if (Optionalstrlen == 0) {
 			lena = strlen(content);
 		}
 		else {
-			lena = strl;
+			lena = Optionalstrlen;
 		}
 		memcpy_s(buffer + len, lena, content, lena);
 		return 0;
