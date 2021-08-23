@@ -78,7 +78,6 @@ extern "C" {
 			RAND_bytes(iv, 12);
 			memcpy_s(&ivbuff, 12, iv, 12);
 			auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)rem + (long long)1]);
-			
 			//unsigned char* out = new unsigned char[msglen+(long long)rem+(long long)1];
 			EVP_CIPHER_CTX* ctx;
 			int len;
@@ -104,8 +103,6 @@ extern "C" {
 				OPENSSL_cleanse(text, msglen);
 			}
 			EVP_CIPHER_CTX_free(ctx);
-			text[msglen] = '/0';
-			key[31] = '/0';
 			if (errcnt != 0) {
 				unsigned char error[] = "Error: Crypto Error";
 				return error;
@@ -119,7 +116,7 @@ extern "C" {
 			OSSL_PROVIDER_unload(base);
 			OSSL_PROVIDER_unload(fips);
 			*/
-			result[ciphertext_len + (long long)16 + (long long)12] = '/0';
+			result[ciphertext_len + (long long)16 + (long long)12] = '\0';
 			return result.release();
 		}
 		catch (...) {
@@ -148,7 +145,7 @@ extern "C" {
 			*/
 			int errcnt = 0;
 			int leny = strlen((char*)ctext);
-			int msglen = strlen((char*)ctext) - 12 - 12 - 16;
+			int msglen = strlen((char*)ctext) - 12 - 16;
 			auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
 			//unsigned char* msg = new unsigned char[msglen];
 			memcpy_s(msg.get(), msglen, ctext, msglen);
@@ -156,6 +153,7 @@ extern "C" {
 			memcpy_s(iv, 12, ctext + msglen + 16 - 1, 12);
 			unsigned char tag[16];
 			memcpy_s(tag, 16, ctext + msglen - 1, 16);
+
 			/*
 			unsigned char* ctext = new unsigned char[msglen];
 			memcpy(ctext, ctexta, msglen);
@@ -190,7 +188,7 @@ extern "C" {
 			OSSL_PROVIDER_unload(base);
 			OSSL_PROVIDER_unload(fips);
 			*/
-			out[msglen] = '/0';
+			out[msglen] = '\0';
 			return out.release();
 		}
 		catch (...) {
