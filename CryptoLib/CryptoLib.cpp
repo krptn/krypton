@@ -111,6 +111,7 @@ extern "C" {
 			auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1]);
 			//unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
 			AddToStrBuilder((char*)result.get(), (char*)out.get(), 0, ciphertext_len);
+			delete[] out.release();
 			AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len,16);
 			AddToStrBuilder((char*)result.get(), (char*)&iv, ciphertext_len + 16,12);
 			/*
@@ -175,6 +176,7 @@ extern "C" {
 			if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
 				handleErrors(&errcnt);
 			plaintext_len = len;
+			delete[] msg.release();
 			int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
 			plaintext_len += len;
 			if (del == true) {
