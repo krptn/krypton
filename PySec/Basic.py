@@ -182,10 +182,7 @@ class getKey():
         self.value=self.e.get()
         self.top.destroy()
         self.value = hashlib.sha256(self.value.encode('utf-8')).digest()
-        del self.e
-        del self.l
-        del self.b
-        del self.top
+        
 
 
 class crypto(kms):

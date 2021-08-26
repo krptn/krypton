@@ -58,12 +58,15 @@ StrAdd.argtypes = [ctypes.c_char_p,ctypes.c_char_p,ctypes.c_int]
 StrAdd.restype = ctypes.c_int
 class StrBuilder():
     def __init__(self,lenNum : int):
-        self.len = lenNum
+        self.len = lenNum +1
         self.data = ctypes.create_string_buffer(lenNum)
     def StringAdd(self, data : bytes, lenNum : int) -> None:
-        StrAdd(self.data,data,lenNum)
+        if self.len <= (len(data)+lenNum):
+            StrAdd(self.data,data,lenNum)
+        else:
+            raise ValueError("Data is longer than buffer size.")
     StrValue = lambda self: self.data.value
-    def Clear(self):
+    def Clear(self) -> None:
         ctypes.memset(self.data,0,self.len)
     def __del__(self):
         self.Clear()
