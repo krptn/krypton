@@ -152,9 +152,9 @@ extern "C" {
 			//unsigned char* msg = new unsigned char[msglen];
 			memcpy_s(msg.get(), msglen, ctext, msglen);
 			unsigned char iv[12];
-			memcpy_s(iv, 12, ctext + msglen + 16 - 1, 12);
+			memcpy_s(iv, 12, ctext + msglen + 16, 12);
 			unsigned char tag[16];
-			memcpy_s(tag, 16, ctext + msglen - 1, 16);
+			memcpy_s(tag, 16, ctext + msglen, 16);
 
 			/*
 			unsigned char* ctext = new unsigned char[msglen];
@@ -215,8 +215,9 @@ extern "C" {
 		else {
 			lena = ctext.len;
 		}
-		unsigned char* text = new unsigned char[lena];
-		memcpy_s(text, ctext.len, ctext.data, ctext.len);
+		unsigned char* text = new unsigned char[lena+(long long)1];
+		memcpy_s(text, lena, ctext.data, lena);
+		text[lena] = '\0';
 		unsigned char* ret = AESDecrypt(text, key, true);
 		return ret;
 	}
