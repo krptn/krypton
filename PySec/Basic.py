@@ -217,8 +217,8 @@ class crypto(kms):
 
 class analyzeSecurity():
     #This will analyze the security of the current installation - collect logs and other things
-    def __init__():
+    def __init__(self):
         pass
-    def getTableRecommendation():
+    def getTableRecommendation(self) -> str:
         return "Example - do not trust"
 
