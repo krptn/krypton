@@ -27,7 +27,8 @@ NewStrBuilder = ctypes.create_string_buffer
 
 def RestEncrypt(ctext : bytes, key : bytes) -> bytes:
     re = Encrypt(ctext, key)
-    s = ctypes.cast(re.data, ctypes.c_char_p).value[:re.len]
+    s = re.data[0:re.len]
+    #s = ctypes.cast(re.data, ctypes.c_char_p).raw[:re.len]
     print("Cipher text ",s)
     return s
 
@@ -36,10 +37,9 @@ Decrypt.argtypes = [ret, ctypes.c_char_p]
 Decrypt.restype = ctypes.c_char_p
 
 def RestDecrypt(ctext : bytes, key : bytes) -> bytes:
-    s = ctypes.cast(ctext, ctypes.POINTER(ctypes.c_ubyte))
     text = ret()
-    text.len=ctypes.c_int(len(ctext))
-    text.data=ctypes.cast(ctext, ctypes.POINTER(ctypes.c_ubyte))
+    text.len=len(ctext)
+    text.data=ctypes.cast((ctypes.c_ubyte * text.len)(*ctext) ,ctypes.POINTER(ctypes.c_ubyte))
     text.str=True
     re = Decrypt(text,key)
     return re

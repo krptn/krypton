@@ -87,6 +87,8 @@ extern "C" {
 				handleErrors(&errcnt);
 			if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
 				handleErrors(&errcnt);
+			if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
+				handleErrors(&errcnt);
 			if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv))
 				handleErrors(&errcnt);
 			if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, text, msglen))
@@ -169,13 +171,15 @@ extern "C" {
 				handleErrors(&errcnt);
 			if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
 				handleErrors(&errcnt);
-			if (!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv))
+			if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
 				handleErrors(&errcnt);
-			if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
+			if (!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv))
 				handleErrors(&errcnt);
 			if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
 				handleErrors(&errcnt);
 			plaintext_len = len;
+			if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
+				handleErrors(&errcnt);
 			delete[] msg.release();
 			int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
 			plaintext_len += len;
