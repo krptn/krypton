@@ -225,6 +225,22 @@ extern "C" {
 		unsigned char* ret = AESDecrypt(text, key, true);
 		return ret;
 	}
+	DLLEXPORT int test() {
+		unsigned char* key = new unsigned char[32];
+		RAND_bytes(key, 32);
+		const char* text = "Hello";
+		unsigned char* keyt = new unsigned char[32];
+		memcpy_s(keyt, 32, key, 32);
+		unsigned char* result = NonNativeAESDecrypt(NonNativeAESEncrypt((unsigned char*)text, key), keyt);
+		if ((const char*)result == text) {
+			delete[] result;
+			return 1;
+		}
+		else {
+			delete[] result;
+			return -1;
+		}
+	}
 }
 
 //Libs for C++ code
