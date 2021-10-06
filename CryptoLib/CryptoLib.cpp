@@ -129,7 +129,7 @@ extern "C" {
 		}
 	}
 
-	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del) {
+	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del, int* len) {
 		try {
 			/*
 			OSSL_PROVIDER *fips;
@@ -196,6 +196,7 @@ extern "C" {
 			OSSL_PROVIDER_unload(fips);
 			*/
 			out[msglen] = '\0';
+			len = msglen;
 			return out.release();
 		}
 		catch (...) {
@@ -222,23 +223,31 @@ extern "C" {
 		unsigned char* text = new unsigned char[lena+(long long)1];
 		memcpy_s(text, lena, ctext.data, lena);
 		text[lena] = '\0';
-		unsigned char* ret = AESDecrypt(text, key, true);
+		int len;
+		unsigned char* ret = AESDecrypt(text, key, true, &len);
+		ret[len] = '\0';
 		return ret;
 	}
-	DLLEXPORT int test() {
-		unsigned char* key = new unsigned char[32];
-		RAND_bytes(key, 32);
-		const char* text = "Hello";
-		unsigned char* keyt = new unsigned char[32];
-		memcpy_s(keyt, 32, key, 32);
-		unsigned char* result = NonNativeAESDecrypt(NonNativeAESEncrypt((unsigned char*)text, key), keyt);
-		if ((const char*)result == text) {
-			delete[] result;
+	DLLEXPORT int test(unsigned char* ctext, unsigned char* key) {
+		unsigned char* key_b = new unsigned char[32];
+		unsigned char* ctext_b = new unsigned char[strnlen((const char*)ctext, 10)];
+		unsigned char* ctext_c = new unsigned char[strnlen((const char*)ctext, 10)];
+		memcpy_s(key_b, 32, key, 32);
+		memcpy_s(ctext_b, strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
+		memcpy_s(ctext_c, strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
+		NonNative text_a = NonNativeAESEncrypt(ctext, key);
+		unsigned char* text_b = NonNativeAESDecrypt(text_a, key_b);
+		delete[] key_b;
+		delete[] ctext_b;
+		if (*text_b == *ctext_c) {
+			delete[] text_b;
+			delete[] ctext_c;
 			return 1;
 		}
 		else {
-			delete[] result;
-			return -1;
+			delete[] text_b;
+			delete[] ctext_c;
+			return 0;
 		}
 	}
 }
