@@ -44,7 +44,6 @@ extern "C" {
 	}
 
 	DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del) {
-		try {
 			if (strlen((char*)text) > 549755813632) {
 				unsigned char error[] = "Error: The data is too long";
 				return error;
@@ -110,27 +109,28 @@ extern "C" {
 				unsigned char error[] = "Error: Crypto Error";
 				return error;
 			}
-			auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1]);
+			auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1 + (long long)12]);
 			//unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
 			AddToStrBuilder((char*)result.get(), (char*)out.get(), 0, ciphertext_len);
 			delete[] out.release();
 			AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len,16);
 			AddToStrBuilder((char*)result.get(), (char*)&iv, ciphertext_len + 16,12);
+			unsigned char len_num[12];
+			string num = to_string(msglen);
+			int ler = num.length();
+			const char* num_len = num.c_str();
+			//Finsih writing the length to the 12 bytes at the end of the buffer! And read it at decryption!
+
 			/*
 			OSSL_PROVIDER_unload(base);
 			OSSL_PROVIDER_unload(fips);
 			*/
 			result[ciphertext_len + (long long)16 + (long long)12] = '\0';
+
 			return result.release();
-		}
-		catch (...) {
-			unsigned char error[] = "Error: Non-Crypto error";
-			return error;
-		}
 	}
 
-	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del, int* len) {
-		try {
+	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del, int* lenx) {
 			/*
 			OSSL_PROVIDER *fips;
 			OSSL_PROVIDER *base;
@@ -196,13 +196,8 @@ extern "C" {
 			OSSL_PROVIDER_unload(fips);
 			*/
 			out[msglen] = '\0';
-			len = msglen;
+			*lenx = msglen;
 			return out.release();
-		}
-		catch (...) {
-			unsigned char error[] = "Error: Non-Crypto error";
-			return error;
-		}
 	}
 	DLLEXPORT NonNative __cdecl NonNativeAESEncrypt(unsigned char* ctext, unsigned char* key) {
 		unsigned char* ret = AESEncrypt(ctext, key, true);
@@ -269,9 +264,11 @@ namespace Cpp {
 	std::string DecryptAES(std::string key, std::string ctext) {
 		unsigned char* keyc = (unsigned char*)key.c_str();
 		unsigned char* ctextc = (unsigned char*)ctext.c_str();
-		unsigned char* a = AESDecrypt(keyc, ctextc, true);
+		int len;
+		unsigned char* a = AESDecrypt(keyc, ctextc, true,&len);
 		delete[] keyc;
 		delete[] ctextc;
+		a[len] = '\0';
 		std::string result = std::string((char*)a);
 		OPENSSL_cleanse(a, strnlen((const char*)a, 549755813632));
 		delete[] a;

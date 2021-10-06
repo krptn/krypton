@@ -19,13 +19,11 @@
 #include <openssl/err.h>
 #include <memory>
 
-// TODO: Reference additional headers your program requires here.
-
 struct NonNative;
 
 extern "C" {
 	DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen);
-	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del);
+	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del, int* len);
 	DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del);
 }
 
