@@ -119,13 +119,14 @@ extern "C" {
 			string num = to_string(msglen);
 			int ler = num.length();
 			const char* num_len = num.c_str();
-			//Finsih writing the length to the 12 bytes at the end of the buffer! And read it at decryption!
+			AddToStrBuilder((char*)result.get(), (char*)num_len, ciphertext_len + 12 + 16+(12-ler), ler);
+			memset(result.get() + ciphertext_len + 12 + 16, '0', (12 - ler));
 
 			/*
 			OSSL_PROVIDER_unload(base);
 			OSSL_PROVIDER_unload(fips);
 			*/
-			result[ciphertext_len + (long long)16 + (long long)12] = '\0';
+			result[ciphertext_len + (long long)16 + (long long)12+(long long)12] = '\0';
 
 			return result.release();
 	}
@@ -147,6 +148,10 @@ extern "C" {
 			exit(EXIT_FAILURE);
 			}
 			*/
+		char len_str[12];
+		memcpy_s(len_str,12,ctext+(strnlen((char*)ctext, 549755813632)-12),12);
+		string str_lena = string(len_str);
+		int flen = stoi(str_lena);
 			int errcnt = 0;
 			int leny = strlen((char*)ctext);
 			int msglen = strlen((char*)ctext) - 12 - 16;
@@ -195,7 +200,7 @@ extern "C" {
 			OSSL_PROVIDER_unload(base);
 			OSSL_PROVIDER_unload(fips);
 			*/
-			out[msglen] = '\0';
+			out[flen]= '\0';
 			*lenx = msglen;
 			return out.release();
 	}
