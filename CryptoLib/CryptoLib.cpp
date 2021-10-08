@@ -65,7 +65,7 @@ extern "C" {
 			}
 			*/
 			int errcnt = 0;
-			int msglen = strlen((char*)text);
+			int msglen = strnlen((char*)text, 549755813632);
 
 			int rem = 16 - (msglen % 16);
 			/*
@@ -155,7 +155,7 @@ extern "C" {
 		int flen = stoi(str_lena);
 			int errcnt = 0;
 			int leny = strlen((char*)ctext);
-			int msglen = strlen((char*)ctext) - 12 - 16;
+			int msglen = strlen((char*)ctext) - 12 - 16-12;
 			auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
 			//unsigned char* msg = new unsigned char[msglen];
 			memcpy_s(msg.get(), msglen, ctext, msglen);
@@ -228,7 +228,7 @@ extern "C" {
 		text[lena] = '\0';
 		int len;
 		unsigned char* ret = AESDecrypt(text.get(), key, true, &len);
-		ret[len] = '\0';
+		//ret[len] = '\0';
 		return ret;
 	}
 
@@ -237,7 +237,7 @@ extern "C" {
 		auto ctext_b = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10)]);
 		auto ctext_c = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10)]);
 		memcpy_s(key_b.get(), 32, key, 32);
-		key_b[32] = 0;
+		key_b[32] = '\0';
 		memcpy_s(ctext_b.get(), strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
 		memcpy_s(ctext_c.get(), strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
 		NonNative text_a = NonNativeAESEncrypt(ctext, key);

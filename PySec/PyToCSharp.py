@@ -2,10 +2,16 @@ import ctypes
 from PySec import RestEncrypt, RestDecrypt, a
 from PySec import strbuff
 import os
+
 input("Go")
 
 key = os.urandom(32)
-text = b"Hello!"
+text = b"Hello"
+print("Text: ",text)
+print("Result, ",RestDecrypt(RestEncrypt(text,key),key))
+
+key = os.urandom(32)
+text = b"Hello"
 print("Text: ",text)
 print("Result, ",RestDecrypt(RestEncrypt(text,key),key))
 
@@ -17,6 +23,6 @@ def tester(ctext:bytes,key:bytes)->int:
     return s
 
 
-for i in range(11):
+for i in range(10):
     print(tester(b"Hello",os.urandom(32)))
 
