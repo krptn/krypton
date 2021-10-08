@@ -9,10 +9,10 @@ cmake_minimum_required (VERSION 3.8)
 project ("Cross-PlatformCryptoLib")
 if (MSVC AND (MSVC_VERSION GREATER 1900))
     message("Setting CONTROL FLOW GUARD") 
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /guard:cf /O2 /GS /QIntel-jcc-erratum /analyze /sdl")
-    SET(CMAKE_EXE_LINKER_FLAGS  "/guard:cf /DYNAMICBASE /O2 /GS /QIntel-jcc-erratum /analyze /sdl")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /guard:cf /O2 /GS /QIntel-jcc-erratum /analyze /sdl /MD")
+    SET(CMAKE_EXE_LINKER_FLAGS  "/guard:cf /DYNAMICBASE /O2 /GS /QIntel-jcc-erratum /analyze /sdl /MD")
     message("Setting QSPECTRE")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre ")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre /MD")
 endif()
 
 # Add source to this project's executable.

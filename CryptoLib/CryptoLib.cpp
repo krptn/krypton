@@ -205,6 +205,7 @@ extern "C" {
 			*lenx = flen;
 			return out.release();
 	}
+
 	DLLEXPORT NonNative __cdecl NonNativeAESEncrypt(unsigned char* ctext, unsigned char* key) {
 		unsigned char* ret = AESEncrypt(ctext, key, true);
 		NonNative result;
@@ -213,6 +214,7 @@ extern "C" {
 		result.str = true;
 		return result;
 	}
+
 	DLLEXPORT unsigned char* __cdecl NonNativeAESDecrypt(NonNative ctext, unsigned char* key) {
 		int lena;
 		if (ctext.str) {
@@ -221,34 +223,29 @@ extern "C" {
 		else {
 			lena = ctext.len;
 		}
-		unsigned char* text = new unsigned char[lena+(long long)1];
-		memcpy_s(text, lena, ctext.data, lena);
+		auto text = unique_ptr<unsigned char[]>(new unsigned char[lena+(long long)1]);
+		memcpy_s(text.get(), lena, ctext.data, lena);
 		text[lena] = '\0';
 		int len;
-		unsigned char* ret = AESDecrypt(text, key, true, &len);
+		unsigned char* ret = AESDecrypt(text.get(), key, true, &len);
 		ret[len] = '\0';
 		return ret;
 	}
+
 	DLLEXPORT int test(unsigned char* ctext, unsigned char* key) {
-		unsigned char* key_b = new unsigned char[33];
-		unsigned char* ctext_b = new unsigned char[strnlen((const char*)ctext, 10)];
-		unsigned char* ctext_c = new unsigned char[strnlen((const char*)ctext, 10)];
-		memcpy_s(key_b, 32, key, 32);
+		auto key_b = unique_ptr<unsigned char[]>(new unsigned char[33]);
+		auto ctext_b = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10)]);
+		auto ctext_c = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10)]);
+		memcpy_s(key_b.get(), 32, key, 32);
 		key_b[32] = 0;
-		memcpy_s(ctext_b, strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
-		memcpy_s(ctext_c, strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
+		memcpy_s(ctext_b.get(), strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
+		memcpy_s(ctext_c.get(), strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
 		NonNative text_a = NonNativeAESEncrypt(ctext, key);
-		unsigned char* text_b = NonNativeAESDecrypt(text_a, key_b);
-		delete[] key_b;
-		delete[] ctext_b;
-		if (*text_b == *ctext_c) {
-			delete[] text_b;
-			delete[] ctext_c;
+		unsigned char* text_b = NonNativeAESDecrypt(text_a, key_b.get());
+		if (*text_b == *ctext_c.get()) {
 			return 1;
 		}
 		else {
-			delete[] text_b;
-			delete[] ctext_c;
 			return 0;
 		}
 	}
