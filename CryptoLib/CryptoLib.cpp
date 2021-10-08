@@ -101,7 +101,7 @@ extern "C" {
 				handleErrors(&errcnt);
 			ciphertext_len += len;
 			if (del == true) {
-				OPENSSL_cleanse(key, strnlen((const char*)key, 32));
+				OPENSSL_cleanse(key, 32);
 				OPENSSL_cleanse(text, msglen);
 			}
 			EVP_CIPHER_CTX_free(ctx);
@@ -120,7 +120,7 @@ extern "C" {
 			int ler = num.length();
 			const char* num_len = num.c_str();
 			AddToStrBuilder((char*)result.get(), (char*)num_len, ciphertext_len + 12 + 16+(12-ler), ler);
-			memset(result.get() + ciphertext_len + 12 + 16, '0', (12 - ler));
+			memset(result.get() + ciphertext_len + 12 + 16, '0', ((long long)12 - ler));
 
 			/*
 			OSSL_PROVIDER_unload(base);
@@ -148,8 +148,9 @@ extern "C" {
 			exit(EXIT_FAILURE);
 			}
 			*/
-		char len_str[12];
+		char len_str[13];
 		memcpy_s(len_str,12,ctext+(strnlen((char*)ctext, 549755813632)-12),12);
+		len_str[12] = '\0';
 		string str_lena = string(len_str);
 		int flen = stoi(str_lena);
 			int errcnt = 0;
@@ -189,7 +190,7 @@ extern "C" {
 			int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
 			plaintext_len += len;
 			if (del == true) {
-				OPENSSL_cleanse(key, strnlen((const char*)key, 32));
+				OPENSSL_cleanse(key, 32);
 			}
 			EVP_CIPHER_CTX_free(ctx);
 			if ((!(ret >= 0)) || (errcnt > 0)) {
@@ -201,7 +202,7 @@ extern "C" {
 			OSSL_PROVIDER_unload(fips);
 			*/
 			out[flen]= '\0';
-			*lenx = msglen;
+			*lenx = flen;
 			return out.release();
 	}
 	DLLEXPORT NonNative __cdecl NonNativeAESEncrypt(unsigned char* ctext, unsigned char* key) {
@@ -229,10 +230,11 @@ extern "C" {
 		return ret;
 	}
 	DLLEXPORT int test(unsigned char* ctext, unsigned char* key) {
-		unsigned char* key_b = new unsigned char[32];
+		unsigned char* key_b = new unsigned char[33];
 		unsigned char* ctext_b = new unsigned char[strnlen((const char*)ctext, 10)];
 		unsigned char* ctext_c = new unsigned char[strnlen((const char*)ctext, 10)];
 		memcpy_s(key_b, 32, key, 32);
+		key_b[32] = 0;
 		memcpy_s(ctext_b, strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
 		memcpy_s(ctext_c, strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
 		NonNative text_a = NonNativeAESEncrypt(ctext, key);
