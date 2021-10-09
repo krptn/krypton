@@ -233,16 +233,19 @@ extern "C" {
 	}
 
 	DLLEXPORT int test(unsigned char* ctext, unsigned char* key) {
+		int len = strlen((const char*)ctext);
 		auto key_b = unique_ptr<unsigned char[]>(new unsigned char[33]);
-		auto ctext_b = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10)]);
-		auto ctext_c = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10)]);
+		auto ctext_b = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10)+(long long)1]);
+		ctext_b[len] = '\0';
+		auto ctext_c = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10) + (long long)1]);
+		ctext_c[len] = '\0';
 		memcpy_s(key_b.get(), 32, key, 32);
 		key_b[32] = '\0';
 		memcpy_s(ctext_b.get(), strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
 		memcpy_s(ctext_c.get(), strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
-		NonNative text_a = NonNativeAESEncrypt(ctext, key);
+		NonNative text_a = NonNativeAESEncrypt(ctext_b.get(), key);
 		unsigned char* text_b = NonNativeAESDecrypt(text_a, key_b.get());
-		if (*text_b == *ctext_c.get()) {
+		if (*text_b == *ctext) {
 			return 1;
 		}
 		else {

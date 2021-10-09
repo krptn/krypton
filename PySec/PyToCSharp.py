@@ -1,28 +1,31 @@
 import ctypes
-from PySec import RestEncrypt, RestDecrypt, a
+from PySec import RestEncrypt, RestDecrypt, DLL
 from PySec import strbuff
 import os
 
 input("Go")
+count = 0
+while True:
+    count += 1
+    try:
+        key = os.urandom(32)
+        text = input("Please enter text to crypto! ").encode("utf-8")
+        print("Text: ",text)
+        print("Result, ",RestDecrypt(RestEncrypt(text,key),key))
 
-key = os.urandom(32)
-text = b"Hello"
-print("Text: ",text)
-print("Result, ",RestDecrypt(RestEncrypt(text,key),key))
-
-key = os.urandom(32)
-text = b"Hello"
-print("Text: ",text)
-print("Result, ",RestDecrypt(RestEncrypt(text,key),key))
-
-test = a.test
-test.restype = int
-test.argtypes = [ctypes.c_char_p,ctypes.POINTER(ctypes.c_char)]
-def tester(ctext:bytes,key:bytes)->int:
-    s=test(ctext,key)
-    return s
-
-
-for i in range(10):
-    print(tester(b"Hello",os.urandom(32)))
-
+        test = DLL.test
+        test.restype = int
+        test.argtypes = [ctypes.c_char_p,ctypes.POINTER(ctypes.c_char)]
+        def tester(ctext:bytes,key:bytes)->int:
+            s=test(ctext,key)
+            return s
+        a = input("Please enter text to crypt: ").encode("utf-8")
+        print(tester(a,os.urandom(32)))
+        if count == 10:
+            break
+    except:
+        b = input("Error occured. Press enter quit to quit and re to retry: ")
+        if b == "re":
+            continue
+        else:
+            break

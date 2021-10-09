@@ -18,7 +18,7 @@ class ret(ctypes.Structure):
     _fields_ = [("data", ctypes.POINTER(ctypes.c_ubyte)),
         ("len", ctypes.c_int),
         ("str", ctypes.c_bool)]
-
+DLL = a
 Encrypt = a.NonNativeAESEncrypt
 Encrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
 Encrypt.restype = ret
@@ -39,7 +39,7 @@ Decrypt.restype = ctypes.c_char_p
 def RestDecrypt(ctext : bytes, key : bytes) -> bytes:
     text = ret()
     text.len=len(ctext)
-    text.data=ctypes.cast((ctypes.c_ubyte * text.len)(*ctext) ,ctypes.POINTER(ctypes.c_ubyte))
+    text.data=ctypes.POINTER((ctypes.c_ubyte * text.len)(*ctext))
     text.str=True
     re = Decrypt(text,key)
     return re
