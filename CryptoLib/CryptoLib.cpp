@@ -9,7 +9,7 @@
 #define DLLEXPORT __declspec(dllexport)
 #endif
 //#define PY_SSIZE_T_CLEAN
-
+typedef unsigned char uchar;
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <string>
@@ -17,10 +17,11 @@
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <memory>
+#include <vector>
 using namespace std;
 
 struct NonNative {
-	unsigned char* data;
+	const char* data;
 	int len;
 	bool str;
 };
@@ -28,6 +29,44 @@ struct NonNative {
 void handleErrors(int* err) {
 	//Add to log here
 	*err = *err + 1;
+}
+
+//The following two functions where taken from https://stackoverflow.com/questions/180947/base64-decode-snippet-in-c. 
+static std::string base64_encode(const std::string& in) {
+
+	std::string out;
+
+	int val = 0, valb = -6;
+	for (uchar c : in) {
+		val = (val << 8) + c;
+		valb += 8;
+		while (valb >= 0) {
+			out.push_back("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[(val >> valb) & 0x3F]);
+			valb -= 6;
+		}
+	}
+	if (valb > -6) out.push_back("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[((val << 8) >> (valb + 8)) & 0x3F]);
+	while (out.size() % 4) out.push_back('=');
+	return out;
+}
+static std::string base64_decode(const std::string& in) {
+
+	std::string out;
+
+	std::vector<int> T(256, -1);
+	for (int i = 0; i < 64; i++) T["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i;
+
+	int val = 0, valb = -8;
+	for (uchar c : in) {
+		if (T[c] == -1) break;
+		val = (val << 6) + T[c];
+		valb += 6;
+		if (valb >= 0) {
+			out.push_back(char((val >> valb) & 0xFF));
+			valb -= 8;
+		}
+	}
+	return out;
 }
 
 extern "C" {
@@ -208,8 +247,11 @@ extern "C" {
 
 	DLLEXPORT NonNative __cdecl NonNativeAESEncrypt(unsigned char* ctext, unsigned char* key) {
 		unsigned char* ret = AESEncrypt(ctext, key, true);
+		auto pt = base64_encode(string((char*)ret));
+		delete[] ret;
+		const char* reta = pt.c_str();
 		NonNative result;
-		result.data = ret;
+		result.data = reta;
 		result.len = strlen((const char*)ret);
 		result.str = true;
 		return result;
@@ -224,7 +266,10 @@ extern "C" {
 			lena = ctext.len;
 		}
 		auto text = unique_ptr<unsigned char[]>(new unsigned char[lena+(long long)1]);
-		memcpy_s(text.get(), lena, ctext.data, lena);
+		string a = string(ctext.data);
+		string ctexta = base64_decode(a);
+		unsigned char* thing = (unsigned char*)ctexta.c_str();
+		memcpy_s(text.get(), lena, thing, lena);
 		text[lena] = '\0';
 		int len;
 		unsigned char* ret = AESDecrypt(text.get(), key, true, &len);

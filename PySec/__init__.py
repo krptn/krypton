@@ -3,6 +3,7 @@
 import hashlib
 import sys
 import ctypes
+from cryptography.hazmat.primitives.ciphers.aead  import AESGCM
 #import PySec
 DEBUG = True
 if sys.platform == "win32" and DEBUG:
@@ -13,6 +14,7 @@ elif sys.platform != "win32" and DEBUG:
     a = ctypes.cdll.LoadLibrary(r"CryptoLib\out\build\Linux-Clang-Debug\CryptoLib.so")
 else:
     a = ctypes.cdll.LoadLibrary(r"CryptoLib\out\build\Linux-Clang-Release\CryptoLib.so")
+version = "1"
 
 class ret(ctypes.Structure):
     _fields_ = [("data", ctypes.POINTER(ctypes.c_ubyte)),
@@ -39,7 +41,7 @@ Decrypt.restype = ctypes.c_char_p
 def RestDecrypt(ctext : bytes, key : bytes) -> bytes:
     text = ret()
     text.len=len(ctext)
-    text.data=ctypes.POINTER((ctypes.c_ubyte * text.len)(*ctext))
+    text.data=strbuff(ctext)
     text.str=True
     re = Decrypt(text,key)
     return re
