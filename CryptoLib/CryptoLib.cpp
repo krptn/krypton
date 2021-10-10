@@ -9,7 +9,7 @@
 #define DLLEXPORT __declspec(dllexport)
 #endif
 //#define PY_SSIZE_T_CLEAN
-typedef unsigned char uchar;
+
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <string>
@@ -17,11 +17,10 @@ typedef unsigned char uchar;
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <memory>
-#include <vector>
 using namespace std;
 
 struct NonNative {
-	const char* data;
+	unsigned char* data;
 	int len;
 	bool str;
 };
@@ -29,44 +28,6 @@ struct NonNative {
 void handleErrors(int* err) {
 	//Add to log here
 	*err = *err + 1;
-}
-
-//The following two functions where taken from https://stackoverflow.com/questions/180947/base64-decode-snippet-in-c. 
-static std::string base64_encode(const std::string& in) {
-
-	std::string out;
-
-	int val = 0, valb = -6;
-	for (uchar c : in) {
-		val = (val << 8) + c;
-		valb += 8;
-		while (valb >= 0) {
-			out.push_back("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[(val >> valb) & 0x3F]);
-			valb -= 6;
-		}
-	}
-	if (valb > -6) out.push_back("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[((val << 8) >> (valb + 8)) & 0x3F]);
-	while (out.size() % 4) out.push_back('=');
-	return out;
-}
-static std::string base64_decode(const std::string& in) {
-
-	std::string out;
-
-	std::vector<int> T(256, -1);
-	for (int i = 0; i < 64; i++) T["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"[i]] = i;
-
-	int val = 0, valb = -8;
-	for (uchar c : in) {
-		if (T[c] == -1) break;
-		val = (val << 6) + T[c];
-		valb += 6;
-		if (valb >= 0) {
-			out.push_back(char((val >> valb) & 0xFF));
-			valb -= 8;
-		}
-	}
-	return out;
 }
 
 extern "C" {
@@ -83,175 +44,170 @@ extern "C" {
 	}
 
 	DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del) {
-			if (strlen((char*)text) > 549755813632) {
-				unsigned char error[] = "Error: The data is too long";
-				return error;
-			}
-			unsigned char ivbuff[12];
-			unsigned char tag[16];
-			/*
-			OSSL_PROVIDER *fips;
-			OSSL_PROVIDER *base;
+		if (strlen((char*)text) > 549755813632) {
+			unsigned char error[] = "Error: The data is too long";
+			return error;
+		}
+		unsigned char ivbuff[12];
+		unsigned char tag[16];
+		/*
+		OSSL_PROVIDER *fips;
+		OSSL_PROVIDER *base;
+		fips = OSSL_PROVIDER_load(NULL, "fips");
+		if (fips == NULL) {
+		printf("Failed to load FIPS provider\n");
+		}
+		base = OSSL_PROVIDER_load(NULL, "base");
+		if (base == NULL) {
+		OSSL_PROVIDER_unload(fips);
+		printf("Failed to load base provider\n");
+		}
+		*/
+		int errcnt = 0;
+		int msglen = strnlen((char*)text, 549755813632);
 
-			fips = OSSL_PROVIDER_load(NULL, "fips");
-			if (fips == NULL) {
-			printf("Failed to load FIPS provider\n");
-			}
-			base = OSSL_PROVIDER_load(NULL, "base");
-			if (base == NULL) {
-			OSSL_PROVIDER_unload(fips);
-			printf("Failed to load base provider\n");
-			}
-			*/
-			int errcnt = 0;
-			int msglen = strnlen((char*)text, 549755813632);
+		int rem = 16 - (msglen % 16);
+		/*
+		unsigned char* text = new unsigned char[msglen+(long long)rem];
+		memcpy_s(text, msglen, texta, msglen);
+		memset(text + msglen, 0, rem);
+		OPENSSL_cleanse(texta,msglen);
+		*/
+		unsigned char iv[12];
+		RAND_bytes(iv, 12);
+		memcpy_s(&ivbuff, 12, iv, 12);
+		auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)rem + (long long)1]);
+		//unsigned char* out = new unsigned char[msglen+(long long)rem+(long long)1];
+		EVP_CIPHER_CTX* ctx;
+		int len;
+		int ciphertext_len;
+		if (!(ctx = EVP_CIPHER_CTX_new()))
+			handleErrors(&errcnt);
+		if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
+			handleErrors(&errcnt);
+		if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
+			handleErrors(&errcnt);
+		if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv))
+			handleErrors(&errcnt);
+		if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, text, msglen))
+			handleErrors(&errcnt);
+		ciphertext_len = len;
 
-			int rem = 16 - (msglen % 16);
-			/*
-			unsigned char* text = new unsigned char[msglen+(long long)rem];
-			memcpy_s(text, msglen, texta, msglen);
-			memset(text + msglen, 0, rem);
-			OPENSSL_cleanse(texta,msglen);
-			*/
-			unsigned char iv[12];
-			RAND_bytes(iv, 12);
-			memcpy_s(&ivbuff, 12, iv, 12);
-			auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)rem + (long long)1]);
-			//unsigned char* out = new unsigned char[msglen+(long long)rem+(long long)1];
-			EVP_CIPHER_CTX* ctx;
-			int len;
-			int ciphertext_len;
-			if (!(ctx = EVP_CIPHER_CTX_new()))
-				handleErrors(&errcnt);
-			if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
-				handleErrors(&errcnt);
-			if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
-				handleErrors(&errcnt);
-			if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv))
-				handleErrors(&errcnt);
-			if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, text, msglen))
-				handleErrors(&errcnt);
-			ciphertext_len = len;
+		if (1 != EVP_EncryptFinal_ex(ctx, out.get() + len, &len))
+			handleErrors(&errcnt);
 
-			if (1 != EVP_EncryptFinal_ex(ctx, out.get() + len, &len))
-				handleErrors(&errcnt);
+		if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, &tag))
+			handleErrors(&errcnt);
+		ciphertext_len += len;
+		if (del == true) {
+			OPENSSL_cleanse(key, 32);
+			OPENSSL_cleanse(text, msglen);
+		}
+		EVP_CIPHER_CTX_free(ctx);
+		if (errcnt != 0) {
+			unsigned char error[] = "Error: Crypto Error";
+			return error;
+		}
+		auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1 + (long long)12]);
+		//unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
+		AddToStrBuilder((char*)result.get(), (char*)out.get(), 0, ciphertext_len);
+		delete[] out.release();
+		AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len, 16);
+		AddToStrBuilder((char*)result.get(), (char*)&iv, ciphertext_len + 16, 12);
+		unsigned char len_num[12];
+		string num = to_string(msglen);
+		int ler = num.length();
+		const char* num_len = num.c_str();
+		AddToStrBuilder((char*)result.get(), (char*)num_len, ciphertext_len + 12 + 16 + (12 - ler), ler);
+		memset(result.get() + ciphertext_len + 12 + 16, '0', ((long long)12 - ler));
 
-			if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, &tag))
-				handleErrors(&errcnt);
-			ciphertext_len += len;
-			if (del == true) {
-				OPENSSL_cleanse(key, 32);
-				OPENSSL_cleanse(text, msglen);
-			}
-			EVP_CIPHER_CTX_free(ctx);
-			if (errcnt != 0) {
-				unsigned char error[] = "Error: Crypto Error";
-				return error;
-			}
-			auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1 + (long long)12]);
-			//unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
-			AddToStrBuilder((char*)result.get(), (char*)out.get(), 0, ciphertext_len);
-			delete[] out.release();
-			AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len,16);
-			AddToStrBuilder((char*)result.get(), (char*)&iv, ciphertext_len + 16,12);
-			unsigned char len_num[12];
-			string num = to_string(msglen);
-			int ler = num.length();
-			const char* num_len = num.c_str();
-			AddToStrBuilder((char*)result.get(), (char*)num_len, ciphertext_len + 12 + 16+(12-ler), ler);
-			memset(result.get() + ciphertext_len + 12 + 16, '0', ((long long)12 - ler));
+		/*
+		OSSL_PROVIDER_unload(base);
+		OSSL_PROVIDER_unload(fips);
+		*/
+		result[ciphertext_len + (long long)16 + (long long)12 + (long long)12] = '\0';
 
-			/*
-			OSSL_PROVIDER_unload(base);
-			OSSL_PROVIDER_unload(fips);
-			*/
-			result[ciphertext_len + (long long)16 + (long long)12+(long long)12] = '\0';
-
-			return result.release();
+		return result.release();
 	}
 
 	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del, int* lenx) {
-			/*
-			OSSL_PROVIDER *fips;
-			OSSL_PROVIDER *base;
-
-			fips = OSSL_PROVIDER_load(NULL, "fips");
-			if (fips == NULL) {
-			printf("Failed to load FIPS provider\n");
-			exit(EXIT_FAILURE);
-			}
-			base = OSSL_PROVIDER_load(NULL, "base");
-			if (base == NULL) {
-			OSSL_PROVIDER_unload(fips);
-			printf("Failed to load base provider\n");
-			exit(EXIT_FAILURE);
-			}
-			*/
+		/*
+		OSSL_PROVIDER *fips;
+		OSSL_PROVIDER *base;
+		fips = OSSL_PROVIDER_load(NULL, "fips");
+		if (fips == NULL) {
+		printf("Failed to load FIPS provider\n");
+		exit(EXIT_FAILURE);
+		}
+		base = OSSL_PROVIDER_load(NULL, "base");
+		if (base == NULL) {
+		OSSL_PROVIDER_unload(fips);
+		printf("Failed to load base provider\n");
+		exit(EXIT_FAILURE);
+		}
+		*/
 		char len_str[13];
-		memcpy_s(len_str,12,ctext+(strnlen((char*)ctext, 549755813632)-12),12);
+		memcpy_s(len_str, 12, ctext + (strnlen((char*)ctext, 549755813632) - 12), 12);
 		len_str[12] = '\0';
 		string str_lena = string(len_str);
 		int flen = stoi(str_lena);
-			int errcnt = 0;
-			int leny = strlen((char*)ctext);
-			int msglen = strlen((char*)ctext) - 12 - 16-12;
-			auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
-			//unsigned char* msg = new unsigned char[msglen];
-			memcpy_s(msg.get(), msglen, ctext, msglen);
-			unsigned char iv[12];
-			memcpy_s(iv, 12, ctext + msglen + 16, 12);
-			unsigned char tag[16];
-			memcpy_s(tag, 16, ctext + msglen, 16);
+		int errcnt = 0;
+		int leny = strlen((char*)ctext);
+		int msglen = strlen((char*)ctext) - 12 - 16 - 12;
+		auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
+		//unsigned char* msg = new unsigned char[msglen];
+		memcpy_s(msg.get(), msglen, ctext, msglen);
+		unsigned char iv[12];
+		memcpy_s(iv, 12, ctext + msglen + 16, 12);
+		unsigned char tag[16];
+		memcpy_s(tag, 16, ctext + msglen, 16);
 
-			/*
-			unsigned char* ctext = new unsigned char[msglen];
-			memcpy(ctext, ctexta, msglen);
-			*/
-			auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen+(long long)1]);
-			//unsigned char* out = new unsigned char[msglen];
-			EVP_CIPHER_CTX* ctx;
-			int len;
-			int plaintext_len;
-			if (!(ctx = EVP_CIPHER_CTX_new()))
-				handleErrors(&errcnt);
-			if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
-				handleErrors(&errcnt);
-			if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
-				handleErrors(&errcnt);
-			if (!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv))
-				handleErrors(&errcnt);
-			if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
-				handleErrors(&errcnt);
-			plaintext_len = len;
-			if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
-				handleErrors(&errcnt);
-			delete[] msg.release();
-			int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
-			plaintext_len += len;
-			if (del == true) {
-				OPENSSL_cleanse(key, 32);
-			}
-			EVP_CIPHER_CTX_free(ctx);
-			if ((!(ret >= 0)) || (errcnt > 0)) {
-				unsigned char error[] = "Error: Crypto-Error: Unable to decrypt data";
-				return error;
-			}
-			/*
-			OSSL_PROVIDER_unload(base);
-			OSSL_PROVIDER_unload(fips);
-			*/
-			out[flen]= '\0';
-			*lenx = flen;
-			return out.release();
+		/*
+		unsigned char* ctext = new unsigned char[msglen];
+		memcpy(ctext, ctexta, msglen);
+		*/
+		auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)1]);
+		//unsigned char* out = new unsigned char[msglen];
+		EVP_CIPHER_CTX* ctx;
+		int len;
+		int plaintext_len;
+		if (!(ctx = EVP_CIPHER_CTX_new()))
+			handleErrors(&errcnt);
+		if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
+			handleErrors(&errcnt);
+		if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
+			handleErrors(&errcnt);
+		if (!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv))
+			handleErrors(&errcnt);
+		if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
+			handleErrors(&errcnt);
+		plaintext_len = len;
+		if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
+			handleErrors(&errcnt);
+		delete[] msg.release();
+		int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
+		plaintext_len += len;
+		if (del == true) {
+			OPENSSL_cleanse(key, 32);
+		}
+		EVP_CIPHER_CTX_free(ctx);
+		if ((!(ret >= 0)) || (errcnt > 0)) {
+			unsigned char error[] = "Error: Crypto-Error: Unable to decrypt data";
+			return error;
+		}
+		/*
+		OSSL_PROVIDER_unload(base);
+		OSSL_PROVIDER_unload(fips);
+		*/
+		out[flen] = '\0';
+		*lenx = flen;
+		return out.release();
 	}
 
 	DLLEXPORT NonNative __cdecl NonNativeAESEncrypt(unsigned char* ctext, unsigned char* key) {
 		unsigned char* ret = AESEncrypt(ctext, key, true);
-		auto pt = base64_encode(string((char*)ret));
-		delete[] ret;
-		const char* reta = pt.c_str();
 		NonNative result;
-		result.data = reta;
+		result.data = ret;
 		result.len = strlen((const char*)ret);
 		result.str = true;
 		return result;
@@ -265,11 +221,8 @@ extern "C" {
 		else {
 			lena = ctext.len;
 		}
-		auto text = unique_ptr<unsigned char[]>(new unsigned char[lena+(long long)1]);
-		string a = string(ctext.data);
-		string ctexta = base64_decode(a);
-		unsigned char* thing = (unsigned char*)ctexta.c_str();
-		memcpy_s(text.get(), lena, thing, lena);
+		auto text = unique_ptr<unsigned char[]>(new unsigned char[lena + (long long)1]);
+		memcpy_s(text.get(), lena, ctext.data, lena);
 		text[lena] = '\0';
 		int len;
 		unsigned char* ret = AESDecrypt(text.get(), key, true, &len);
@@ -280,7 +233,7 @@ extern "C" {
 	DLLEXPORT int test(unsigned char* ctext, unsigned char* key) {
 		int len = strlen((const char*)ctext);
 		auto key_b = unique_ptr<unsigned char[]>(new unsigned char[33]);
-		auto ctext_b = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10)+(long long)1]);
+		auto ctext_b = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10) + (long long)1]);
 		ctext_b[len] = '\0';
 		auto ctext_c = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10) + (long long)1]);
 		ctext_c[len] = '\0';
@@ -317,7 +270,7 @@ namespace Cpp {
 		unsigned char* keyc = (unsigned char*)key.c_str();
 		unsigned char* ctextc = (unsigned char*)ctext.c_str();
 		int len;
-		unsigned char* a = AESDecrypt(keyc, ctextc, true,&len);
+		unsigned char* a = AESDecrypt(keyc, ctextc, true, &len);
 		delete[] keyc;
 		delete[] ctextc;
 		a[len] = '\0';
