@@ -7,10 +7,12 @@
 #define DLLEXPORT
 #endif
 #ifdef Win
-#define DLLEXPORT __declspec(dllexport)
+//#define DLLEXPORT __declspec(dllexport)
+#define DLLEXPORT
 #endif
 //#define PY_SSIZE_T_CLEAN
 
+#include <C:\Users\markb\VEnvs\PySecEnv\Lib\site-packages\pybind11\include/pybind11/pybind11.h>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <string>
@@ -21,12 +23,10 @@
 
 struct NonNative;
 
-extern "C" {
-	DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen);
-	DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del, int* len);
-	DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del);
-	DLLEXPORT int test(unsigned char* ctext, unsigned char* key);
-}
+DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen);
+DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del);
+DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del);
+
 
 namespace Cpp {
 	std::string EncryptAES(std::string textb, std::string keyb);

@@ -18,12 +18,12 @@
         },
         {
           "name": "PyLoc",
-          "value": "C:\\Program Files\\Python39\\include",
+          "value": "C:\\Program Files\\Python310\\include",
           "type": "STRING"
         },
         {
           "name": "PyLib",
-          "value": "C:\\Program Files\\Python39\\libs",
+          "value": "C:\\Program Files\\Python310\\libs",
           "type": "STRING"
         },
         {
@@ -97,7 +97,7 @@
         },
         {
           "name": "PyLoc",
-          "value": "C:\\Program Files\\Python39\\include",
+          "value": "C:\\Program Files\\Python310\\include",
           "type": "STRING"
         },
         {
@@ -107,7 +107,7 @@
         },
         {
           "name": "PyLib",
-          "value": "C:\\Program Files\\Python39\\libs",
+          "value": "C:\\Program Files\\Python310\\libs",
           "type": "STRING"
         },
         {
