@@ -1,6 +1,7 @@
 import ctypes
 from PySec import Encrypt, Decrypt
 import os
+#I cannot believe this!! The Crypto Works!!
 
 input("Go")
 count = 0
