@@ -64,6 +64,9 @@ exit(EXIT_FAILURE);
 }
 */
 	memcpy_s(len_str, 12, ctext + (strnlen((char*)ctext, 549755813632) - 12), 12);
+	if (strnlen((char*)ctext, 549755813632) == 549755813632 || strnlen((char*)ctext, 549755813632) == 549755813631) {
+		return (unsigned char*)"Error: this is not a null terminated string";
+	}
 	len_str[12] = '\0';
 	string str_lena = string(len_str);
 	int flen = stoi(str_lena);
@@ -136,6 +139,9 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	*/
 	int errcnt = 0;
 	int msglen = strnlen((char*)text, 549755813632);
+	if (msglen == 549755813632 || msglen == 549755813631) {
+		return (unsigned char*)"Error: this is not a null terminated string";
+	}
 
 	int rem = 16 - (msglen % 16);
 	unsigned char iv[12];

@@ -19,46 +19,15 @@ else:
 
 version = "1"
 from CryptoLib import Encrypt, Decrypt
-
-"""
-class ret(ctypes.Structure):
-    _fields_ = [("data", ctypes.POINTER(ctypes.c_ubyte)),
-        ("len", ctypes.c_int),
-        ("str", ctypes.c_bool)]
-DLL = a
-Encrypt = a.NonNativeAESEncrypt
-Encrypt.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
-Encrypt.restype = ret
-strbuff = ctypes.create_string_buffer
-NewStrBuilder = ctypes.create_string_buffer
-
-def RestEncrypt(ctext : bytes, key : bytes) -> bytes:
-    re = Encrypt(ctext, key)
-    s = re.data[0:re.len]
-    #s = ctypes.cast(re.data, ctypes.c_char_p).raw[:re.len]
-    print("Cipher text ",s)
-    return s
-
-Decrypt = a.NonNativeAESDecrypt
-Decrypt.argtypes = [ret, ctypes.c_char_p]
-Decrypt.restype = ctypes.c_char_p
-
-def RestDecrypt(ctext : bytes, key : bytes) -> bytes:
-    text = ret()
-    text.len=len(ctext)
-    text.data=strbuff(ctext)
-    text.str=True
-    re = Decrypt(text,key)
-    return re
-"""
 __all__ = ["Basic","decorators"]
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
 search = 9
 def getUser():
     return b"not connected to cloud"
-
+data_path = "Data/"
 key = "PySec.key"
-DEBUG = True
+key_path = data_path+key
+
 class StrBuilder():
     def __init__(self,lenNum : int):
         self.len = lenNum

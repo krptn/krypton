@@ -1,17 +1,15 @@
 from typing import Iterable
-from PySec.PyToCSharp import Adrr
 import hashlib
 import sqlite3
-#import pyaes 
 from tkinter import messagebox
 from tkinter import *
 import os
 import ctypes
 import PySec
 import sys
-from PySec import RestDecrypt, RestEncrypt, StrBuilder
-## Will embrace in proper mem protection using the CppDotNet crypto and deleting mem content e.g:memoryview
-
+from PySec import Decrypt, Encrypt, StrBuilder
+RestDecrypt = Decrypt
+RestEncrypt = Encrypt
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.

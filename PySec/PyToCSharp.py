@@ -5,14 +5,10 @@ import os
 
 input("Go")
 count = 0
-for i in range(10):
+text = b"Hello this is a random piece of text to be encrypted and decrypted by the openssl AESGCM interface Its aim is to test the performance of the crypto."
+#text = b"Hello aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+for i in range(1):
     key = os.urandom(32)
-    print("-"*20)
-    print("")
-    print("Key is:",key)
-    text = input("Please enter text to crypto! ").encode("utf-8")
-    print("Text: ",text)
     ctext = Encrypt(text,key)
-    print("Cipher Text:",ctext)
-    print("Key:",key)
-    print("Result: ",Decrypt(ctext,key))
+    a=Decrypt(ctext,key)
+    print(a)

@@ -6,6 +6,7 @@
 c_cpp_properties.json
 #App Generated Files
 keystore.db
+Data
 
 # User-specific files
 *.rsuser
