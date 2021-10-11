@@ -291,10 +291,7 @@ extern "C" DLLEXPORT int __cdecl Init() {
 };
 
 namespace py = pybind11;
-PYBIND11_PLUGIN(CryptoLib) {
-	py::module m("CryptoLib", "PySec crypto component.");
+PYBIND11_MODULE(CryptoLib, m) {
 	m.def("Decrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.");
-
 	m.def("Encrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.");
-	return m.ptr();
 }
