@@ -21,6 +21,7 @@
 #include <memory>
 using namespace std;
 using namespace pybind11::literals;
+namespace py = pybind11;
 
 struct NonNative {
 	unsigned char* data;
@@ -45,7 +46,7 @@ DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int 
 	return 0;
 }
 
-DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del = true) {
+DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key, bool del = true){
 	char len_str[13];
 	/*
 OSSL_PROVIDER *fips;
@@ -76,11 +77,6 @@ exit(EXIT_FAILURE);
 	memcpy_s(iv, 12, ctext + msglen + 16, 12);
 	unsigned char tag[16];
 	memcpy_s(tag, 16, ctext + msglen, 16);
-
-	/*
-	unsigned char* ctext = new unsigned char[msglen];
-	memcpy(ctext, ctexta, msglen);
-	*/
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)1]);
 	//unsigned char* out = new unsigned char[msglen];
 	EVP_CIPHER_CTX* ctx;
@@ -142,12 +138,6 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	int msglen = strnlen((char*)text, 549755813632);
 
 	int rem = 16 - (msglen % 16);
-	/*
-	unsigned char* text = new unsigned char[msglen+(long long)rem];
-	memcpy_s(text, msglen, texta, msglen);
-	memset(text + msglen, 0, rem);
-	OPENSSL_cleanse(texta,msglen);
-	*/
 	unsigned char iv[12];
 	RAND_bytes(iv, 12);
 	memcpy_s(&ivbuff, 12, iv, 12);
@@ -201,7 +191,6 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	OSSL_PROVIDER_unload(fips);
 	*/
 	result[ciphertext_len + (long long)16 + (long long)12 + (long long)12] = '\0';
-
 	return result.release();
 }
 
@@ -290,8 +279,22 @@ extern "C" DLLEXPORT int __cdecl Init() {
 	return 1;
 };
 
-namespace py = pybind11;
+py::bytes PyAESEncrypt(char* text, char* key) {
+	unsigned char* result = AESEncrypt((unsigned char*)text, (unsigned char*)key, true);
+	py::bytes r = py::bytes((char*)result);
+	delete[] result;
+	return r;
+}
+
+py::bytes PyAESDecrypt(char* ctext, char* key) {
+	unsigned char* result = AESDecrypt((unsigned char*)ctext, (unsigned char*)key, true);
+	py::bytes r = py::bytes((char*)result);
+	OPENSSL_cleanse((char*)result,strlen((const char*)result));
+	delete[] result;
+	return r;
+}
+
 PYBIND11_MODULE(CryptoLib, m) {
-	m.def("Decrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.");
-	m.def("Encrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.");
+	m.def("Decrypt", &PyAESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
+	m.def("Encrypt", &PyAESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 }

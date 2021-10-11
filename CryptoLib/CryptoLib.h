@@ -24,8 +24,8 @@
 struct NonNative;
 
 DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen);
-DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned char* key, bool del);
-DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del);
+DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key, bool);
+DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned  char* key, bool);
 
 
 namespace Cpp {
