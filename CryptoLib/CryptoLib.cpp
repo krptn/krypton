@@ -10,8 +10,7 @@
 #define DLLEXPORT
 #endif
 //#define PY_SSIZE_T_CLEAN
-#include <Python.h>
-#include <C:\Users\markb\VEnvs\PySecEnv\Lib\site-packages\pybind11\include/pybind11/pybind11.h>
+#include <pybind11/pybind11.h>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <string>
@@ -20,7 +19,6 @@
 #include <openssl/err.h>
 #include <memory>
 using namespace std;
-using namespace pybind11::literals;
 namespace py = pybind11;
 
 struct NonNative {
@@ -46,7 +44,7 @@ DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int 
 	return 0;
 }
 
-DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key, bool del = true){
+DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key, int mlen, bool del = true){
 	char len_str[13];
 	/*
 OSSL_PROVIDER *fips;
@@ -65,14 +63,14 @@ exit(EXIT_FAILURE);
 */
 	memcpy_s(len_str, 12, ctext + (strnlen((char*)ctext, 549755813632) - 12), 12);
 	if (strnlen((char*)ctext, 549755813632) == 549755813632 || strnlen((char*)ctext, 549755813632) == 549755813631) {
-		return (unsigned char*)"Error: this is not a null terminated string";
+		throw std::invalid_argument("Error: this is not a null terminated string");
 	}
 	len_str[12] = '\0';
 	string str_lena = string(len_str);
 	int flen = stoi(str_lena);
 	int errcnt = 0;
-	int leny = strlen((char*)ctext);
-	int msglen = strlen((char*)ctext) - 12 - 16 - 12;
+	int leny = mlen;
+	int msglen = mlen - 12 - 16 - 12;
 	auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
 	//unsigned char* msg = new unsigned char[msglen];
 	memcpy_s(msg.get(), msglen, ctext, msglen);
@@ -106,8 +104,7 @@ exit(EXIT_FAILURE);
 	}
 	EVP_CIPHER_CTX_free(ctx);
 	if ((!(ret >= 0)) || (errcnt > 0)) {
-		unsigned char error[] = "Error: Crypto-Error: Unable to decrypt data";
-		return error;
+		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
 	/*
 	OSSL_PROVIDER_unload(base);
@@ -117,10 +114,9 @@ exit(EXIT_FAILURE);
 	return out.release();
 }
 
-DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del = true) {
+DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, int* len_ex, bool del = true) {
 	if (strlen((char*)text) > 549755813632) {
-		unsigned char error[] = "Error: The data is too long";
-		return error;
+		throw std::invalid_argument("Data is too long or is not null terminated");
 	}
 	unsigned char ivbuff[12];
 	unsigned char tag[16];
@@ -140,7 +136,7 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	int errcnt = 0;
 	int msglen = strnlen((char*)text, 549755813632);
 	if (msglen == 549755813632 || msglen == 549755813631) {
-		return (unsigned char*)"Error: this is not a null terminated string";
+		throw std::invalid_argument("Error: this is not a null terminated string");
 	}
 
 	int rem = 16 - (msglen % 16);
@@ -163,10 +159,8 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, text, msglen))
 		handleErrors(&errcnt);
 	ciphertext_len = len;
-
 	if (1 != EVP_EncryptFinal_ex(ctx, out.get() + len, &len))
 		handleErrors(&errcnt);
-
 	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, &tag))
 		handleErrors(&errcnt);
 	ciphertext_len += len;
@@ -176,8 +170,7 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	}
 	EVP_CIPHER_CTX_free(ctx);
 	if (errcnt != 0) {
-		unsigned char error[] = "Error: Crypto Error";
-		return error;
+		throw std::invalid_argument("Unable to encrypt");
 	}
 	auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1 + (long long)12]);
 	//unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
@@ -197,64 +190,17 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	OSSL_PROVIDER_unload(fips);
 	*/
 	result[ciphertext_len + (long long)16 + (long long)12 + (long long)12] = '\0';
+	*len_ex = ciphertext_len + (long long)16 + (long long)12 + (long long)12;
 	return result.release();
 }
 
-/*
-DLLEXPORT NonNative __cdecl NonNativeAESEncrypt(unsigned char* ctext, unsigned char* key) {
-	unsigned char* ret = AESEncrypt(ctext, key, true);
-	NonNative result;
-	result.data = ret;
-	result.len = strlen((const char*)ret);
-	result.str = true;
-	return result;
-}
-
-DLLEXPORT unsigned char* __cdecl NonNativeAESDecrypt(NonNative ctext, unsigned char* key) {
-	int lena;
-	if (ctext.str) {
-		lena = strlen((const char*)ctext.data);
-	}
-	else {
-		lena = ctext.len;
-	}
-	auto text = unique_ptr<unsigned char[]>(new unsigned char[lena + (long long)1]);
-	memcpy_s(text.get(), lena, ctext.data, lena);
-	text[lena] = '\0';
-	int len;
-	unsigned char* ret = AESDecrypt(text.get(), key, true, &len);
-	//ret[len] = '\0';
-	return ret;
-}
-
-DLLEXPORT int test(unsigned char* ctext, unsigned char* key) {
-	int len = strlen((const char*)ctext);
-	auto key_b = unique_ptr<unsigned char[]>(new unsigned char[33]);
-	auto ctext_b = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10) + (long long)1]);
-	ctext_b[len] = '\0';
-	auto ctext_c = unique_ptr<unsigned char[]>(new unsigned char[strnlen((const char*)ctext, 10) + (long long)1]);
-	ctext_c[len] = '\0';
-	memcpy_s(key_b.get(), 32, key, 32);
-	key_b[32] = '\0';
-	memcpy_s(ctext_b.get(), strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
-	memcpy_s(ctext_c.get(), strnlen((const char*)ctext, 10), ctext, strnlen((const char*)ctext, 10));
-	NonNative text_a = NonNativeAESEncrypt(ctext_b.get(), key);
-	unsigned char* text_b = NonNativeAESDecrypt(text_a, key_b.get());
-	if (*text_b == *ctext) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
-}
-*/
-
 //Libs for C++ code
+/*
 namespace Cpp {
 	std::string EncryptAES(std::string textb, std::string keyb) {
 		unsigned char* text = (unsigned char*)textb.c_str();
 		unsigned char* key = (unsigned char*)keyb.c_str();
-		unsigned char* a = AESEncrypt(text, key, true);
+		unsigned char* a = AESEncrypt(text, key, &len,true);
 		delete[] key;
 		delete[] text;
 		auto result = std::string((char*)a);
@@ -275,8 +221,8 @@ namespace Cpp {
 		return result;
 	}
 }
-
-extern "C" DLLEXPORT int __cdecl Init() {
+*/
+DLLEXPORT int __cdecl Init() {
 	//EVP_set_default_properties(NULL, "fips=yes");
 	EVP_add_cipher(EVP_aes_256_gcm());
 	if (FIPS_mode_set(2) == 0) {
@@ -286,21 +232,23 @@ extern "C" DLLEXPORT int __cdecl Init() {
 };
 
 py::bytes PyAESEncrypt(char* text, char* key) {
-	unsigned char* result = AESEncrypt((unsigned char*)text, (unsigned char*)key, true);
+	int len;
+	unsigned char* result = AESEncrypt((unsigned char*)text, (unsigned char*)key, &len, true);
 	py::bytes r = py::bytes((char*)result);
 	delete[] result;
 	return r;
 }
 
-py::bytes PyAESDecrypt(char* ctext, char* key) {
-	unsigned char* result = AESDecrypt((unsigned char*)ctext, (unsigned char*)key, true);
-	py::bytes r = py::bytes((char*)result);
+py::bytes PyAESDecrypt(char* ctext, char* key, int len) {
+	unsigned char* result = AESDecrypt((unsigned char*)ctext, (unsigned char*)key, len,true);
+	py::bytes r = py::bytes((char*)result,len);
 	OPENSSL_cleanse((char*)result,strlen((const char*)result));
 	delete[] result;
 	return r;
 }
 
 PYBIND11_MODULE(CryptoLib, m) {
-	m.def("Decrypt", &PyAESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
-	m.def("Encrypt", &PyAESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
+	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
+	m.def("AESDecrypt", &PyAESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"),py::arg("len"));
+	m.def("AESEncrypt", &PyAESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 }

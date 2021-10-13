@@ -12,7 +12,7 @@
 #endif
 //#define PY_SSIZE_T_CLEAN
 
-#include <C:\Users\markb\VEnvs\PySecEnv\Lib\site-packages\pybind11\include/pybind11/pybind11.h>
+#include <pybind11/pybind11.h>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <string>
@@ -24,8 +24,8 @@
 struct NonNative;
 
 DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen);
-DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key, bool);
-DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned  char* key, bool);
+DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key, int* len_ex, bool del);
+DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned  char* key, int* len_ex, bool del);
 
 
 namespace Cpp {

@@ -3,8 +3,6 @@
 import hashlib
 import sys
 import ctypes
-from cryptography.hazmat.primitives.ciphers.aead  import AESGCM
-#import PySec
 import sys
 
 DEBUG = True
@@ -18,7 +16,13 @@ else:
     sys.path.append(r"CryptoLib\out\build\Linux-Clang-Release")
 
 version = "1"
-from CryptoLib import Encrypt, Decrypt
+from CryptoLib import AESEncrypt, AESDecrypt
+def Decrypt(data:bytes,key:bytes):
+    len = int(data[-12:].decode("utf-8"))
+    return AESDecrypt(data,key,len)
+def Encrypt(data:bytes,key:bytes):
+    return AESDecrypt(data,key)
+    
 __all__ = ["Basic","decorators"]
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
 search = 9
@@ -33,8 +37,6 @@ class StrBuilder():
         self.len = lenNum
         self.used = 0
         self.data = ctypes.create_string_buffer(lenNum)
-    def zeromem(obj:str)->None:
-        ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
     def StringAdd(self, data : bytes, lenNum:int=-1) -> None:
         if lenNum == -1:
             lenNum = self.used
@@ -51,7 +53,7 @@ class StrBuilder():
     def __del__(self):
         self.Clear()
 
-def zeromem(obj:str)->None:
+def zeromem(obj:str)->None: #C-Style function to clear the content of str and bytes
     ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
 
 def antiSQLi(name:bytes, info:bool=True)->bytes:

@@ -27,6 +27,11 @@
           "type": "STRING"
         },
         {
+          "name": "PyBind11",
+          "value":"C:\\Users\\markb\\VEnvs\\PySecEnv\\Lib\\site-packages\\pybind11\\include",
+          "type": "STRING"
+        },
+        {
           "name": "OPENSSL_ROOT_DIR",
           "value": "C:\\Users\\markb\\source\\other-repos\\MS\\vcpkg\\installed\\x64-windows",
           "type": "STRING"
@@ -98,6 +103,11 @@
         {
           "name": "PyLoc",
           "value": "C:\\Program Files\\Python310\\include",
+          "type": "STRING"
+        },
+        {
+          "name": "PyBind11",
+          "value": "C:\\Users\\markb\\VEnvs\\PySecEnv\\Lib\\site-packages\\pybind11\\include",
           "type": "STRING"
         },
         {
