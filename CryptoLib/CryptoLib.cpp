@@ -44,77 +44,8 @@ DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int 
 	return 0;
 }
 
-DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key, int mlen, bool del = true){
-	char len_str[13];
-	/*
-OSSL_PROVIDER *fips;
-OSSL_PROVIDER *base;
-fips = OSSL_PROVIDER_load(NULL, "fips");
-if (fips == NULL) {
-printf("Failed to load FIPS provider\n");
-exit(EXIT_FAILURE);
-}
-base = OSSL_PROVIDER_load(NULL, "base");
-if (base == NULL) {
-OSSL_PROVIDER_unload(fips);
-printf("Failed to load base provider\n");
-exit(EXIT_FAILURE);
-}
-*/
-	memcpy_s(len_str, 12, ctext + (strnlen((char*)ctext, 549755813632) - 12), 12);
-	if (strnlen((char*)ctext, 549755813632) == 549755813632 || strnlen((char*)ctext, 549755813632) == 549755813631) {
-		throw std::invalid_argument("Error: this is not a null terminated string");
-	}
-	len_str[12] = '\0';
-	string str_lena = string(len_str);
-	int flen = stoi(str_lena);
-	int errcnt = 0;
-	int leny = mlen;
-	int msglen = mlen - 12 - 16 - 12;
-	auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
-	//unsigned char* msg = new unsigned char[msglen];
-	memcpy_s(msg.get(), msglen, ctext, msglen);
-	unsigned char iv[12];
-	memcpy_s(iv, 12, ctext + msglen + 16, 12);
-	unsigned char tag[16];
-	memcpy_s(tag, 16, ctext + msglen, 16);
-	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)1]);
-	//unsigned char* out = new unsigned char[msglen];
-	EVP_CIPHER_CTX* ctx;
-	int len;
-	int plaintext_len;
-	if (!(ctx = EVP_CIPHER_CTX_new()))
-		handleErrors(&errcnt);
-	if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
-		handleErrors(&errcnt);
-	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
-		handleErrors(&errcnt);
-	if (!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv))
-		handleErrors(&errcnt);
-	if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
-		handleErrors(&errcnt);
-	plaintext_len = len;
-	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
-		handleErrors(&errcnt);
-	delete[] msg.release();
-	int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
-	plaintext_len += len;
-	if (del == true) {
-		OPENSSL_cleanse(key, 32);
-	}
-	EVP_CIPHER_CTX_free(ctx);
-	if ((!(ret >= 0)) || (errcnt > 0)) {
-		throw std::invalid_argument("Unable to decrypt ciphertext");
-	}
-	/*
-	OSSL_PROVIDER_unload(base);
-	OSSL_PROVIDER_unload(fips);
-	*/
-	out[flen] = '\0';
-	return out.release();
-}
 
-DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, int* len_ex, bool del = true) {
+DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del = true) {
 	if (strlen((char*)text) > 549755813632) {
 		throw std::invalid_argument("Data is too long or is not null terminated");
 	}
@@ -190,38 +121,82 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	OSSL_PROVIDER_unload(fips);
 	*/
 	result[ciphertext_len + (long long)16 + (long long)12 + (long long)12] = '\0';
-	*len_ex = ciphertext_len + (long long)16 + (long long)12 + (long long)12;
+	auto output = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1 + (long long)12]);
+	for (int i = 0; i < (ciphertext_len + (long long)16 + (long long)12 + (long long)12); i++) {
+
+	}
 	return result.release();
 }
 
-//Libs for C++ code
-/*
-namespace Cpp {
-	std::string EncryptAES(std::string textb, std::string keyb) {
-		unsigned char* text = (unsigned char*)textb.c_str();
-		unsigned char* key = (unsigned char*)keyb.c_str();
-		unsigned char* a = AESEncrypt(text, key, &len,true);
-		delete[] key;
-		delete[] text;
-		auto result = std::string((char*)a);
-		delete[] a;
-		return result;
-	}
-
-
-	std::string DecryptAES(std::string key, std::string ctext) {
-		unsigned char* keyc = (unsigned char*)key.c_str();
-		unsigned char* ctextc = (unsigned char*)ctext.c_str();
-		unsigned char* a = AESDecrypt(keyc, ctextc, true);
-		delete[] keyc;
-		delete[] ctextc;
-		std::string result = std::string((char*)a);
-		OPENSSL_cleanse(a, strnlen((const char*)a, 549755813632));
-		delete[] a;
-		return result;
-	}
+DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key, bool del = true){
+	char len_str[13];
+	/*
+OSSL_PROVIDER *fips;
+OSSL_PROVIDER *base;
+fips = OSSL_PROVIDER_load(NULL, "fips");
+if (fips == NULL) {
+printf("Failed to load FIPS provider\n");
+exit(EXIT_FAILURE);
+}
+base = OSSL_PROVIDER_load(NULL, "base");
+if (base == NULL) {
+OSSL_PROVIDER_unload(fips);
+printf("Failed to load base provider\n");
+exit(EXIT_FAILURE);
 }
 */
+	memcpy_s(len_str, 12, ctext + (strnlen((char*)ctext, 549755813632) - 12), 12);
+	if (strnlen((char*)ctext, 549755813632) == 549755813632 || strnlen((char*)ctext, 549755813632) == 549755813631) {
+		throw std::invalid_argument("Error: this is not a null terminated string");
+	}
+	len_str[12] = '\0';
+	string str_lena = string(len_str);
+	int flen = stoi(str_lena);
+	int errcnt = 0;
+	int leny = strlen((const char*)ctext);
+	int msglen = leny - 12 - 16 - 12;
+	auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
+	memcpy_s(msg.get(), msglen, ctext, msglen);
+	unsigned char iv[12];
+	memcpy_s(iv, 12, ctext + msglen + 16, 12);
+	unsigned char tag[16];
+	memcpy_s(tag, 16, ctext + msglen, 16);
+	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)1]);
+
+	EVP_CIPHER_CTX* ctx;
+	int len;
+	int plaintext_len;
+	if (!(ctx = EVP_CIPHER_CTX_new()))
+		handleErrors(&errcnt);
+	if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
+		handleErrors(&errcnt);
+	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
+		handleErrors(&errcnt);
+	if (!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv))
+		handleErrors(&errcnt);
+	if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
+		handleErrors(&errcnt);
+	plaintext_len = len;
+	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
+		handleErrors(&errcnt);
+	delete[] msg.release();
+	int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
+	plaintext_len += len;
+	if (del == true) {
+		OPENSSL_cleanse(key, 32);
+	}
+	EVP_CIPHER_CTX_free(ctx);
+	if ((!(ret >= 0)) || (errcnt > 0)) {
+		throw std::invalid_argument("Unable to decrypt ciphertext");
+	}
+	/*
+	OSSL_PROVIDER_unload(base);
+	OSSL_PROVIDER_unload(fips);
+	*/
+	out[flen] = '\0';
+	return out.release();
+}
+
 DLLEXPORT int __cdecl Init() {
 	//EVP_set_default_properties(NULL, "fips=yes");
 	EVP_add_cipher(EVP_aes_256_gcm());
@@ -232,16 +207,15 @@ DLLEXPORT int __cdecl Init() {
 };
 
 py::bytes PyAESEncrypt(char* text, char* key) {
-	int len;
-	unsigned char* result = AESEncrypt((unsigned char*)text, (unsigned char*)key, &len, true);
+	unsigned char* result = AESEncrypt((unsigned char*)text, (unsigned char*)key, true);
 	py::bytes r = py::bytes((char*)result);
 	delete[] result;
 	return r;
 }
 
-py::bytes PyAESDecrypt(char* ctext, char* key, int len) {
-	unsigned char* result = AESDecrypt((unsigned char*)ctext, (unsigned char*)key, len,true);
-	py::bytes r = py::bytes((char*)result,len);
+py::bytes PyAESDecrypt(char* ctext, char* key) {
+	unsigned char* result = AESDecrypt((unsigned char*)ctext, (unsigned char*)key, true);
+	py::bytes r = py::bytes((char*)result);
 	OPENSSL_cleanse((char*)result,strlen((const char*)result));
 	delete[] result;
 	return r;
