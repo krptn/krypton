@@ -1,6 +1,6 @@
 cffi==1.15.0
 cryptography==35.0.0
-numpy==1.21.2
+numpy==1.21.3
 pip==21.3
 pycparser==2.20
 setuptools==58.2.0
