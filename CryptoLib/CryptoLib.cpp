@@ -21,6 +21,26 @@
 using namespace std;
 namespace py = pybind11;
 
+#include <boost/archive/iterators/binary_from_base64.hpp>
+#include <boost/archive/iterators/base64_from_binary.hpp>
+#include <boost/archive/iterators/transform_width.hpp>
+#include <boost/algorithm/string.hpp>
+
+std::string decode64(const std::string& val) {
+	using namespace boost::archive::iterators;
+	using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
+	return boost::algorithm::trim_right_copy_if(std::string(It(std::begin(val)), It(std::end(val))), [](char c) {
+		return c == '\0';
+		});
+}
+
+std::string encode64(const std::string& val) {
+	using namespace boost::archive::iterators;
+	using It = base64_from_binary<transform_width<std::string::const_iterator, 6, 8>>;
+	auto tmp = std::string(It(std::begin(val)), It(std::end(val)));
+	return tmp.append((3 - val.size() % 3) % 3, '=');
+}
+
 struct NonNative {
 	unsigned char* data;
 	int len;
@@ -121,11 +141,13 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	OSSL_PROVIDER_unload(fips);
 	*/
 	result[ciphertext_len + (long long)16 + (long long)12 + (long long)12] = '\0';
-	auto output = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1 + (long long)12]);
-	for (int i = 0; i < (ciphertext_len + (long long)16 + (long long)12 + (long long)12); i++) {
-
-	}
-	return result.release();
+	string d = string();
+	d.resize(ciphertext_len + (long long)16 + (long long)12 + (long long)12);
+	memcpy_s((void*)d.c_str(), ciphertext_len + (long long)16 + (long long)12 + (long long)12,result.get(), ciphertext_len + (long long)16 + (long long)12 + (long long)12);
+	string r = encode64(d);
+	char* f = new char[r.size()];
+	memcpy_s(f, r.size(), r.c_str(), r.size());
+	return (unsigned char*)f;
 }
 
 DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key, bool del = true){
