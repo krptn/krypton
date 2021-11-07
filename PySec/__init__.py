@@ -5,7 +5,7 @@ import sys
 import ctypes
 import sys
 
-DEBUG = True
+DEBUG = False
 if sys.platform == "win32" and DEBUG:
     sys.path.append(r"CryptoLib\out\build\x64-Debug\Debug")
 elif sys.platform == "win32" and not DEBUG:
