@@ -173,7 +173,7 @@ exit(EXIT_FAILURE);
 	auto b = decode64(a);
 	auto ctext = unique_ptr<unsigned char[]>(new unsigned char[b.size()]);
 	memcpy_s(ctext.get(), b.size(), b.c_str(), b.size());
-	memcpy_s(len_str, 12, ctext.get() + (strnlen((char*)ctext.get(), 549755813632) - 12), 12);
+	memcpy_s(len_str, 12, ctext.get() + b.size() - 12, 12);
 	if (strnlen((char*)ctext.get(), 549755813632) == 549755813632 || strnlen((char*)ctext.get(), 549755813632) == 549755813631) {
 		throw std::invalid_argument("Error: this is not a null terminated string");
 	}
@@ -234,19 +234,14 @@ DLLEXPORT int __cdecl Init() {
 	return 1;
 };
 
-py::bytes PyAESEncrypt(char* text, char* key) {
+char* PyAESEncrypt(char* text, char* key) {
 	unsigned char* result = AESEncrypt((unsigned char*)text, (unsigned char*)key, true);
-	py::bytes r = py::bytes((char*)result);
-	delete[] result;
-	return r;
+	return (char*)result;
 }
 
-py::bytes PyAESDecrypt(char* ctext, char* key) {
+char* PyAESDecrypt(char* ctext, char* key) {
 	unsigned char* result = AESDecrypt((unsigned char*)ctext, (unsigned char*)key, true);
-	py::bytes r = py::bytes((char*)result);
-	OPENSSL_cleanse((char*)result,strlen((const char*)result));
-	delete[] result;
-	return r;
+	return (char*)result;
 }
 
 PYBIND11_MODULE(CryptoLib, m) {
