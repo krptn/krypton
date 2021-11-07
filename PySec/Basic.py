@@ -8,6 +8,7 @@ import ctypes
 import PySec
 import sys
 from PySec import Decrypt, Encrypt, StrBuilder
+from PySec import Adrr
 RestDecrypt = Decrypt
 RestEncrypt = Encrypt
 # Create a database where the table keys will be imported from the keyfile. 

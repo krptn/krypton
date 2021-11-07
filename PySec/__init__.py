@@ -30,7 +30,7 @@ def getUser():
 data_path = "Data/"
 key = "PySec.key"
 key_path = data_path+key
-
+Adrr = id
 class StrBuilder():
     def __init__(self,lenNum : int):
         self.len = lenNum
