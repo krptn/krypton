@@ -2,14 +2,6 @@
 // -fdeclspec -cfguard" for ninja buildArgs
 #include "CryptoLib.h"
 #define _CRT_SECURE_DEPRECATE_MEMORY
-#ifndef Win
-#define DLLEXPORT
-#endif
-#ifdef Win
-//#define DLLEXPORT __declspec(dllexport)
-#define DLLEXPORT
-#endif
-//#define PY_SSIZE_T_CLEAN
 #include <pybind11/pybind11.h>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
@@ -52,7 +44,7 @@ void handleErrors(int* err) {
 	*err = *err + 1;
 }
 
-DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen = 0) {
+int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen = 0) {
 	int lena;
 	if (Optionalstrlen == 0) {
 		lena = strlen(content);
@@ -65,7 +57,7 @@ DLLEXPORT int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int 
 }
 
 
-DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del = true) {
+unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del = true) {
 	if (strlen((char*)text) > 549755813632) {
 		throw std::invalid_argument("Data is too long or is not null terminated");
 	}
@@ -152,7 +144,7 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	return (unsigned char*)f;
 }
 
-DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext_b, unsigned  char* key, bool del = true){
+unsigned char* __cdecl AESDecrypt(unsigned char* ctext_b, unsigned  char* key, bool del = true){
 	char len_str[13];
 	/*
 OSSL_PROVIDER *fips;
@@ -225,7 +217,7 @@ exit(EXIT_FAILURE);
 	return out.release();
 }
 
-DLLEXPORT int __cdecl Init() {
+int __cdecl Init() {
 	//EVP_set_default_properties(NULL, "fips=yes");
 	EVP_add_cipher(EVP_aes_256_gcm());
 	if (FIPS_mode_set(2) == 0) {
