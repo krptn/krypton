@@ -147,10 +147,12 @@ DLLEXPORT unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* 
 	string r = encode64(d);
 	char* f = new char[r.size()];
 	memcpy_s(f, r.size(), r.c_str(), r.size());
+	int to_change = r.length();
+	f[to_change] = '\0';
 	return (unsigned char*)f;
 }
 
-DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key, bool del = true){
+DLLEXPORT unsigned char* __cdecl AESDecrypt(unsigned char* ctext_b, unsigned  char* key, bool del = true){
 	char len_str[13];
 	/*
 OSSL_PROVIDER *fips;
@@ -167,22 +169,26 @@ printf("Failed to load base provider\n");
 exit(EXIT_FAILURE);
 }
 */
-	memcpy_s(len_str, 12, ctext + (strnlen((char*)ctext, 549755813632) - 12), 12);
-	if (strnlen((char*)ctext, 549755813632) == 549755813632 || strnlen((char*)ctext, 549755813632) == 549755813631) {
+	auto a = string((const char*)ctext_b);
+	auto b = decode64(a);
+	auto ctext = unique_ptr<unsigned char[]>(new unsigned char[b.size()]);
+	memcpy_s(ctext.get(), b.size(), b.c_str(), b.size());
+	memcpy_s(len_str, 12, ctext.get() + (strnlen((char*)ctext.get(), 549755813632) - 12), 12);
+	if (strnlen((char*)ctext.get(), 549755813632) == 549755813632 || strnlen((char*)ctext.get(), 549755813632) == 549755813631) {
 		throw std::invalid_argument("Error: this is not a null terminated string");
 	}
 	len_str[12] = '\0';
 	string str_lena = string(len_str);
 	int flen = stoi(str_lena);
 	int errcnt = 0;
-	int leny = strlen((const char*)ctext);
+	int leny = b.size();
 	int msglen = leny - 12 - 16 - 12;
 	auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
-	memcpy_s(msg.get(), msglen, ctext, msglen);
+	memcpy_s(msg.get(), msglen, ctext.get(), msglen);
 	unsigned char iv[12];
-	memcpy_s(iv, 12, ctext + msglen + 16, 12);
+	memcpy_s(iv, 12, ctext.get() + msglen + 16, 12);
 	unsigned char tag[16];
-	memcpy_s(tag, 16, ctext + msglen, 16);
+	memcpy_s(tag, 16, ctext.get() + msglen, 16);
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)1]);
 
 	EVP_CIPHER_CTX* ctx;
@@ -245,6 +251,6 @@ py::bytes PyAESDecrypt(char* ctext, char* key) {
 
 PYBIND11_MODULE(CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
-	m.def("AESDecrypt", &PyAESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"),py::arg("len"));
+	m.def("AESDecrypt", &PyAESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
 	m.def("AESEncrypt", &PyAESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 }
