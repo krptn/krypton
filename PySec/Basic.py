@@ -7,10 +7,10 @@ import os
 import ctypes
 import PySec
 import sys
-from PySec import Decrypt, Encrypt, StrBuilder
+from PySec import AESDecrypt, AESEncrypt, StrBuilder
 from PySec import Adrr
-RestDecrypt = Decrypt
-RestEncrypt = Encrypt
+RestDecrypt = AESDecrypt
+RestEncrypt = AESEncrypt
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.

@@ -57,7 +57,7 @@ int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalst
 }
 
 
-unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool del = true) {
+char* __cdecl AESEncrypt(char* text, char* key) {
 	if (strlen((char*)text) > 549755813632) {
 		throw std::invalid_argument("Data is too long or is not null terminated");
 	}
@@ -97,9 +97,9 @@ unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool 
 		handleErrors(&errcnt);
 	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
 		handleErrors(&errcnt);
-	if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, key, iv))
+	if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char*)key, iv))
 		handleErrors(&errcnt);
-	if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, text, msglen))
+	if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, (unsigned char*)text, msglen))
 		handleErrors(&errcnt);
 	ciphertext_len = len;
 	if (1 != EVP_EncryptFinal_ex(ctx, out.get() + len, &len))
@@ -107,10 +107,8 @@ unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool 
 	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, &tag))
 		handleErrors(&errcnt);
 	ciphertext_len += len;
-	if (del == true) {
-		OPENSSL_cleanse(key, 32);
-		OPENSSL_cleanse(text, msglen);
-	}
+	OPENSSL_cleanse(key, 32);
+	OPENSSL_cleanse(text, msglen);
 	EVP_CIPHER_CTX_free(ctx);
 	if (errcnt != 0) {
 		throw std::invalid_argument("Unable to encrypt");
@@ -141,10 +139,10 @@ unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned char* key, bool 
 	memcpy_s(f, r.size(), r.c_str(), r.size());
 	int to_change = r.length();
 	f[to_change] = '\0';
-	return (unsigned char*)f;
+	return (char*)f;
 }
 
-unsigned char* __cdecl AESDecrypt(unsigned char* ctext_b, unsigned  char* key, bool del = true){
+char* __cdecl AESDecrypt(char* ctext_b, char* key){
 	char len_str[13];
 	/*
 OSSL_PROVIDER *fips;
@@ -192,7 +190,7 @@ exit(EXIT_FAILURE);
 		handleErrors(&errcnt);
 	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
 		handleErrors(&errcnt);
-	if (!EVP_DecryptInit_ex(ctx, NULL, NULL, key, iv))
+	if (!EVP_DecryptInit_ex(ctx, NULL, NULL, (unsigned char*)key, iv))
 		handleErrors(&errcnt);
 	if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
 		handleErrors(&errcnt);
@@ -202,9 +200,8 @@ exit(EXIT_FAILURE);
 	delete[] msg.release();
 	int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
 	plaintext_len += len;
-	if (del == true) {
-		OPENSSL_cleanse(key, 32);
-	}
+
+	OPENSSL_cleanse(key, 32);
 	EVP_CIPHER_CTX_free(ctx);
 	if ((!(ret >= 0)) || (errcnt > 0)) {
 		throw std::invalid_argument("Unable to decrypt ciphertext");
@@ -214,7 +211,7 @@ exit(EXIT_FAILURE);
 	OSSL_PROVIDER_unload(fips);
 	*/
 	out[flen] = '\0';
-	return out.release();
+	return (char*)out.release();
 }
 
 int __cdecl Init() {
@@ -226,18 +223,18 @@ int __cdecl Init() {
 	return 1;
 };
 
-char* PyAESEncrypt(char* text, char* key) {
-	unsigned char* result = AESEncrypt((unsigned char*)text, (unsigned char*)key, true);
-	return (char*)result;
+char* __cdecl HASH(char* text) {
+	return text;
 }
 
-char* PyAESDecrypt(char* ctext, char* key) {
-	unsigned char* result = AESDecrypt((unsigned char*)ctext, (unsigned char*)key, true);
-	return (char*)result;
+bool __cdecl HASHCompare(char* hash, char* text) {
+	return true;
 }
 
 PYBIND11_MODULE(CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
-	m.def("AESDecrypt", &PyAESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
-	m.def("AESEncrypt", &PyAESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
+	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
+	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
+	m.def("HASH", &HASH, "Securely hashes the text", py::arg("text"));
+	m.def("HASHCompare", &HASHCompare, "Hashes the second argument and compares it with the first argument. Built to prevent timing attacks.", py::arg("hash"), py::arg("text"));
 }

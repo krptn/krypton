@@ -16,7 +16,9 @@
 struct NonNative;
 
 int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen);
-unsigned char* __cdecl AESDecrypt(unsigned char* ctext, unsigned  char* key,bool del);
-unsigned char* __cdecl AESEncrypt(unsigned char* text, unsigned  char* key,bool del);
+char* __cdecl AESDecrypt(char* ctext_b, char* key);
+char* __cdecl AESEncrypt(char* text, char* key);
+char* __cdecl HASH(char* text);
+bool __cdecl HASHCompare(char* hash, char* text);
 
 extern "C" int __cdecl Init();
