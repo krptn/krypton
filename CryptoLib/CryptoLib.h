@@ -20,5 +20,6 @@ char* __cdecl AESDecrypt(char* ctext_b, char* key);
 char* __cdecl AESEncrypt(char* text, char* key);
 char* __cdecl HASH(char* text);
 bool __cdecl HASHCompare(char* hash, char* text);
+char* __cdecl GetKey(char* pwd, char* salt);
 
 extern "C" int __cdecl Init();

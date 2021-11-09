@@ -213,7 +213,7 @@ exit(EXIT_FAILURE);
 	out[flen] = '\0';
 	return (char*)out.release();
 }
-
+/*
 int __cdecl Init() {
 	//EVP_set_default_properties(NULL, "fips=yes");
 	EVP_add_cipher(EVP_aes_256_gcm());
@@ -222,7 +222,7 @@ int __cdecl Init() {
 	}
 	return 1;
 };
-
+*/
 char* __cdecl HASH(char* text) {
 	return text;
 }
@@ -231,10 +231,15 @@ bool __cdecl HASHCompare(char* hash, char* text) {
 	return true;
 }
 
+char* __cdecl GetKey(char* pwd, char* salt) {
+	return pwd;
+};
+
 PYBIND11_MODULE(CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 	m.def("HASH", &HASH, "Securely hashes the text", py::arg("text"));
 	m.def("HASHCompare", &HASHCompare, "Hashes the second argument and compares it with the first argument. Built to prevent timing attacks.", py::arg("hash"), py::arg("text"));
+	m.def("GetKey", &GetKey, "Performs Key Deriviation on the first argument using second argument as a salt. If salt=0 than a new salt will be generated.", py::arg("pwd"), py::arg("salt")='\0');
 }
