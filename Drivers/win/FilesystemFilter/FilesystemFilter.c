@@ -578,10 +578,6 @@ Return Value:
             FltUnregisterFilter( gFilterHandle );
         }
     }
-
-    UserProcess = "PySec.exe";
-    UserProcess2 = "Python.exe";
-
     return status;
 }
 
@@ -687,9 +683,9 @@ Return Value:
     // This template code does not do anything with the callbackData, but
     // rather returns FLT_PREOP_SUCCESS_WITH_CALLBACK.
     // This passes the request down to the next miniFilter in the chain.
-    UNICODE_STRING thing = (Data->Iopb->TargetFileObject->FileName);
-    if ((&thing == "PySec.key") || (&thing == "Python.exe")) {
-        if (AskApp(Data->Iopb->TargetFileObject->FileName)) {
+    char* thing = (Data->Iopb->TargetFileObject->FileName);
+    if (thing == "PySec.key") {
+        if (AskApp()) { //Check the digital signiture.
             return FLT_PREOP_SUCCESS_WITH_CALLBACK;
         }
         else {
@@ -798,13 +794,6 @@ Return Value:
     UNREFERENCED_PARAMETER( CompletionContext );
     UNREFERENCED_PARAMETER( Flags );
 
-    if (PsGetCurrentProcessId()) {  //Should be in PREOP actually
-
-        FltCancelFileOpen(FltObjects->Instance, FltObjects->FileObject);
-
-        Data->IoStatus.Status = STATUS_ACCESS_DENIED;
-        Data->IoStatus.Information = 0;
-    }
     PT_DBG_PRINT( PTDBG_TRACE_ROUTINES,
                   ("FilesystemFilter!FilesystemFilterPostOperation: Entered\n") );
 
