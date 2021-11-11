@@ -9,3 +9,7 @@
 - ML/AI to detect attacks - only planned
 # It does this all automatically: so the developers can focus on their work, and PySec does the security. 
 View security features: [Security Features](security/sec_feature_plan.md)
+
+```python
+import PySec
+´´´
