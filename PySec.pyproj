@@ -65,8 +65,8 @@
   <ItemGroup>
     <Interpreter Include="..\..\..\VEnvs\PySecEnv\">
       <Id>PySecEnv</Id>
-      <Version>3.10</Version>
-      <Description>PySecEnv (Python 3.10 (64-bit))</Description>
+      <Version>3.9</Version>
+      <Description>PySecEnv (Python 3.9 (64-bit))</Description>
       <InterpreterPath>Scripts\python.exe</InterpreterPath>
       <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
       <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
