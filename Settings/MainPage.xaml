@@ -6,45 +6,74 @@
     <ScrollView>
         <Grid RowSpacing="25" RowDefinitions="Auto,Auto,Auto,Auto,*"
               Padding="{OnPlatform iOS='30,60,30,30', Default='30'}">
-
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="25*"/>
+            </Grid.ColumnDefinitions>
+        <!--The Home Page-->
             <Label 
-                Text="Hello, World!"
-                Grid.Row="0"
-                SemanticProperties.HeadingLevel="Level1"
-                FontSize="32"
-                HorizontalOptions="Center" />
-
-            <Label 
-                Text="Welcome to .NET Multi-platform App UI"
+                Text="Welcome to PySec Settings"
                 Grid.Row="1"
+                Grid.Column="1"
                 SemanticProperties.HeadingLevel="Level1"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                FontSize="18"
+                SemanticProperties.Description="Welcome to PySec Settings"
+                FontSize="30"
                 HorizontalOptions="Center" />
 
             <Label 
-                Text="Current count: 0"
+                Text=""
                 Grid.Row="2"
+                Grid.Column="1"
                 FontSize="18"
                 FontAttributes="Bold"
                 x:Name="CounterLabel"
                 HorizontalOptions="Center" />
-
-            <Button 
-                Text="Click me"
-                FontAttributes="Bold"
+            
+            <Button
+                Text="Connect to Server"
                 Grid.Row="3"
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Center" />
+                Grid.Column="1"
+                Clicked="Connect"/>
 
             <Image Grid.Row="4"
-                Source="dotnet_bot.png"
-                SemanticProperties.Description="Cute dot net bot waving hi to you!"
+                Source="logo.png"
+                Grid.Column="1"
+                SemanticProperties.Description="PySec Logo"
                 WidthRequest="250"
                 HeightRequest="310"
                 HorizontalOptions="Center" />
-
+            
+            <!--The Side Panel Menu-->
+            <Button
+                Text="Home Page"
+                Clicked="Home_Settings"
+                Grid.Column="0"
+                SemanticProperties.Description="Go to the homepage"
+                Grid.Row="0"/>
+            <Button
+                Text="FIPS"
+                Clicked="FIPS_Settings"
+                Grid.Column="0"
+                SemanticProperties.Description="Change FIPS Settings"
+                Grid.Row="1"/>
+            <Button
+                Text="Auth Settings"
+                Clicked="Auth_Settings"
+                Grid.Column="0"
+                SemanticProperties.Description="Change Authentication Settings"
+                Grid.Row="2"/>
+            <Button
+                Text="Server Settings"
+                Clicked="Server_Settings"
+                Grid.Column="0"
+                SemanticProperties.Description="Change Server Settings"
+                Grid.Row="2"/>
+            <Button
+                Text="Data Settings"
+                Clicked="Data_Settings"
+                Grid.Column="0"
+                SemanticProperties.Description="Change Data Privacy Settings"
+                Grid.Row="3"/>
         </Grid>
     </ScrollView>
 </ContentPage>

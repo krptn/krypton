@@ -6,19 +6,40 @@ namespace Settings
 {
     public partial class MainPage : ContentPage
     {
-        int count = 0;
-
         public MainPage()
         {
             InitializeComponent();
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        private void Connect(object sender, EventArgs e)
         {
-            count++;
-            CounterLabel.Text = $"Current count: {count}";
-
+            CounterLabel.Text = "Only building UI!";
             SemanticScreenReader.Announce(CounterLabel.Text);
+        }
+
+        private void FIPS_Settings(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Home_Settings(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Auth_Settings(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Server_Settings(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Data_Settings(object sender, EventArgs e)
+        {
+
         }
     }
 }
