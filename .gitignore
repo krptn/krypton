@@ -8,6 +8,9 @@ c_cpp_properties.json
 keystore.db
 Data
 
+#Machine specific files
+CMakeSettings.json
+
 # User-specific files
 *.rsuser
 *.suo
