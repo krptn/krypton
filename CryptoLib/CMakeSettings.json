@@ -3,7 +3,7 @@
     {
       "name": "x64-Debug",
       "generator": "Visual Studio 17 2022",
-      "configurationType": "Debug",
+      "configurationType":"Debug",
       "inheritEnvironments": [ "msvc_x64" ],
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
@@ -27,8 +27,8 @@
           "type": "STRING"
         },
         {
-          "name": "PyBind11",
-          "value": "C:\\Users\\Mark Barsi-Siminszky\\VEnvs\\PySecEnv\\Lib\\site-packages\\pybind11\\include",
+          "name": "pybind11_DIR",
+          "value": "C:\\Users\\Mark Barsi-Siminszky\\VEnvs\\PySecEnv\\Lib\\site-packages\\pybind11\\share\\cmake\\pybind11",
           "type": "STRING"
         },
         {
@@ -87,7 +87,7 @@
     {
       "name": "x64-Release",
       "generator": "Visual Studio 17 2022",
-      "configurationType": "RelWithDebInfo",
+      "configurationType": "Release",
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
@@ -106,8 +106,8 @@
           "type": "STRING"
         },
         {
-          "name": "PyBind11",
-          "value": "C:\\Users\\Mark Barsi-Siminszky\\VEnvs\\PySecEnv\\Lib\\site-packages\\pybind11\\include",
+          "name": "pybind11_DIR",
+          "value": "C:\\Users\\Mark Barsi-Siminszky\\VEnvs\\PySecEnv\\Lib\\site-packages\\pybind11\\share\\cmake\\pybind11",
           "type": "STRING"
         },
         {
@@ -130,7 +130,7 @@
     {
       "name": "Linux-Clang-Release",
       "generator": "Unix Makefiles",
-      "configurationType": "RelWithDebInfo",
+      "configurationType": "Release",
       "cmakeExecutable": "cmake",
       "remoteCopySourcesExclusionList": [ ".vs", ".git", "out" ],
       "cmakeCommandArgs": "",
