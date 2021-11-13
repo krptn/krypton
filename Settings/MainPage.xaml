@@ -4,12 +4,21 @@
              BackgroundColor="{DynamicResource SecondaryColor}">
 
     <ScrollView>
+
         <Grid RowSpacing="25" RowDefinitions="Auto,Auto,Auto,Auto,*"
               Padding="{OnPlatform iOS='30,60,30,30', Default='30'}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="5*"/>
                 <ColumnDefinition Width="25*"/>
             </Grid.ColumnDefinitions>
+            <Grid.Background>
+                <LinearGradientBrush>
+                    <GradientStop Color="Yellow" Offset="0.0" />
+                    <GradientStop Color="Red" Offset="0.25" />
+                    <GradientStop Color="Blue" Offset="0.75" />
+                    <GradientStop Color="LimeGreen" Offset="1.0" />
+                </LinearGradientBrush>
+            </Grid.Background>
         <!--The Home Page-->
             <Label 
                 Text="Welcome to PySec Settings"
@@ -18,7 +27,8 @@
                 SemanticProperties.HeadingLevel="Level1"
                 SemanticProperties.Description="Welcome to PySec Settings"
                 FontSize="30"
-                HorizontalOptions="Center" />
+                HorizontalOptions="Center" 
+                TextColor="Red"/>
 
             <Label 
                 Text=""
@@ -28,20 +38,22 @@
                 FontAttributes="Bold"
                 x:Name="CounterLabel"
                 HorizontalOptions="Center" />
-            
+
             <Button
                 Text="Connect to Server"
+                TextColor="Purple"
                 Grid.Row="3"
                 Grid.Column="1"
-                Clicked="Connect"/>
+                Clicked="Connect"
+                BackgroundColor="Aqua"/>
 
             <Image Grid.Row="4"
                 Source="logo.png"
                 Grid.Column="1"
                 SemanticProperties.Description="PySec Logo"
-                WidthRequest="250"
-                HeightRequest="310"
-                HorizontalOptions="Center" />
+                WidthRequest="400"
+                HeightRequest="400"
+                HorizontalOptions="Center"/>
             
             <!--The Side Panel Menu-->
             <Button
