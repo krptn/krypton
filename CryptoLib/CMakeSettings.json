@@ -1,8 +1,10 @@
 ﻿{
+  "environments":[
+  ],
   "configurations": [
     {
       "name": "x64-Debug",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 16 2019 Win64",
       "configurationType":"Debug",
       "inheritEnvironments": [ "msvc_x64" ],
       "buildRoot": "${projectDir}\\out\\build\\${name}",
@@ -17,29 +19,16 @@
           "type": "STRING"
         },
         {
+          "name": "CC",
+          "value": "cl"
+        },
+        {
           "name": "PyLoc",
-          "value": "C:\\Program Files\\Python310\\include",
-          "type": "STRING"
+          "value": "C:\\Program Files\\Python39\\include"
         },
         {
           "name": "PyLib",
-          "value": "C:\\Program Files\\Python310\\libs",
-          "type": "STRING"
-        },
-        {
-          "name": "pybind11_DIR",
-          "value": "C:\\Users\\Mark Barsi-Siminszky\\VEnvs\\PySecEnv\\Lib\\site-packages\\pybind11\\share\\cmake\\pybind11",
-          "type": "STRING"
-        },
-        {
-          "name": "OPENSSL_ROOT_DIR",
-          "value": "C:\\Users\\Mark Barsi-Siminszky\\source\\other-repos\\MS\\vcpkg\\installed\\x64-windows",
-          "type": "STRING"
-        },
-        {
-          "name": "Platform",
-          "value": "Win",
-          "type": "STRING"
+          "value": "C:\\Program Files\\Python39\\libs"
         }
       ]
     },
@@ -66,64 +55,36 @@
           "name": "CMAKE_TOOLCHAIN_FILE",
           "value": "/mnt/c/Users/Mark Barsi-Siminszky/source/other-repos/MS/vcpkg/scripts/buildsystems/vcpkg.cmake",
           "type": "STRING"
-        },
-        {
-          "name": "PyLoc",
-          "value": "/usr/include/python3.7/",
-          "type": "STRING"
-        },
-        {
-          "name": "OPENSSL_ROOT_DIR",
-          "value": "/mnt/c/Users/Mark Barsi-Siminszky/source/other-repos/MS/vcpkg/installed/x64-windows",
-          "type": "STRING"
-        },
-        {
-          "name": "Platform",
-          "value": "Linux",
-          "type": "STRING"
         }
       ]
     },
     {
       "name": "x64-Release",
-      "generator": "Visual Studio 17 2022",
+      "generator": "Visual Studio 16 2019 Win64",
       "configurationType": "Release",
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
-      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "inheritEnvironments": [ "msvc_x64" ],
       "variables": [
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
-          "value": "C:\\Users\\Mark Barsi-Siminszky\\source\\\\other-repos\\\\MS\\\\vcpkg\\\\scripts\\\\buildsystems\\\\vcpkg.cmake",
+          "value": "C:\\Users\\Mark Barsi-Siminszky\\source\\other-repos\\MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
           "type": "STRING"
+        },
+        {
+          "name": "CC",
+          "value": "cl"
         },
         {
           "name": "PyLoc",
-          "value": "C:\\Program Files\\Python310\\include",
-          "type": "STRING"
-        },
-        {
-          "name": "pybind11_DIR",
-          "value": "C:\\Users\\Mark Barsi-Siminszky\\VEnvs\\PySecEnv\\Lib\\site-packages\\pybind11\\share\\cmake\\pybind11",
-          "type": "STRING"
-        },
-        {
-          "name": "OPENSSL_ROOT_DIR",
-          "value": "C:\\Users\\Mark Barsi-Siminszky\\source\\other-repos\\MS\\vcpkg\\installed\\x64-windows",
-          "type": "STRING"
+          "value": "C:\\Program Files\\Python39\\include"
         },
         {
           "name": "PyLib",
-          "value": "C:\\Program Files\\Python310\\libs",
-          "type": "STRING"
-        },
-        {
-          "name": "Platform",
-          "value": "Win",
-          "type": "STRING"
+          "value": "C:\\Program Files\\Python39\\libs"
         }
       ]
     },
@@ -149,21 +110,6 @@
         {
           "name": "CMAKE_TOOLCHAIN_FILE",
           "value": "/mnt/c/Users/Mark Barsi-Siminszky/source/other-repos/MS/vcpkg/scripts/buildsystems/vcpkg.cmake",
-          "type": "STRING"
-        },
-        {
-          "name": "PyLoc",
-          "value": "/usr/include/python3.7",
-          "type": "STRING"
-        },
-        {
-          "name": "OPENSSL_ROOT_DIR",
-          "value": "/mnt/c/Users/Mark Barsi-Siminszky/source/other-repos/MS/vcpkg/installed/x64-windows",
-          "type": "STRING"
-        },
-        {
-          "name": "Platform",
-          "value": "Linux",
           "type": "STRING"
         }
       ]

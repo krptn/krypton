@@ -13,10 +13,8 @@ namespace Settings
 
         private void Connect(object sender, EventArgs e)
         {
-            CounterLabel.Text = "Only building UI!";
-            SemanticScreenReader.Announce(CounterLabel.Text);
-        }
 
+        }
         private void FIPS_Settings(object sender, EventArgs e)
         {
 

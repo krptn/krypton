@@ -1,11 +1,7 @@
 ﻿# CMakeList.txt : CMake project for CryptoLib, include source and define
 # project specific logic here.
-#
 cmake_minimum_required (VERSION 3.8)
-
 project ("CryptoLib")
-
-cmake_minimum_required (VERSION 3.8)
 project ("Cross-PlatformCryptoLib")
 if (MSVC AND (MSVC_VERSION GREATER 1900))
     message("Setting CONTROL FLOW GUARD") 
@@ -14,14 +10,17 @@ if (MSVC AND (MSVC_VERSION GREATER 1900))
     message("Setting QSPECTRE")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /Qspectre /MD")
 endif()
-SET("A" "x64")
-# Add source to this project's executable.
-find_package(OpenSSL REQUIRED)
+
+if(NOT MSVC)
+    message("Setting Spectre mitigation")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfunction-return -mindirect-branch-register ")
+    target_compile_options (CryptoLib PUBLIC -fexceptions)
+endif()
+
+include_directories(${PyLoc})
 link_directories(${PyLib})
-include_directories(${PyLoc} include src)
+find_package(OpenSSL REQUIRED)
+find_package(Python3 REQUIRED)
 add_library(CryptoLib SHARED "CryptoLib.cpp" "CryptoLib.h")
-add_compile_definitions(${Platform})
-find_package(pybind11 REQUIRED)
-target_link_libraries(CryptoLib PRIVATE pybind11::lto pybind11::embed pybind11::module)
 target_link_libraries(CryptoLib  PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 set_target_properties(CryptoLib PROPERTIES SUFFIX ".pyd")

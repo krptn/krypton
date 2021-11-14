@@ -11,81 +11,84 @@
                 <ColumnDefinition Width="5*"/>
                 <ColumnDefinition Width="25*"/>
             </Grid.ColumnDefinitions>
+            <!---
             <Grid.Background>
                 <LinearGradientBrush>
-                    <GradientStop Color="Yellow" Offset="0.0" />
-                    <GradientStop Color="Red" Offset="0.25" />
-                    <GradientStop Color="Blue" Offset="0.75" />
-                    <GradientStop Color="LimeGreen" Offset="1.0" />
+                    <GradientStop Color="Yellow"  />
+                    <GradientStop Color="Orange" Offset="0.0" />
+                    <GradientStop Color="BlueViolet" Offset="0.0" />
                 </LinearGradientBrush>
             </Grid.Background>
+           -->
         <!--The Home Page-->
-            <Label 
+                <Label 
                 Text="Welcome to PySec Settings"
                 Grid.Row="1"
-                Grid.Column="1"
                 SemanticProperties.HeadingLevel="Level1"
                 SemanticProperties.Description="Welcome to PySec Settings"
                 FontSize="30"
                 HorizontalOptions="Center" 
                 TextColor="Red"/>
 
-            <Label 
+                <Label 
                 Text=""
                 Grid.Row="2"
-                Grid.Column="1"
                 FontSize="18"
                 FontAttributes="Bold"
                 x:Name="CounterLabel"
                 HorizontalOptions="Center" />
 
-            <Button
+                <Button
                 Text="Connect to Server"
                 TextColor="Purple"
                 Grid.Row="3"
-                Grid.Column="1"
                 Clicked="Connect"
                 BackgroundColor="Aqua"/>
 
-            <Image Grid.Row="4"
+                <Image Grid.Row="4"
                 Source="logo.png"
-                Grid.Column="1"
                 SemanticProperties.Description="PySec Logo"
                 WidthRequest="400"
                 HeightRequest="400"
                 HorizontalOptions="Center"/>
-            
-            <!--The Side Panel Menu-->
-            <Button
+                
+                <Button
+                Text="Colapse"
+                Clicked="Colapse"
+                SemanticProperties.Description="Colpase side menu."
+                Grid.Row="0"/>
+                <!--The Side Panel Menu-->
+
+
+            <NavigationPage>
+                <
+                <Button
                 Text="Home Page"
                 Clicked="Home_Settings"
-                Grid.Column="0"
                 SemanticProperties.Description="Go to the homepage"
-                Grid.Row="0"/>
-            <Button
+                Grid.Row="1"/>
+                <Button
                 Text="FIPS"
                 Clicked="FIPS_Settings"
-                Grid.Column="0"
                 SemanticProperties.Description="Change FIPS Settings"
-                Grid.Row="1"/>
-            <Button
+                Grid.Row="2"/>
+                <Button
                 Text="Auth Settings"
                 Clicked="Auth_Settings"
-                Grid.Column="0"
                 SemanticProperties.Description="Change Authentication Settings"
-                Grid.Row="2"/>
-            <Button
+                Grid.Row="3"/>
+                <Button
                 Text="Server Settings"
                 Clicked="Server_Settings"
-                Grid.Column="0"
                 SemanticProperties.Description="Change Server Settings"
-                Grid.Row="2"/>
-            <Button
+                Grid.Row="4"/>
+                <Button
                 Text="Data Settings"
                 Clicked="Data_Settings"
-                Grid.Column="0"
                 SemanticProperties.Description="Change Data Privacy Settings"
-                Grid.Row="3"/>
+                Grid.Row="5"
+                MaximumWidthRequest="0.25"/>
+            </NavigationPage>
         </Grid>
     </ScrollView>
 </ContentPage>

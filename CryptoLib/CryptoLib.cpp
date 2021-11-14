@@ -1,7 +1,6 @@
 ﻿// Cross-PlatformCryptoLib.cpp : Defines the entry point for the application.
 // -fdeclspec -cfguard" for ninja buildArgs
 #include "CryptoLib.h"
-#define _CRT_SECURE_DEPRECATE_MEMORY
 #include <pybind11/pybind11.h>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
@@ -9,7 +8,6 @@
 #include <openssl/conf.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
-#include <memory>
 using namespace std;
 namespace py = pybind11;
 
@@ -32,12 +30,6 @@ std::string encode64(const std::string& val) {
 	auto tmp = std::string(It(std::begin(val)), It(std::end(val)));
 	return tmp.append((3 - val.size() % 3) % 3, '=');
 }
-
-struct NonNative {
-	unsigned char* data;
-	int len;
-	bool str;
-};
 
 void handleErrors(int* err) {
 	//Add to log here
@@ -119,7 +111,7 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	delete[] out.release();
 	AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len, 16);
 	AddToStrBuilder((char*)result.get(), (char*)&iv, ciphertext_len + 16, 12);
-	unsigned char len_num[12];
+	unsigned char len_num[12]{};
 	string num = to_string(msglen);
 	int ler = num.length();
 	const char* num_len = num.c_str();
