@@ -9,7 +9,7 @@ keystore.db
 Data
 
 #Machine specific files
-#CMakeSettings.json
+CMakeSettings.json
 .vs/
 .vscode/
 
