@@ -134,7 +134,7 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	return (char*)f;
 }
 
-char* __cdecl AESDecrypt(char* ctext_b, char* key){
+py::bytes __cdecl AESDecrypt(char* ctext_b, char* key){
 	char len_str[13];
 	/*
 OSSL_PROVIDER *fips;
@@ -203,7 +203,9 @@ exit(EXIT_FAILURE);
 	OSSL_PROVIDER_unload(fips);
 	*/
 	out[flen] = '\0';
-	return (char*)out.release();
+	py::bytes r = py::bytes((char*)out.get());
+	OPENSSL_cleanse((char*)out.get(),msglen + (long long)1);
+	return r;
 }
 /*
 int __cdecl Init() {
@@ -223,7 +225,8 @@ bool __cdecl HASHCompare(char* hash, char* text) {
 	return true;
 }
 
-char* __cdecl GetKey(char* pwd, char* salt) {
+py::bytes __cdecl GetKey(char* pwd, char* salt) {
+	//Ok. So we need to create the PyObject inside this function to prevent making copies after the function has returned
 	return pwd;
 };
 

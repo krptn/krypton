@@ -2,7 +2,7 @@ setup = """"""
 from PySec import AESEncrypt, AESDecrypt
 import os
 import timeit
-
+input("Go")
 run = """ """
 text = b"Its aim is to test the performance of the crypto."
 key = os.urandom(32)

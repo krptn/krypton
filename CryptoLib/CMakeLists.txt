@@ -1,5 +1,7 @@
 ﻿# CMakeList.txt : CMake project for CryptoLib, include source and define
 # project specific logic here.
+# for VSC use VS 2019 - x86_amd64 config 
+
 cmake_minimum_required (VERSION 3.8)
 project ("CryptoLib")
 project ("Cross-PlatformCryptoLib")

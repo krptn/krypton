@@ -7,7 +7,7 @@
       "generator": "Visual Studio 16 2019 Win64",
       "configurationType":"Debug",
       "inheritEnvironments": [ "msvc_x64" ],
-      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "buildRoot": "${projectDir}\\build\\Debug",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
@@ -17,10 +17,6 @@
           "name": "CMAKE_TOOLCHAIN_FILE",
           "value": "C:\\Users\\Mark Barsi-Siminszky\\source\\other-repos\\MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
           "type": "STRING"
-        },
-        {
-          "name": "CC",
-          "value": "cl"
         },
         {
           "name": "PyLoc",
@@ -62,7 +58,7 @@
       "name": "x64-Release",
       "generator": "Visual Studio 16 2019 Win64",
       "configurationType": "Release",
-      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "buildRoot": "${projectDir}\\build\\Release",
       "installRoot": "${projectDir}\\out\\install\\${name}",
       "cmakeCommandArgs": "",
       "buildCommandArgs": "",
@@ -73,10 +69,6 @@
           "name": "CMAKE_TOOLCHAIN_FILE",
           "value": "C:\\Users\\Mark Barsi-Siminszky\\source\\other-repos\\MS\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake",
           "type": "STRING"
-        },
-        {
-          "name": "CC",
-          "value": "cl"
         },
         {
           "name": "PyLoc",
