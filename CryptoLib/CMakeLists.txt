@@ -21,6 +21,7 @@ include_directories(${PyLoc})
 link_directories(${PyLib})
 find_package(OpenSSL REQUIRED)
 find_package(Python3 REQUIRED)
+
 add_library(CryptoLib SHARED "CryptoLib.cpp" "CryptoLib.h")
 target_link_libraries(CryptoLib  PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 set_target_properties(CryptoLib PROPERTIES SUFFIX ".pyd")
