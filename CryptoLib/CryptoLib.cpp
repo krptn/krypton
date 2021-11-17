@@ -53,6 +53,7 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	if (strlen((char*)text) > 549755813632) {
 		throw std::invalid_argument("Data is too long or is not null terminated");
 	}
+	try{
 	unsigned char ivbuff[12];
 	unsigned char tag[16];
 	/*
@@ -132,9 +133,13 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	int to_change = r.length();
 	f[to_change] = '\0';
 	return (char*)f;
+	} catch(...) {
+		throw std::invalid_argument("Unable to encrypt ciphertext");
+	}
 }
 
 py::bytes __cdecl AESDecrypt(char* ctext_b, char* key){
+	try {
 	char len_str[13];
 	/*
 OSSL_PROVIDER *fips;
@@ -206,6 +211,9 @@ exit(EXIT_FAILURE);
 	py::bytes r = py::bytes((char*)out.get());
 	OPENSSL_cleanse((char*)out.get(),msglen + (long long)1);
 	return r;
+	} catch(...) {
+		throw std::invalid_argument("Unable to decrypt ciphertext");
+	}
 }
 /*
 int __cdecl Init() {
