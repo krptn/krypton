@@ -226,7 +226,33 @@ int __cdecl Init() {
 };
 */
 char* __cdecl HASH(char* text) {
-	return text;
+	int len = strlen(text);
+	int err_cnt = 0;
+	char* result;
+	unsigned int digest_len;
+	EVP_MD_CTX* mdctx;
+
+	if ((mdctx = EVP_MD_CTX_new()) == NULL)
+		handleErrors(&err_cnt);
+
+	if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), NULL))
+		handleErrors(&err_cnt);
+
+	if (1 != EVP_DigestUpdate(mdctx, text, len))
+		handleErrors(&err_cnt);
+
+	if ((result = (char*)OPENSSL_malloc(EVP_MD_size(EVP_sha256()))) == NULL)
+		handleErrors(&err_cnt);
+
+	if (1 != EVP_DigestFinal_ex(mdctx, (unsigned char*)result, &digest_len))
+		handleErrors(&err_cnt);
+
+	EVP_MD_CTX_free(mdctx);
+	OPENSSL_cleanse(text,len);
+	if (err_cnt != 0) {
+		throw std::invalid_argument("Unable to hash data.");
+	}
+	return result;
 }
 
 bool __cdecl HASHCompare(char* hash, char* text) {
