@@ -228,6 +228,8 @@ int __cdecl Init() {
 char* __cdecl HASH(char* text) {
 	int len = strlen(text);
 	int err_cnt = 0;
+	char salt[12];
+	RAND_bytes((unsigned char*)salt,12);
 	char* result;
 	unsigned int digest_len;
 	EVP_MD_CTX* mdctx;
@@ -235,14 +237,16 @@ char* __cdecl HASH(char* text) {
 	if ((mdctx = EVP_MD_CTX_new()) == NULL)
 		handleErrors(&err_cnt);
 
-	if (1 != EVP_DigestInit_ex(mdctx, EVP_sha256(), NULL))
+	if (1 != EVP_DigestInit_ex(mdctx, EVP_sha512(), NULL))
+		handleErrors(&err_cnt);
+
+	if (1 != EVP_DigestUpdate(mdctx, salt, 12))
 		handleErrors(&err_cnt);
 
 	if (1 != EVP_DigestUpdate(mdctx, text, len))
 		handleErrors(&err_cnt);
 
-	if ((result = (char*)OPENSSL_malloc(EVP_MD_size(EVP_sha256()))) == NULL)
-		handleErrors(&err_cnt);
+	result = new char[EVP_MD_size(EVP_sha512())];
 
 	if (1 != EVP_DigestFinal_ex(mdctx, (unsigned char*)result, &digest_len))
 		handleErrors(&err_cnt);
@@ -252,7 +256,12 @@ char* __cdecl HASH(char* text) {
 	if (err_cnt != 0) {
 		throw std::invalid_argument("Unable to hash data.");
 	}
-	return result;
+	unique_ptr<char[]> out = unique_ptr<char[]>(new char[digest_len + (long long)12]);
+	AddToStrBuilder(out.get(), result, 0, digest_len);
+	delete[] result;
+	AddToStrBuilder(out.get(), salt, digest_len, 12);
+	//Base64 encode for python compatability. 
+	return out.release();
 }
 
 bool __cdecl HASHCompare(char* hash, char* text) {
