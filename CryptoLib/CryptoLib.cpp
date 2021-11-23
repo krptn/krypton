@@ -225,41 +225,23 @@ int __cdecl Init() {
 	return 1;
 };
 */
-char* __cdecl HASH(char* text) {
+char* __cdecl HASH_FOR_STORAGE(char* text) {
 	int len = strlen(text);
 	int err_cnt = 0;
 	char salt[12];
 	RAND_bytes((unsigned char*)salt,12);
-	char* result;
-	unsigned int digest_len;
-	EVP_MD_CTX* mdctx;
-
-	if ((mdctx = EVP_MD_CTX_new()) == NULL)
+	unique_ptr<char[]> result = unique_ptr<char[]>(new char[32]);
+	if (!PKCS5_PBKDF2_HMAC_SHA1(text, len, (unsigned char*)&salt, 12, 100000, 32, (unsigned char*)result.get()))
 		handleErrors(&err_cnt);
 
-	if (1 != EVP_DigestInit_ex(mdctx, EVP_sha512(), NULL))
-		handleErrors(&err_cnt);
-
-	if (1 != EVP_DigestUpdate(mdctx, salt, 12))
-		handleErrors(&err_cnt);
-
-	if (1 != EVP_DigestUpdate(mdctx, text, len))
-		handleErrors(&err_cnt);
-
-	result = new char[EVP_MD_size(EVP_sha512())];
-
-	if (1 != EVP_DigestFinal_ex(mdctx, (unsigned char*)result, &digest_len))
-		handleErrors(&err_cnt);
-
-	EVP_MD_CTX_free(mdctx);
 	OPENSSL_cleanse(text,len);
 	if (err_cnt != 0) {
 		throw std::invalid_argument("Unable to hash data.");
 	}
-	unique_ptr<char[]> out = unique_ptr<char[]>(new char[digest_len + (long long)12]);
-	AddToStrBuilder(out.get(), result, 0, digest_len);
-	delete[] result;
-	AddToStrBuilder(out.get(), salt, digest_len, 12);
+	unique_ptr<char[]> out = unique_ptr<char[]>(new char[32 + 12]);
+	AddToStrBuilder(out.get(), result.get(), 0, 32);
+	delete[] result.release();
+	AddToStrBuilder(out.get(), salt, 32, 12);
 	//Base64 encode for python compatability. 
 	return out.release();
 }
@@ -268,7 +250,7 @@ bool __cdecl HASHCompare(char* hash, char* text) {
 	return true;
 }
 
-py::bytes __cdecl GetKey(char* pwd, char* salt) {
+py::bytes __cdecl GetKeyFromPass(char* pwd, char* salt) {
 	//Ok. So we need to create the PyObject inside this function to prevent making copies after the function has returned
 	return pwd;
 };
