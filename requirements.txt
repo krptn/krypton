@@ -1,5 +1,5 @@
 cffi==1.15.0
-cryptography==35.0.0
+cryptography==36.0.0
 numpy==1.21.4
 pip==21.3.1
 pycparser==2.21
