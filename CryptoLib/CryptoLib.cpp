@@ -231,7 +231,7 @@ char* __cdecl HASH_FOR_STORAGE(char* text) {
 	char salt[12];
 	RAND_bytes((unsigned char*)salt,12);
 	unique_ptr<char[]> result = unique_ptr<char[]>(new char[32]);
-	if (!PKCS5_PBKDF2_HMAC_SHA1(text, len, (unsigned char*)&salt, 12, 100000, 32, (unsigned char*)result.get()))
+	if (!PKCS5_PBKDF2_HMAC_SHA1(text, len, (unsigned char*)&salt, 12, 100, 32, (unsigned char*)result.get()))
 		handleErrors(&err_cnt);
 
 	OPENSSL_cleanse(text,len);
@@ -242,8 +242,12 @@ char* __cdecl HASH_FOR_STORAGE(char* text) {
 	AddToStrBuilder(out.get(), result.get(), 0, 32);
 	delete[] result.release();
 	AddToStrBuilder(out.get(), salt, 32, 12);
-	//Base64 encode for python compatability. 
-	return out.release();
+	string a = string(out.get());
+	string b = encode64(a);
+	delete[] out.release();
+	unique_ptr<char[]> r = unique_ptr<char[]>(new char[b.size()]);
+	memcpy_s(r.get(), b.size(), b.c_str(), b.size());
+	return r.release();
 }
 
 bool __cdecl HASHCompare(char* hash, char* text) {
@@ -251,7 +255,7 @@ bool __cdecl HASHCompare(char* hash, char* text) {
 }
 
 py::bytes __cdecl GetKeyFromPass(char* pwd, char* salt) {
-	//Ok. So we need to create the PyObject inside this function to prevent making copies after the function has returned
+	//So we need to create the PyObject inside this function to prevent making copies after the function has returned
 	return pwd;
 };
 
@@ -259,7 +263,7 @@ PYBIND11_MODULE(CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
-	m.def("HASH", &HASH, "Securely hashes the text", py::arg("text"));
+	m.def("HASH_FOR_STORAGE", &HASH_FOR_STORAGE, "Securely hashes the text", py::arg("text"));
 	m.def("HASHCompare", &HASHCompare, "Hashes the second argument and compares it with the first argument. Built to prevent timing attacks.", py::arg("hash"), py::arg("text"));
-	m.def("GetKey", &GetKey, "Performs Key Deriviation on the first argument using second argument as a salt. If salt=0 than a new salt will be generated.", py::arg("pwd"), py::arg("salt")='\0');
+	m.def("GetKeyFromPass", &GetKeyFromPass, "Performs Key Deriviation on the first argument using second argument as a salt. If salt=0 than a new salt will be generated.", py::arg("pwd"), py::arg("salt")='\0');
 }
