@@ -242,7 +242,7 @@ char* __cdecl HASH_FOR_STORAGE(char* text) {
 	AddToStrBuilder(out.get(), result.get(), 0, 32);
 	delete[] result.release();
 	AddToStrBuilder(out.get(), salt, 32, 12);
-	string a = string(out.get());
+	string a = string(out.get(),32+12);
 	string b = encode64(a);
 	delete[] out.release();
 	unique_ptr<char[]> r = unique_ptr<char[]>(new char[b.size()]);
