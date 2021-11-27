@@ -52,10 +52,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Remove="FIPS.xaml" />
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Remove="Resources\Images\Logo.png" />
 	</ItemGroup>
 
@@ -64,9 +60,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Page Include="FIPS.xaml">
-	    <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-	  </Page>
+	  <MauiXaml Update="FIPS_Set.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 	<PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">

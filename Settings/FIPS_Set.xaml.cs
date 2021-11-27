@@ -4,10 +4,11 @@ using System;
 
 namespace Settings
 {
-    public partial class FIPS : ContentPage
+    public partial class FIPS_Set : ContentPage
     {
-        public FIPS()
+        public FIPS_Set()
         {
+
             InitializeComponent();
         }
     }
