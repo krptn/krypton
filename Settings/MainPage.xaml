@@ -2,93 +2,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Settings.MainPage"
              BackgroundColor="{DynamicResource SecondaryColor}">
-
-    <ScrollView>
-
-        <Grid RowSpacing="25" RowDefinitions="Auto,Auto,Auto,Auto,*"
-              Padding="{OnPlatform iOS='30,60,30,30', Default='30'}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="5*"/>
-                <ColumnDefinition Width="25*"/>
-            </Grid.ColumnDefinitions>
-            <!---
-            <Grid.Background>
-                <LinearGradientBrush>
-                    <GradientStop Color="Yellow"  />
-                    <GradientStop Color="Orange" Offset="0.0" />
-                    <GradientStop Color="BlueViolet" Offset="0.0" />
-                </LinearGradientBrush>
-            </Grid.Background>
-           -->
-        <!--The Home Page-->
-                <Label 
-                Text="Welcome to PySec Settings"
-                Grid.Row="1"
-                SemanticProperties.HeadingLevel="Level1"
-                SemanticProperties.Description="Welcome to PySec Settings"
-                FontSize="30"
-                HorizontalOptions="Center" 
-                TextColor="Red"/>
-
-                <Label 
-                Text=""
-                Grid.Row="2"
-                FontSize="18"
-                FontAttributes="Bold"
-                x:Name="CounterLabel"
-                HorizontalOptions="Center" />
-
-                <Button
-                Text="Connect to Server"
-                TextColor="Purple"
-                Grid.Row="3"
-                Clicked="Connect"
-                BackgroundColor="Aqua"/>
-
-                <Image Grid.Row="4"
-                Source="logo.png"
-                SemanticProperties.Description="PySec Logo"
-                WidthRequest="400"
-                HeightRequest="400"
-                HorizontalOptions="Center"/>
-                
-                <Button
-                Text="Colapse"
-                Clicked="Colapse"
-                SemanticProperties.Description="Colpase side menu."
-                Grid.Row="0"/>
-                <!--The Side Panel Menu-->
-
-
-            <NavigationPage>
-                <
-                <Button
-                Text="Home Page"
-                Clicked="Home_Settings"
-                SemanticProperties.Description="Go to the homepage"
-                Grid.Row="1"/>
-                <Button
-                Text="FIPS"
-                Clicked="FIPS_Settings"
-                SemanticProperties.Description="Change FIPS Settings"
-                Grid.Row="2"/>
-                <Button
-                Text="Auth Settings"
-                Clicked="Auth_Settings"
-                SemanticProperties.Description="Change Authentication Settings"
-                Grid.Row="3"/>
-                <Button
-                Text="Server Settings"
-                Clicked="Server_Settings"
-                SemanticProperties.Description="Change Server Settings"
-                Grid.Row="4"/>
-                <Button
-                Text="Data Settings"
-                Clicked="Data_Settings"
-                SemanticProperties.Description="Change Data Privacy Settings"
-                Grid.Row="5"
-                MaximumWidthRequest="0.25"/>
-            </NavigationPage>
-        </Grid>
-    </ScrollView>
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="FIPS Settings"
+                     Clicked="FIPS_Settings"/>
+    </ContentPage.ToolbarItems>
+    <StackLayout>
+        
+    </StackLayout>
 </ContentPage>

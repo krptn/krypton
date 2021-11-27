@@ -22,7 +22,7 @@ namespace Settings
 
         private void Home_Settings(object sender, EventArgs e)
         {
-
+            Console.WriteLine("FIPS Settings Entered");
         }
 
         private void Auth_Settings(object sender, EventArgs e)
