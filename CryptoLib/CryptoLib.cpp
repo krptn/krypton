@@ -231,7 +231,7 @@ char* __cdecl HASH_FOR_STORAGE(char* text) {
 	char salt[12];
 	RAND_bytes((unsigned char*)salt,12);
 	unique_ptr<char[]> result = unique_ptr<char[]>(new char[32]);
-	if (!PKCS5_PBKDF2_HMAC_SHA1(text, len, (unsigned char*)&salt, 12, 100, 32, (unsigned char*)result.get()))
+	if (!PKCS5_PBKDF2_HMAC_SHA1(text, len, (unsigned char*)&salt, 12, 100000, 32, (unsigned char*)result.get()))
 		handleErrors(&err_cnt);
 
 	OPENSSL_cleanse(text,len);
@@ -250,12 +250,7 @@ char* __cdecl HASH_FOR_STORAGE(char* text) {
 	return r.release();
 }
 
-bool __cdecl HASHCompare(char* hash, char* text) {
-	return true;
-}
-
-py::bytes __cdecl GetKeyFromPass(char* pwd, char* salt) {
-	//So we need to create the PyObject inside this function to prevent making copies after the function has returned
+py::bytes __cdecl Auth(char* pwd, char* stored_HASH) {
 	return pwd;
 };
 
@@ -264,6 +259,5 @@ PYBIND11_MODULE(CryptoLib, m) {
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 	m.def("HASH_FOR_STORAGE", &HASH_FOR_STORAGE, "Securely hashes the text", py::arg("text"));
-	m.def("HASHCompare", &HASHCompare, "Hashes the second argument and compares it with the first argument. Built to prevent timing attacks.", py::arg("hash"), py::arg("text"));
-	m.def("GetKeyFromPass", &GetKeyFromPass, "Performs Key Deriviation on the first argument using second argument as a salt. If salt=0 than a new salt will be generated.", py::arg("pwd"), py::arg("salt")='\0');
+	m.def("Auth", &Auth, "Authneticates users using values supplied. Returns user's crypto key is authentication successfull, returns 'Error' otherwise.", py::arg("pwd"), py::arg("stored_HASH")='\0');
 }
