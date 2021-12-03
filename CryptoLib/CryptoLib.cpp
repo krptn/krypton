@@ -128,7 +128,7 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	d.resize(ciphertext_len + (long long)16 + (long long)12 + (long long)12);
 	memcpy_s((void*)d.c_str(), ciphertext_len + (long long)16 + (long long)12 + (long long)12,result.get(), ciphertext_len + (long long)16 + (long long)12 + (long long)12);
 	string r = encode64(d);
-	char* f = new char[r.size()];
+	char* f = new char[r.size()+(long long)1];
 	memcpy_s(f, r.size(), r.c_str(), r.size());
 	int to_change = r.length();
 	f[to_change] = '\0';
@@ -158,7 +158,8 @@ exit(EXIT_FAILURE);
 */
 	auto a = string((const char*)ctext_b);
 	auto b = decode64(a);
-	auto ctext = unique_ptr<unsigned char[]>(new unsigned char[b.size()]);
+	auto ctext = unique_ptr<unsigned char[]>(new unsigned char[b.size()+(long long)1]);
+	ctext[b.size()]=='\0';
 	memcpy_s(ctext.get(), b.size(), b.c_str(), b.size());
 	memcpy_s(len_str, 12, ctext.get() + b.size() - 12, 12);
 	if (strnlen((char*)ctext.get(), 549755813632) == 549755813632 || strnlen((char*)ctext.get(), 549755813632) == 549755813631) {
@@ -207,6 +208,9 @@ exit(EXIT_FAILURE);
 	OSSL_PROVIDER_unload(base);
 	OSSL_PROVIDER_unload(fips);
 	*/
+	if (flen > msglen + (long long)1) {
+		throw std::invalid_argument("Unable to decrpt ciphertext: a bufferoverflow on the heap has occured.");
+	}
 	out[flen] = '\0';
 	py::bytes r = py::bytes((char*)out.get());
 	OPENSSL_cleanse((char*)out.get(),msglen + (long long)1);
