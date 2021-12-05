@@ -230,28 +230,18 @@ int __cdecl Init() {
 };
 */
 char* __cdecl HASH_FOR_STORAGE(char* text) {
+	char* key = new char[32];
+	char salt[5] = "salt";
 	int len = strlen(text);
-	int err_cnt = 0;
-	char salt[12];
-	RAND_bytes((unsigned char*)salt,12);
-	unique_ptr<char[]> result = unique_ptr<char[]>(new char[32]);
-	if (!PKCS5_PBKDF2_HMAC_SHA1(text, len, (unsigned char*)&salt, 12, 100000, 32, (unsigned char*)result.get()))
-		handleErrors(&err_cnt);
-
-	OPENSSL_cleanse(text,len);
-	if (err_cnt != 0) {
-		throw std::invalid_argument("Unable to hash data.");
-	}
-	unique_ptr<char[]> out = unique_ptr<char[]>(new char[32 + 12]);
-	AddToStrBuilder(out.get(), result.get(), 0, 32);
-	delete[] result.release();
-	AddToStrBuilder(out.get(), salt, 32, 12);
-	string a = string(out.get(),32+12);
-	string b = encode64(a);
-	delete[] out.release();
-	unique_ptr<char[]> r = unique_ptr<char[]>(new char[b.size()]);
-	memcpy_s(r.get(), b.size(), b.c_str(), b.size());
-	return r.release();
+	int a;
+	a = PKCS5_PBKDF2_HMAC(text, len, (unsigned char*)&salt, 4, 100000,EVP_sha512(), 32, (unsigned char*)key);
+	OPENSSL_cleanse(text, len);
+	auto x = string(key, 32);
+	auto b = encode64(x);
+	char* new_b = new char[b.size() + (long long)1];
+	memcpy_s(new_b, b.size(), b.c_str(), b.size());
+	new_b[b.size()] = '\0';
+	return new_b;
 }
 
 py::bytes __cdecl Auth(char* pwd, char* stored_HASH) {
