@@ -6,7 +6,7 @@
 - Secure Storage of keys: HSMs, etc...
 - Authentication and access managment 
 - Handels sensitive data for the developer: so the developer can have a piece of mind that the data is safe
-- ML/AI to detect attacks - only planned
+- ML/AI to detect attacks - not developed yet 
 # It does this all automatically: so the developers can focus on their work, and PySec does the security. 
 View security features: [Security Features](security/sec_feature_plan.md)
 
