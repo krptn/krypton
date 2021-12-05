@@ -159,7 +159,7 @@ exit(EXIT_FAILURE);
 	auto a = string((const char*)ctext_b);
 	auto b = decode64(a);
 	auto ctext = unique_ptr<unsigned char[]>(new unsigned char[b.size()+(long long)1]);
-	ctext[b.size()]=='\0';
+	ctext[b.size()]='\0';
 	memcpy_s(ctext.get(), b.size(), b.c_str(), b.size());
 	memcpy_s(len_str, 12, ctext.get() + b.size() - 12, 12);
 	if (strnlen((char*)ctext.get(), 549755813632) == 549755813632 || strnlen((char*)ctext.get(), 549755813632) == 549755813631) {
