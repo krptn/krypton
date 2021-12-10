@@ -7,6 +7,7 @@ c_cpp_properties.json
 #App Generated Files
 keystore.db
 Data
+PySec.key 
 
 #Machine specific files
 CMakeSettings.json

@@ -262,6 +262,20 @@ char* __cdecl hashForStorage(char* text) {
 	return new_b;
 }
 
+py::bytes __cdecl getKeyFromPass(char* pwd) {
+	char* key = new char[32];
+	char salt[12];
+	int len = strlen(pwd);
+	RAND_bytes((unsigned char*)&salt, 12);
+	int a;
+	a = PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, 12, 100000, EVP_sha512(), 32, (unsigned char*)key);
+	OPENSSL_cleanse(pwd, len);
+	if (a != 1) {
+		throw std::invalid_argument("Unable to hash data.");
+	}
+	return py::bytes(key,32);
+}
+
 py::bytes __cdecl Auth(char* pwd, char* storedHash) {	
 	int errcnt = 0;
 	int len = strlen(pwd);
@@ -311,4 +325,5 @@ PYBIND11_MODULE(CryptoLib, m) {
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 	m.def("hashForStorage", &hashForStorage, "Securely hashes the text", py::arg("text"));
 	m.def("Auth", &Auth, "Authneticates users using values supplied. Returns user's crypto key is authentication successfull, returns 'Error' otherwise.", py::arg("pwd"), py::arg("stored_HASH")='\0');
+	m.def("getKeyFromPass", &getKeyFromPass, "Uses PBKDF2 to get the crypto key from the password.", py::arg("pwd"));
 }

@@ -26,38 +26,6 @@ def isBaseNameAvailable(self,name:bytes)->bool:
     else:
         return True
 
-def antiExploit():
-    def antiSQLi(name:Iterable, info:bool=True)->bytes:
-        #Santizes and de-santizes inputs before constructing sql cmds to avoid injections
-        if info:
-            a = StrBuilder(len(name)*4+3)
-            a.StringAdd(b'"')
-            for ch in name:
-                a.StringAdd(str(ord(ch))+"/")
-            result = a.StrValue[:-1]
-            result+='"'
-            a.Clear()
-            ctypes.memset(Adrr(a),0,90)
-        elif not info:
-            a = StrBuilder(round((len(name)-3)/4))
-            a.StringAdd(b'"')
-            nameb = name[1:]
-            zeromem(name)
-            name=nameb[:-1]
-            zeromem(nameb)
-            t = name.split("/")
-            for i in t:
-                a.StringAdd(chr(int(i)))
-            result = a.StrValue
-            a.Clear()
-        else:
-            raise TypeError("Must be type str or type int")
-        return result
-
-    def zeromem(obj:Iterable)->None:
-        ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
-
-
 class kms():
     #Needed: update table keys
     def hmsCipher(self,key):
@@ -75,13 +43,17 @@ class kms():
         self.keydb = sqlite3.connect(PySec.key)
         self.c = self.keydb.cursor()
         try:
-            self.c.execute("SELECT * FROM "+antiExploit.antiSQLi(self.base))
+            self.c.execute("SELECT * FROM "+PySec.antiSQLi(self.base))
         except(sqlite3.OperationalError):
             if kmsport == None:
                 question = messagebox.askyesno(master=self.root, title="Keys", message="Would you like to import a kms (unsupported)?")
                 if question == False:
-                    self.c.execute("CREATE TABLE "+antiExploit.antiSQLi(self.base)+" (tbl text, key text)")
-                    self.c.execute("INSERT INTO keys VALUES (?,?)",(self.base,key))
+                    self.c.execute("CREATE TABLE '"+PySec.antiSQLi(self.base)+"' (tbl text, key text)")
+                    try:
+                        self.c.execute("INSERT INTO keys VALUES (?,?)",(self.base,key))
+                    except(sqlite3.OperationalError):
+                        self.c.execute("CREATE TABLE keys (base text, key blob)")
+                        self.c.execute("INSERT INTO keys VALUES (?,?)",(self.base,key))
                     self.keydb.commit()
                 else:
                     pass
@@ -124,11 +96,11 @@ class kms():
             raise ValueError("Options contain invalid values!")
 
     def getTableKey(self, table : str) -> bytes:
-        self.c.execute("SELECT key FROM "+antiExploit.antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
+        self.c.execute("SELECT key FROM "+PySec.antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
         r = self.c.fetchone()
         if r == None:
             self.configTable(self, table)
-            self.c.execute("SELECT key FROM "+antiExploit.antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
+            self.c.execute("SELECT key FROM "+PySec.antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
             r = self.c.fetchone()
         self.c.execute()
         r = r[0]
@@ -138,7 +110,7 @@ class kms():
     def configTable(self,table : (str or bytes)) -> None:
         k = os.urandom(32)
         k = RestEncrypt(k,self.pin(),True,True)
-        self.c.execute("INSERT INTO "+antiExploit.antiSQLi(self.base)+" VALUES (?, ?)", (table, self.key))
+        self.c.execute("INSERT INTO "+PySec.antiSQLi(self.base)+" VALUES (?, ?)", (table, self.key))
         self.keydb.commit()
         return None
 
@@ -157,10 +129,10 @@ class kms():
         for base in bases:
             kc.execute("INSERT INTO keys VLUES (?, ?)", (base, self.pin(rebase=True, kc=kc)))
             for table in tables[baseCount]:
-                key = bk.execute("SELECT key FROM "+antiExploit.antiSQLi(base[2:])+" WHERE tbl= ?",(table))
+                key = bk.execute("SELECT key FROM "+PySec.antiSQLi(base[2:])+" WHERE tbl= ?",(table))
                 key = RestDecrypt(key,self.pin(rebase=True, kc=kc, base=base),True,True)
                 key = RestEncrypt(key,self.pin(rebase=True, kc=kc, base=base),True,True)
-                kc.execute("INSERT INTO "+antiExploit.antiSQLi(base)+" VALUES (?, ?)",(table,key))
+                kc.execute("INSERT INTO "+PySec.antiSQLi(base)+" VALUES (?, ?)",(table,key))
                 tmpksys.commit()
             baseCount+=1
         tmpkeystore.close()
@@ -179,7 +151,7 @@ class getKey():
     def cleanup(self):
         self.value=self.e.get()
         self.top.destroy()
-        #self.value = hashlib.sha256(self.value.encode('utf-8')).digest() ## This is problamatic.
+        self.value = PySec.getKeyFromPass(self.e.get()) ## This is problamatic.
         
 
 

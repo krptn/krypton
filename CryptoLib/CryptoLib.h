@@ -18,3 +18,4 @@ char* __cdecl AESEncrypt(char* text, char* key);
 char* __cdecl HASH_FOR_STORAGE(char* text);
 int compHash(const void* a, const void* b, const size_t size);
 py::bytes __cdecl Auth(char* pwd, char* stored_HASH);
+py::bytes __cdecl getKeyFromPass(char* pwd);

@@ -7,7 +7,7 @@ import sys
 
 DEBUG = True
 if sys.platform == "win32" and DEBUG:
-    sys.path.append(r"CryptoLib\out\build\x64-Debug\Debug")
+    sys.path.append(r"CryptoLib\build\Debug\Debug")
     sys.path.append(r"CryptoLib\build\Debug")
 elif sys.platform == "win32" and not DEBUG:
     sys.path.append(r"CryptoLib\out\build\x64-Release\RelWithDebInfo")
@@ -19,7 +19,7 @@ else:
 
 
 version = "1"
-from CryptoLib import AESEncrypt, AESDecrypt
+from CryptoLib import AESEncrypt, AESDecrypt, getKeyFromPass
 
 __all__ = ["Basic","decorators"]
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
@@ -54,15 +54,15 @@ class StrBuilder():
 def zeromem(obj:str)->None: #C-Style function to clear the content of str and bytes
     ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
 
-def antiSQLi(name:bytes, info:bool=True)->bytes:
+def antiSQLi(name:bytes, info:bool=True)->str:
     #Santizes and de-santizes inputs before constructing sql cmds to avoid injections
     if info:
         a = StrBuilder(len(name)*3+3)
         a.StringAdd(b'"')
         for ch in name:
             a.StringAdd((str(ord(ch))+"/").encode("utf-8"))
-        result = a.StrValue()[:-1]
-        result+=b'"'
+        result = a.StrValue()[:-1].decode("utf-8")
+        result+='"'
         a.Clear()
     elif not info:
         a = StrBuilder(round((len(name)-3)/4))
@@ -74,7 +74,7 @@ def antiSQLi(name:bytes, info:bool=True)->bytes:
         t = name.split(b"/")
         for i in t:
             a.StringAdd(chr(int(i)))
-        result = a.StrValue
+        result = a.StrValue.decode("utf-8")
         a.Clear()
     else:
         raise TypeError("Must be type str or type int")
