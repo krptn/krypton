@@ -16,6 +16,20 @@ namespace py = pybind11;
 #include <boost/archive/iterators/transform_width.hpp>
 #include <boost/algorithm/string.hpp>
 
+int compHash(const void* a, const void* b, const size_t size)
+{
+	const unsigned char* _a = (const unsigned char*)a;
+	const unsigned char* _b = (const unsigned char*)b;
+	unsigned char result = 0;
+	size_t i;
+
+	for (i = 0; i < size; i++) {
+		result |= _a[i] ^ _b[i];
+	}
+
+	return result; /* returns 0 if equal, nonzero otherwise */
+}
+
 std::string decode64(const std::string& val) {
 	using namespace boost::archive::iterators;
 	using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
@@ -229,13 +243,17 @@ int __cdecl Init() {
 	return 1;
 };
 */
-char* __cdecl HASH_FOR_STORAGE(char* text) {
+char* __cdecl hashForStorage(char* text) {
 	char* key = new char[32];
-	char salt[5] = "salt";
+	char salt[12];
 	int len = strlen(text);
+	RAND_bytes((unsigned char*)&salt, 12);
 	int a;
-	a = PKCS5_PBKDF2_HMAC(text, len, (unsigned char*)&salt, 4, 100000,EVP_sha512(), 32, (unsigned char*)key);
+	a = PKCS5_PBKDF2_HMAC(text, len, (unsigned char*)&salt, 12, 1000000,EVP_sha512(), 32, (unsigned char*)key);
 	OPENSSL_cleanse(text, len);
+	if (a != 1) {
+		throw std::invalid_argument("Unable to hash data.");
+	}
 	auto x = string(key, 32);
 	auto b = encode64(x);
 	char* new_b = new char[b.size() + (long long)1];
@@ -244,7 +262,46 @@ char* __cdecl HASH_FOR_STORAGE(char* text) {
 	return new_b;
 }
 
-py::bytes __cdecl Auth(char* pwd, char* stored_HASH) {
+py::bytes __cdecl Auth(char* pwd, char* storedHash) {	
+	int errcnt = 0;
+	int len = strlen(pwd);
+	auto decoded = unique_ptr<char[]>(new char[strlen(storedHash)+(long long)1]);
+	string a = string(storedHash);
+	string b = decode64(a);
+	if (b.length() != 44) {
+		throw std::invalid_argument("The stored hash is of incorrect length.");
+	}
+	memcpy_s(decoded.get(), strlen(storedHash) + (long long)1 -(long long)12, b.c_str(), b.length()-(long long)12);
+	auto salt = unique_ptr<char[]>(new char[12]);
+	memcpy_s(salt.get(), 12, decoded.get() + ((b.length()+(long long)1) - (long long)12),12);
+	auto key = unique_ptr<char[]>(new char[32]);
+	auto keya = unique_ptr<char[]>(new char[32]);
+	if(!PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, 12, 1000000, EVP_sha512(), 32, (unsigned char*)keya.get()))
+		handleErrors(&errcnt);
+	int x;
+	x = PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, 12, 100000, EVP_sha512(), 32, (unsigned char*)key.get());
+	OPENSSL_cleanse(pwd, len);
+	if (x != 1) {
+		handleErrors(&errcnt);
+	}
+	if (compHash(decoded.get(), keya.get(), 32)==0) {
+		if (errcnt != 0) {
+			OPENSSL_cleanse(key.get(), 32);
+			OPENSSL_cleanse(pwd, len);
+			throw std::invalid_argument("Authentication failed.");
+		}
+		else {
+			auto result = py::bytes(key.get(), 32);
+			OPENSSL_cleanse(key.get(), 32);
+			OPENSSL_cleanse(pwd, len);
+			return result;
+		}
+	}
+	else {
+		OPENSSL_cleanse(key.get(), 32);
+		OPENSSL_cleanse(pwd, len);
+		throw std::invalid_argument("Authentication failed.");
+	}
 	return pwd;
 };
 
@@ -252,6 +309,6 @@ PYBIND11_MODULE(CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
-	m.def("HASH_FOR_STORAGE", &HASH_FOR_STORAGE, "Securely hashes the text", py::arg("text"));
+	m.def("hashForStorage", &hashForStorage, "Securely hashes the text", py::arg("text"));
 	m.def("Auth", &Auth, "Authneticates users using values supplied. Returns user's crypto key is authentication successfull, returns 'Error' otherwise.", py::arg("pwd"), py::arg("stored_HASH")='\0');
 }
