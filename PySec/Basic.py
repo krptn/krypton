@@ -7,8 +7,7 @@ import os
 import ctypes
 import PySec
 import sys
-from PySec import AESDecrypt, AESEncrypt, StrBuilder
-from PySec import Adrr
+from PySec import AESDecrypt, AESEncrypt, StrBuilder, Adrr
 RestDecrypt = AESDecrypt
 RestEncrypt = AESEncrypt
 # Create a database where the table keys will be imported from the keyfile. 
@@ -108,16 +107,16 @@ class kms():
         r = self.c.fetchone()
         r = r[0]
         if self.trust and not rebase:
-            return PySec.RestEncrypt(r,self.hsmDecipher(),True)
+            return RestEncrypt(r,self.hsmDecipher(),True)
         elif self.trust and rebase:
-            r = kc.execute("INSERT INTO keys VALUES (?,?)", (base, PySec.RestEncrypt(os.urandom(32),getKey(self.root).value,True,True)))
+            r = kc.execute("INSERT INTO keys VALUES (?,?)", (base, RestEncrypt(os.urandom(32),getKey(self.root).value,True,True)))
         elif not self.trust and not rebase:
             if trustKey is None:
                 key = getKey(self.root)
                 messagebox.showinfo(master = self.root,title="Enter Key", message="Select OK once you have entered the PIN")
-                key = PySec.RestDecrypt(self.key,getKey(self.root).value,False)
+                key = RestDecrypt(self.key,getKey(self.root).value,False)
             else:
-                key = PySec.RestDecrypt(trustKey,getKey(self.root).value,False)
+                key = RestDecrypt(trustKey,getKey(self.root).value,False)
             return key
         elif not self.trust and rebase:
             raise ValueError("You cannot not trust and recrypt keys simultaniously!")
@@ -180,7 +179,7 @@ class getKey():
     def cleanup(self):
         self.value=self.e.get()
         self.top.destroy()
-        self.value = hashlib.sha256(self.value.encode('utf-8')).digest()
+        #self.value = hashlib.sha256(self.value.encode('utf-8')).digest() ## This is problamatic.
         
 
 
