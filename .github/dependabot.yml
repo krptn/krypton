@@ -8,30 +8,24 @@ updates:
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "daily"
-
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "SecurityDLL/" # Location of package manifests
+      interval: "weekly"
+      
+  - package-ecosystem: "github-actions"
+    directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     
   - package-ecosystem: "nuget" # See documentation for possible values
     directory: "SecurityManager/" # Location of package manifests
     schedule:
-      interval: "daily"
-      
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "CppDotNetDLL/CppDotNet/" # Location of package manifests
-    schedule:
-      interval: "daily"
+      interval: "weekly"
       
   - package-ecosystem: "nuget" # See documentation for possible values
     directory: "Drivers/win/FilesystemFilter" # Location of package manifests
     schedule:
-      interval: "daily"
-      
-  - package-ecosystem: "nuget" # See documentation for possible values
-    directory: "PythonCSharp" # Location of package manifests
+      interval: "weekly"
+  
+  - package-ecosystem: "nuget"
+    directory: "Settings/"
     schedule:
-      interval: "daily"
-
+      interval: "weekly"
