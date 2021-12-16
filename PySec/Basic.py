@@ -151,8 +151,7 @@ class getKey():
     def cleanup(self):
         self.value=self.e.get()
         self.top.destroy()
-        self.value = PySec.getKeyFromPass(self.e.get()) ## This is problamatic.
-        
+        self.value = PySec.getKeyFromPass(self.e.get()) ## This is problamatic.        
 
 
 class crypto(kms):
