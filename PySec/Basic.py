@@ -6,7 +6,7 @@ from tkinter import *
 import os
 import ctypes
 import PySec
-import sys
+import sys 
 from PySec import AESDecrypt, AESEncrypt, StrBuilder, Adrr
 RestDecrypt = AESDecrypt
 RestEncrypt = AESEncrypt
