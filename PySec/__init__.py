@@ -65,7 +65,7 @@ def antiSQLi(name:bytes, info:bool=True)->str:
         result+='"'
         a.Clear()
     elif not info:
-        a = StrBuilder(round((len(name)-3)/4))
+        a = StrBuilder(len(name)))
         a.StringAdd(b'"')
         nameb = name[1:]
         zeromem(name)
