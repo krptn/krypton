@@ -57,7 +57,7 @@ def zeromem(obj:str)->None: #C-Style function to clear the content of str and by
 def antiSQLi(name:bytes, info:bool=True)->str:
     #Santizes and de-santizes inputs before constructing sql cmds to avoid injections
     if info:
-        a = StrBuilder(len(name)*3+3)
+        a = StrBuilder(len(name)*4+3)
         a.StringAdd(b'"')
         for ch in name:
             a.StringAdd((str(ord(ch))+"/").encode("utf-8"))
