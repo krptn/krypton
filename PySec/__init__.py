@@ -1,6 +1,7 @@
 ﻿#from PySec import Basic
 #from PySec import decorators
 import hashlib
+import sqlite3
 import sys
 import ctypes
 import sys
@@ -30,6 +31,9 @@ data_path = "Data/"
 key = "PySec.key"
 key_path = data_path+key
 Adrr = id
+
+keyDB = sqlite3.connect(key_path)
+
 class StrBuilder():
     def __init__(self,lenNum : int):
         self.len = lenNum
@@ -79,3 +83,14 @@ def antiSQLi(name:bytes, info:bool=True)->str:
     else:
         raise TypeError("Must be type str or type int")
     return result
+
+c = keyDB.cursor()
+
+try:
+    c.execute("SELECT * FROM keys")
+except(sqlite3.OperationalError):
+    c.execute("CREATE TABLE keys (tbl text, ky blob)")
+    keyDB.commit()
+
+c.close()
+del c

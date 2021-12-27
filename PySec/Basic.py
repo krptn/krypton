@@ -34,8 +34,6 @@ class kms():
     def secureDecipher(self,ctext,pwdFromUser):
         pass
 
-    def firstUse(self): #For bases only
-        pass
     def importKeys(self):
         pass
 
@@ -49,7 +47,7 @@ class kms():
 
     def __init__(self, base="defaultBase")->None:
         self.base = base
-        self.keydb = sqlite3.connect(PySec.key)
+        self.keydb = PySec.keyDB 
         self.c = self.keydb.cursor()
         try:
             self.c.execute("SELECT * FROM "+PySec.antiSQLi(base)) # see if db is set up
@@ -82,7 +80,7 @@ class kms():
         kc.execute("CREATE TABLE keys (db text, key text)")
         baseCount=0
         for base in bases:
-            kc.execute("INSERT INTO keys VLUES (?, ?)", (base, self.pin(rebase=True, kc=kc)))
+            kc.execute("INSERT INTO keys VALUES (?, ?)", (base, self.pin(rebase=True, kc=kc)))
             for table in tables[baseCount]:
                 key = bk.execute("SELECT key FROM "+PySec.antiSQLi(base[2:])+" WHERE tbl= ?",(table))
                 key = self.secureDecipher(key,True)
