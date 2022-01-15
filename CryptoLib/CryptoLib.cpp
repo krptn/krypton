@@ -319,6 +319,24 @@ py::bytes __cdecl Auth(char* pwd, char* storedHash) {
 	return pwd;
 };
 
+char* __cdecl PBKDF2(char* text, char* salt) {
+	char* key = new char[32];
+	int len = strlen(text);
+	int a;
+	a = PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt, 12, 1000000, EVP_sha512(), 32, (unsigned char*)key);
+	OPENSSL_cleanse(text, len);
+	if (a != 1) {
+		throw std::invalid_argument("Unable to hash data.");
+	}
+	auto x = string(key, 32);
+	auto b = encode64(x);
+	char* result = new char[b.size()+(long long)1];
+	memcpy_s(result, b.size() + (long long)1, b.c_str(), b.size());
+	result[b.size()] = '\0';
+	delete[] key;
+	return result;
+}
+
 PYBIND11_MODULE(CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
@@ -326,4 +344,6 @@ PYBIND11_MODULE(CryptoLib, m) {
 	m.def("hashForStorage", &hashForStorage, "Securely hashes the text", py::arg("text"));
 	m.def("Auth", &Auth, "Authneticates users using values supplied. Returns user's crypto key is authentication successfull, returns 'Error' otherwise.", py::arg("pwd"), py::arg("stored_HASH")='\0');
 	m.def("getKeyFromPass", &getKeyFromPass, "Uses PBKDF2 to get the crypto key from the password.", py::arg("pwd"));
+	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
+	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"));
 }
