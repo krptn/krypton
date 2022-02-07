@@ -27,7 +27,7 @@ ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__'
 search = 9
 def getUser():
     return b"not connected to cloud"
-data_path = "Data/"
+data_path = ""
 key = "PySec.key"
 key_path = data_path+key
 Adrr = id

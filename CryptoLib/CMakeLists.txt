@@ -21,8 +21,8 @@ endif()
 
 include_directories(${PyLoc})
 link_directories(${PyLib})
-include_directories(${pybind11_include}) 
-find_package(pybind11 CONFIG REQUIRED)
+include_directories(${pybind11_include})
+#find_package(pybind11 CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Python3 REQUIRED)
 
