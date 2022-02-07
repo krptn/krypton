@@ -1,6 +1,6 @@
 cffi==1.15.0
 cryptography==36.0.1
-numpy==1.22.1
+numpy==1.22.2
 pybind11==2.9.0
 pip==22.0.2
 pycparser==2.21
