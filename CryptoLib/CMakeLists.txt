@@ -3,8 +3,8 @@
 # for VSC use VS 2019 - x86_amd64 config 
 
 cmake_minimum_required (VERSION 3.8)
-project ("CryptoLib")
-project ("Cross-PlatformCryptoLib")
+project("CryptoLib")
+
 if (MSVC AND (MSVC_VERSION GREATER 1900))
     message("Setting CONTROL FLOW GUARD") 
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /guard:cf /O2 /GS /QIntel-jcc-erratum /analyze /sdl /MD")
@@ -21,9 +21,12 @@ endif()
 
 include_directories(${PyLoc})
 link_directories(${PyLib})
+include_directories(${pybind11_include}) 
+find_package(pybind11 CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
 find_package(Python3 REQUIRED)
 
 add_library(CryptoLib SHARED "CryptoLib.cpp" "CryptoLib.h")
 target_link_libraries(CryptoLib  PRIVATE OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(CryptoLib PRIVATE )
 set_target_properties(CryptoLib PROPERTIES SUFFIX ".pyd")
