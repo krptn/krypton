@@ -1,3 +1,4 @@
+from re import T
 from typing import Iterable
 import hashlib
 import sqlite3
@@ -28,68 +29,38 @@ def isBaseNameAvailable(self,name:bytes)->bool:
 
 class kms():
     #Needed: update table keys
-    def secureCipher(self,text,pwdFromUser):
-        pass
+    hsmEnabled = False
+    def secureCipher(self,text):
+        if self.hsmEnabled:
+            pass
+        else:
+            RestEncrypt(text,"Just debug",True,True)
 
-    def secureDecipher(self,ctext,pwdFromUser):
-        pass
+    def secureDecipher(self,ctext):
+        if self.hsmEnabled:
+            pass
+        else:
+            RestDecrypt(ctext,"Just debug",True,True)
 
     def importKeys(self):
         pass
-
-    def loadFromConfig(self):
-        pass
-
-    def createBase(self):
-        self.c.execute("CREATE TABLE '"+PySec.antiSQLi(self.base)+"' (tbl text, key text)")
-        self.keydb.commit()
-
-
-    def __init__(self, base="defaultBase")->None:
-        self.base = base
+    
+    def __init__(self)->None:
         self.keydb = PySec.keyDB 
         self.c = self.keydb.cursor()
-        try:
-            self.c.execute("SELECT * FROM "+PySec.antiSQLi(base)) # see if db is set up
-        except(sqlite3.OperationalError):
-            self.firstUse()
 
-        self.c.execute("SELECT key FROM keys WHERE db=?",(self.base,))
-        self.Cipheredkey = self.c.fetchone()[0]
-
-    def getTableKey(self, table : str) -> bytes:
-        self.c.execute("SELECT key FROM "+PySec.antiSQLi(self.base)+ " WHERE tbl = ?",(table,)) 
+    def getKey(self, name : str) -> bytes:
+        self.c.execute("SELECT key FROM keys WHERE name = ?",(name,)) 
         key = self.c.fetchone()[0]
         r = self.secureDecipher(key)
         return r
 
-    def configTable(self,table : (str or bytes)) -> None:
+    def createNewKey(self, name : (str or bytes)) -> None:
         k = os.urandom(32)
-        k = RestEncrypt(k,self.pin(),True,True)
-        self.c.execute("INSERT INTO "+PySec.antiSQLi(self.base)+" VALUES (?, ?)", (table, self.key))
+        k = self.secureCipher(k)
+        self.c.execute("INSERT INTO keys VALUES (?, ?)", (name, self.key))
         self.keydb.commit()
         return None
-
-    def exportKeys(self, bases : str, tables : bytes, path : bytes, pwd : bytes):
-
-        tmpkeystore = sqlite3.connect(PySec.key)
-        tmpksys = sqlite3.connect(path)
-        bk = tmpkeystore.cursor() #Old
-        kc = tmpksys.cursor() #New
-
-        kc.execute("CREATE TABLE keys (db text, key text)")
-        baseCount=0
-        for base in bases:
-            kc.execute("INSERT INTO keys VALUES (?, ?)", (base, self.pin(rebase=True, kc=kc)))
-            for table in tables[baseCount]:
-                key = bk.execute("SELECT key FROM "+PySec.antiSQLi(base[2:])+" WHERE tbl= ?",(table))
-                key = self.secureDecipher(key,True)
-                key = self.secureCipher(key,True)
-                kc.execute("INSERT INTO "+PySec.antiSQLi(base)+" VALUES (?, ?)",(table,key))
-                tmpksys.commit()
-            baseCount+=1
-        tmpkeystore.close()
-        tmpksys.close()
 
 class getKey():
     def __init__(self,master):
@@ -110,20 +81,14 @@ class crypto(kms):
     '''
     Ciphers and deciphers strings. Can also store strings securely and supports CRUD operations
     '''
-    def __init__(self, baseKMS="{secureStore"):
-        super().__init__(base=baseKMS)
-        self.rec = analyzeSecurity)Ö
-
+    def __init__(self):
+        pass
     #Ciphers
     def crypt(self,what:bytes) -> bytes:
-        table = self.rec.getTableRecommendation()
-        data = RestEncrypt(what,self.getTableKey(table),True,True)
-        return data
+        pass
 
     def decrypt(self,what:bytes)->bytes:
-        table = self.rec.getTableRecommendation()
-        data = RestDecrypt(what,self.getTableKey(table),True,True)
-        return data
+        pass
 
     #CRUD
     def secureCreate(self,what:bytes):

@@ -1,4 +1,4 @@
-﻿#from PySec import Basic
+﻿from PySec import Basic
 #from PySec import decorators
 import hashlib
 import sqlite3
@@ -94,3 +94,5 @@ except(sqlite3.OperationalError):
 
 c.close()
 del c
+
+KMS = Basic.kms()
