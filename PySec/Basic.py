@@ -1,4 +1,3 @@
-from re import T
 from typing import Iterable
 import hashlib
 import sqlite3
@@ -6,20 +5,19 @@ from tkinter import messagebox
 from tkinter import *
 import os
 import ctypes
-import PySec
 import sys 
-from PySec import AESDecrypt, AESEncrypt, StrBuilder, Adrr
-RestDecrypt = AESDecrypt
-RestEncrypt = AESEncrypt
+
+from .globals import restEncrypt, restDecrypt
+
+import globals
+
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 
 # hash of the unique activation code to recognise the name of the localy stored db key.
 
 def isBaseNameAvailable(self,name:bytes)->bool:
-    conn = sqlite3.connect(PySec.key)
-    c = conn.cursor()
     falsey = False
-    for table in self.c.excecute("SELECT * FROM SQLite_master"):
+    for table in globals.c.excecute("SELECT * FROM SQLite_master"):
         if table[1] == name:
             falsey = True
     if falsey == True:
@@ -34,20 +32,20 @@ class kms():
         if self.hsmEnabled:
             pass
         else:
-            RestEncrypt(text,"Just debug",True,True)
+            restEncrypt(text,"Just debug",True,True)
 
     def secureDecipher(self,ctext):
         if self.hsmEnabled:
             pass
         else:
-            RestDecrypt(ctext,"Just debug",True,True)
+            restDecrypt(ctext,"Just debug",True,True)
 
     def importKeys(self):
         pass
     
     def __init__(self)->None:
-        self.keydb = PySec.keyDB 
-        self.c = self.keydb.cursor()
+        self.keydb = globals.keyDB 
+        self.c = globals.c
 
     def getKey(self, name : str) -> bytes:
         self.c.execute("SELECT key FROM keys WHERE name = ?",(name,)) 
@@ -74,7 +72,7 @@ class getKey():
         self.b.pack()
     def cleanup(self):
         self.top.destroy()
-        self.value = PySec.getKeyFromPass(self.e.get())  
+        self.value = globals.getKeyFromPass(self.e.get())  
 
 
 class crypto(kms):

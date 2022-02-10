@@ -11,8 +11,8 @@ class TestSum(unittest.TestCase):
 
     def test_creation(self):
         k = kms()
-        k.configTable("example")
-        k.getTableKey("example")
+        k.createNewKey("example")
+        k.getKey("example")
 
         self.assertIsInstance(k.getTableKey("example"), bytes, "Should be bytes")
 
