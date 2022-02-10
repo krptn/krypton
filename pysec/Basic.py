@@ -16,7 +16,7 @@ from . import globals
 
 def isBaseNameAvailable(self,name:bytes)->bool:
     falsey = False
-    for table in globals.c.excecute("SELECT * FROM SQLite_master"):
+    for table in globals.cursor.excecute("SELECT * FROM SQLite_master"):
         if table[1] == name:
             falsey = True
     if falsey == True:
@@ -44,7 +44,7 @@ class kms():
     
     def __init__(self)->None:
         self.keydb = globals.keyDB 
-        self.c = globals.c
+        self.c = globals.cursor
 
     def getKey(self, name : str) -> bytes:
         self.c.execute("SELECT key FROM keys WHERE name = ?",(name,)) 
@@ -52,7 +52,7 @@ class kms():
         r = self.secureDecipher(key)
         return r
 
-    def createNewKey(self, name : (str or bytes)) -> None:
+    def createNewKey(self, name:str) -> None:
         k = os.urandom(32)
         k = self.secureCipher(k)
         self.c.execute("INSERT INTO keys VALUES (?, ?)", (name, self.key))

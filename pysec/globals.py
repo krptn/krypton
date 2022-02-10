@@ -1,4 +1,5 @@
 import ctypes
+from multiprocessing import connection
 import sqlite3
 import sys
 import os
@@ -9,8 +10,8 @@ Adrr = id
 
 from CryptoLib import AESEncrypt, AESDecrypt, getKeyFromPass 
 
-keyDB = sqlite3.connect(key_path)
-c = keyDB.cursor()
+keyDB:sqlite3.Connection = sqlite3.connect(key_path)
+cursor = keyDB.cursor()
 
 restEncrypt = AESEncrypt
 restDecrypt = AESDecrypt
@@ -66,10 +67,7 @@ def antiSQLi(name:bytes, info:bool=True)->str:
     return result
 
 try:
-    c.execute("SELECT * FROM keys")
+    cursor.execute("SELECT * FROM keys")
 except(sqlite3.OperationalError):
-    c.execute("CREATE TABLE keys (tbl text, ky blob)")
+    cursor.execute("CREATE TABLE keys (tbl text, ky blob)")
     keyDB.commit()
-
-c.close()
-del c
