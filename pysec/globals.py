@@ -1,13 +1,16 @@
 import ctypes
 import sqlite3
 import sys
-
+import os
 data_path = ""
 key = "PySec.key"
 key_path = data_path+key
 Adrr = id
 
-from CryptoLib import AESEncrypt, AESDecrypt, getKeyFromPass
+from CryptoLib import AESEncrypt, AESDecrypt, getKeyFromPass 
+
+keyDB = sqlite3.connect(key_path)
+c = keyDB.cursor()
 
 restEncrypt = AESEncrypt
 restDecrypt = AESDecrypt
@@ -61,10 +64,6 @@ def antiSQLi(name:bytes, info:bool=True)->str:
     else:
         raise TypeError("Must be type str or type int")
     return result
-
-keyDB = sqlite3.connect(key_path)
-
-c = keyDB.cursor()
 
 try:
     c.execute("SELECT * FROM keys")

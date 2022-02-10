@@ -8,8 +8,7 @@ import ctypes
 import sys 
 
 from .globals import restEncrypt, restDecrypt
-
-import globals
+from . import globals
 
 # Create a database where the table keys will be imported from the keyfile. 
 # It will recognise the database with information from the dbinfo table. It will store the 

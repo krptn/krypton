@@ -1,6 +1,8 @@
+import sys
 import unittest
+import sys
 
-from PySec.Basic import kms
+from pysec.Basic import kms
 import os
 try:
     os.remove("PySec.key")
