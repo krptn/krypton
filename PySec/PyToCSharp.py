@@ -1,5 +1,5 @@
 setup = """"""
-from PySec import AESEncrypt, AESDecrypt
+from globals import AESEncrypt, AESDecrypt
 import os
 import timeit
 input("Go")
