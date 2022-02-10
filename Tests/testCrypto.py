@@ -9,7 +9,7 @@ try:
 except:
     pass
 
-class TestSum(unittest.TestCase):
+class TestKMS(unittest.TestCase):
 
     def test_creation(self):
         k = kms()
