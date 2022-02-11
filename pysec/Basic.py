@@ -7,7 +7,7 @@ import os
 import ctypes
 import sys 
 
-from .globals import restEncrypt, restDecrypt
+from .globals import restEncrypt, restDecrypt, zeromem
 from . import globals
 
 # Create a database where the table keys will be imported from the keyfile. 
@@ -31,13 +31,13 @@ class kms():
         if self.hsmEnabled:
             pass
         else:
-            restEncrypt(text,"Just debug",True,True)
+            restEncrypt(text,"Just debug")
 
     def secureDecipher(self,ctext):
         if self.hsmEnabled:
             pass
         else:
-            restDecrypt(ctext,"Just debug",True,True)
+            restDecrypt(ctext,"Just debug")
 
     def importKeys(self):
         pass
@@ -55,7 +55,7 @@ class kms():
     def createNewKey(self, name:str) -> None:
         k = os.urandom(32)
         k = self.secureCipher(k)
-        self.c.execute("INSERT INTO keys VALUES (?, ?)", (name, self.key))
+        self.c.execute("INSERT INTO keys VALUES (?, ?)", (name, k))
         self.keydb.commit()
         return None
 

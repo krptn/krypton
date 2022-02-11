@@ -5,5 +5,7 @@ try:
     os.remove("PySec.key")
 except:
     pass
-pysec.kms.createNewKey(name="example")
-print(pysec.kms.getKey("example"))
+
+kms = pysec.Basic.kms()
+kms.createNewKey("example")
+print(kms.getKey("example"))

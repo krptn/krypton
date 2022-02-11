@@ -69,5 +69,5 @@ def antiSQLi(name:bytes, info:bool=True)->str:
 try:
     cursor.execute("SELECT * FROM keys")
 except(sqlite3.OperationalError):
-    cursor.execute("CREATE TABLE keys (tbl text, ky blob)")
+    cursor.execute("CREATE TABLE keys (name text, key blob)")
     keyDB.commit()
