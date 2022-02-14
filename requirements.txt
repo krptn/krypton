@@ -4,5 +4,5 @@ numpy==1.22.2
 pybind11==2.9.1
 pip==22.0.3
 pycparser==2.21
-setuptools==60.8.1
+setuptools==60.9.0
 wheel==0.37.1
