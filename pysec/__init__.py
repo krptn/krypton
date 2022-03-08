@@ -6,7 +6,7 @@ import sys
 
 DEBUG = True
 if sys.platform == "win32" and DEBUG:
-    sys.path.append(r"CryptoLib\build\Debug\Debug")
+    sys.path.append(r"out\build\x64-Debug\Debug")
     sys.path.append(r"CryptoLib\build\Debug")
 elif sys.platform == "win32" and not DEBUG:
     sys.path.append(r"CryptoLib\out\build\x64-Release\RelWithDebInfo")
