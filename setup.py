@@ -1,9 +1,5 @@
 from distutils.core import setup
 from distutils.extension import Extension
-import pybind11
-from pathlib import Path
-from urllib import request
-import os
 
 setup(name='pysec',
       version='1.0',
