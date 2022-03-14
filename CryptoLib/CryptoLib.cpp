@@ -8,14 +8,10 @@
 #include <string>
 #include <openssl/conf.h>
 #include <openssl/evp.h>
+#include <openssl/evp.h>
 #include <openssl/err.h>
 using namespace std;
 namespace py = pybind11;
-
-#include <boost/archive/iterators/binary_from_base64.hpp>
-#include <boost/archive/iterators/base64_from_binary.hpp>
-#include <boost/archive/iterators/transform_width.hpp>
-#include <boost/algorithm/string.hpp>
 
 int compHash(const void* a, const void* b, const size_t size)
 {
@@ -31,19 +27,20 @@ int compHash(const void* a, const void* b, const size_t size)
 	return result; /* returns 0 if equal, nonzero otherwise */
 }
 
-std::string decode64(const std::string& val) {
-	using namespace boost::archive::iterators;
-	using It = transform_width<binary_from_base64<std::string::const_iterator>, 8, 6>;
-	return boost::algorithm::trim_right_copy_if(std::string(It(std::begin(val)), It(std::end(val))), [](char c) {
-		return c == '\0';
-		});
+char *base64(const unsigned char *input, int length) {
+  const auto pl = 4*((length+2)/3);
+  auto output = reinterpret_cast<char *>(calloc(pl+1, 1));
+  const auto ol = EVP_EncodeBlock(reinterpret_cast<unsigned char *>(output), input, length);
+  length = pl;
+  return output;
 }
 
-std::string encode64(const std::string& val) {
-	using namespace boost::archive::iterators;
-	using It = base64_from_binary<transform_width<std::string::const_iterator, 6, 8>>;
-	auto tmp = std::string(It(std::begin(val)), It(std::end(val)));
-	return tmp.append((3 - val.size() % 3) % 3, '=');
+unsigned char *decode64(const char *input, int length) {
+  const auto pl = 3*length/4;
+  auto output = reinterpret_cast<unsigned char *>(calloc(pl+1, 1));
+  const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
+  length = pl;
+  return output;
 }
 
 void handleErrors(int* err) {
@@ -118,21 +115,10 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	const char* num_len = num.c_str();
 	AddToStrBuilder((char*)result.get(), (char*)num_len, ciphertext_len + 12 + 16 + (12 - ler), ler);
 	memset(result.get() + ciphertext_len + 12 + 16, '0', ((long long)12 - ler));
-
-	/*
-	OSSL_PROVIDER_unload(base);
-	OSSL_PROVIDER_unload(fips);
-	*/
 	result[ciphertext_len + (long long)16 + (long long)12 + (long long)12] = '\0';
-	string d = string();
-	d.resize(ciphertext_len + (long long)16 + (long long)12 + (long long)12);
-	memcpy_s((void*)d.c_str(), ciphertext_len + (long long)16 + (long long)12 + (long long)12,result.get(), ciphertext_len + (long long)16 + (long long)12 + (long long)12);
-	string r = encode64(d);
-	char* f = new char[r.size()+(long long)1];
-	memcpy_s(f, r.size(), r.c_str(), r.size());
-	int to_change = r.length();
-	f[to_change] = '\0';
-	return (char*)f;
+	int fl = ciphertext_len + (long long)16 + (long long)12 + (long long)1 + (long long)12;
+	auto fresult = base64(result.get(),fl);
+	return (char*)fresult;
 	} catch(...) {
 		throw std::invalid_argument("Unable to encrypt ciphertext");
 	}
@@ -141,12 +127,12 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 py::bytes __cdecl AESDecrypt(char* ctext_b, char* key){
 	try {
 	char len_str[13];
-	auto a = string((const char*)ctext_b);
-	auto b = decode64(a);
-	auto ctext = unique_ptr<unsigned char[]>(new unsigned char[b.size()+(long long)1]);
-	ctext[b.size()]='\0';
-	memcpy_s(ctext.get(), b.size(), b.c_str(), b.size());
-	memcpy_s(len_str, 12, ctext.get() + b.size() - 12, 12);
+	int input_len = strlen(ctext_b);
+	auto dctext = decode64(ctext_b,input_len);
+	auto ctext = unique_ptr<unsigned char[]>(new unsigned char [input_len]);
+	memcpy_s(ctext.get(), input_len, dctext, input_len);
+	memcpy_s(len_str, 12, ctext.get() + input_len - 12, 12);
+	free(dctext);
 	if (strnlen((char*)ctext.get(), 549755813632) == 549755813632 || strnlen((char*)ctext.get(), 549755813632) == 549755813631) {
 		throw std::invalid_argument("Error: this is not a null terminated string");
 	}
@@ -212,11 +198,7 @@ char* __cdecl hashForStorage(char* text) {
 	if (a != 1) {
 		throw std::invalid_argument("Unable to hash data.");
 	}
-	auto x = string(key, 32);
-	auto b = encode64(x);
-	char* new_b = new char[b.size() + (long long)1];
-	memcpy_s(new_b, b.size(), b.c_str(), b.size());
-	new_b[b.size()] = '\0';
+	auto new_b = base64((const unsigned char*)key,32);
 	return new_b;
 }
 
@@ -237,15 +219,16 @@ py::bytes __cdecl getKeyFromPass(char* pwd) {
 py::bytes __cdecl Auth(char* pwd, char* storedHash) {	
 	int errcnt = 0;
 	int len = strlen(pwd);
-	auto decoded = unique_ptr<char[]>(new char[strlen(storedHash)+(long long)1]);
-	string a = string(storedHash);
-	string b = decode64(a);
-	if (b.length() != 44) {
+	int hashLen = strlen(storedHash);
+	auto decoded = unique_ptr<char[]>(new char[hashLen+(long long)1]);
+	auto b = decode64(storedHash,hashLen);
+	if (hashLen != 44) {
 		throw std::invalid_argument("The stored hash is of incorrect length.");
 	}
-	memcpy_s(decoded.get(), strlen(storedHash) + (long long)1 -(long long)12, b.c_str(), b.length()-(long long)12);
+	memcpy_s(decoded.get(), strlen(storedHash) + (long long)1 -(long long)12, b, hashLen-(long long)12);
+	free(b);
 	auto salt = unique_ptr<char[]>(new char[12]);
-	memcpy_s(salt.get(), 12, decoded.get() + ((b.length()+(long long)1) - (long long)12),12);
+	memcpy_s(salt.get(), 12, decoded.get() + ((hashLen+(long long)1) - (long long)12),12);
 	auto key = unique_ptr<char[]>(new char[32]);
 	auto keya = unique_ptr<char[]>(new char[32]);
 	if(!PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, 12, 1000000, EVP_sha512(), 32, (unsigned char*)keya.get()))
@@ -286,11 +269,7 @@ char* __cdecl PBKDF2(char* text, char* salt) {
 	if (a != 1) {
 		throw std::invalid_argument("Unable to hash data.");
 	}
-	auto x = string(key, 32);
-	auto b = encode64(x);
-	char* result = new char[b.size()+(long long)1];
-	memcpy_s(result, b.size() + (long long)1, b.c_str(), b.size());
-	result[b.size()] = '\0';
+	auto result = base64((const unsigned char*)key,32);
 	delete[] key;
 	return result;
 }
@@ -314,5 +293,5 @@ PYBIND11_MODULE(CryptoLib, m) {
 	m.def("getKeyFromPass", &getKeyFromPass, "Uses PBKDF2 to get the crypto key from the password.", py::arg("pwd"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
 	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"));
-	m.def("init",&init,"Initialises cryptographic components. ")
+	m.def("init",&init,"Initialises cryptographic components. ");
 }
