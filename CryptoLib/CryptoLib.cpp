@@ -2,6 +2,7 @@
 // -fdeclspec -cfguard" for ninja buildArgs
 #include "CryptoLib.h"
 #include <pybind11/pybind11.h>
+#include <openssl/provider.h>
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <string>
@@ -70,19 +71,6 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	try{
 	unsigned char ivbuff[12];
 	unsigned char tag[16];
-	/*
-	OSSL_PROVIDER *fips;
-	OSSL_PROVIDER *base;
-	fips = OSSL_PROVIDER_load(NULL, "fips");
-	if (fips == NULL) {
-	printf("Failed to load FIPS provider\n");
-	}
-	base = OSSL_PROVIDER_load(NULL, "base");
-	if (base == NULL) {
-	OSSL_PROVIDER_unload(fips);
-	printf("Failed to load base provider\n");
-	}
-	*/
 	int errcnt = 0;
 	int msglen = strnlen((char*)text, 549755813632);
 	if (msglen == 549755813632 || msglen == 549755813631) {
@@ -94,7 +82,6 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	RAND_bytes(iv, 12);
 	memcpy_s(&ivbuff, 12, iv, 12);
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)rem + (long long)1]);
-	//unsigned char* out = new unsigned char[msglen+(long long)rem+(long long)1];
 	EVP_CIPHER_CTX* ctx;
 	int len;
 	int ciphertext_len;
@@ -121,7 +108,6 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 		throw std::invalid_argument("Unable to encrypt");
 	}
 	auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1 + (long long)12]);
-	//unsigned char* result = new unsigned char[ciphertext_len+(long long)16+ (long long)12+(long long)1];
 	AddToStrBuilder((char*)result.get(), (char*)out.get(), 0, ciphertext_len);
 	delete[] out.release();
 	AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len, 16);
@@ -155,21 +141,6 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 py::bytes __cdecl AESDecrypt(char* ctext_b, char* key){
 	try {
 	char len_str[13];
-	/*
-OSSL_PROVIDER *fips;
-OSSL_PROVIDER *base;
-fips = OSSL_PROVIDER_load(NULL, "fips");
-if (fips == NULL) {
-printf("Failed to load FIPS provider\n");
-exit(EXIT_FAILURE);
-}
-base = OSSL_PROVIDER_load(NULL, "base");
-if (base == NULL) {
-OSSL_PROVIDER_unload(fips);
-printf("Failed to load base provider\n");
-exit(EXIT_FAILURE);
-}
-*/
 	auto a = string((const char*)ctext_b);
 	auto b = decode64(a);
 	auto ctext = unique_ptr<unsigned char[]>(new unsigned char[b.size()+(long long)1]);
@@ -218,10 +189,6 @@ exit(EXIT_FAILURE);
 	if ((!(ret >= 0)) || (errcnt > 0)) {
 		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
-	/*
-	OSSL_PROVIDER_unload(base);
-	OSSL_PROVIDER_unload(fips);
-	*/
 	if (flen > msglen + (long long)1) {
 		throw std::invalid_argument("Unable to decrpt ciphertext: a bufferoverflow on the heap has occured.");
 	}
@@ -233,16 +200,7 @@ exit(EXIT_FAILURE);
 		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
 }
-/*
-int __cdecl Init() {
-	//EVP_set_default_properties(NULL, "fips=yes");
-	EVP_add_cipher(EVP_aes_256_gcm());
-	if (FIPS_mode_set(2) == 0) {
-		return 0;
-	}
-	return 1;
-};
-*/
+
 char* __cdecl hashForStorage(char* text) {
 	char* key = new char[32];
 	char salt[12];
@@ -337,6 +295,16 @@ char* __cdecl PBKDF2(char* text, char* salt) {
 	return result;
 }
 
+int init()
+{
+	OSSL_PROVIDER *fips;
+	fips = OSSL_PROVIDER_load(NULL, "fips");
+	if (fips == NULL) {
+		printf("Failed to load FIPS provider\n");
+		exit(EXIT_FAILURE);
+	}
+}
+
 PYBIND11_MODULE(CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
@@ -346,4 +314,5 @@ PYBIND11_MODULE(CryptoLib, m) {
 	m.def("getKeyFromPass", &getKeyFromPass, "Uses PBKDF2 to get the crypto key from the password.", py::arg("pwd"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
 	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"));
+	m.def("init",&init,"Initialises cryptographic components. ")
 }

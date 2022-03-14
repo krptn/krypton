@@ -13,3 +13,5 @@ View security features: [Security Features](security/sec_feature_plan.md)
 ```python
 import PySec
 ```
+# Build/Setup the extension: 
+First please build openssl in the /openssl directory acording to their instructions. 
