@@ -140,7 +140,7 @@ py::bytes __cdecl AESDecrypt(char* ctext_b, char* key){
 	string str_lena = string(len_str);
 	int flen = stoi(str_lena);
 	int errcnt = 0;
-	int leny = b.size();
+	int leny = input_len;
 	int msglen = leny - 12 - 16 - 12;
 	auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
 	memcpy_s(msg.get(), msglen, ctext.get(), msglen);
