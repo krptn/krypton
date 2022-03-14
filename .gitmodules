@@ -1,3 +1,7 @@
 [submodule "openssl"]
 	path = openssl
 	url = https://github.com/openssl/openssl.git
+[submodule "pybind11"]
+	path = pybind11
+	url = ../../pybind/pybind11
+	branch = stable
