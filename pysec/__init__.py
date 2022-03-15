@@ -4,19 +4,6 @@ import sys
 import ctypes
 import sys
 
-DEBUG = True
-if sys.platform == "win32" and DEBUG:
-    sys.path.append(r"out\build\x64-Debug\Debug")
-    sys.path.append(r"CryptoLib\build\Debug")
-elif sys.platform == "win32" and not DEBUG:
-    sys.path.append(r"CryptoLib\out\build\x64-Release\RelWithDebInfo")
-    sys.path.append(r"CryptoLib\build\Release")
-elif sys.platform != "win32" and DEBUG:
-    sys.path.append(r"CryptoLib\out\build\Linux-Clang-Debug")
-else:
-    sys.path.append(r"CryptoLib\out\build\Linux-Clang-Release")
-
-
 version = "1"
 
 __all__ = ["Basic"]
