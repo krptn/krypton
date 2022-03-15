@@ -1,4 +1,4 @@
-from setuptools import Extension, setup
+from setuptools import setup, find_packages
 from pybind11.setup_helpers import Pybind11Extension
 with open("README.md","r") as file:
   description=file.read()
@@ -19,10 +19,11 @@ setup(name='pysec',
       "Operating System :: OS Independent",
   ],
   packages=['pysec'],
-  python_requires="<3.7",
+  python_requires=">3.8",
   ext_modules=[Pybind11Extension('CryptoLib', 
     ['CryptoLib/Cryptolib.cpp'], 
     include_dirs=["openssl/include","CryptoLib"],
     library_dirs=["openssl"],
-    libraries=["libcrypto"])]
+    libraries=["libcrypto"],
+    data_files=[("","openssl/libcrypto-3-x64.dll")])]
 )

@@ -1,3 +1,4 @@
 graft openssl/include 
 graft CryptoLib 
-global-include libcrypto.lib
+include openssl/libcrypto.lib
+include openssl/libcrypto-3-x64.dll

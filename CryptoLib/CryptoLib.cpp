@@ -13,6 +13,14 @@
 using namespace std;
 namespace py = pybind11;
 
+int MAX_CRYPTO_LEN = 549755813632;
+int PBKDF2_STORAGE_ITERATIONS = 1000000;
+int PBKDF2_KEY_ITERATIONS = 100000;
+const int AES_KEY_LEN = 32;
+const int IV_SALT_LEN = 12;
+const int AUTH_TAG_LEN = 16;
+const auto PBKDF2_HASH_ALGO = EVP_sha512;
+
 int compHash(const void* a, const void* b, const size_t size)
 {
 	const unsigned char* _a = (const unsigned char*)a;
@@ -29,7 +37,7 @@ int compHash(const void* a, const void* b, const size_t size)
 
 char *base64(const unsigned char *input, int length) {
   const auto pl = 4*((length+2)/3);
-  auto output = reinterpret_cast<char *>(calloc(pl+1, 1));
+  char* output = new char[pl+1];
   const auto ol = EVP_EncodeBlock(reinterpret_cast<unsigned char *>(output), input, length);
   length = pl;
   return output;
@@ -37,7 +45,7 @@ char *base64(const unsigned char *input, int length) {
 
 unsigned char *decode64(const char *input, int length) {
   const auto pl = 3*length/4;
-  auto output = reinterpret_cast<unsigned char *>(calloc(pl+1, 1));
+  unsigned char* output = new unsigned char[pl+1];
   const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
   length = pl;
   return output;
@@ -62,22 +70,22 @@ int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalst
 
 
 char* __cdecl AESEncrypt(char* text, char* key) {
-	if (strlen((char*)text) > 549755813632) {
+	if (strlen((char*)text) > MAX_CRYPTO_LEN) {
 		throw std::invalid_argument("Data is too long or is not null terminated");
 	}
 	try{
-	unsigned char ivbuff[12];
-	unsigned char tag[16];
+	unsigned char ivbuff[IV_SALT_LEN];
+	unsigned char tag[AUTH_TAG_LEN];
 	int errcnt = 0;
-	int msglen = strnlen((char*)text, 549755813632);
-	if (msglen == 549755813632 || msglen == 549755813631) {
+	int msglen = strnlen((char*)text, MAX_CRYPTO_LEN);
+	if (msglen == MAX_CRYPTO_LEN || msglen == MAX_CRYPTO_LEN) {
 		throw std::invalid_argument("Error: this is not a null terminated string");
 	}
 
-	int rem = 16 - (msglen % 16);
-	unsigned char iv[12];
-	RAND_bytes(iv, 12);
-	memcpy_s(&ivbuff, 12, iv, 12);
+	int rem = AUTH_TAG_LEN - (msglen % AUTH_TAG_LEN);
+	unsigned char iv[IV_SALT_LEN];
+	RAND_bytes(iv, IV_SALT_LEN);
+	memcpy_s(&ivbuff, IV_SALT_LEN, iv, IV_SALT_LEN);
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)rem + (long long)1]);
 	EVP_CIPHER_CTX* ctx;
 	int len;
@@ -86,7 +94,7 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 		handleErrors(&errcnt);
 	if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
 		handleErrors(&errcnt);
-	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
+	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL))
 		handleErrors(&errcnt);
 	if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char*)key, iv))
 		handleErrors(&errcnt);
@@ -95,28 +103,28 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	ciphertext_len = len;
 	if (1 != EVP_EncryptFinal_ex(ctx, out.get() + len, &len))
 		handleErrors(&errcnt);
-	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, 16, &tag))
+	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, AUTH_TAG_LEN, &tag))
 		handleErrors(&errcnt);
 	ciphertext_len += len;
-	OPENSSL_cleanse(key, 32);
+	OPENSSL_cleanse(key, AES_KEY_LEN);
 	OPENSSL_cleanse(text, msglen);
 	EVP_CIPHER_CTX_free(ctx);
 	if (errcnt != 0) {
 		throw std::invalid_argument("Unable to encrypt");
 	}
-	auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)16 + (long long)12 + (long long)1 + (long long)12]);
+	auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN + (long long)1 + (long long)IV_SALT_LEN]);
 	AddToStrBuilder((char*)result.get(), (char*)out.get(), 0, ciphertext_len);
 	delete[] out.release();
-	AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len, 16);
-	AddToStrBuilder((char*)result.get(), (char*)&iv, ciphertext_len + 16, 12);
-	unsigned char len_num[12]{};
+	AddToStrBuilder((char*)result.get(), (char*)&tag, ciphertext_len, AUTH_TAG_LEN);
+	AddToStrBuilder((char*)result.get(), (char*)&iv, ciphertext_len + AUTH_TAG_LEN, IV_SALT_LEN);
+	unsigned char len_num[IV_SALT_LEN]{};
 	string num = to_string(msglen);
 	int ler = num.length();
 	const char* num_len = num.c_str();
-	AddToStrBuilder((char*)result.get(), (char*)num_len, ciphertext_len + 12 + 16 + (12 - ler), ler);
-	memset(result.get() + ciphertext_len + 12 + 16, '0', ((long long)12 - ler));
-	result[ciphertext_len + (long long)16 + (long long)12 + (long long)12] = '\0';
-	int fl = ciphertext_len + (long long)16 + (long long)12 + (long long)1 + (long long)12;
+	AddToStrBuilder((char*)result.get(), (char*)num_len, ciphertext_len + IV_SALT_LEN + AUTH_TAG_LEN + (IV_SALT_LEN - ler), ler);
+	memset(result.get() + ciphertext_len + IV_SALT_LEN + AUTH_TAG_LEN, '0', ((long long)IV_SALT_LEN - ler));
+	result[ciphertext_len + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN + (long long)IV_SALT_LEN] = '\0';
+	int fl = ciphertext_len + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN + (long long)1 + (long long)IV_SALT_LEN;
 	auto fresult = base64(result.get(),fl);
 	return (char*)fresult;
 	} catch(...) {
@@ -131,23 +139,23 @@ py::bytes __cdecl AESDecrypt(char* ctext_b, char* key){
 	auto dctext = decode64(ctext_b,input_len);
 	auto ctext = unique_ptr<unsigned char[]>(new unsigned char [input_len]);
 	memcpy_s(ctext.get(), input_len, dctext, input_len);
-	memcpy_s(len_str, 12, ctext.get() + input_len - 12, 12);
-	free(dctext);
-	if (strnlen((char*)ctext.get(), 549755813632) == 549755813632 || strnlen((char*)ctext.get(), 549755813632) == 549755813631) {
+	memcpy_s(len_str, IV_SALT_LEN, ctext.get() + input_len - IV_SALT_LEN, IV_SALT_LEN);
+	delete[] dctext;
+	if (strnlen((char*)ctext.get(), MAX_CRYPTO_LEN) == MAX_CRYPTO_LEN || strnlen((char*)ctext.get(), MAX_CRYPTO_LEN) == MAX_CRYPTO_LEN) {
 		throw std::invalid_argument("Error: this is not a null terminated string");
 	}
-	len_str[12] = '\0';
+	len_str[IV_SALT_LEN] = '\0';
 	string str_lena = string(len_str);
 	int flen = stoi(str_lena);
 	int errcnt = 0;
 	int leny = input_len;
-	int msglen = leny - 12 - 16 - 12;
+	int msglen = leny - IV_SALT_LEN - AUTH_TAG_LEN - IV_SALT_LEN;
 	auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
 	memcpy_s(msg.get(), msglen, ctext.get(), msglen);
-	unsigned char iv[12];
-	memcpy_s(iv, 12, ctext.get() + msglen + 16, 12);
-	unsigned char tag[16];
-	memcpy_s(tag, 16, ctext.get() + msglen, 16);
+	unsigned char iv[IV_SALT_LEN];
+	memcpy_s(iv, IV_SALT_LEN, ctext.get() + msglen + AUTH_TAG_LEN, IV_SALT_LEN);
+	unsigned char tag[AUTH_TAG_LEN];
+	memcpy_s(tag, AUTH_TAG_LEN, ctext.get() + msglen, AUTH_TAG_LEN);
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)1]);
 
 	EVP_CIPHER_CTX* ctx;
@@ -157,20 +165,20 @@ py::bytes __cdecl AESDecrypt(char* ctext_b, char* key){
 		handleErrors(&errcnt);
 	if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
 		handleErrors(&errcnt);
-	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, 12, NULL))
+	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL))
 		handleErrors(&errcnt);
 	if (!EVP_DecryptInit_ex(ctx, NULL, NULL, (unsigned char*)key, iv))
 		handleErrors(&errcnt);
 	if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
 		handleErrors(&errcnt);
 	plaintext_len = len;
-	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, 16, tag))
+	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AUTH_TAG_LEN, tag))
 		handleErrors(&errcnt);
 	delete[] msg.release();
 	int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
 	plaintext_len += len;
 
-	OPENSSL_cleanse(key, 32);
+	OPENSSL_cleanse(key, AES_KEY_LEN);
 	EVP_CIPHER_CTX_free(ctx);
 	if ((!(ret >= 0)) || (errcnt > 0)) {
 		throw std::invalid_argument("Unable to decrypt ciphertext");
@@ -188,32 +196,32 @@ py::bytes __cdecl AESDecrypt(char* ctext_b, char* key){
 }
 
 char* __cdecl hashForStorage(char* text) {
-	char* key = new char[32];
-	char salt[12];
+	char* key = new char[AES_KEY_LEN];
+	char salt[IV_SALT_LEN];
 	int len = strlen(text);
-	RAND_bytes((unsigned char*)&salt, 12);
+	RAND_bytes((unsigned char*)&salt, IV_SALT_LEN);
 	int a;
-	a = PKCS5_PBKDF2_HMAC(text, len, (unsigned char*)&salt, 12, 1000000,EVP_sha512(), 32, (unsigned char*)key);
+	a = PKCS5_PBKDF2_HMAC(text, len, (unsigned char*)&salt, IV_SALT_LEN, PBKDF2_STORAGE_ITERATIONS,PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)key);
 	OPENSSL_cleanse(text, len);
 	if (a != 1) {
 		throw std::invalid_argument("Unable to hash data.");
 	}
-	auto new_b = base64((const unsigned char*)key,32);
+	auto new_b = base64((const unsigned char*)key,AES_KEY_LEN);
 	return new_b;
 }
 
 py::bytes __cdecl getKeyFromPass(char* pwd) {
-	char* key = new char[32];
-	char salt[12];
+	char* key = new char[AES_KEY_LEN];
+	char salt[IV_SALT_LEN];
 	int len = strlen(pwd);
-	RAND_bytes((unsigned char*)&salt, 12);
+	RAND_bytes((unsigned char*)&salt, IV_SALT_LEN);
 	int a;
-	a = PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, 12, 100000, EVP_sha512(), 32, (unsigned char*)key);
+	a = PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, IV_SALT_LEN, PBKDF2_KEY_ITERATIONS, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)key);
 	OPENSSL_cleanse(pwd, len);
 	if (a != 1) {
 		throw std::invalid_argument("Unable to hash data.");
 	}
-	return py::bytes(key,32);
+	return py::bytes(key,AES_KEY_LEN);
 }
 
 py::bytes __cdecl Auth(char* pwd, char* storedHash) {	
@@ -225,35 +233,35 @@ py::bytes __cdecl Auth(char* pwd, char* storedHash) {
 	if (hashLen != 44) {
 		throw std::invalid_argument("The stored hash is of incorrect length.");
 	}
-	memcpy_s(decoded.get(), strlen(storedHash) + (long long)1 -(long long)12, b, hashLen-(long long)12);
-	free(b);
-	auto salt = unique_ptr<char[]>(new char[12]);
-	memcpy_s(salt.get(), 12, decoded.get() + ((hashLen+(long long)1) - (long long)12),12);
-	auto key = unique_ptr<char[]>(new char[32]);
-	auto keya = unique_ptr<char[]>(new char[32]);
-	if(!PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, 12, 1000000, EVP_sha512(), 32, (unsigned char*)keya.get()))
+	memcpy_s(decoded.get(), strlen(storedHash) + (long long)1 -(long long)IV_SALT_LEN, b, hashLen-(long long)IV_SALT_LEN);
+	delete[] b;
+	auto salt = unique_ptr<char[]>(new char[IV_SALT_LEN]);
+	memcpy_s(salt.get(), IV_SALT_LEN, decoded.get() + ((hashLen+(long long)1) - (long long)IV_SALT_LEN),IV_SALT_LEN);
+	auto key = unique_ptr<char[]>(new char[AES_KEY_LEN]);
+	auto keya = unique_ptr<char[]>(new char[AES_KEY_LEN]);
+	if(!PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, IV_SALT_LEN, PBKDF2_STORAGE_ITERATIONS, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)keya.get()))
 		handleErrors(&errcnt);
 	int x;
-	x = PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, 12, 100000, EVP_sha512(), 32, (unsigned char*)key.get());
+	x = PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, IV_SALT_LEN, PBKDF2_KEY_ITERATIONS, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)key.get());
 	OPENSSL_cleanse(pwd, len);
 	if (x != 1) {
 		handleErrors(&errcnt);
 	}
-	if (compHash(decoded.get(), keya.get(), 32)==0) {
+	if (compHash(decoded.get(), keya.get(), AES_KEY_LEN)==0) {
 		if (errcnt != 0) {
-			OPENSSL_cleanse(key.get(), 32);
+			OPENSSL_cleanse(key.get(), AES_KEY_LEN);
 			OPENSSL_cleanse(pwd, len);
 			throw std::invalid_argument("Authentication failed.");
 		}
 		else {
-			auto result = py::bytes(key.get(), 32);
-			OPENSSL_cleanse(key.get(), 32);
+			auto result = py::bytes(key.get(), AES_KEY_LEN);
+			OPENSSL_cleanse(key.get(), AES_KEY_LEN);
 			OPENSSL_cleanse(pwd, len);
 			return result;
 		}
 	}
 	else {
-		OPENSSL_cleanse(key.get(), 32);
+		OPENSSL_cleanse(key.get(), AES_KEY_LEN);
 		OPENSSL_cleanse(pwd, len);
 		throw std::invalid_argument("Authentication failed.");
 	}
@@ -261,15 +269,15 @@ py::bytes __cdecl Auth(char* pwd, char* storedHash) {
 };
 
 char* __cdecl PBKDF2(char* text, char* salt) {
-	char* key = new char[32];
+	char* key = new char[AES_KEY_LEN];
 	int len = strlen(text);
 	int a;
-	a = PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt, 12, 1000000, EVP_sha512(), 32, (unsigned char*)key);
+	a = PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt, IV_SALT_LEN, PBKDF2_KEY_ITERATIONS, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)key);
 	OPENSSL_cleanse(text, len);
 	if (a != 1) {
 		throw std::invalid_argument("Unable to hash data.");
 	}
-	auto result = base64((const unsigned char*)key,32);
+	auto result = base64((const unsigned char*)key,AES_KEY_LEN);
 	delete[] key;
 	return result;
 }
