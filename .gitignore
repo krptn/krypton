@@ -13,6 +13,7 @@ PySec.key
 CMakeSettings.json
 .vs/
 .vscode/
+openssl-install/
 
 # User-specific files
 *.rsuser
