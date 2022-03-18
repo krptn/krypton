@@ -15,3 +15,4 @@ import PySec
 ```
 # Build/Setup the extension: 
 First please build and install openssl3 before building pysec. Currently only windows is supported. 
+For release, please download openssl from the website. Only use the openssl submodule in this repo for dev/test. 

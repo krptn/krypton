@@ -1,4 +1,4 @@
-graft openssl/include 
 graft C:/Program Files/OpenSSL/include
 include C:/Program Files/OpenSSL/lib/openssl/libcrypto.lib
 include C:/Program Files/OpenSSL/bin/libcrypto-3-x64.dll
+include C:/Program Files/OpenSSL/lib/ossl-modules/fips.dll
