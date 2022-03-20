@@ -14,6 +14,7 @@ CMakeSettings.json
 .vs/
 .vscode/
 openssl-install/
+openssl-config/ 
 
 # User-specific files
 *.rsuser
