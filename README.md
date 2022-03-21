@@ -18,3 +18,8 @@ First please build and install openssl3 before building pysec. Currently only wi
 For release, please download openssl from the website. Only use the openssl submodule in this repo for dev/test. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). 
 
 So when using Configure please pass --prefix=DIR (replace dir with your /openssl-install directory), --openssldir=DIR (to your /openssl-config directory) and enable-fips option. 
+
+For example: 
+```shell 
+perl Configure --prefix="C:\Users\MARKBA~1\source\repos\PySec\openssl-install" --openssldir="C:\Users\MARKBA~1\source\repos\PySec\openssl-config" enable-fips 
+```
