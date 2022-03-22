@@ -14,8 +14,7 @@ View security features: [Security Features](security/sec_feature_plan.md)
 import PySec
 ```
 # Build/Setup the extension: 
-First please build and install openssl3 before building pysec. Currently only windows is supported. 
-For release, please download openssl from the website. Only use the openssl submodule in this repo for dev/test. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). 
+First please build and install openssl3 before building pysec. Currently only windows is supported. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). 
 
 So when using Configure please pass --prefix=DIR (replace dir with your /openssl-install directory), --openssldir=DIR (to your /openssl-config directory) and enable-fips option. 
 
