@@ -12,20 +12,14 @@ with open("README.md","r") as file:
 class opensslFipsValidate(install):
   def run(self):
     install.run(self)
-    openssl_fips_conf = os.path.join(self.install_base,"Lib\\site-packages\\pysec\\fipsmodule.cnf")
-    open(openssl_fips_conf,"w").close()
-    openssl_exe = "'"+os.path.join(self.install_base,"Lib\\site-packages\\openssl-install\\bin\\openssl.exe")+"'"
-    openssl_fips_module = os.path.join(self.install_base,"Lib\\site-packages\\openssl-install\\lib\\ossl-modules\\fips.dll")
+    openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll"
+    openssl_fips_conf = "pysec/fipsmodule.cnf"
     temp = os.getcwd()
-    os.chdir(os.path.join(self.install_base,"Lib\\site-packages\\openssl-install\\bin"))
-    print(openssl_exe)
-    print(openssl_fips_conf)
-    print(openssl_fips_module)
+    os.chdir(os.path.join(self.install_base,"Lib\\site-packages"))
+    open(openssl_fips_conf,"w").close()
     print("Running self-tests for openssl fips validated module")
-    subprocess.run(executable="openssl.exe",
-      args=["fipsinstall","-out "+openssl_fips_conf ,"-module "+openssl_fips_module],
-      stdout=sys.stdout,stderr=sys.stderr
-    )
+    os.system('"openssl-install\\bin\\openssl.exe" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
+      .format(openssl_fips_module=openssl_fips_module,openssl_fips_conf=openssl_fips_conf))
     os.chdir(temp)
 
 
