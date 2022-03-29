@@ -3,7 +3,6 @@ from setuptools import setup
 from setuptools.command.install import install
 from pybind11.setup_helpers import Pybind11Extension
 import os
-import subprocess
 import sys
 
 with open("README.md","r") as file:
@@ -12,13 +11,13 @@ with open("README.md","r") as file:
 class opensslFipsValidate(install):
   def run(self):
     install.run(self)
-    openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll"
+    openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
     openssl_fips_conf = "pysec/fipsmodule.cnf"
     temp = os.getcwd()
     os.chdir(os.path.join(self.install_base,"Lib\\site-packages"))
     open(openssl_fips_conf,"w").close()
     print("Running self-tests for openssl fips validated module")
-    os.system('"openssl-install\\bin\\openssl.exe" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
+    os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
       .format(openssl_fips_module=openssl_fips_module,openssl_fips_conf=openssl_fips_conf))
     os.chdir(temp)
 
