@@ -23,7 +23,7 @@ class opensslFipsValidate(install):
     print(openssl_fips_module)
     print("Running self-tests for openssl fips validated module")
     subprocess.run(executable="openssl.exe",
-      args=["fipsinstall","-out"+openssl_fips_conf ,"-module"+openssl_fips_module],
+      args=["fipsinstall","-out "+openssl_fips_conf ,"-module "+openssl_fips_module],
       stdout=sys.stdout,stderr=sys.stderr
     )
     os.chdir(temp)
