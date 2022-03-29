@@ -1,4 +1,3 @@
-from ast import arg
 from setuptools import setup
 from setuptools.command.install import install
 from pybind11.setup_helpers import Pybind11Extension
