@@ -7,7 +7,7 @@ import sys
 with open("README.md","r") as file:
   description=file.read()
 
-class opensslFipsValidate(install):
+class opensslFipsValidatedInstall(install):
   def run(self):
     install.run(self)
     openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
@@ -17,7 +17,7 @@ class opensslFipsValidate(install):
     open(openssl_fips_conf,"w").close()
     print("Running self-tests for openssl fips validated module")
     os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
-      .format(openssl_fips_module=openssl_fips_module,openssl_fips_conf=openssl_fips_conf))
+      .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
     os.chdir(temp)
 
 
@@ -44,7 +44,7 @@ setup(name='pysec',
   python_requires=">3.8",
   include_package_data=True,
   cmdclass={
-    'install': opensslFipsValidate
+    'install': opensslFipsValidatedInstall
   },
   ext_modules=[Pybind11Extension('CryptoLib', 
     ['CryptoLib/Cryptolib.cpp'], 
