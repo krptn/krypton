@@ -8,6 +8,7 @@ c_cpp_properties.json
 keystore.db
 Data
 PySec.key 
+pysec-*/
 
 #Machine specific files
 CMakeSettings.json
