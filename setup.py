@@ -37,9 +37,7 @@ class opensslFipsValidatedDevelop(develop):
     except:
       print("Not doing openssl self-test. Please perform these manually.")
 
-extra_args = []
-if DEBUG:
-  extra_args.append("-DDEBUG=0")
+
 setup(name='pysec',
   version='1.0',
   description='pysec',
@@ -69,6 +67,5 @@ setup(name='pysec',
     ['CryptoLib/Cryptolib.cpp'], 
     include_dirs=["openssl/include","CryptoLib"],
     library_dirs=["openssl"],
-    libraries=["libcrypto"],
-    extra_compile_args=extra_args)]
+    libraries=["libcrypto"])]
 )
