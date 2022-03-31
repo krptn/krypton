@@ -1,5 +1,6 @@
 from setuptools import setup
 from setuptools.command.install import install
+from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
 import os
 import sys
@@ -14,13 +15,31 @@ class opensslFipsValidatedInstall(install):
     openssl_fips_conf = "pysec/fipsmodule.cnf"
     temp = os.getcwd()
     os.chdir(os.path.join(self.install_base,"Lib\\site-packages"))
-    open(openssl_fips_conf,"w").close()
-    print("Running self-tests for openssl fips validated module")
-    os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
-      .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
+    try: 
+      open(openssl_fips_conf,"w").close()
+      print("Running self-tests for openssl fips validated module")
+      os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
+        .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
+    except:
+      print("Not doing openssl self-test. Please perform these manually.")
     os.chdir(temp)
 
 
+class opensslFipsValidatedDevelop(develop):
+  def run(self):
+    develop.run(self)
+    openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
+    openssl_fips_conf = "pysec/fipsmodule.cnf"
+    temp = os.getcwd()
+    os.chdir(os.path.join(self.install_base,"Lib\\site-packages"))
+    try: 
+      open(openssl_fips_conf,"w").close()
+      print("Running self-tests for openssl fips validated module")
+      os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
+        .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
+    except:
+      print("Not doing openssl self-test. Please perform these manually.")
+    os.chdir(temp)
   
 setup(name='pysec',
   version='1.0',
@@ -44,7 +63,8 @@ setup(name='pysec',
   python_requires=">3.8",
   include_package_data=True,
   cmdclass={
-    'install': opensslFipsValidatedInstall
+    'install': opensslFipsValidatedInstall,
+    'develop':opensslFipsValidatedDevelop
   },
   ext_modules=[Pybind11Extension('CryptoLib', 
     ['CryptoLib/Cryptolib.cpp'], 
