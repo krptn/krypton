@@ -16,6 +16,8 @@ CMakeSettings.json
 .vscode/
 openssl-install/
 openssl-config/ 
+*.pyd 
+fipsmodule.cnf 
 
 # User-specific files
 *.rsuser

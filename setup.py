@@ -30,8 +30,6 @@ class opensslFipsValidatedDevelop(develop):
     develop.run(self)
     openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
     openssl_fips_conf = "pysec/fipsmodule.cnf"
-    temp = os.getcwd()
-    os.chdir(os.path.join(self.install_base,"Lib\\site-packages"))
     try: 
       open(openssl_fips_conf,"w").close()
       print("Running self-tests for openssl fips validated module")
@@ -39,7 +37,6 @@ class opensslFipsValidatedDevelop(develop):
         .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
     except:
       print("Not doing openssl self-test. Please perform these manually.")
-    os.chdir(temp)
   
 setup(name='pysec',
   version='1.0',
