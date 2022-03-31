@@ -4,7 +4,7 @@ from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
 import os
 import sys
-
+DEBUG = True
 with open("README.md","r") as file:
   description=file.read()
 
@@ -24,7 +24,6 @@ class opensslFipsValidatedInstall(install):
       print("Not doing openssl self-test. Please perform these manually.")
     os.chdir(temp)
 
-
 class opensslFipsValidatedDevelop(develop):
   def run(self):
     develop.run(self)
@@ -37,7 +36,10 @@ class opensslFipsValidatedDevelop(develop):
         .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
     except:
       print("Not doing openssl self-test. Please perform these manually.")
-  
+
+extra_args = []
+if DEBUG:
+  extra_args.append("-DDEBUG=0")
 setup(name='pysec',
   version='1.0',
   description='pysec',
@@ -67,5 +69,6 @@ setup(name='pysec',
     ['CryptoLib/Cryptolib.cpp'], 
     include_dirs=["openssl/include","CryptoLib"],
     library_dirs=["openssl"],
-    libraries=["libcrypto"])]
+    libraries=["libcrypto"],
+    extra_compile_args=extra_args)]
 )

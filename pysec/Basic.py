@@ -25,7 +25,6 @@ def isBaseNameAvailable(self,name:bytes)->bool:
         return True
 
 class kms():
-    #Needed: update table keys
     hsmEnabled = False
     def secureCipher(self,text):
         if self.hsmEnabled:
