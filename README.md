@@ -22,3 +22,9 @@ For example:
 ```shell 
 perl Configure --prefix="C:\Users\MARKBA~1\source\repos\PySec\openssl-install" --openssldir="C:\Users\MARKBA~1\source\repos\PySec\openssl-config" enable-fips 
 ```
+
+To install the extension and produce debuging symbols use: 
+```shell
+python setup.py build_ext --debug
+pip install -e .
+```

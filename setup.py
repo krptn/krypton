@@ -4,7 +4,7 @@ from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
 import os
 import sys
-DEBUG = True
+
 with open("README.md","r") as file:
   description=file.read()
 
