@@ -20,6 +20,7 @@ const int AES_KEY_LEN = 32;
 const int IV_SALT_LEN = 12;
 const int AUTH_TAG_LEN = 16;
 const auto PBKDF2_HASH_ALGO = EVP_sha512;
+OSSL_PROVIDER *fips;
 
 int compHash(const void* a, const void* b, const size_t size)
 {
@@ -284,7 +285,6 @@ char* __cdecl PBKDF2(char* text, char* salt) {
 
 int init()
 {
-	OSSL_PROVIDER *fips;
 	fips = OSSL_PROVIDER_load(NULL, "fips");
 	if (fips == NULL) {
 		printf("Failed to load FIPS provider\n");

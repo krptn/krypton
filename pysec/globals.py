@@ -8,13 +8,21 @@ key = "PySec.key"
 key_path = data_path+key
 Adrr = id
 
-from CryptoLib import AESEncrypt, AESDecrypt, getKeyFromPass 
+from CryptoLib import AESEncrypt, AESDecrypt
+import CryptoLib
+CryptoLib.init()
 
 keyDB:sqlite3.Connection = sqlite3.connect(key_path)
 cursor = keyDB.cursor()
 
 restEncrypt = AESEncrypt
 restDecrypt = AESDecrypt
+
+def getEncryptor():
+    return restEncrypt
+
+def getDecryptor():
+    return restDecrypt
 
 class StrBuilder():
     def __init__(self,lenNum : int):
@@ -71,3 +79,20 @@ try:
 except(sqlite3.OperationalError):
     cursor.execute("CREATE TABLE keys (name text, key blob)")
     keyDB.commit()
+
+keyDB2 = sqlite3.connect("crypto.db")
+c = keyDB2.cursor()
+try:
+    c.execute("SELECT * FROM keys")
+except(sqlite3.OperationalError):
+    c.execute("CREATE TABLE keys (name text, key blob)")
+    keyDB2.commit()
+try:
+    c.execute("SELECT * FROM crypto")
+except(sqlite3.OperationalError):
+    c.execute("CREATE TABLE crypto (id int, ctext blob)")
+    keyDB2.commit()
+c.close()
+keyDB2.close()
+del c
+del keyDB
