@@ -12,17 +12,17 @@ from CryptoLib import AESEncrypt, AESDecrypt
 import CryptoLib
 CryptoLib.init()
 
-keyDB:sqlite3.Connection = sqlite3.connect(key_path)
-cursor = keyDB.cursor()
+__keyDB:sqlite3.Connection = sqlite3.connect(key_path)
+__cursor = __keyDB.cursor()
 
-restEncrypt = AESEncrypt
-restDecrypt = AESDecrypt
+_restEncrypt = AESEncrypt
+_restDecrypt = AESDecrypt
 
 def getEncryptor():
-    return restEncrypt
+    return _restEncrypt
 
 def getDecryptor():
-    return restDecrypt
+    return _restDecrypt
 
 class StrBuilder():
     def __init__(self,lenNum : int):
@@ -75,10 +75,10 @@ def antiSQLi(name:bytes, info:bool=True)->str:
     return result
 
 try:
-    cursor.execute("SELECT * FROM keys")
+    __cursor.execute("SELECT * FROM keys")
 except(sqlite3.OperationalError):
-    cursor.execute("CREATE TABLE keys (name text, key blob)")
-    keyDB.commit()
+    __cursor.execute("CREATE TABLE keys (name text, key blob)")
+    __keyDB.commit()
 
 keyDB2 = sqlite3.connect("crypto.db")
 c = keyDB2.cursor()
@@ -95,4 +95,4 @@ except(sqlite3.OperationalError):
 c.close()
 keyDB2.close()
 del c
-del keyDB
+del __keyDB

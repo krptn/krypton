@@ -1,22 +1,13 @@
-import sys
 import unittest
-import sys
-
-from pysec.Basic import kms
-import os
-try:
-    os.remove("PySec.key")
-except:
-    pass
+from pysec.Basic import crypto
 
 class TestKMS(unittest.TestCase):
 
     def test_creation(self):
-        k = kms()
-        k.createNewKey("example")
-        k.getKey("example")
-
-        self.assertIsInstance(k.getTableKey("example"), bytes, "Should be bytes")
+        test = crypto()
+        a = test.secureCipher("Example")
+        b = test.secureDecipher(a)
+        self.assertEqual(a,b)
 
 if __name__ == "__main__":
     unittest.main()
