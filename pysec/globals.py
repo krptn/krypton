@@ -3,6 +3,7 @@ from multiprocessing import connection
 import sqlite3
 import sys
 import os
+import pathlib
 data_path = ""
 key = "PySec.key"
 key_path = data_path+key
@@ -10,8 +11,10 @@ Adrr = id
 
 from CryptoLib import AESEncrypt, AESDecrypt
 import CryptoLib
+temp = os.getcwd()
+os.chdir(pathlib.Path(__file__).parent.parent.absolute().as_posix())
 CryptoLib.init()
-
+os.chdir(temp)
 __keyDB:sqlite3.Connection = sqlite3.connect(key_path)
 __cursor = __keyDB.cursor()
 

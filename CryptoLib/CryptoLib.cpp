@@ -10,6 +10,7 @@
 #include <openssl/evp.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
+
 using namespace std;
 namespace py = pybind11;
 
@@ -287,8 +288,8 @@ int init()
 {
 	fips = OSSL_PROVIDER_load(NULL, "fips");
 	if (fips == NULL) {
-		printf("Failed to load FIPS provider\n");
-		exit(EXIT_FAILURE);
+		ERR_print_errors_fp(stderr);
+		throw std::runtime_error("Failed to load fips provider.");
 	}
 }
 

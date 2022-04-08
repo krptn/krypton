@@ -12,7 +12,7 @@ class opensslFipsValidatedInstall(install):
   def run(self):
     install.run(self)
     openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
-    openssl_fips_conf = "pysec/fipsmodule.cnf"
+    openssl_fips_conf = "openssl-config/fipsmodule.cnf"
     temp = os.getcwd()
     os.chdir(os.path.join(self.install_base,"Lib\\site-packages"))
     try: 
@@ -28,8 +28,8 @@ class opensslFipsValidatedDevelop(develop):
   def run(self):
     develop.run(self)
     openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
-    openssl_fips_conf = "pysec/fipsmodule.cnf"
-    try: 
+    openssl_fips_conf = "openssl-config/fipsmodule.cnf"
+    try:
       open(openssl_fips_conf,"w").close()
       print("Running self-tests for openssl fips validated module")
       os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
@@ -55,7 +55,8 @@ setup(name='pysec',
   ],
   package_data={"":["../openssl-install/bin/libcrypto-3-x64.dll",
     "../openssl-install/lib/ossl-modules/fips.dll",
-    "../openssl-install/bin/openssl.exe"]},
+    "../openssl-install/bin/openssl.exe",
+    "../openssl-config/openssl.cnf"]},
   packages=['pysec'],
   python_requires=">3.8",
   include_package_data=True,
@@ -64,7 +65,7 @@ setup(name='pysec',
     'develop':opensslFipsValidatedDevelop
   },
   ext_modules=[Pybind11Extension('CryptoLib', 
-    ['CryptoLib/Cryptolib.cpp'], 
+    ['CryptoLib/Cryptolib.cpp','openssl-install/include/openssl/applink.c'], 
     include_dirs=["openssl/include","CryptoLib"],
     library_dirs=["openssl"],
     libraries=["libcrypto"])]

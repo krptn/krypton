@@ -3,3 +3,4 @@ include openssl-install/lib/libcrypto.lib
 include openssl-install/bin/libcrypto-3-x64.dll
 include openssl-install/lib/ossl-modules/fips.dll
 include openssl-install/bin/openssl.exe
+graft openssl-config
