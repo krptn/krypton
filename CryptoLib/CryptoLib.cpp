@@ -10,6 +10,7 @@
 #include <openssl/evp.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
+#include <openssl/applink.c>
 
 using namespace std;
 namespace py = pybind11;
@@ -22,6 +23,15 @@ const int IV_SALT_LEN = 12;
 const int AUTH_TAG_LEN = 16;
 const auto PBKDF2_HASH_ALGO = EVP_sha512;
 OSSL_PROVIDER *fips;
+
+int init()
+{
+	fips = OSSL_PROVIDER_load(NULL, "fips");
+	if (fips == NULL) {
+		ERR_print_errors_fp(stderr);
+		throw std::runtime_error("Failed to load fips provider.");
+	}
+}
 
 int compHash(const void* a, const void* b, const size_t size)
 {
@@ -282,15 +292,6 @@ char* __cdecl PBKDF2(char* text, char* salt) {
 	auto result = base64((const unsigned char*)key,AES_KEY_LEN);
 	delete[] key;
 	return result;
-}
-
-int init()
-{
-	fips = OSSL_PROVIDER_load(NULL, "fips");
-	if (fips == NULL) {
-		ERR_print_errors_fp(stderr);
-		throw std::runtime_error("Failed to load fips provider.");
-	}
 }
 
 PYBIND11_MODULE(CryptoLib, m) {

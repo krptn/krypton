@@ -65,8 +65,8 @@ setup(name='pysec',
     'develop':opensslFipsValidatedDevelop
   },
   ext_modules=[Pybind11Extension('CryptoLib', 
-    ['CryptoLib/Cryptolib.cpp','openssl-install/include/openssl/applink.c'], 
-    include_dirs=["openssl/include","CryptoLib"],
-    library_dirs=["openssl"],
+    ['CryptoLib/Cryptolib.cpp'], 
+    include_dirs=["openssl-install/include","CryptoLib"],
+    library_dirs=["openssl-install/lib"],
     libraries=["libcrypto"])]
 )

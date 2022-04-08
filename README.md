@@ -20,7 +20,7 @@ So when using Configure please pass --prefix=DIR (replace dir with your /openssl
 
 For example: 
 ```shell 
-perl Configure --prefix="C:\Users\MARKBA~1\source\repos\PySec\openssl-install" --openssldir="C:\Users\MARKBA~1\source\repos\PySec\openssl-config" enable-fips 
+perl Configure --prefix="C:\Users\MARKBA~1\source\repos\PySec\openssl-install" --openssldir="C:\Users\MARKBA~1\source\repos\PySec\openssl-config" enable-fips --debug
 ```
 
 To install the extension and produce debuging symbols use: 
