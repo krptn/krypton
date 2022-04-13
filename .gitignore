@@ -9,6 +9,7 @@ keystore.db
 Data
 PySec.key 
 pysec-*/
+*.db
 
 #Machine specific files
 CMakeSettings.json
