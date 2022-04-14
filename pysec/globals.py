@@ -4,19 +4,15 @@ import sqlite3
 import sys
 import os
 import pathlib
-data_path = ""
-key = "PySec.key"
-key_path = data_path+key
+from . import sitePackages
+
 Adrr = id
 
 from CryptoLib import AESEncrypt, AESDecrypt
-import CryptoLib
 temp = os.getcwd()
-os.chdir(pathlib.Path(__file__).parent.parent.absolute().as_posix())
-CryptoLib.init()
+os.chdir(sitePackages)
+#CryptoLib.init()
 os.chdir(temp)
-__keyDB:sqlite3.Connection = sqlite3.connect(key_path)
-__cursor = __keyDB.cursor()
 
 _restEncrypt = AESEncrypt
 _restDecrypt = AESDecrypt
@@ -76,26 +72,3 @@ def antiSQLi(name:bytes, info:bool=True)->str:
     else:
         raise TypeError("Must be type str or type int")
     return result
-
-try:
-    __cursor.execute("SELECT * FROM keys")
-except(sqlite3.OperationalError):
-    __cursor.execute("CREATE TABLE keys (name text, key blob)")
-    __keyDB.commit()
-
-keyDB2 = sqlite3.connect("crypto.db")
-c = keyDB2.cursor()
-try:
-    c.execute("SELECT * FROM keys")
-except(sqlite3.OperationalError):
-    c.execute("CREATE TABLE keys (name text, key blob)")
-    keyDB2.commit()
-try:
-    c.execute("SELECT * FROM crypto")
-except(sqlite3.OperationalError):
-    c.execute("CREATE TABLE crypto (id int, ctext blob)")
-    keyDB2.commit()
-c.close()
-keyDB2.close()
-del c
-del __keyDB

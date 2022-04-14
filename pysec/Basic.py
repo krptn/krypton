@@ -1,8 +1,9 @@
 import os
 import sqlite3
 import tkinter as tk
-from .globals import _restEncrypt, _restDecrypt, zeromem
 from . import globals
+from . import cryptoDBLocation
+from .globals import _restEncrypt, _restDecrypt, zeromem
 import pysec
 
 def isBaseNameAvailable(self,name:bytes)->bool:
@@ -31,7 +32,7 @@ class kms():
     def importKeys(self):
         pass
     
-    def __init__(self, keyDB:sqlite3.Connection=globals.keyDB, master:bool=False, all:bool=False)->None:
+    def __init__(self, keyDB:sqlite3.Connection, master:bool=False, all:bool=False)->None:
         self.keydb = keyDB
         self._masterHSM = master
         self._allHDM = all
@@ -76,7 +77,7 @@ class crypto(kms):
     Ciphers and deciphers strings. Can also store strings securely and supports CRUD operations
     '''
     def __init__(self):
-        self.keydb = sqlite3.connect("crypto.db")
+        self.keydb = sqlite3.connect(cryptoDBLocation)
         self.c = self.keydb.cursor()
         id = int(self.c.execute("SELECT MAX(id) FROM crypto").fetchone()[0])
         if id == None:

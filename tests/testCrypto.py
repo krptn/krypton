@@ -1,12 +1,12 @@
 import unittest
 from pysec.Basic import crypto
 
-class TestKMS(unittest.TestCase):
+class TestCryptoClass(unittest.TestCase):
 
     def test_creation(self):
         test = crypto()
-        a = test.secureCipher("Example")
-        b = test.secureDecipher(a)
+        a = test.secureCreate("Example")
+        b = test.sercureRead(a)
         self.assertEqual(a,b)
 
 if __name__ == "__main__":
