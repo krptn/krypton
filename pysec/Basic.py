@@ -5,16 +5,6 @@ from . import globals
 from . import cryptoDBLocation
 from .globals import _restEncrypt, _restDecrypt, zeromem
 
-def isBaseNameAvailable(self,name:bytes)->bool:
-    falsey = False
-    for table in globals.cursor.excecute("SELECT * FROM SQLite_master"):
-        if table[1] == name:
-            falsey = True
-    if falsey == True:
-        return False
-    else:
-        return True
-
 class kms():
     def __secureCipher(self,text, pwd):
         if self._masterHSM:
@@ -22,7 +12,7 @@ class kms():
         else:
             return _restEncrypt(text,pwd)
  #Will also need to check the level of HSM: only master key or all keys. 
-    def __secureDecipher(self,ctext, pwd):
+    def __secureDecipher(self,ctext:str|bytes, pwd:str|bytes):
         if self.hsmEnabled:
             pass
         else:
@@ -37,13 +27,13 @@ class kms():
         self._allHDM = all
         self.c = keyDB.cursor()
 
-    def getKey(self, name : str, pwd:str=None) -> bytes:
+    def getKey(self, name : str, pwd:str|bytes=None) -> bytes:
         self.c.execute("SELECT key FROM keys WHERE name == ?",(name,)) 
         key = self.c.fetchone()[0]
         r = self.__secureDecipher(key, pwd)
         return r
 
-    def createNewKey(self, name:str, pwd:str=None) -> str:
+    def createNewKey(self, name:str, pwd:str|bytes=None) -> str:
         self.c.execute("SELECT * FROM keys WHERE name=?",(name,))
         if self.c.fetchone() != None:
             raise ValueError("Such a name already exists")
@@ -70,7 +60,6 @@ class getKey():
         self.root.destroy()
         self.value = globals.getKeyFromPass(self.e.get())  
 
-
 class crypto(kms):
     '''
     Ciphers and deciphers strings. Can also store strings securely and supports CRUD operations
@@ -85,29 +74,36 @@ class crypto(kms):
             self.id = id
         super().__init__(self.keydb)
     #Ciphers
-    def crypt(self,what:bytes, pwd=None) -> bytes:
+    def crypt(self,data:bytes|str, pwd:str|bytes=None) -> bytes:
+        id = self.id
+        self.id+=1
+        key = self.createNewKey(str(id), pwd)
+        self.c.execute("INSERT INTO crypto VALUES (?, ?)",(id,_restEncrypt(data,key)))
+        zeromem(key)
+        return id
+
+    def decrypt(self, id:int, pwd:str|bytes=None)->bytes:
+        self.c.execute("SELECT ctext FROM crypto WHERE id=?", (id,))
+        ctext = self.c.fetchone()[0]
+        if ctext == None:
+            raise ValueError("Your selected data does not exists")
+        key = self.getKey(str(id),pwd)
+        text = _restDecrypt(ctext,key)
+        zeromem(key)
+        return text
+        
+    #CRUD
+    def secureCreate(self,what:bytes, pwd=None):
         id = self.id
         self.id+=1
         key = self.createNewKey(str(id), pwd)
         self.c.execute("INSERT INTO crypto VALUES (?, ?)",(id,_restEncrypt(what)))
         zeromem(key)
         return id
-
-    def decrypt(self,what:bytes)->bytes:
-        pass
-
-    #CRUD
-    def secureCreate(self,what:bytes, pwd=None):
-        d = self.id
-        self.id+=1
-        key = self.createNewKey(str(id), pwd)
-        self.c.execute("INSERT INTO crypto VALUES (?, ?)",(id,_restEncrypt(what)))
-        zeromem(key)
-        return id
     
-    def sercureRead(self,what:bytes):
+    def sercureRead(self, id:int):
         pass
-    def secureUpdate(self,what:bytes):
+    def secureUpdate(self, id:int, new:str|bytes):
         pass
-    def sucureDelete(self,what:bytes):
+    def sucureDelete(self,id:int):
         pass

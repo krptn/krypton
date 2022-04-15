@@ -1,4 +1,5 @@
-﻿import os
+﻿from importlib.resources import path
+import os
 import pathlib
 import sys
 version = "1"
@@ -17,10 +18,6 @@ else:
         pathlib.Path(sys.executable).parent.absolute(),
         "Lib\\site-packages"
     )
-cryptoDBLocation = os.path.join(sitePackages, "pysec\\crypto.db")
-
-os.add_dll_directory(pathlib.Path(__file__).parent.parent.absolute().as_posix()+
-    pathlib.Path("/openssl-install/bin").as_posix())
-
-os.add_dll_directory(pathlib.Path(__file__).parent.parent.absolute().as_posix()+
-    pathlib.Path("/openssl-install/lib/ossl-modules").as_posix())
+cryptoDBLocation = os.path.join(sitePackages, "pysec/crypto.db")
+os.add_dll_directory(os.path.join(sitePackages, "openssl-install/bin"))
+os.add_dll_directory(os.path.join(sitePackages, "openssl-install/lib/ossl-modules"))

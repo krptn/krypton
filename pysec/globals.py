@@ -3,10 +3,10 @@ import sys
 import os
 
 Adrr = id
-import __CryptoLib
+#import __CryptoLib
 from __CryptoLib import AESEncrypt, AESDecrypt
 temp = os.getcwd()
-__CryptoLib.fipsInit()
+#__CryptoLib.fipsInit()
 
 _restEncrypt = AESEncrypt
 _restDecrypt = AESDecrypt
@@ -18,7 +18,7 @@ def getDecryptor():
     return _restDecrypt
 
 class StrBuilder():
-    def __init__(self,lenNum : int):
+    def __init__(self, lenNum : int):
         self.len = lenNum
         self.used = 0
         self.data = ctypes.create_string_buffer(lenNum)
