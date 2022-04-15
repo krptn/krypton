@@ -10,13 +10,13 @@ class kms():
         if self._masterHSM:
             pass
         else:
-            return _restEncrypt(text,pwd)
+            return _restEncrypt(text, pwd)
  #Will also need to check the level of HSM: only master key or all keys. 
-    def __secureDecipher(self,ctext:str|bytes, pwd:str|bytes):
+    def __secureDecipher(self, ctext:str|bytes, pwd:str|bytes):
         if self.hsmEnabled:
             pass
         else:
-            return _restDecrypt(ctext,pwd)
+            return _restDecrypt(ctext, pwd)
     
     def __init__(self, keyDB:sqlite3.Connection, master:bool=False, all:bool=False)->None:
         self.keydb = keyDB
@@ -30,7 +30,7 @@ class kms():
     def importKeys(self):
         pass
 
-    def getKey(self, name : str, pwd:str|bytes=None) -> bytes:
+    def getKey(self, name:str, pwd:str|bytes=None) -> bytes:
         self.c.execute("SELECT key FROM keys WHERE name == ?",(name,)) 
         key = self.c.fetchone()[0]
         r = self.__secureDecipher(key, pwd)
