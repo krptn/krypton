@@ -4,7 +4,6 @@ import tkinter as tk
 from . import globals
 from . import cryptoDBLocation
 from .globals import _restEncrypt, _restDecrypt, zeromem
-import pysec
 
 def isBaseNameAvailable(self,name:bytes)->bool:
     falsey = False

@@ -5,7 +5,6 @@ from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
 import os
 import sys
-from tkinter import messagebox
 import sqlite3
 
 description = ""
@@ -16,9 +15,10 @@ def finishInstall(install_base):
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
   openssl_fips_conf = "openssl-config/fipsmodule.cnf"
   temp = os.getcwd()
-  messagebox.showinfo(install_base)
+
   try: os.chdir(os.path.join(install_base, "Lib\\site-packages"))
   except: return
+
   try: 
     open(openssl_fips_conf,"w").close()
     print("Running self-tests for openssl fips validated module")
@@ -26,17 +26,18 @@ def finishInstall(install_base):
       .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
   except:
     print("Not doing openssl self-test. Please perform these manually.")
+
   try:
     os.chdir("pysec")
   except:
     print("Not setting up crypto.db")
     os.chdir(temp)
     return
+
   if pathlib.Path(os.getcwd(),"crypto.db").exists():
     print("Not setting up crypto.db as it already exists")
     os.chdir(temp)
     return
-  
   conn = sqlite3.connect("crypto.db")
   c = conn.cursor()
   c.execute("CREATE TABLE crypto (id int, ctext blob)")
@@ -49,15 +50,13 @@ def finishInstall(install_base):
 
 class completeInstall(install):
   def run(self):
-    path = self.install_base
     install.run(self)
-    finishInstall(path)
+    finishInstall(self.install_base)
 
 class completeDevelop(develop):
   def run(self):
-    path = self.install_base
     develop.run(self)
-    finishInstall(path)
+    finishInstall(self.install_base)
 
 setup(name='pysec',
   version='1.0',
@@ -85,7 +84,7 @@ setup(name='pysec',
     'install': completeInstall,
     'develop':completeDevelop
   },
-  ext_modules=[Pybind11Extension('CryptoLib', 
+  ext_modules=[Pybind11Extension('__CryptoLib', 
     ['CryptoLib/Cryptolib.cpp'], 
     include_dirs=["openssl-install/include","CryptoLib"],
     library_dirs=["openssl-install/lib"],

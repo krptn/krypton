@@ -1,5 +1,5 @@
 import unittest
-from pysec.Basic import crypto
+from pysec.basic import crypto
 
 class TestCryptoClass(unittest.TestCase):
 

@@ -294,7 +294,7 @@ char* __cdecl PBKDF2(char* text, char* salt) {
 	return result;
 }
 
-PYBIND11_MODULE(CryptoLib, m) {
+PYBIND11_MODULE(__CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));

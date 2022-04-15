@@ -1,18 +1,13 @@
 import ctypes
-from multiprocessing import connection
-import sqlite3
 import sys
 import os
-import pathlib
-from . import sitePackages
 
 Adrr = id
 
-from CryptoLib import AESEncrypt, AESDecrypt
+from __CryptoLib import AESEncrypt, AESDecrypt
 temp = os.getcwd()
-os.chdir(sitePackages)
 #CryptoLib.init()
-os.chdir(temp)
+
 
 _restEncrypt = AESEncrypt
 _restDecrypt = AESDecrypt
