@@ -1,6 +1,4 @@
-﻿// Cross-PlatformCryptoLib.cpp : Defines the entry point for the application.
-// -fdeclspec -cfguard" for ninja buildArgs
-#include "CryptoLib.h"
+﻿#include "CryptoLib.h"
 #include <pybind11/pybind11.h>
 #include <openssl/provider.h>
 #include <openssl/crypto.h>
@@ -24,7 +22,7 @@ const int AUTH_TAG_LEN = 16;
 const auto PBKDF2_HASH_ALGO = EVP_sha512;
 OSSL_PROVIDER *fips;
 
-int init()
+int fipsInit()
 {
 	fips = OSSL_PROVIDER_load(NULL, "fips");
 	if (fips == NULL) {
@@ -299,9 +297,12 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 	m.def("hashForStorage", &hashForStorage, "Securely hashes the text", py::arg("text"));
-	m.def("Auth", &Auth, "Authneticates users using values supplied. Returns user's crypto key is authentication successfull, returns 'Error' otherwise.", py::arg("pwd"), py::arg("stored_HASH")='\0');
+	m.def("Auth", &Auth, 
+		"Authneticates users using values supplied. Returns user's crypto key is authentication successfull, returns 'Error' otherwise.",
+		 py::arg("pwd"), py::arg("stored_HASH")='\0'
+	);
 	m.def("getKeyFromPass", &getKeyFromPass, "Uses PBKDF2 to get the crypto key from the password.", py::arg("pwd"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
 	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"));
-	m.def("init",&init,"Initialises cryptographic components. ");
+	m.def("fipsInit",&fipsInit,"Initialises cryptographic components. ");
 }
