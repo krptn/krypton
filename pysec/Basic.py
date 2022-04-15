@@ -17,15 +17,18 @@ class kms():
             pass
         else:
             return _restDecrypt(ctext,pwd)
-
-    def importKeys(self):
-        pass
     
     def __init__(self, keyDB:sqlite3.Connection, master:bool=False, all:bool=False)->None:
         self.keydb = keyDB
         self._masterHSM = master
         self._allHDM = all
         self.c = keyDB.cursor()
+    
+    def exportKeys(self):
+        pass
+
+    def importKeys(self):
+        pass
 
     def getKey(self, name : str, pwd:str|bytes=None) -> bytes:
         self.c.execute("SELECT key FROM keys WHERE name == ?",(name,)) 
@@ -43,8 +46,10 @@ class kms():
         self.keydb.commit()
         return k
     
-    def exportKeys():
-        pass
+    def removeKey(self, name:str, pwd:str|bytes=None) -> None:
+        zeromem(self.getKey(name, pwd))
+        self.c.execute("DELETE FROM crypto WHERE name=?", (name,))
+        return
 
 class getKey():
     def __init__(self):
@@ -73,7 +78,13 @@ class crypto(kms):
         else:
             self.id = id
         super().__init__(self.keydb)
-    #Ciphers
+    
+    def exportData(self):
+        pass
+
+    def importData(self):
+        pass
+    
     def crypt(self,data:bytes|str, pwd:str|bytes=None) -> bytes:
         id = self.id
         self.id+=1
@@ -82,7 +93,22 @@ class crypto(kms):
         zeromem(key)
         return id
 
-    def decrypt(self, id:int, pwd:str|bytes=None)->bytes:
+    def decrypt(self, data:bytes, pwd:str|bytes=None)->bytes:
+        key = self.getKey(str(int),pwd)
+        text = _restDecrypt(data,key)
+        zeromem(key)
+        return text
+
+    def secureCreate(self,what:bytes, pwd=None):
+        id = self.id
+        self.id+=1
+        key = self.createNewKey(str(id), pwd)
+        self.c.execute("INSERT INTO crypto VALUES (?, ?)",(id,_restEncrypt(what)))
+        zeromem(key)
+        self.keydb.commit()
+        return id
+    
+    def secureRead(self, id:int, pwd:str|bytes):
         self.c.execute("SELECT ctext FROM crypto WHERE id=?", (id,))
         ctext = self.c.fetchone()[0]
         if ctext == None:
@@ -91,19 +117,19 @@ class crypto(kms):
         text = _restDecrypt(ctext,key)
         zeromem(key)
         return text
-        
-    #CRUD
-    def secureCreate(self,what:bytes, pwd=None):
-        id = self.id
-        self.id+=1
-        key = self.createNewKey(str(id), pwd)
-        self.c.execute("INSERT INTO crypto VALUES (?, ?)",(id,_restEncrypt(what)))
-        zeromem(key)
-        return id
     
-    def sercureRead(self, id:int):
-        pass
-    def secureUpdate(self, id:int, new:str|bytes):
-        pass
-    def sucureDelete(self,id:int):
-        pass
+    def secureUpdate(self, id:int, new:str|bytes, pwd:str|bytes):
+        zeromem(self.secureRead(id,pwd))
+        key = self.getKey(str(id),pwd)
+        ctext = _restEncrypt(new, key)
+        zeromem(key)
+        self.c.execute("UPDATE crypto SET ctext=? WHERE id=?", (ctext, id))
+        self.keydb.commit()
+        return
+    
+    def secureDelete(self,id:int, pwd:str|bytes=None) -> None:
+        zeromem(self.secureRead(id,pwd))
+        self.c.execute("DELETE FROM crypto WHERE id=?",(id,))
+        self.removeKey(str(id),pwd)
+        self.keydb.commit()
+        return
