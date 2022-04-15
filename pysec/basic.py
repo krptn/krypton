@@ -1,7 +1,6 @@
 import os
 import sqlite3
 import tkinter as tk
-from . import globals
 from . import cryptoDBLocation
 from .globals import _restEncrypt, _restDecrypt, zeromem
 
@@ -53,8 +52,8 @@ class kms():
 
 class getKey():
     def __init__(self):
-        self.value = " "
-        self.root=tk.Tk()
+        self.value = ""
+        self.root=tk.Toplevel()
         self.l=tk.Label(self.root,text="Please enter the password for database key managment:")
         self.l.pack()
         self.e=tk.Entry(self.root)
@@ -62,8 +61,8 @@ class getKey():
         self.b=tk.Button(self.root,text='Ok',command=self.cleanup)
         self.b.pack()
     def cleanup(self):
+        self.value = self.e.get()
         self.root.destroy()
-        self.value = globals.getKeyFromPass(self.e.get())  
 
 class crypto(kms):
     '''
