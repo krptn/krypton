@@ -28,16 +28,14 @@ print("The data is",
     myCrypto.secureRead(id, "Password - perhaps provided by the user"))
 ```
 
-# Settings: 
+# Settings 
 
 # Build/Setup the extension: 
-First please build and install openssl3 before building pysec. Currently only windows is supported. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). 
+First please build and install openssl3 before building pysec. Currently only windows is supported. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /openssl-install directory), --openssldir=DIR (replace DIR with your /openssl-config directory) and enable-fips option. 
 
-So when using Configure please pass --prefix=DIR (replace dir with your /openssl-install directory), --openssldir=DIR (to your /openssl-config directory) and enable-fips option. 
-
-For example: 
+For example (Windows example): 
 ```shell 
-perl Configure --prefix="C:\Users\MARKBA~1\source\repos\PySec\openssl-install" --openssldir="C:\Users\MARKBA~1\source\repos\PySec\openssl-config" enable-fips --debug
+perl Configure --prefix="C:\Users\trans\source\repos\PySec\openssl-install" --openssldir="C:\Users\trans\source\repos\PySec\openssl-config" enable-fips --debug
 ```
 
 To install the extension and produce debuging symbols use: 
