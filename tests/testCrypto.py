@@ -1,13 +1,39 @@
 import unittest
 from pysec.basic import crypto
 
-class TestCryptoClass(unittest.TestCase):
+TEST_PWD = "Example"
+TEST_TEXT = "Example"
+UPDATE_TEST_TEXT = "Example2"
+class TestSecureStoreClass(unittest.TestCase):
 
-    def test_creation(self):
+    def WriteRead(self):
         test = crypto()
-        a = test.secureCreate("Example")
-        b = test.sercureRead(a)
-        self.assertEqual(a,b)
+        a = test.secureCreate(TEST_TEXT,TEST_PWD)
+        b = test.secureRead(a,TEST_PWD)
+        test.secureDelete(a, TEST_PWD)
+        self.assertEqual(TEST_TEXT,b)
+    
+    def WriteUpdateRead(self):
+        test = crypto()
+        a = test.secureCreate(TEST_TEXT, TEST_PWD)
+        test.secureUpdate(a,UPDATE_TEST_TEXT,TEST_PWD)
+        b = test.secureRead(a,TEST_PWD)
+        self.assertEqual(UPDATE_TEST_TEXT,b)
+    
+    def WriteDelete(self):
+        test = crypto()
+        a = test.secureCreate(TEST_TEXT, TEST_PWD)
+        test.secureDelete(a, TEST_PWD)
+        working = False
+        try:
+            test.secureRead(a, TEST_PWD)
+        except:
+            working = True
+        if working:
+            self.assertFalse(False)
+        else:
+            self.assertFalse(True)
+
 
 if __name__ == "__main__":
     unittest.main()
