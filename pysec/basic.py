@@ -24,10 +24,8 @@ class kms():
             zeromem(key)
             return r
     
-    def __init__(self, keyDB:sqlite3.Connection=altKeyDB, master:bool=False, all:bool=False)->None:
+    def __init__(self, keyDB:sqlite3.Connection=altKeyDB)->None:
         self.keydb = keyDB
-        self._masterHSM = master
-        self._allHDM = all
         self.c = keyDB.cursor()
     
     def exportKeys(self):
