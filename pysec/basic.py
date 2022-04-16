@@ -1,4 +1,3 @@
-from curses.ascii import alt
 import os
 import sqlite3
 import tkinter as tk
