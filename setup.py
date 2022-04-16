@@ -46,6 +46,16 @@ def finishInstall(install_base):
   conn.commit()
   c.close()
   conn.close()
+  if pathlib.Path(os.getcwd(),"altKMS.db").exists():
+    print("Not setting up altKMS.db as it already exists")
+    os.chdir(temp)
+    return
+  conn = sqlite3.connect("altKMS.db")
+  c = conn.cursor()
+  c.execute("CREATE TABLE keys (name text, key blob)")
+  conn.commit()
+  c.close()
+  conn.close()
   os.chdir(temp)
 
 class completeInstall(install):

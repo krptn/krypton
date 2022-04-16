@@ -1,7 +1,9 @@
+from curses.ascii import alt
 import os
 import sqlite3
 import tkinter as tk
 from . import cryptoDBLocation
+from . import altKeyDB
 from .globals import _restEncrypt, _restDecrypt, zeromem
 
 class kms():
@@ -17,7 +19,7 @@ class kms():
         else:
             return _restDecrypt(ctext, pwd)
     
-    def __init__(self, keyDB:sqlite3.Connection, master:bool=False, all:bool=False)->None:
+    def __init__(self, keyDB:sqlite3.Connection=altKeyDB, master:bool=False, all:bool=False)->None:
         self.keydb = keyDB
         self._masterHSM = master
         self._allHDM = all

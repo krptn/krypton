@@ -11,8 +11,15 @@
 View security features: [Security Features](security/sec_feature_plan.md)
 # It provides a distributed settings network where a change to a setting on one device is synced to others (by signing with admins key) - not developed yet. 
 ```python
-import PySec
+import pysec
+# Create a instance of crypto - a class for encrypting and storing sensitive data.
+myCrypto = pysec.basic.crypto()
+# It supports C.R.U.D. operations:
+id = myCrypto.secureCreate("Example data", "Password - perhaps provided by the user") #id is an intiger
+print("The data is",
+    myCrypto.secureRead(id, "Password - perhaps provided by the user"))
 ```
+
 # Build/Setup the extension: 
 First please build and install openssl3 before building pysec. Currently only windows is supported. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). 
 
@@ -26,5 +33,11 @@ perl Configure --prefix="C:\Users\MARKBA~1\source\repos\PySec\openssl-install" -
 To install the extension and produce debuging symbols use: 
 ```shell
 python setup.py build_ext --debug
+pip install .
 pip install -e .
+```
+
+To install the extension and not produce debuging symbols:
+```shell
+pip install . 
 ```
