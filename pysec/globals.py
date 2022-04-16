@@ -7,6 +7,7 @@ __CryptoLib.fipsInit()
 
 _restEncrypt = __CryptoLib.AESEncrypt
 _restDecrypt = __CryptoLib.AESDecrypt
+_getKey = __CryptoLib.getKeyFromPass
 
 def getEncryptor():
     return _restEncrypt

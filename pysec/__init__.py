@@ -19,12 +19,13 @@ else:
         pathlib.Path(sys.executable).parent.absolute(),
         "Lib\\site-packages"
     )
+
 OPENSSL_CONFIG = os.path.join(sitePackages,"openssl-config")
 OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG,"openssl.cnf")
 OPENSSL_BIN = os.path.join(sitePackages, "openssl-install/bin")
 OPENSSL_MODULES = os.path.join(sitePackages, "openssl-install/lib/ossl-modules")
-cryptoDBLocation = os.path.join(sitePackages, "pysec/crypto.db")
-altKeyDB = sqlite3.connect(os.path.join(sitePackages, "pysec/altKMS.db"))
+cryptoDBLocation = os.path.join(sitePackages, "pysec-data/crypto.db")
+altKeyDB = sqlite3.connect(os.path.join(sitePackages, "pysec-data/altKMS.db"))
 
 os.add_dll_directory(OPENSSL_BIN)
 os.add_dll_directory(OPENSSL_MODULES)

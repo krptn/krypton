@@ -4,20 +4,26 @@ import sqlite3
 import tkinter as tk
 from . import cryptoDBLocation
 from . import altKeyDB
-from .globals import _restEncrypt, _restDecrypt, zeromem
+from .globals import _restEncrypt, _restDecrypt, zeromem, _getKey
 
 class kms():
     def __secureCipher(self,text, pwd):
         if self._masterHSM:
             pass
         else:
-            return _restEncrypt(text, pwd)
+            key = _getKey(pwd)
+            r = _restEncrypt(text, key)
+            zeromem(key)
+            return r
  #Will also need to check the level of HSM: only master key or all keys. 
     def __secureDecipher(self, ctext:str|bytes, pwd:str|bytes):
         if self.hsmEnabled:
             pass
         else:
-            return _restDecrypt(ctext, pwd)
+            key = _getKey(pwd)
+            r = _restDecrypt(ctext, _getKey(pwd))
+            zeromem(key)
+            return r
     
     def __init__(self, keyDB:sqlite3.Connection=altKeyDB, master:bool=False, all:bool=False)->None:
         self.keydb = keyDB

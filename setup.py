@@ -28,9 +28,13 @@ def finishInstall(install_base):
     print("Not doing openssl self-test. Please perform these manually.")
 
   try:
-    os.chdir("pysec")
+    os.mkdir("pysec-data")
   except:
-    print("Not setting up crypto.db")
+    pass
+  try:
+    os.chdir("pysec-data")
+  except:
+    print("Not setting up db")
     os.chdir(temp)
     return
 

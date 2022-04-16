@@ -12,6 +12,10 @@ View security features: [Security Features](security/sec_feature_plan.md)
 # It provides a distributed settings network where a change to a setting on one device is synced to others (by signing with admins key) - not developed yet. 
 ```python
 import pysec
+# Before doing anything else, set the default location for the databases to be used. 
+# Elsehow, it will be stores in site-packages/pysec-data.
+pysec.cryptoDBLocation = "Path/example.db"
+pysec.altKeyDB = "Path/key.db"
 # Create a instance of crypto - a class for encrypting and storing sensitive data.
 myCrypto = pysec.basic.crypto()
 # It supports C.R.U.D. operations:
