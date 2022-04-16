@@ -6,7 +6,6 @@
 - Authentication
 - ML/AI to detect attacks - not developed yet 
 
-# It does this all automatically: so the developers can focus on their work, and PySec does the security. 
 View aditional security mitigations: [Security Features](security/sec_feature_plan.md)
 
 # Example: 
