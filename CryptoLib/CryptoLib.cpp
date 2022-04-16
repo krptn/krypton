@@ -22,13 +22,15 @@ const int AUTH_TAG_LEN = 16;
 const auto PBKDF2_HASH_ALGO = EVP_sha512;
 OSSL_PROVIDER *fips;
 
-int fipsInit()
+bool fipsInit()
 {
 	fips = OSSL_PROVIDER_load(NULL, "fips");
 	if (fips == NULL) {
 		ERR_print_errors_fp(stderr);
 		throw std::runtime_error("Failed to load fips provider.");
+		return false; 
 	}
+	return true;
 }
 
 int compHash(const void* a, const void* b, const size_t size)
@@ -304,5 +306,5 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("getKeyFromPass", &getKeyFromPass, "Uses PBKDF2 to get the crypto key from the password.", py::arg("pwd"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
 	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"));
-	m.def("fipsInit",&fipsInit,"Initialises cryptographic components. ");
+	m.def("fipsInit",&fipsInit,"Initialises openssl FIPS module.");
 }

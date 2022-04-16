@@ -1,5 +1,4 @@
-﻿from importlib.resources import path
-import os
+﻿import os
 import pathlib
 import sys
 version = "1"
@@ -18,6 +17,12 @@ else:
         pathlib.Path(sys.executable).parent.absolute(),
         "Lib\\site-packages"
     )
+OPENSSL_CONFIG = os.path.join(sitePackages,"openssl-config")
+OPENSSL_BIN = os.path.join(sitePackages, "openssl-install/bin")
+OPENSSL_MODULES = os.path.join(sitePackages, "openssl-install/lib/ossl-modules")
 cryptoDBLocation = os.path.join(sitePackages, "pysec/crypto.db")
-os.add_dll_directory(os.path.join(sitePackages, "openssl-install/bin"))
-os.add_dll_directory(os.path.join(sitePackages, "openssl-install/lib/ossl-modules"))
+os.add_dll_directory(OPENSSL_BIN)
+os.add_dll_directory(OPENSSL_MODULES)
+os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
+os.environ["OPENSSL_CONF"] = os.path.join(OPENSSL_CONFIG,"openssl.cnf")
+os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG

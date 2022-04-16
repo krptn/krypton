@@ -3,10 +3,10 @@ import sys
 import os
 
 Adrr = id
-#import __CryptoLib
+import __CryptoLib
 from __CryptoLib import AESEncrypt, AESDecrypt
 temp = os.getcwd()
-#__CryptoLib.fipsInit()
+__CryptoLib.fipsInit()
 
 _restEncrypt = AESEncrypt
 _restDecrypt = AESDecrypt
