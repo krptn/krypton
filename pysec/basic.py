@@ -1,8 +1,7 @@
 import os
 import sqlite3
 import tkinter as tk
-from . import cryptoDBLocation
-from . import altKeyDB
+from . import _cryptoDB, _altKeyDB
 from .globals import _restEncrypt, _restDecrypt, zeromem, _getKey
 
 class kms():
@@ -24,7 +23,7 @@ class kms():
             zeromem(key)
             return r
     
-    def __init__(self, keyDB:sqlite3.Connection=altKeyDB)->None:
+    def __init__(self, keyDB:sqlite3.Connection=_altKeyDB)->None:
         self.keydb = keyDB
         self.c = keyDB.cursor()
     
@@ -73,8 +72,8 @@ class crypto(kms):
     '''
     Ciphers and deciphers strings. Can also store strings securely and supports CRUD operations
     '''
-    def __init__(self):
-        self.keydb = sqlite3.connect(cryptoDBLocation)
+    def __init__(self, keyDB:sqlite3.Connection = _cryptoDB):
+        self.keydb = keyDB
         self.c = self.keydb.cursor()
         id = int(self.c.execute("SELECT MAX(id) FROM crypto").fetchone()[0])
         if id == None:

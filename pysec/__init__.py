@@ -26,20 +26,23 @@ OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG,"openssl.cnf")
 OPENSSL_BIN = os.path.join(sitePackages, "openssl-install/bin")
 OPENSSL_MODULES = os.path.join(sitePackages, "openssl-install/lib/ossl-modules")
 
-cryptoDBpath = property(
-    fget=lambda: _cryptoDBLocation,
+defaultCryptoDBpath = property(
+    fget=lambda: _cryptoDB,
     fset=setups.setupCryptoDB,
     doc="Location of the default DB for crypto class"
 )
 
-defaultKeyDB  = property(
+defaultKeyDBpath  = property(
     fget=lambda: _altKeyDB,
     fset=setups.setupKeyDB(),
     doc="Location of the default keydb for kms class"
 )
 
-_cryptoDBLocation = os.path.join(sitePackages, "pysec-data/crypto.db")
-_altKeyDB = sqlite3.connect(os.path.join(sitePackages, "pysec-data/altKMS.db"))
+_cryptoDB:sqlite3.Connection
+_altKeyDB:sqlite3.Connection
+
+defaultCryptoDBpath = os.path.join(sitePackages, "pysec-data/crypto.db")
+defaultKeyDBpath = os.path.join(sitePackages, "pysec-data/altKMS.db")
 
 os.add_dll_directory(OPENSSL_BIN)
 os.add_dll_directory(OPENSSL_MODULES)
