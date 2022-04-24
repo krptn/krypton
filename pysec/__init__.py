@@ -21,8 +21,8 @@ else:
         "Lib\\site-packages"
     )
 
-OPENSSL_CONFIG = os.path.join(sitePackages,"openssl-config")
-OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG,"openssl.cnf")
+OPENSSL_CONFIG = os.path.join(sitePackages, "openssl-config")
+OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG, "openssl.cnf")
 OPENSSL_BIN = os.path.join(sitePackages, "openssl-install/bin")
 OPENSSL_MODULES = os.path.join(sitePackages, "openssl-install/lib/ossl-modules")
 
@@ -32,14 +32,13 @@ os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 
-
 defaultCryptoDBpath = property(
     fget=lambda: _cryptoDB,
     fset=setups.setupCryptoDB,
     doc="Location of the default DB for crypto class"
 )
 
-defaultKeyDBpath  = property(
+defaultKeyDBpath = property(
     fget=lambda: _altKeyDB,
     fset=setups.setupKeyDB(),
     doc="Location of the default keydb for kms class"
