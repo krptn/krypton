@@ -11,6 +11,11 @@ class user(ABCMeta):
     @abstractmethod
     def userName(self, newName:str):
         pass
+    @userName.getter
+    @abstractmethod
+    def userName(self):
+        pass
+
     @abstractmethod
     def save(self):
         pass
