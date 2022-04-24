@@ -14,8 +14,8 @@ import pysec
 # Before doing anything else, set the default location for the databases to be used. 
 # Elsehow, it will be stores in site-packages/pysec-data.
 # There is no need to create the databses: pysec will do that for you.
-pysec.cryptoDBLocation = "Path/example.db"
-pysec.altKeyDB = "Path/key.db"
+pysec.defaultCryptoDBpath = "Path/example.db"
+pysec.defaultKeyDBpath = "Path/key.db"
 # Create a instance of crypto - a class for encrypting and storing sensitive data.
 myCrypto = pysec.basic.crypto()
 # It supports C.R.U.D. operations:
