@@ -2,8 +2,9 @@
 
 # PySec 
 - Secure Storage of Data
-- Secure Storage of keys: HSMs, etc...
-- Authentication
+- Authentication for Users
+- Easy API
+- FIPS Validated Cryptography (via OPENSSL)
 
 View aditional security mitigations: [Security Features](security/sec_feature_plan.md)
 
