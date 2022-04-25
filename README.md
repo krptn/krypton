@@ -1,14 +1,13 @@
 ![DevSkim Analysis](https://github.com/mbs9org/PySec/actions/workflows/CodeReview.yml/badge.svg) -> see security/result.sarif (plenty of false positives) for JSON representation (analysis by https://github.com/marketplace/actions/devskim). 
 
-# PySec: An API which provides the following
+# PySec 
 - Secure Storage of Data
 - Secure Storage of keys: HSMs, etc...
 - Authentication
-- ML/AI to detect attacks - not developed yet 
 
 View aditional security mitigations: [Security Features](security/sec_feature_plan.md)
 
-# Example: 
+# Crypto 
 ```python
 import pysec
 # Before doing anything else, set the default location for the databases to be used. 
@@ -19,14 +18,22 @@ pysec.defaultKeyDBpath = "Path/key.db"
 # Create a instance of crypto - a class for encrypting and storing sensitive data.
 myCrypto = pysec.basic.crypto()
 # It supports C.R.U.D. operations:
-id = myCrypto.secureCreate("Example data", "Password - perhaps provided by the user") #id is an intiger
-print("The data is",
-    myCrypto.secureRead(id, "Password - perhaps provided by the user"))
+id = myCrypto.secureCreate("Example data", 
+    "Password - perhaps provided by the user") #id is an intiger
+print("The data is", myCrypto.secureRead(id, 
+        "Password - perhaps provided by the user"))
 ```
 
-# Settings 
+# User Auth
+Being Developed
 
-# Build/Setup the extension: 
+# Settings
+To be developed after user Auth
+
+# Integration with web frameworks
+To be made after User Auth 
+
+# Build/Setup the extension for development
 First please build and install openssl3 before building pysec. Currently only windows is supported. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /openssl-install directory), --openssldir=DIR (replace DIR with your /openssl-config directory) and enable-fips option. 
 To create debug binaries, you need to pass the --debug option also. 
 
