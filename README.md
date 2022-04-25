@@ -7,7 +7,7 @@
 
 View aditional security mitigations: [Security Features](security/sec_feature_plan.md)
 
-# APIs for other languages apart from python 
+# APIs for other languages
 
 # Crypto 
 ```python
