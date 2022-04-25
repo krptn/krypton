@@ -1,7 +1,7 @@
 from . import basic
 from abc import ABCMeta, abstractmethod
 
-class user(ABCMeta):
+class user(metaclass=ABCMeta):
     _userName:str 
     @property
     @abstractmethod 
@@ -29,3 +29,16 @@ class user(ABCMeta):
     @abstractmethod
     def logout(self):
         pass
+
+    @abstractmethod
+    def enableMFA(self):
+        pass
+    @abstractmethod
+    def disableMFA(self):
+        pass
+    @abstractmethod
+    def createOTP(self):
+        pass
+
+class admin(user):
+    pass

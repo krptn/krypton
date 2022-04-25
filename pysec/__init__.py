@@ -3,7 +3,7 @@ import pathlib
 import sqlite3
 import sys
 import basic
-import setups
+import _setups
 version = "1"
 
 __all__ = ["basic"]
@@ -34,13 +34,13 @@ os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 
 defaultCryptoDBpath = property(
     fget=lambda: _cryptoDB,
-    fset=setups.setupCryptoDB,
+    fset=_setups.setupCryptoDB,
     doc="Location of the default DB for crypto class"
 )
 
 defaultKeyDBpath = property(
     fget=lambda: _altKeyDB,
-    fset=setups.setupKeyDB(),
+    fset=_setups.setupKeyDB(),
     doc="Location of the default keydb for kms class"
 )
 
