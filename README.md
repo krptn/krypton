@@ -1,7 +1,7 @@
 ![DevSkim Analysis](https://github.com/mbs9org/PySec/actions/workflows/CodeReview.yml/badge.svg) -> see security/result.sarif (plenty of false positives) for JSON representation (analysis by https://github.com/marketplace/actions/devskim). 
 
 # Please read this first:
-This project is being developed for the Microsoft Imagine Cup by students: any contributions you make may be included in the submission. 
+This project may be submited to the Microsoft Imagine Cup: any contributions you make may be included in the submission. 
 However, we do promote people to use this project as they would do so otherwise - the above warning is solely for open-source contributors who may not expect their contributions to be used for such a cause. 
 
 # PySec 
@@ -9,6 +9,7 @@ However, we do promote people to use this project as they would do so otherwise 
 - Authentication for Users
 - Easy API
 - FIPS Validated Cryptography (via OPENSSL)
+- Planned User Authentication with OAuth integration
 
 View aditional security mitigations: [Security Features](security/sec_feature_plan.md)
 
