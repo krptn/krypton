@@ -29,3 +29,18 @@ def setupKeyDB(path:str):
     c.close()
     conn.close()
     pysec._altKeyDB = sqlite3.connect(path)
+
+def setupUserDB(path:str):
+  conn = sqlite3.connect(path)
+  c = conn.cursor()
+  try:
+    c.execute("CREATE TABLE users (name text, id int)")
+    c.execute("CREATE TABLE keys (name text, key blob)")
+  except:
+    pass
+  finally:
+    conn.commit()
+    c.close()
+    conn.close()
+  pysec._userDB = sqlite3.connect(path)
+

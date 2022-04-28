@@ -73,20 +73,6 @@ class crypto(kms):
     def importData(self):
         pass
     
-    def crypt(self, data:bytes|str, pwd:str|bytes=None) -> bytes:
-        id = self.id
-        self.id+=1
-        key = self.createNewKey(str(id), pwd)
-        self.c.execute("INSERT INTO crypto VALUES (?, ?)",(id,self.__cipher(data,key)))
-        zeromem(key)
-        return id
-
-    def decrypt(self, data:bytes, pwd:str|bytes=None)->bytes:
-        key = self.getKey(str(int),pwd)
-        text = self.__decipher(data,key)
-        zeromem(key)
-        return text
-
     def secureCreate(self, data:bytes, pwd=None):
         id = self.id
         self.id+=1

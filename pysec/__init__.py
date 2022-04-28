@@ -40,12 +40,19 @@ defaultCryptoDBpath = property(
 
 defaultKeyDBpath = property(
     fget=lambda: _altKeyDB,
-    fset=_setups.setupKeyDB(),
+    fset=_setups.setupKeyDB,
     doc="Location of the default keydb for kms class"
+)
+
+userDBpath = property(
+    fget=lambda: _userDB,
+    fset=_setups.setupUserDB,
+    doc="Location of the databse for users"
 )
 
 _cryptoDB:sqlite3.Connection
 _altKeyDB:sqlite3.Connection
+_userDB:sqlite3.Connection
 
 defaultCryptoDBpath = os.path.join(sitePackages, "pysec-data/crypto.db")
 defaultKeyDBpath = os.path.join(sitePackages, "pysec-data/altKMS.db")
