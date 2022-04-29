@@ -1,4 +1,5 @@
-from . import basic, _userDB
+from typing import List
+from . import basic, userDB
 from abc import ABCMeta, abstractmethod
 
 class user(metaclass=ABCMeta):
@@ -7,14 +8,12 @@ class user(metaclass=ABCMeta):
     @abstractmethod
     def delete(self):
         pass
-
     @abstractmethod
     def login(self, pwd:str, mfaToken:int|None=None):
         pass
     @abstractmethod
     def logout(self):
         pass
-
     @abstractmethod
     def enableMFA(self):
         pass
@@ -33,13 +32,19 @@ class user(metaclass=ABCMeta):
     @abstractmethod
     def __getattribute__(self, __name: str) -> any:
         pass
+    @abstractmethod
+    def decryptWithUserKey(self, data:str|bytes) -> bytes:
+        pass
+    @abstractmethod
+    def encryptWithUserKey(self, data:str|bytes, otherUsers:List[str]) -> bytes:
+        pass
 
-class admin(user):
+class standardUser(user):
     _userName:str = ""
     __key:bytes
     def __init__(self, userName:str) -> None:
         super().__init__()
-        self.c = _userDB.cursor()
+        self.c = userDB.cursor()
         self._userName = userName
         self.id = self.c.execute("SELECT id FROM users WHERE name=?", (userName,)).fetchone()
         if self.id == None:
@@ -51,7 +56,7 @@ class admin(user):
             "INSERT INTO {id} VALUES (? ,?)".format(self.id),
             (__name, __value)
         )
-        _userDB.commit()
+        userDB.commit()
     
     def __getattribute__(self, __name: str) -> any:
         result = self.c.execute(
@@ -67,10 +72,7 @@ class admin(user):
 
     def login(self, pwd:str, mfaToken:int|None=None):
         keys = basic.kms()
-        self.key = keys.getKey(self.id, pwd)
-        # Encrypt it with a session key and send the ciphertext in coockie to clinet
-        # Delete decryption key after 15 mins 
-
+        self.__key = keys.getKey(self.id, pwd)
 
     def logout(self):
         pass
@@ -86,4 +88,12 @@ class admin(user):
     
     def __saveNewUser(self):
         self.c.execute("CREATE TABLE {id} (key text, value blob)")
-        _userDB.commit()
+        userDB.commit()
+    
+    def encryptWithUserKey(self, data:str|bytes) -> bytes:
+        pass
+
+    def decryptWithUserKey(self, data:str|bytes) -> bytes:
+        pass
+    def encryptWithUserKey(self, data:str|bytes, otherUsers:List[str]) -> bytes:
+        pass

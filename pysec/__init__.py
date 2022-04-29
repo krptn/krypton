@@ -32,27 +32,27 @@ os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 
-defaultCryptoDBpath = property(
-    fget=lambda: _cryptoDB,
+sqlite3DefaultCryptoDBpath = property(
+    fget=lambda: cryptoDB,
     fset=_setups.setupCryptoDB,
     doc="Location of the default DB for crypto class"
 )
 
-defaultKeyDBpath = property(
-    fget=lambda: _altKeyDB,
+sqlite3DefaultKeyDBpath = property(
+    fget=lambda: altKeyDB,
     fset=_setups.setupKeyDB,
     doc="Location of the default keydb for kms class"
 )
 
-userDBpath = property(
-    fget=lambda: _userDB,
+sqlite3UserDBpath = property(
+    fget=lambda: userDB,
     fset=_setups.setupUserDB,
     doc="Location of the databse for users"
 )
 
-_cryptoDB:sqlite3.Connection
-_altKeyDB:sqlite3.Connection
-_userDB:sqlite3.Connection
+cryptoDB:sqlite3.Connection
+altKeyDB:sqlite3.Connection
+userDB:sqlite3.Connection
 
 defaultCryptoDBpath = os.path.join(sitePackages, "pysec-data/crypto.db")
 defaultKeyDBpath = os.path.join(sitePackages, "pysec-data/altKMS.db")

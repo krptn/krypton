@@ -14,7 +14,7 @@ def setupCryptoDB(path:str) -> None:
     conn.commit()
     c.close()
     conn.close()
-    pysec._cryptoDBLocation = sqlite3.connect(path)
+    pysec.cryptoDBLocation = sqlite3.connect(path)
 
 # Setup DB for kms class. 
 def setupKeyDB(path:str):
@@ -28,7 +28,7 @@ def setupKeyDB(path:str):
     conn.commit()
     c.close()
     conn.close()
-    pysec._altKeyDB = sqlite3.connect(path)
+    pysec.altKeyDB = sqlite3.connect(path)
 
 def setupUserDB(path:str):
   conn = sqlite3.connect(path)
@@ -42,5 +42,5 @@ def setupUserDB(path:str):
     conn.commit()
     c.close()
     conn.close()
-  pysec._userDB = sqlite3.connect(path)
+  pysec.userDB = sqlite3.connect(path)
 
