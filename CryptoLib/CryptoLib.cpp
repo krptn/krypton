@@ -279,12 +279,34 @@ char* __cdecl PBKDF2(char* text, char* salt) {
 	return result;
 }
 
-int* __cdecl createECCPrivkey() {
+py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey){
+	int secret_len = 32;
+	EVP_PKEY* pkey;
+	char* privk = privKey.cast<char*>();
+	d2i_PrivateKey(EVP_PKEY_EC, &pkey, (const unsigned char**)&privk, privKey.attr("__len__").cast<int>());
+	EVP_PKEY* peerkey;
+	char* pubk = pubKey.cast<char*>();
+	d2i_PublicKey(EVP_PKEY_EC, &peerkey, (const unsigned char**)&pubk, privKey.attr("__len__").cast<int>());
+	unsigned char *secret;
 	EVP_PKEY_CTX *ctx;
-	EC_KEY *key;
-    EVP_PKEY *pkey = NULL;
-    int ret = 1;
+	if(NULL == (ctx = EVP_PKEY_CTX_new(pkey, NULL))) handleErrors();
+	if(1 != EVP_PKEY_derive_init(ctx)) handleErrors();
+	if(1 != EVP_PKEY_derive_set_peer(ctx, peerkey)) handleErrors();
+	if(1 != EVP_PKEY_derive(ctx, NULL, (size_t*)&secret_len)) handleErrors();
+	secret = new unsigned char[secret_len];
+	if(1 != (EVP_PKEY_derive(ctx, secret, (size_t*)&secret_len))) handleErrors();
+	EVP_PKEY_CTX_free(ctx);
+	EVP_PKEY_free(peerkey);
+	EVP_PKEY_free(pkey);
+	char* pwd = base64(secret, secret_len);
+	py::bytes key = getKeyFromPass((char*)pwd);
+	return key;
+};
 
+py::bytes __cdecl createECCPrivKey() {
+	unsigned char* result;
+	EVP_PKEY_CTX *ctx;
+    EVP_PKEY *pkey = NULL;
     ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL);
     if (ctx == NULL)
         handleErrors();
@@ -292,17 +314,24 @@ int* __cdecl createECCPrivkey() {
         handleErrors();
     if (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, NID_X9_62_prime256v1) <= 0)
         handleErrors();
-
     if (EVP_PKEY_keygen(ctx, &pkey) <= 0)
         handleErrors();
-	
-	BIGNUM *prv;
-	EC_POINT *pub;
-	EVP_PKEY_set1_EC_KEY(pkey, key);
-	if(1 != EC_KEY_set_private_key(key, prv)) handleErrors();
-	if(1 != EC_KEY_set_public_key(key, pub)) handleErrors();
 	EVP_PKEY_CTX_free(ctx);
-	return (int*)prv;
+	int len = i2d_PublicKey(pkey, NULL);
+	result = new unsigned char[len];
+	EVP_PKEY_get_raw_public_key(pkey, result, (size_t*)&len);
+	EVP_PKEY_CTX_free(ctx);
+	EVP_PKEY_free(pkey);
+	py::bytes r = py::bytes((char*)result, len);
+	OPENSSL_cleanse(result, len);
+	return r;
+}
+
+py::bytes __cdecl getECCPubKey(py::bytes privKey){
+	char* privk = privKey.cast<char*>();
+	EVP_PKEY* pkey;
+	d2i_PrivateKey(EVP_PKEY_EC, &pkey, (const unsigned char**)&privk, privKey.attr("__len__").cast<int>());
+
 }
 
 PYBIND11_MODULE(__CryptoLib, m) {
@@ -318,4 +347,7 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
 	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"));
 	m.def("fipsInit",&fipsInit,"Initialises openssl FIPS module.");
+	m.def("createECCPrivKey", &createECCPrivKey, "Create a new ECC private key");
+	m.def("getECCPubKey", &getECCPubKey, "Creates an ECC public key from private key", py::arg("privKey"));
+	m.def("getSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"));
 }
