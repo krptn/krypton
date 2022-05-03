@@ -279,7 +279,7 @@ char* __cdecl PBKDF2(char* text, char* salt) {
 	return result;
 }
 
-char* __cdecl createECCPrivkey() {
+int* __cdecl createECCPrivkey() {
 	EVP_PKEY_CTX *ctx;
 	EC_KEY *key;
     EVP_PKEY *pkey = NULL;
@@ -302,7 +302,7 @@ char* __cdecl createECCPrivkey() {
 	if(1 != EC_KEY_set_private_key(key, prv)) handleErrors();
 	if(1 != EC_KEY_set_public_key(key, pub)) handleErrors();
 	EVP_PKEY_CTX_free(ctx);
-	
+	return (int*)prv;
 }
 
 PYBIND11_MODULE(__CryptoLib, m) {
