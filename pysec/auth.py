@@ -95,5 +95,6 @@ class standardUser(user):
 
     def decryptWithUserKey(self, data:str|bytes) -> bytes:
         pass
+    
     def encryptWithUserKey(self, data:str|bytes, otherUsers:List[str]) -> bytes:
         pass

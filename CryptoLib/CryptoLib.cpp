@@ -9,6 +9,8 @@
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <openssl/applink.c>
+#include <openssl/ec.h>
+#include <openssl/obj_mac.h>
 
 using namespace std;
 namespace py = pybind11;
@@ -63,9 +65,8 @@ unsigned char *decode64(const char *input, int length) {
   return output;
 }
 
-void handleErrors(int* err) {
-	//Add to log here
-	*err = *err + 1;
+void handleErrors() {
+	throw invalid_argument("Unable to perform cryptographic operation");
 }
 
 int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen = 0) {
@@ -88,7 +89,6 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	try{
 	unsigned char ivbuff[IV_SALT_LEN];
 	unsigned char tag[AUTH_TAG_LEN];
-	int errcnt = 0;
 	int msglen = strnlen((char*)text, MAX_CRYPTO_LEN);
 	if (msglen == MAX_CRYPTO_LEN || msglen == MAX_CRYPTO_LEN) {
 		throw std::invalid_argument("Error: this is not a null terminated string");
@@ -103,27 +103,24 @@ char* __cdecl AESEncrypt(char* text, char* key) {
 	int len;
 	int ciphertext_len;
 	if (!(ctx = EVP_CIPHER_CTX_new()))
-		handleErrors(&errcnt);
+		handleErrors();
 	if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
-		handleErrors(&errcnt);
+		handleErrors();
 	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL))
-		handleErrors(&errcnt);
+		handleErrors();
 	if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char*)key, iv))
-		handleErrors(&errcnt);
+		handleErrors();
 	if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, (unsigned char*)text, msglen))
-		handleErrors(&errcnt);
+		handleErrors();
 	ciphertext_len = len;
 	if (1 != EVP_EncryptFinal_ex(ctx, out.get() + len, &len))
-		handleErrors(&errcnt);
+		handleErrors();
 	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, AUTH_TAG_LEN, &tag))
-		handleErrors(&errcnt);
+		handleErrors();
 	ciphertext_len += len;
 	OPENSSL_cleanse(key, AES_KEY_LEN);
 	OPENSSL_cleanse(text, msglen);
 	EVP_CIPHER_CTX_free(ctx);
-	if (errcnt != 0) {
-		throw std::invalid_argument("Unable to encrypt");
-	}
 	auto result = unique_ptr<unsigned char[]>(new unsigned char[ciphertext_len + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN + (long long)1 + (long long)IV_SALT_LEN]);
 	AddToStrBuilder((char*)result.get(), (char*)out.get(), 0, ciphertext_len);
 	delete[] out.release();
@@ -159,7 +156,6 @@ py::bytes __cdecl AESDecrypt(char* ctext_b, char* key){
 	len_str[IV_SALT_LEN] = '\0';
 	string str_lena = string(len_str);
 	int flen = stoi(str_lena);
-	int errcnt = 0;
 	int leny = input_len;
 	int msglen = leny - IV_SALT_LEN - AUTH_TAG_LEN - IV_SALT_LEN;
 	auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
@@ -174,29 +170,26 @@ py::bytes __cdecl AESDecrypt(char* ctext_b, char* key){
 	int len;
 	int plaintext_len;
 	if (!(ctx = EVP_CIPHER_CTX_new()))
-		handleErrors(&errcnt);
+		handleErrors();
 	if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
-		handleErrors(&errcnt);
+		handleErrors();
 	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL))
-		handleErrors(&errcnt);
+		handleErrors();
 	if (!EVP_DecryptInit_ex(ctx, NULL, NULL, (unsigned char*)key, iv))
-		handleErrors(&errcnt);
+		handleErrors();
 	if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
-		handleErrors(&errcnt);
+		handleErrors();
 	plaintext_len = len;
 	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AUTH_TAG_LEN, tag))
-		handleErrors(&errcnt);
+		handleErrors();
 	delete[] msg.release();
 	int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
 	plaintext_len += len;
 
 	OPENSSL_cleanse(key, AES_KEY_LEN);
 	EVP_CIPHER_CTX_free(ctx);
-	if ((!(ret >= 0)) || (errcnt > 0)) {
+	if (!(ret >= 0)) {
 		throw std::invalid_argument("Unable to decrypt ciphertext");
-	}
-	if (flen > msglen + (long long)1) {
-		throw std::invalid_argument("Unable to decrpt ciphertext: a bufferoverflow on the heap has occured.");
 	}
 	out[flen] = '\0';
 	py::bytes r = py::bytes((char*)out.get());
@@ -237,7 +230,6 @@ py::bytes __cdecl getKeyFromPass(char* pwd) {
 }
 
 py::bytes __cdecl Auth(char* pwd, char* storedHash) {	
-	int errcnt = 0;
 	int len = strlen(pwd);
 	int hashLen = strlen(storedHash);
 	auto decoded = unique_ptr<char[]>(new char[hashLen+(long long)1]);
@@ -252,25 +244,18 @@ py::bytes __cdecl Auth(char* pwd, char* storedHash) {
 	auto key = unique_ptr<char[]>(new char[AES_KEY_LEN]);
 	auto keya = unique_ptr<char[]>(new char[AES_KEY_LEN]);
 	if(!PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, IV_SALT_LEN, PBKDF2_STORAGE_ITERATIONS, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)keya.get()))
-		handleErrors(&errcnt);
+		handleErrors();
 	int x;
 	x = PKCS5_PBKDF2_HMAC(pwd, len, (unsigned char*)&salt, IV_SALT_LEN, PBKDF2_KEY_ITERATIONS, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)key.get());
 	OPENSSL_cleanse(pwd, len);
 	if (x != 1) {
-		handleErrors(&errcnt);
+		handleErrors();
 	}
 	if (compHash(decoded.get(), keya.get(), AES_KEY_LEN)==0) {
-		if (errcnt != 0) {
-			OPENSSL_cleanse(key.get(), AES_KEY_LEN);
-			OPENSSL_cleanse(pwd, len);
-			throw std::invalid_argument("Authentication failed.");
-		}
-		else {
-			auto result = py::bytes(key.get(), AES_KEY_LEN);
-			OPENSSL_cleanse(key.get(), AES_KEY_LEN);
-			OPENSSL_cleanse(pwd, len);
-			return result;
-		}
+		auto result = py::bytes(key.get(), AES_KEY_LEN);
+		OPENSSL_cleanse(key.get(), AES_KEY_LEN);
+		OPENSSL_cleanse(pwd, len);
+		return result;
 	}
 	else {
 		OPENSSL_cleanse(key.get(), AES_KEY_LEN);
@@ -292,6 +277,32 @@ char* __cdecl PBKDF2(char* text, char* salt) {
 	auto result = base64((const unsigned char*)key,AES_KEY_LEN);
 	delete[] key;
 	return result;
+}
+
+char* __cdecl createECCPrivkey() {
+	EVP_PKEY_CTX *ctx;
+	EC_KEY *key;
+    EVP_PKEY *pkey = NULL;
+    int ret = 1;
+
+    ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL);
+    if (ctx == NULL)
+        handleErrors();
+    if (EVP_PKEY_keygen_init(ctx) <= 0)
+        handleErrors();
+    if (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, NID_X9_62_prime256v1) <= 0)
+        handleErrors();
+
+    if (EVP_PKEY_keygen(ctx, &pkey) <= 0)
+        handleErrors();
+	
+	BIGNUM *prv;
+	EC_POINT *pub;
+	EVP_PKEY_set1_EC_KEY(pkey, key);
+	if(1 != EC_KEY_set_private_key(key, prv)) handleErrors();
+	if(1 != EC_KEY_set_public_key(key, pub)) handleErrors();
+	EVP_PKEY_CTX_free(ctx);
+	
 }
 
 PYBIND11_MODULE(__CryptoLib, m) {
