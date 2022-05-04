@@ -299,12 +299,15 @@ py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey){
 	EVP_PKEY_free(peerkey);
 	EVP_PKEY_free(pkey);
 	char* pwd = base64(secret, secret_len);
+	delete[] secret;
 	py::bytes key = getKeyFromPass((char*)pwd);
+	delete[] pwd;
 	return key;
 };
 
-py::bytes __cdecl createECCPrivKey() {
-	unsigned char* result;
+std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
+	unsigned char* pubResult;
+	unsigned char* privResult;
 	EVP_PKEY_CTX *ctx;
     EVP_PKEY *pkey = NULL;
     ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_EC, NULL);
@@ -318,20 +321,20 @@ py::bytes __cdecl createECCPrivKey() {
         handleErrors();
 	EVP_PKEY_CTX_free(ctx);
 	int len = i2d_PublicKey(pkey, NULL);
-	result = new unsigned char[len];
-	EVP_PKEY_get_raw_public_key(pkey, result, (size_t*)&len);
+	pubResult = new unsigned char[len];
+	i2d_PublicKey(pkey, &pubResult);
+	py::bytes r = py::bytes((char*)pubResult, len);
+	OPENSSL_cleanse(pubResult, len);
+	delete[] pubResult;
+	int len = i2d_PrivateKey(pkey, NULL);
+	privResult = new unsigned char[len];
+	py::bytes pr = py::bytes((char*)privResult, len);
+	OPENSSL_cleanse(privResult, len);
+	delete[] privResult;
 	EVP_PKEY_CTX_free(ctx);
 	EVP_PKEY_free(pkey);
-	py::bytes r = py::bytes((char*)result, len);
-	OPENSSL_cleanse(result, len);
-	return r;
-}
-
-py::bytes __cdecl getECCPubKey(py::bytes privKey){
-	char* privk = privKey.cast<char*>();
-	EVP_PKEY* pkey;
-	d2i_PrivateKey(EVP_PKEY_EC, &pkey, (const unsigned char**)&privk, privKey.attr("__len__").cast<int>());
-
+	tuple<py::bytes, py::bytes> finalTuple(pr, r);
+	return finalTuple;
 }
 
 PYBIND11_MODULE(__CryptoLib, m) {
@@ -347,7 +350,6 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
 	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"));
 	m.def("fipsInit",&fipsInit,"Initialises openssl FIPS module.");
-	m.def("createECCPrivKey", &createECCPrivKey, "Create a new ECC private key");
-	m.def("getECCPubKey", &getECCPubKey, "Creates an ECC public key from private key", py::arg("privKey"));
+	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("getSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"));
 }

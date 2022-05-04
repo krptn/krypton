@@ -20,6 +20,4 @@ int compHash(const void* a, const void* b, const size_t size);
 py::bytes __cdecl Auth(char* pwd, char* stored_HASH);
 py::bytes __cdecl getKeyFromPass(char* pwd);
 py::bytes __cdecl getSharedKey(char* privKey, char* pubKey);
-py::bytes __cdecl createECCPrivKey();
-py::bytes __cdecl getECCPubKey(char* privKey);
-
+std::tuple<py::bytes, py::bytes> __cdecl createECCKey();
