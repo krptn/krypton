@@ -1,9 +1,5 @@
 ![DevSkim Analysis](https://github.com/mbs9org/PySec/actions/workflows/CodeReview.yml/badge.svg) -> see security/result.sarif (plenty of false positives) for JSON representation (analysis by https://github.com/marketplace/actions/devskim). 
 
-# Please read this first:
-This project may be submited to the Microsoft Imagine Cup: any contributions you make may be included in the submission. 
-However, we do promote people to use this project as they would do so otherwise - the above warning is solely for open-source contributors who may not expect their contributions to be used for such a cause. 
-
 # PySec 
 - Secure Storage of Data
 - Authentication for Users
@@ -47,7 +43,7 @@ To create debug binaries, you need to pass the --debug option also.
 
 For example (Windows example): 
 ```shell 
-perl Configure --prefix="C:\Users\trans\source\repos\PySec\openssl-install" --openssldir="C:\Users\trans\source\repos\PySec\openssl-config" enable-fips --debug
+perl Configure --prefix="C:\Users\markb\source\repos\PySec\openssl-install" --openssldir="C:\Users\markb\source\repos\PySec\openssl-config" enable-fips --debug
 ```
 
 To install the extension and produce debuging symbols use: 
