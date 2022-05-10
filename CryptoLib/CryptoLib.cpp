@@ -277,34 +277,7 @@ char* __cdecl PBKDF2(char* text, char* salt) {
 	auto result = base64((const unsigned char*)key,AES_KEY_LEN);
 	delete[] key;
 	return result;
-}
-
-py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey){
-	int secret_len = 32;
-	EVP_PKEY* pkey;
-	char* privk = privKey.cast<char*>();
-	d2i_PrivateKey(EVP_PKEY_EC, &pkey, (const unsigned char**)&privk, privKey.attr("__len__").cast<int>());
-	EVP_PKEY* peerkey;
-	char* pubk = pubKey.cast<char*>();
-	d2i_PublicKey(EVP_PKEY_EC, &peerkey, (const unsigned char**)&pubk, privKey.attr("__len__").cast<int>());
-	unsigned char *secret;
-	EVP_PKEY_CTX *ctx;
-	if(NULL == (ctx = EVP_PKEY_CTX_new(pkey, NULL))) handleErrors();
-	if(1 != EVP_PKEY_derive_init(ctx)) handleErrors();
-	if(1 != EVP_PKEY_derive_set_peer(ctx, peerkey)) handleErrors();
-	if(1 != EVP_PKEY_derive(ctx, NULL, (size_t*)&secret_len)) handleErrors();
-	secret = new unsigned char[secret_len];
-	if(1 != (EVP_PKEY_derive(ctx, secret, (size_t*)&secret_len))) handleErrors();
-	EVP_PKEY_CTX_free(ctx);
-	EVP_PKEY_free(peerkey);
-	EVP_PKEY_free(pkey);
-	char* pwd = base64(secret, secret_len);
-	delete[] secret;
-	py::bytes key = getKeyFromPass((char*)pwd);
-	delete[] pwd;
-	return key;
 };
-
 std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
 	unsigned char* pubResult;
 	unsigned char* privResult;
@@ -335,7 +308,34 @@ std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
 	EVP_PKEY_free(pkey);
 	tuple<py::bytes, py::bytes> finalTuple(pr, r);
 	return finalTuple;
-}
+};
+
+
+py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey){
+	int secret_len = 32;
+	EVP_PKEY* pkey;
+	char* privk = privKey.cast<char*>();
+	d2i_PrivateKey(EVP_PKEY_EC, &pkey, (const unsigned char**)&privk, privKey.attr("__len__").cast<int>());
+	EVP_PKEY* peerkey;
+	char* pubk = pubKey.cast<char*>();
+	d2i_PublicKey(EVP_PKEY_EC, &peerkey, (const unsigned char**)&pubk, privKey.attr("__len__").cast<int>());
+	unsigned char *secret;
+	EVP_PKEY_CTX *ctx;
+	if(NULL == (ctx = EVP_PKEY_CTX_new(pkey, NULL))) handleErrors();
+	if(1 != EVP_PKEY_derive_init(ctx)) handleErrors();
+	if(1 != EVP_PKEY_derive_set_peer(ctx, peerkey)) handleErrors();
+	if(1 != EVP_PKEY_derive(ctx, NULL, (size_t*)&secret_len)) handleErrors();
+	secret = new unsigned char[secret_len];
+	if(1 != (EVP_PKEY_derive(ctx, secret, (size_t*)&secret_len))) handleErrors();
+	EVP_PKEY_CTX_free(ctx);
+	EVP_PKEY_free(peerkey);
+	EVP_PKEY_free(pkey);
+	char* pwd = base64(secret, secret_len);
+	delete[] secret;
+	py::bytes key = getKeyFromPass((char*)pwd);
+	delete[] pwd;
+	return key;
+};
 
 PYBIND11_MODULE(__CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";

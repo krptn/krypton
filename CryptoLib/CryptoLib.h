@@ -19,5 +19,5 @@ char* __cdecl HASH_FOR_STORAGE(char* text);
 int compHash(const void* a, const void* b, const size_t size);
 py::bytes __cdecl Auth(char* pwd, char* stored_HASH);
 py::bytes __cdecl getKeyFromPass(char* pwd);
-py::bytes __cdecl getSharedKey(char* privKey, char* pubKey);
 std::tuple<py::bytes, py::bytes> __cdecl createECCKey();
+py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey);
