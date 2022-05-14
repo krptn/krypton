@@ -21,3 +21,7 @@ py::bytes __cdecl Auth(char* pwd, char* stored_HASH);
 py::bytes __cdecl getKeyFromPass(char* pwd);
 std::tuple<py::bytes, py::bytes> __cdecl createECCKey();
 py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey);
+unsigned char *decode64(const char *input, int length);
+char *base64(const unsigned char *input, int length);
+void handleErrors();
+

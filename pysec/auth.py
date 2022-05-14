@@ -1,6 +1,7 @@
 from typing import List
 from . import basic, userDB
 from abc import ABCMeta, abstractmethod
+from .globals import _getKey, base64encode
 
 class user(metaclass=ABCMeta):
     _userName:str
@@ -27,10 +28,10 @@ class user(metaclass=ABCMeta):
     def __saveNewUser(self):
         pass
     @abstractmethod
-    def __setattr__(self, __name: str, __value: any) -> None:
+    def gatData(self, __name: str) -> any:
         pass
     @abstractmethod
-    def __getattribute__(self, __name: str) -> any:
+    def setData(self, __name: str, __value: any) -> None:
         pass
     @abstractmethod
     def decryptWithUserKey(self, data:str|bytes) -> bytes:
@@ -51,14 +52,16 @@ class standardUser(user):
             self.__saveNewUser()
             self.id = self.c.execute("SELECT id FROM users WHERE name=?", (userName,)).fetchone()
         
-    def __setattr__(self, __name: str, __value: any) -> None:
+    def setData(self, __name: str, __value: any) -> None:
         self.c.execute(
             "INSERT INTO {id} VALUES (? ,?)".format(self.id),
             (__name, __value)
         )
         userDB.commit()
     
-    def __getattribute__(self, __name: str) -> any:
+    def gatData(self, __name: str) -> any:
+        if __name == "__key":
+            return self.__key
         result = self.c.execute(
             "SELECT value FROM {id} WHERE key=?".format(self.id), 
             (__name,)
@@ -87,11 +90,8 @@ class standardUser(user):
         pass
     
     def __saveNewUser(self):
-        self.c.execute("CREATE TABLE {id} (key text, value blob)")
+        self.c.execute("CREATE TABLE {id} (key text, value blob)".format(base64encode(_getKey(self._userName), 32)))
         userDB.commit()
-    
-    def encryptWithUserKey(self, data:str|bytes) -> bytes:
-        pass
 
     def decryptWithUserKey(self, data:str|bytes) -> bytes:
         pass
