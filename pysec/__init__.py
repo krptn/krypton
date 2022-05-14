@@ -32,27 +32,40 @@ os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 
-sqlite3DefaultCryptoDBpath = property(
-    fget=lambda: cryptoDB,
+SQLDefaultCryptoDBpath = property(
+    fget=lambda: __cryptoDB,
     fset=_setups.setupCryptoDB,
-    doc="Location of the default DB for crypto class"
+    doc=
+    """
+        Connection to the default database used to store Encrypted Data.
+        Either set a string for sqlite3 database or Connection object for other databases.
+    """
 )
 
-sqlite3DefaultKeyDBpath = property(
-    fget=lambda: altKeyDB,
+SQLDefaultKeyDBpath = property(
+    fget=lambda: __altKeyDB,
     fset=_setups.setupKeyDB,
-    doc="Location of the default keydb for kms class"
+    doc=    
+    """
+        Connection to the default database used to store Keys.
+        Either set a string for sqlite3 database or Connection object for other databases.
+    """
 )
 
-sqlite3UserDBpath = property(
-    fget=lambda: userDB,
+SQLDefaultUserDBpath = property(
+    fget=lambda: __userDB,
     fset=_setups.setupUserDB,
-    doc="Location of the databse for users"
+    doc=
+    """
+        Connection to the default database used to store User Data.
+        Either set a string for sqlite3 database or Connection object for other databases.
+    """
 )
 
-cryptoDB:sqlite3.Connection
-altKeyDB:sqlite3.Connection
-userDB:sqlite3.Connection
+__cryptoDB:sqlite3.Connection
+__altKeyDB:sqlite3.Connection
+__userDB:sqlite3.Connection
 
-defaultCryptoDBpath = os.path.join(sitePackages, "pysec-data/crypto.db")
-defaultKeyDBpath = os.path.join(sitePackages, "pysec-data/altKMS.db")
+SQLDefaultCryptoDBpath = os.path.join(sitePackages, "pysec-data/crypto.db")
+SQLDefaultKeyDBpath = os.path.join(sitePackages, "pysec-data/altKMS.db")
+SQLDefaultUserDBpath = os.path.join(sitePackages, "pysec-data/users.db")

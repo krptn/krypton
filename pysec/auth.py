@@ -1,5 +1,5 @@
 from typing import List
-from . import basic, userDB
+from . import basic, __userDB
 from abc import ABCMeta, abstractmethod
 from .globals import _getKey, base64encode
 
@@ -45,7 +45,7 @@ class standardUser(user):
     __key:bytes
     def __init__(self, userName:str) -> None:
         super().__init__()
-        self.c = userDB.cursor()
+        self.c = __userDB.cursor()
         self._userName = userName
         self.id = self.c.execute("SELECT id FROM users WHERE name=?", (userName,)).fetchone()
         if self.id == None:
@@ -57,7 +57,7 @@ class standardUser(user):
             "INSERT INTO {id} VALUES (? ,?)".format(self.id),
             (__name, __value)
         )
-        userDB.commit()
+        __userDB.commit()
     
     def gatData(self, __name: str) -> any:
         if __name == "__key":
@@ -91,7 +91,7 @@ class standardUser(user):
     
     def __saveNewUser(self):
         self.c.execute("CREATE TABLE {id} (key text, value blob)".format(base64encode(_getKey(self._userName), 32)))
-        userDB.commit()
+        __userDB.commit()
 
     def decryptWithUserKey(self, data:str|bytes) -> bytes:
         pass

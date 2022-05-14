@@ -1,8 +1,11 @@
 import sqlite3
 import pysec
 # Setup DB for crypto class. 
-def setupCryptoDB(path:str) -> None:
-  conn = sqlite3.connect(path)
+def setupCryptoDB(path:str|sqlite3.Connection) -> None:
+  if isinstance(path,str):
+    conn = sqlite3.connect(path)
+  else:
+    conn = path
   c = conn.cursor()
   try:
     c.execute("CREATE TABLE crypto (id int, ctext blob)")
@@ -13,12 +16,14 @@ def setupCryptoDB(path:str) -> None:
   finally:
     conn.commit()
     c.close()
-    conn.close()
-    pysec.cryptoDBLocation = sqlite3.connect(path)
+    pysec.__cryptoDBLocation = conn
 
 # Setup DB for kms class. 
-def setupKeyDB(path:str):
-  conn = sqlite3.connect(path)
+def setupKeyDB(path:str|sqlite3.Connection):
+  if isinstance(path,str):
+    conn = sqlite3.connect(path)
+  else:
+    conn = path
   c = conn.cursor()
   try:
     c.execute("CREATE TABLE keys (name text, key blob)")
@@ -27,11 +32,13 @@ def setupKeyDB(path:str):
   finally:
     conn.commit()
     c.close()
-    conn.close()
-    pysec.altKeyDB = sqlite3.connect(path)
+    pysec.__altKeyDB = conn
 
-def setupUserDB(path:str):
-  conn = sqlite3.connect(path)
+def setupUserDB(path:str|sqlite3.Connection):
+  if isinstance(path,str):
+    conn = sqlite3.connect(path)
+  else:
+    conn = path
   c = conn.cursor()
   try:
     c.execute("CREATE TABLE users (name text, id int)")
@@ -42,5 +49,4 @@ def setupUserDB(path:str):
     conn.commit()
     c.close()
     conn.close()
-  pysec.userDB = sqlite3.connect(path)
-
+  pysec.__userDB = conn

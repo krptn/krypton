@@ -17,6 +17,8 @@ import pysec
 # Before doing anything else, set the default location for the databases to be used. 
 # Elsehow, it will be stores in site-packages/pysec-data.
 # There is no need to create the databses: pysec will do that for you.
+# To use another non-sqlite3 database. Please create the database and pass the Connection object.
+# The connection object does not have to be sqlite3.Connection but should have same (or very similar) API.
 pysec.defaultCryptoDBpath = "Path/example.db"
 pysec.defaultKeyDBpath = "Path/key.db"
 # Create a instance of crypto - a class for encrypting and storing sensitive data.
