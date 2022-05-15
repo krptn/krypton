@@ -34,6 +34,10 @@ class TestSecureStoreClass(unittest.TestCase):
         else:
             self.assertFalse(True)
 
+class TestCryptographicUnits(unittest.TestCase):
+    pass
+class TestUserAuth(unittest.TestCase):
+    pass
 
 if __name__ == "__main__":
     unittest.main()
