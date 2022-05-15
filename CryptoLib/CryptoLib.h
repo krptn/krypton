@@ -13,8 +13,8 @@
 namespace py = pybind11;
 
 int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen);
-py::bytes __cdecl AESDecrypt(char* ctext_b, char* key);
-char* __cdecl AESEncrypt(char* text, char* key);
+py::bytes __cdecl AESEncrypt(char* text, py::bytes key);
+py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key);
 char* __cdecl HASH_FOR_STORAGE(char* text);
 int compHash(const void* a, const void* b, const size_t size);
 py::bytes __cdecl Auth(char* pwd, char* stored_HASH);

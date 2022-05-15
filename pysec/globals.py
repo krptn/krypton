@@ -6,9 +6,9 @@ import __CryptoLib
 __CryptoLib.fipsInit() #Load FIPS Validated resolver 
 
 #Wrappers for __CryptoLib to help intelisense automatically figure out function arguments, etc..
-def _restEncrypt(data:str, key:bytes) -> str:
+def _restEncrypt(data:str|bytes, key:bytes) -> bytes:
     return __CryptoLib.AESEncrypt(data, key)
-def _restDecrypt(data:bytes, key:bytes) -> str:
+def _restDecrypt(data:bytes, key:bytes) -> bytes:
     return __CryptoLib.AESDecrypt(data, bytes)
 def _getKey(pwd:str|bytes) -> bytes:
     return __CryptoLib.getKeyFromPass(pwd)
