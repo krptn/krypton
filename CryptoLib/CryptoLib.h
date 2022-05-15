@@ -35,7 +35,7 @@ char* __cdecl hashForStorage(char* text);
 //ECC
 std::tuple<py::bytes, py::bytes> __cdecl createECCKey();
 py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey);
-int getPubKey(EVP_PKEY *pkey);
-int getPrivKey(EVP_PKEY *pkey);
-int setPubKey(char* pkey);
-int setPrivKey(char* pkey);
+int getPubKey(EVP_PKEY *pkey, char* out);
+int getPrivKey(EVP_PKEY *pkey, char* out);
+int setPubKey(EVP_PKEY *pkey, char* key, int len);
+int setPrivKey(EVP_PKEY *pkey, char* key, int len);
