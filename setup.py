@@ -86,6 +86,12 @@ setup(name='pysec',
   classifiers=[
       "License :: OSI Approved :: Apache Software License",
       "Operating System :: OS Independent",
+      'Intended Audience :: Developers',
+      'Intended Audience :: System Administrators',
+      'Topic :: Security',
+      'Topic :: Security :: Cryptography',
+      'Framework :: Django',
+      'Framework :: Flask'
   ],
   package_data={"":["../openssl-install/bin/libcrypto-3-x64.dll",
     "../openssl-install/lib/ossl-modules/fips.dll",
