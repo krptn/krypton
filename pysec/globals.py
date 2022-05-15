@@ -18,8 +18,7 @@ def base64encode(data:str|bytes, len:int) -> str:
     return __CryptoLib.base64encode(data, len)
 def base64decode(data:str|bytes, len:int) -> bytes|str:
     return __CryptoLib.base64decode(data, len)
-def createECCKey() -> tuple[bytes, bytes]:
-    # returns (publicKey, privateKey)
+def createECCKey() -> tuple[bytes, bytes]: # returns (publicKey, privateKey)
     return __CryptoLib.createECCKey()
 def ECDH(privKey:bytes, peerPubKey:bytes) -> bytes:
     return __CryptoLib.getECCSharedKey(privKey, peerPubKey)

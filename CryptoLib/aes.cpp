@@ -13,7 +13,7 @@ const int AES_KEY_LEN = 32;
 const int IV_SALT_LEN = 12;
 const int AUTH_TAG_LEN = 16;
 py::bytes __cdecl AESEncrypt(char* text, py::bytes key) {
-	if (key.attr("__len__").cast<int>() != 32){
+	if (key.attr("__len__")().cast<int>() != 32){
 		throw std::invalid_argument("Key is of wrong size");
 	}
 	try{
@@ -30,6 +30,7 @@ py::bytes __cdecl AESEncrypt(char* text, py::bytes key) {
 	memcpy_s(&ivbuff, IV_SALT_LEN, iv, IV_SALT_LEN);
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)rem + (long long)1]);
 	EVP_CIPHER_CTX* ctx;
+	char k = key.cast<char>();
 	int len;
 	int ciphertext_len;
 	if (!(ctx = EVP_CIPHER_CTX_new()))
@@ -38,7 +39,7 @@ py::bytes __cdecl AESEncrypt(char* text, py::bytes key) {
 		handleErrors();
 	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL))
 		handleErrors();
-	if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char*)key.cast<char*>(), iv))
+	if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char*)&k, iv))
 		handleErrors();
 	if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, (unsigned char*)text, msglen))
 		handleErrors();
@@ -64,13 +65,14 @@ py::bytes __cdecl AESEncrypt(char* text, py::bytes key) {
 }
 
 py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key){
-	if (key.attr("__len__").cast<int>() != 32){
+	if (key.attr("__len__")().cast<int>() != 32){
 		throw std::invalid_argument("Key is of wrong size");
 	}
 	try {
-	int input_len = ctext_b.attr("__len__").cast<int>();
+	int input_len = ctext_b.attr("__len__")().cast<int>();
 	auto ctext = unique_ptr<unsigned char[]>(new unsigned char [input_len]);
-	memcpy_s(ctext.get(), input_len, ctext_b.cast<char*>(), input_len);
+	char b = ctext_b.cast<char>();
+	memcpy_s(ctext.get(), input_len, &b, input_len);
 	int msglen = IV_SALT_LEN - AUTH_TAG_LEN - IV_SALT_LEN;
 	auto msg = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
 	memcpy_s(msg.get(), msglen, ctext.get(), msglen);
@@ -79,7 +81,7 @@ py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key){
 	unsigned char tag[AUTH_TAG_LEN];
 	memcpy_s(tag, AUTH_TAG_LEN, ctext.get() + msglen, AUTH_TAG_LEN);
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)1]);
-
+	char k = key.cast<char>();
 	EVP_CIPHER_CTX* ctx;
 	int len;
 	int plaintext_len;
@@ -89,7 +91,7 @@ py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key){
 		handleErrors();
 	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL))
 		handleErrors();
-	if (!EVP_DecryptInit_ex(ctx, NULL, NULL, (unsigned char*)key.cast<char*>(), iv))
+	if (!EVP_DecryptInit_ex(ctx, NULL, NULL, (unsigned char*)&k, iv))
 		handleErrors();
 	if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, msg.get(), msglen))
 		handleErrors();

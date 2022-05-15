@@ -76,7 +76,7 @@ std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
 	py::bytes r = py::bytes((char*)pubResult, len);
 	OPENSSL_cleanse(pubResult, len);
 	delete[] pubResult;
-	int len = getPubKey(pkey, NULL);
+	len = getPubKey(pkey, NULL);
 	privResult = new unsigned char[len];
 	py::bytes pr = py::bytes((char*)privResult, len);
 	OPENSSL_cleanse(privResult, len);
@@ -90,11 +90,11 @@ std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
 py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey){
 	int secret_len = 32;
 	EVP_PKEY* pkey;
-	char* privk = privKey.cast<char*>();
-	setPrivKey(pkey, privk, privKey.attr("__len__").cast<int>());
+	char privk = privKey.cast<char>();
+	setPrivKey(pkey, &privk, privKey.attr("__len__")().cast<int>());
 	EVP_PKEY* peerkey;
-	char* pubk = pubKey.cast<char*>();
-	setPubKey(peerkey, pubk, privKey.attr("__len__").cast<int>());
+	char pubk = pubKey.cast<char>();
+	setPubKey(peerkey, &pubk, privKey.attr("__len__")().cast<int>());
 	EVP_PKEY_CTX *ctx;
 	if(NULL == (ctx = EVP_PKEY_CTX_new(pkey, NULL))) handleErrors();
 	if(1 != EVP_PKEY_derive_init(ctx)) handleErrors();
