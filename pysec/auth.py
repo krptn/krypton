@@ -1,7 +1,8 @@
-from typing import List
+import sqlite3
+from typing import List, Tuple
 from . import basic, __userDB
 from abc import ABCMeta, abstractmethod
-from .globals import _getKey, base64encode
+from . import globals
 
 class user(metaclass=ABCMeta):
     _userName:str
@@ -34,7 +35,7 @@ class user(metaclass=ABCMeta):
     def setData(self, __name: str, __value: any) -> None:
         pass
     @abstractmethod
-    def decryptWithUserKey(self, data:str|bytes) -> bytes:
+    def decryptWithUserKey(self, data:str|bytes, sender:str) -> bytes:
         pass
     @abstractmethod
     def encryptWithUserKey(self, data:str|bytes, otherUsers:List[str]) -> bytes:
@@ -43,9 +44,10 @@ class user(metaclass=ABCMeta):
 class standardUser(user):
     _userName:str = ""
     __key:bytes
+    c:sqlite3.Cursor
     def __init__(self, userName:str) -> None:
         super().__init__()
-        self.c = __userDB.cursor()
+        self.c:sqlite3.Cursor = __userDB.cursor()
         self._userName = userName
         self.id = self.c.execute("SELECT id FROM users WHERE name=?", (userName,)).fetchone()
         if self.id == None:
@@ -59,7 +61,7 @@ class standardUser(user):
         )
         __userDB.commit()
     
-    def gatData(self, __name: str) -> any:
+    def getData(self, __name: str) -> any:
         if __name == "__key":
             return self.__key
         result = self.c.execute(
@@ -90,11 +92,21 @@ class standardUser(user):
         pass
     
     def __saveNewUser(self):
-        self.c.execute("CREATE TABLE {id} (key text, value blob)".format(base64encode(_getKey(self._userName), 32)))
-        __userDB.commit()
+        self.id = globals.base64encode(globals._getKey(self._userName), 32)
+        keys = globals.createECCKey()
+        self.pubKey = keys[0]
+        self.privKey = keys[1]
+        self.c.execute("CREATE TABLE {id} (key text, value blob)".format(self.id))
+        self.c.execute("INSERT INTO pubKeys VALUES (?, ?)", (self.id, self.pubKey))
+        self.setData("userPrivateKey", self.privKey)
+        self.setData("userPublicKey", self.pubKey)
 
-    def decryptWithUserKey(self, data:str|bytes) -> bytes:
-        pass
+    def decryptWithUserKey(self, data:str|bytes, sender:str) -> bytes:
+        key = globals.getSharedKey(self.privKey, sender)
+        
     
-    def encryptWithUserKey(self, data:str|bytes, otherUsers:List[str]) -> bytes:
-        pass
+    def encryptWithUserKey(self, data:str|bytes, otherUsers:List[str]) -> List[Tuple[str, bytes]]:
+        AESKeys = [globals.getSharedKey(self.privKey, name) for name in otherUsers]
+        results = [globals._restEncrypt(data, key) for key in AESKeys]
+        for i in AESKeys: globals.zeromem(i)
+        return zip(otherUsers, results)

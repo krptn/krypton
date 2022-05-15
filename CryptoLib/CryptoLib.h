@@ -10,6 +10,7 @@
 #include <openssl/conf.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
+ #include <openssl/encoder.h>
 namespace py = pybind11;
 
 int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen);
@@ -25,4 +26,7 @@ unsigned char *decode64(const char *input, int length);
 char *base64(const unsigned char *input, int length);
 py::bytes py_decode64(const char *input, int length),
 void handleErrors();
-
+int getPubKey(EVP_PKEY *pkey);
+int getPrivKey(EVP_PKEY *pkey);
+int setPubKey(char* pkey);
+int setPrivKey(char* pkey);

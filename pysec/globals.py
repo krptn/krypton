@@ -1,6 +1,8 @@
 import ctypes
+import sqlite3
 import sys
-
+from . import __userDB
+__userC:sqlite3.Cursor = __userDB.cursor()
 Adrr = id
 import __CryptoLib
 __CryptoLib.fipsInit() #Load FIPS Validated resolver 
@@ -17,9 +19,13 @@ def base64encode(data:str|bytes, len:int) -> str:
 def base64decode(data:str|bytes, len:int) -> bytes|str:
     return __CryptoLib.base64decode(data, len)
 def createECCKey() -> tuple[bytes, bytes]:
+    # returns (publicKey, privateKey)
     return __CryptoLib.createECCKey()
 def ECDH(privKey:bytes, peerPubKey:bytes) -> bytes:
     return __CryptoLib.getECCSharedKey(privKey, peerPubKey)
+def getSharedKey(privKey:bytes, peerName:str) -> bytes:
+    key = __userC.execute("SELECT key FROM pubKeys WHERE name=?", (peerName,)).fetchone()
+    __CryptoLib.getECCSharedKey(privKey, key)
 
 def zeromem(obj:str)->None: #C-Style function to clear the content of str and bytes
     ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))

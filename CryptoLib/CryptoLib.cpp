@@ -11,6 +11,7 @@
 #include <openssl/applink.c>
 #include <openssl/ec.h>
 #include <openssl/obj_mac.h>
+#include <openssl/encoder.h>
 
 using namespace std;
 namespace py = pybind11;
@@ -22,6 +23,7 @@ const int AES_KEY_LEN = 32;
 const int IV_SALT_LEN = 12;
 const int AUTH_TAG_LEN = 16;
 const auto PBKDF2_HASH_ALGO = EVP_sha512;
+int ECC_DEFAULT_CURVE = NID_X9_62_prime256v1;
 OSSL_PROVIDER *fips;
 
 bool fipsInit()
@@ -268,6 +270,42 @@ char* __cdecl PBKDF2(char* text, char* salt) {
 	delete[] key;
 	return result;
 };
+
+int getPubKey(EVP_PKEY *pkey, char* out){
+	OSSL_ENCODER_CTX *ctx;
+	unsigned char* data = NULL;
+	size_t datalen;
+	ctx = OSSL_ENCODER_CTX_new_for_pkey(pkey, EVP_PKEY_PUBLIC_KEY, "PEM", "SubjectPublicKeyInfo", NULL);
+	if (1 != OSSL_ENCODER_CTX_set_cipher(ctx, NULL, NULL)) handleErrors();
+	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen)) handleErrors();
+	memcpy_s(out, datalen, data, datalen);
+	OPENSSL_free(data);
+	return datalen;
+}
+
+// https://www.openssl.org/docs/man3.0/man3/EVP_PKEY_fromdata.html
+// https://www.openssl.org/docs/man3.0/man3/OSSL_ENCODER_to_bio.html
+// https://www.openssl.org/docs/man3.0/man3/OSSL_ENCODER_CTX_new_for_pkey.html#Output-types
+int getPrivKey(EVP_PKEY *pkey, char* out){
+	OSSL_ENCODER_CTX *ctx;
+	unsigned char* data = NULL;
+	size_t datalen;
+	ctx = OSSL_ENCODER_CTX_new_for_pkey(pkey, EVP_PKEY_KEYPAIR, "PEM", "PrivateKeyInfo", NULL);
+	if (1 != OSSL_ENCODER_CTX_set_cipher(ctx, NULL, NULL)) handleErrors();
+	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen)) handleErrors();
+	memcpy_s(out, datalen, data, datalen);
+	OPENSSL_free(data);
+	return datalen;
+}
+
+// https://www.openssl.org/docs/man3.0/man3/OSSL_DECODER_CTX_new_for_pkey.html
+int setPubKey(EVP_PKEY *pkey, char* key, int len){
+	OSSL_ENCODER_CTX *ctx;
+}
+
+int setPrivKey(EVP_PKEY *pkey, char* key, int len){
+
+}
 std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
 	unsigned char* pubResult;
 	unsigned char* privResult;
@@ -278,18 +316,17 @@ std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
         handleErrors();
     if (EVP_PKEY_keygen_init(ctx) <= 0)
         handleErrors();
-    if (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, NID_X9_62_prime256v1) <= 0)
+    if (EVP_PKEY_CTX_set_ec_paramgen_curve_nid(ctx, ECC_DEFAULT_CURVE) <= 0)
         handleErrors();
     if (EVP_PKEY_keygen(ctx, &pkey) <= 0)
         handleErrors();
 	EVP_PKEY_CTX_free(ctx);
-	int len = i2d_PublicKey(pkey, NULL);
+	int len = getPubKey(pkey, NULL);
 	pubResult = new unsigned char[len];
-	i2d_PublicKey(pkey, &pubResult);
 	py::bytes r = py::bytes((char*)pubResult, len);
 	OPENSSL_cleanse(pubResult, len);
 	delete[] pubResult;
-	int len = i2d_PrivateKey(pkey, NULL);
+	int len = getPubKey(pkey, NULL);
 	privResult = new unsigned char[len];
 	py::bytes pr = py::bytes((char*)privResult, len);
 	OPENSSL_cleanse(privResult, len);
@@ -300,28 +337,25 @@ std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
 	return finalTuple;
 };
 
-
 py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey){
 	int secret_len = 32;
 	EVP_PKEY* pkey;
 	char* privk = privKey.cast<char*>();
-	d2i_PrivateKey(EVP_PKEY_EC, &pkey, (const unsigned char**)&privk, privKey.attr("__len__").cast<int>());
+	setPrivKey(pkey, privk, privKey.attr("__len__").cast<int>());
 	EVP_PKEY* peerkey;
 	char* pubk = pubKey.cast<char*>();
-	d2i_PublicKey(EVP_PKEY_EC, &peerkey, (const unsigned char**)&pubk, privKey.attr("__len__").cast<int>());
-	unsigned char *secret;
+	setPubKey(peerkey, pubk, privKey.attr("__len__").cast<int>());
 	EVP_PKEY_CTX *ctx;
 	if(NULL == (ctx = EVP_PKEY_CTX_new(pkey, NULL))) handleErrors();
 	if(1 != EVP_PKEY_derive_init(ctx)) handleErrors();
 	if(1 != EVP_PKEY_derive_set_peer(ctx, peerkey)) handleErrors();
 	if(1 != EVP_PKEY_derive(ctx, NULL, (size_t*)&secret_len)) handleErrors();
-	secret = new unsigned char[secret_len];
-	if(1 != (EVP_PKEY_derive(ctx, secret, (size_t*)&secret_len))) handleErrors();
+	auto secret = unique_ptr<unsigned char[]>(new unsigned char[IV_SALT_LEN]);
+	if(1 != (EVP_PKEY_derive(ctx, secret.get(), (size_t*)&secret_len))) handleErrors();
 	EVP_PKEY_CTX_free(ctx);
 	EVP_PKEY_free(peerkey);
 	EVP_PKEY_free(pkey);
-	char* pwd = base64(secret, secret_len);
-	delete[] secret;
+	char* pwd = base64(secret.get(), secret_len);
 	py::bytes key = getKeyFromPass((char*)pwd);
 	delete[] pwd;
 	return key;

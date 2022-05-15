@@ -42,7 +42,7 @@ def setupUserDB(path:str|sqlite3.Connection):
   c = conn.cursor()
   try:
     c.execute("CREATE TABLE users (name text, id int)")
-    c.execute("CREATE TABLE keys (name text, key blob)")
+    c.execute("CREATE TABLE pubKeys (name text, key blob)")
   except:
     pass
   finally:
