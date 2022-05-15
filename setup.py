@@ -100,7 +100,7 @@ setup(name='pysec',
     'develop':completeDevelop
   },
   ext_modules=[Pybind11Extension('__CryptoLib', 
-    ['CryptoLib/Cryptolib.cpp'], 
+    ['CryptoLib/Cryptolib.cpp', 'CryptoLib/aes.cpp', 'CryptoLib/ecc.cpp', 'CryptoLib/hashes.cpp'], 
     include_dirs=["openssl-install/include","CryptoLib"],
     library_dirs=["openssl-install/lib"],
     libraries=["libcrypto"])]

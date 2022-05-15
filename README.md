@@ -62,4 +62,4 @@ pip install .
 
 # Planned: 
 - APIs for other languages
-- Premium features and 
+- Premium features 
