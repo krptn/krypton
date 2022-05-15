@@ -53,7 +53,7 @@ char *base64(const unsigned char *input, int length) {
   const auto pl = 4*((length+2)/3);
   char* output = new char[pl+1];
   const auto ol = EVP_EncodeBlock(reinterpret_cast<unsigned char *>(output), input, length);
-  length = pl;
+  output[length] = '\0';
   return output;
 }
 
@@ -61,8 +61,16 @@ unsigned char *decode64(const char *input, int length) {
   const auto pl = 3*length/4;
   unsigned char* output = new unsigned char[pl+1];
   const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
-  length = pl;
+  output[length] = '\0';
   return output;
+}
+
+py::bytes py_decode64(const char *input, int length) {
+  const auto pl = 3*length/4;
+  unsigned char* output = new unsigned char[pl+1];
+  const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
+  py::bytes result = py::bytes((const char*)output, length);
+  return result;
 }
 
 void handleErrors() {
@@ -335,5 +343,5 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("getECCSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"));
 	m.def("base64encode", &base64, "Base 64 encode data with length.", py::arg("data"), py::arg("length"));
-	m.def("base64decode", &decode64, "Base 64 decode data with length.", py::arg("data"), py::arg("length"));
+	m.def("base64decode", &py_decode64, "Base 64 decode data with length.", py::arg("data"), py::arg("length"));
 }

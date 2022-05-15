@@ -23,5 +23,6 @@ std::tuple<py::bytes, py::bytes> __cdecl createECCKey();
 py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey);
 unsigned char *decode64(const char *input, int length);
 char *base64(const unsigned char *input, int length);
+py::bytes py_decode64(const char *input, int length),
 void handleErrors();
 
