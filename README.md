@@ -1,5 +1,7 @@
 ![DevSkim Analysis](https://github.com/mbs9org/PySec/actions/workflows/CodeReview.yml/badge.svg) -> see security/result.sarif (plenty of false positives) for JSON representation (analysis by https://github.com/marketplace/actions/devskim). 
 
+<u>Quick notice:</u> this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want there code to be used for such purposes. 
+
 # PySec 
 - Secure Storage of Data
 - Authentication for Users
@@ -8,8 +10,6 @@
 - Planned User Authentication with OAuth integration
 
 View aditional security mitigations: [Security Features](security/sec_feature_plan.md)
-
-# APIs for other languages
 
 # Crypto 
 ```python
@@ -33,11 +33,11 @@ print("The data is", myCrypto.secureRead(id,
 # User Auth
 Being Developed
 
-# Settings
-To be developed after user Auth
-
 # Integration with web frameworks
 To be made after User Auth 
+
+# Optional: store keys in HSMs so Admin can decrypt user data
+After integrations with web frameworks
 
 # Build/Setup the extension for development
 First please build and install openssl3 before building pysec. Currently only windows is supported. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /openssl-install directory), --openssldir=DIR (replace DIR with your /openssl-config directory) and enable-fips option. 
@@ -59,3 +59,7 @@ To install the extension and not produce debuging symbols:
 ```shell
 pip install . 
 ```
+
+# Planned: 
+- APIs for other languages
+- Premium features and 
