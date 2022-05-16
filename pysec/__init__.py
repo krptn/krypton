@@ -2,13 +2,67 @@
 import pathlib
 import sqlite3
 import sys
-import basic
-import _setups
+
+from . import basic
 version = "1"
 
 __all__ = ["basic"]
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
 search = 5
+
+def __setupCryptoDB(path:str|sqlite3.Connection) -> None:
+    global __cryptoDB
+    if isinstance(path,str):
+        conn = sqlite3.connect(path)
+    else:
+        conn = path
+    c = conn.cursor()
+    try:
+        c.execute("CREATE TABLE crypto (id int, ctext blob)")
+        c.execute("INSERT INTO crypto VALUES (?, ?)", (0, b"Position Reserved"))
+        c.execute("CREATE TABLE keys (name text, key blob)")
+    except:
+        pass
+    finally:
+        conn.commit()
+        c.close()
+        __cryptoDB = conn
+
+# Setup DB for kms class. 
+def __setupKeyDB(path:str|sqlite3.Connection):
+    global __altKeyDB
+    if isinstance(path,str):
+        conn = sqlite3.connect(path)
+    else:
+        conn = path
+    c = conn.cursor()
+    try:
+        c.execute("CREATE TABLE keys (name text, key blob)")
+    except:
+        pass
+    finally:
+        conn.commit()
+        c.close()
+        __altKeyDB = conn
+
+def __setupUserDB(path:str|sqlite3.Connection):
+    global __userDB
+    if isinstance(path,str):
+        conn = sqlite3.connect(path)
+    else:
+        conn = path
+        c = conn.cursor()
+    try:
+        c.execute("CREATE TABLE users (name text, id int)")
+        c.execute("CREATE TABLE pubKeys (name text, key blob)")
+    except:
+        pass
+    finally:
+        conn.commit()
+        c.close()
+        conn.close()
+        __userDB = conn
+
 
 if sys.executable[-18:] == "Scripts\\python.exe":
     sitePackages = os.path.join(
@@ -34,7 +88,7 @@ os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 
 SQLDefaultCryptoDBpath = property(
     fget=lambda: __cryptoDB,
-    fset=_setups.setupCryptoDB,
+    fset=__setupCryptoDB,
     doc=
     """
         Connection to the default database used to store Encrypted Data.
@@ -44,7 +98,7 @@ SQLDefaultCryptoDBpath = property(
 
 SQLDefaultKeyDBpath = property(
     fget=lambda: __altKeyDB,
-    fset=_setups.setupKeyDB,
+    fset=__setupKeyDB,
     doc=    
     """
         Connection to the default database used to store Keys.
@@ -54,7 +108,7 @@ SQLDefaultKeyDBpath = property(
 
 SQLDefaultUserDBpath = property(
     fget=lambda: __userDB,
-    fset=_setups.setupUserDB,
+    fset=__setupUserDB,
     doc=
     """
         Connection to the default database used to store User Data.

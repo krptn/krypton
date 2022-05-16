@@ -58,10 +58,10 @@ class TestCryptographicUnits(unittest.TestCase):
         b64 = globals.base64encode(text)
         t = globals.base64decode(b64)
         self.assertEqual(text, t)
-
+"""
 class TestUserAuth(unittest.TestCase):
     pass
-
+"""
 if __name__ == "__main__":
     unittest.main()
 
