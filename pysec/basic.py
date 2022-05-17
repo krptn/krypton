@@ -1,6 +1,8 @@
 import os
 import sqlite3
-from . import __cryptoDB, __altKeyDB
+from . import configs
+SQLDefaultCryptoDBpath:sqlite3.Connection = configs.SQLDefaultCryptoDBpath
+SQLDefaultKeyDBpath:sqlite3.Connection = configs.SQLDefaultKeyDBpath
 from .globals import _restEncrypt, _restDecrypt, zeromem, _getKey
 
 class kms():
@@ -22,7 +24,7 @@ class kms():
             zeromem(key)
             return r
     
-    def __init__(self, keyDB:sqlite3.Connection=__altKeyDB)->None:
+    def __init__(self, keyDB:sqlite3.Connection=SQLDefaultKeyDBpath)->None:
         self.keydb = keyDB
         self.c = keyDB.cursor()
     
@@ -57,7 +59,7 @@ class crypto(kms):
     '''
     Ciphers and deciphers strings. Can also store strings securely and supports CRUD operations
     '''
-    def __init__(self, keyDB:sqlite3.Connection=__cryptoDB):
+    def __init__(self, keyDB:sqlite3.Connection=SQLDefaultCryptoDBpath):
         self.keydb = keyDB
         self.c = self.keydb.cursor()
         id = int(self.c.execute("SELECT MAX(id) FROM crypto").fetchone()[0])

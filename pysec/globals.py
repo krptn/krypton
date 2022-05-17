@@ -1,8 +1,8 @@
 import ctypes
 import sqlite3
 import sys
-from . import __userDB
-__userC:sqlite3.Cursor = __userDB.cursor()
+from . import configs
+__userC:sqlite3.Cursor = configs.SQLDefaultKeyDBpath.cursor()
 Adrr = id
 import __CryptoLib
 __CryptoLib.fipsInit() #Load FIPS Validated resolver 

@@ -1,9 +1,7 @@
 ﻿import os
 import pathlib
 import sqlite3
-import sys
 
-from . import basic
 version = "1"
 
 __all__ = ["basic"]
@@ -11,7 +9,7 @@ ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__'
 search = 5
 
 def __setupCryptoDB(path:str|sqlite3.Connection) -> None:
-    global __cryptoDB
+    global _cryptoDB
     if isinstance(path,str):
         conn = sqlite3.connect(path)
     else:
@@ -23,14 +21,15 @@ def __setupCryptoDB(path:str|sqlite3.Connection) -> None:
         c.execute("CREATE TABLE keys (name text, key blob)")
     except:
         pass
+
     finally:
         conn.commit()
         c.close()
-        __cryptoDB = conn
+        _cryptoDB = conn
 
 # Setup DB for kms class. 
 def __setupKeyDB(path:str|sqlite3.Connection):
-    global __altKeyDB
+    global _altKeyDB
     if isinstance(path,str):
         conn = sqlite3.connect(path)
     else:
@@ -43,10 +42,10 @@ def __setupKeyDB(path:str|sqlite3.Connection):
     finally:
         conn.commit()
         c.close()
-        __altKeyDB = conn
+        _altKeyDB = conn
 
 def __setupUserDB(path:str|sqlite3.Connection):
-    global __userDB
+    global _userDB
     if isinstance(path,str):
         conn = sqlite3.connect(path)
     else:
@@ -61,24 +60,14 @@ def __setupUserDB(path:str|sqlite3.Connection):
         conn.commit()
         c.close()
         conn.close()
-        __userDB = conn
+        _userDB = conn
 
+sitePackage = pathlib.Path(__file__).parent.parent.as_posix()
 
-if sys.executable[-18:] == "Scripts\\python.exe":
-    sitePackages = os.path.join(
-        pathlib.Path(sys.executable).parent.parent.absolute(),
-        "Lib\\site-packages"
-    )
-else:
-    sitePackages = os.path.join(
-        pathlib.Path(sys.executable).parent.absolute(),
-        "Lib\\site-packages"
-    )
-
-OPENSSL_CONFIG = os.path.join(sitePackages, "openssl-config")
+OPENSSL_CONFIG = os.path.join(sitePackage, "openssl-config")
 OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG, "openssl.cnf")
-OPENSSL_BIN = os.path.join(sitePackages, "openssl-install/bin")
-OPENSSL_MODULES = os.path.join(sitePackages, "openssl-install/lib/ossl-modules")
+OPENSSL_BIN = os.path.join(sitePackage, "openssl-install/bin")
+OPENSSL_MODULES = os.path.join(sitePackage, "openssl-install/lib/ossl-modules")
 
 os.add_dll_directory(OPENSSL_BIN)
 os.add_dll_directory(OPENSSL_MODULES)
@@ -86,40 +75,43 @@ os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 
-SQLDefaultCryptoDBpath = property(
-    fget=lambda: __cryptoDB,
-    fset=__setupCryptoDB,
-    doc=
-    """
-        Connection to the default database used to store Encrypted Data.
-        Either set a string for sqlite3 database or Connection object for other databases.
-    """
-)
+class configTemp():
+    SQLDefaultCryptoDBpath = property(
+        fget=lambda: _cryptoDB,
+        fset=__setupCryptoDB,
+        doc=
+        """
+            Connection to the default database used to store Encrypted Data.
+            Either set a string for sqlite3 database or Connection object for other databases.
+        """
+    )
 
-SQLDefaultKeyDBpath = property(
-    fget=lambda: __altKeyDB,
-    fset=__setupKeyDB,
-    doc=    
-    """
-        Connection to the default database used to store Keys.
-        Either set a string for sqlite3 database or Connection object for other databases.
-    """
-)
+    SQLDefaultKeyDBpath = property(
+        fget=lambda: _altKeyDB,
+        fset=__setupKeyDB,
+        doc=    
+        """
+            Connection to the default database used to store Keys.
+            Either set a string for sqlite3 database or Connection object for other databases.
+        """
+    )
 
-SQLDefaultUserDBpath = property(
-    fget=lambda: __userDB,
-    fset=__setupUserDB,
-    doc=
-    """
-        Connection to the default database used to store User Data.
-        Either set a string for sqlite3 database or Connection object for other databases.
-    """
-)
+    SQLDefaultUserDBpath = property(
+        fget=lambda: _userDB,
+        fset=__setupUserDB,
+        doc=
+        """
+            Connection to the default database used to store User Data.
+            Either set a string for sqlite3 database or Connection object for other databases.
+        """
+    )
 
-__cryptoDB:sqlite3.Connection
-__altKeyDB:sqlite3.Connection
-__userDB:sqlite3.Connection
+    _cryptoDB:sqlite3.Connection
+    _altKeyDB:sqlite3.Connection
+    _userDB:sqlite3.Connection
 
-SQLDefaultCryptoDBpath = os.path.join(sitePackages, "pysec-data/crypto.db")
-SQLDefaultKeyDBpath = os.path.join(sitePackages, "pysec-data/altKMS.db")
-SQLDefaultUserDBpath = os.path.join(sitePackages, "pysec-data/users.db")
+configs = configTemp()
+
+configs.SQLDefaultCryptoDBpath = os.path.join(sitePackage, "pysec-data/crypto.db")
+configs.SQLDefaultKeyDBpath = os.path.join(sitePackage, "pysec-data/altKMS.db")
+configs.SQLDefaultUserDBpath = os.path.join(sitePackage, "pysec-data/users.db")

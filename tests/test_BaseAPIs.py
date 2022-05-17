@@ -1,4 +1,5 @@
 import unittest
+import pysec
 from pysec.basic import crypto
 from pysec import globals
 import os

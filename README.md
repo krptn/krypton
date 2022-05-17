@@ -19,8 +19,8 @@ import pysec
 # There is no need to create the databses: pysec will do that for you.
 # To use another non-sqlite3 database. Please create the database and pass the Connection object.
 # The connection object does not have to be sqlite3.Connection but should have same (or very similar) API.
-pysec.defaultCryptoDBpath = "Path/example.db"
-pysec.defaultKeyDBpath = "Path/key.db"
+pysec.configs.SQLDefaultCryptoDBpath = "Path/example.db"
+pysec.configs.SQLDefaultKeyDBpath = "Path/key.db"
 # Create a instance of crypto - a class for encrypting and storing sensitive data.
 myCrypto = pysec.basic.crypto()
 # It supports C.R.U.D. operations:
@@ -51,7 +51,6 @@ perl Configure --prefix="C:\Users\markb\source\repos\PySec\openssl-install" --op
 To install the extension and produce debuging symbols use: 
 ```shell
 python setup.py build_ext --debug
-pip install .
 pip install -e .
 ```
 

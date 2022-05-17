@@ -1,6 +1,7 @@
 import sqlite3
 from typing import List, Tuple
-from . import basic, __userDB
+from . import basic, configs
+SQLDefaultUserDBpath = configs.SQLDefaultUserDBpath
 from abc import ABCMeta, abstractmethod
 from . import globals
 
@@ -47,7 +48,7 @@ class standardUser(user):
     c:sqlite3.Cursor
     def __init__(self, userName:str) -> None:
         super().__init__()
-        self.c:sqlite3.Cursor = __userDB.cursor()
+        self.c:sqlite3.Cursor = SQLDefaultUserDBpath.cursor()
         self._userName = userName
         self.id = self.c.execute("SELECT id FROM users WHERE name=?", (userName,)).fetchone()
         if self.id == None:
@@ -59,7 +60,7 @@ class standardUser(user):
             "INSERT INTO {id} VALUES (? ,?)".format(self.id),
             (__name, __value)
         )
-        __userDB.commit()
+        SQLDefaultUserDBpath.commit()
     
     def getData(self, __name: str) -> any:
         if __name == "__key":
