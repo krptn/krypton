@@ -8,60 +8,6 @@ __all__ = ["basic"]
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
 search = 5
 
-def __setupCryptoDB(path:str|sqlite3.Connection) -> None:
-    global _cryptoDB
-    if isinstance(path,str):
-        conn = sqlite3.connect(path)
-    else:
-        conn = path
-    c = conn.cursor()
-    try:
-        c.execute("CREATE TABLE crypto (id int, ctext blob)")
-        c.execute("INSERT INTO crypto VALUES (?, ?)", (0, b"Position Reserved"))
-        c.execute("CREATE TABLE keys (name text, key blob)")
-    except:
-        pass
-
-    finally:
-        conn.commit()
-        c.close()
-        _cryptoDB = conn
-
-# Setup DB for kms class. 
-def __setupKeyDB(path:str|sqlite3.Connection):
-    global _altKeyDB
-    if isinstance(path,str):
-        conn = sqlite3.connect(path)
-    else:
-        conn = path
-    c = conn.cursor()
-    try:
-        c.execute("CREATE TABLE keys (name text, key blob)")
-    except:
-        pass
-    finally:
-        conn.commit()
-        c.close()
-        _altKeyDB = conn
-
-def __setupUserDB(path:str|sqlite3.Connection):
-    global _userDB
-    if isinstance(path,str):
-        conn = sqlite3.connect(path)
-    else:
-        conn = path
-        c = conn.cursor()
-    try:
-        c.execute("CREATE TABLE users (name text, id int)")
-        c.execute("CREATE TABLE pubKeys (name text, key blob)")
-    except:
-        pass
-    finally:
-        conn.commit()
-        c.close()
-        conn.close()
-        _userDB = conn
-
 sitePackage = pathlib.Path(__file__).parent.parent.as_posix()
 
 OPENSSL_CONFIG = os.path.join(sitePackage, "openssl-config")
@@ -76,39 +22,82 @@ os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 
 class configTemp():
-    SQLDefaultCryptoDBpath = property(
-        fget=lambda: _cryptoDB,
-        fset=__setupCryptoDB,
-        doc=
+    _cryptoDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/crypto.db"))
+    _altKeyDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/altKMS.db"))
+    _userDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/users.db"))
+    @property
+    def SQLDefaultCryptoDBpath(self):
         """
             Connection to the default database used to store Encrypted Data.
             Either set a string for sqlite3 database or Connection object for other databases.
         """
-    )
+        return self._cryptoDB
+    @SQLDefaultCryptoDBpath.setter
+    def SQLDefaultCryptoDBpath(self, path:str|sqlite3.Connection) -> None:
+        if isinstance(path, str):
+            conn = sqlite3.connect(path)
+        else:
+            conn = path
+        c = conn.cursor()
+        try:
+            c.execute("CREATE TABLE crypto (id int, ctext blob)")
+            c.execute("INSERT INTO crypto VALUES (?, ?)", (0, b"Position Reserved"))
+            c.execute("CREATE TABLE keys (name text, key blob)")
+        except:
+            pass
 
-    SQLDefaultKeyDBpath = property(
-        fget=lambda: _altKeyDB,
-        fset=__setupKeyDB,
-        doc=    
+        finally:
+            conn.commit()
+            c.close()
+            self._cryptoDB = conn
+
+    @property
+    def SQLDefaultKeyDBpath(self):
         """
             Connection to the default database used to store Keys.
             Either set a string for sqlite3 database or Connection object for other databases.
         """
-    )
+        return self._cryptoDB 
+    @SQLDefaultKeyDBpath.setter
+    def SQLDefaultKeyDBpath(self, path:str|sqlite3.Connection):
+        if isinstance(path, str):
+            conn = sqlite3.connect(path)
+        else:
+            conn = path
+        c = conn.cursor()
+        try:
+            c.execute("CREATE TABLE keys (name text, key blob)")
+        except:
+            pass
+        finally:
+            conn.commit()
+            c.close()
+            self._altKeyDB = conn
 
-    SQLDefaultUserDBpath = property(
-        fget=lambda: _userDB,
-        fset=__setupUserDB,
-        doc=
+    @property
+    def SQLDefaultUserDBpath(self):
         """
             Connection to the default database used to store User Data.
             Either set a string for sqlite3 database or Connection object for other databases.
         """
-    )
-
-    _cryptoDB:sqlite3.Connection
-    _altKeyDB:sqlite3.Connection
-    _userDB:sqlite3.Connection
+        return self._userDB
+    @SQLDefaultUserDBpath.setter
+    def SQLDefaultUserDBpath(self, path:str|sqlite3.Connection):
+        if isinstance(path,str):
+            conn = sqlite3.connect(path)
+        else:
+            conn = path
+        c = conn.cursor()
+        try:
+            c.execute("CREATE TABLE users (name text, id int)")
+            c.execute("CREATE TABLE pubKeys (name text, key blob)")
+        except:
+            pass
+        finally:
+            conn.commit()
+            c.close()
+            conn.close()
+            self._userDB = conn
 
 configs = configTemp()
 

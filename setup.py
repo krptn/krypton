@@ -14,11 +14,6 @@ with open("README.md","r") as file:
 def finishInstall(install_base):
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
   openssl_fips_conf = "openssl-config/fipsmodule.cnf"
-  temp = os.getcwd()
-
-  try: os.chdir(os.path.join(install_base, "Lib\\site-packages"))
-  except: return
-
   try: 
     open(openssl_fips_conf,"w").close()
     print("Running self-tests for openssl fips validated module")
@@ -35,12 +30,10 @@ def finishInstall(install_base):
     os.chdir("pysec-data")
   except:
     print("Not setting up db")
-    os.chdir(temp)
     return
 
   if pathlib.Path(os.getcwd(),"crypto.db").exists():
     print("Not setting up crypto.db as it already exists")
-    os.chdir(temp)
     return
   conn = sqlite3.connect("crypto.db")
   c = conn.cursor()
@@ -52,7 +45,6 @@ def finishInstall(install_base):
   conn.close()
   if pathlib.Path(os.getcwd(),"altKMS.db").exists():
     print("Not setting up altKMS.db as it already exists")
-    os.chdir(temp)
     return
   conn = sqlite3.connect("altKMS.db")
   c = conn.cursor()
@@ -60,17 +52,23 @@ def finishInstall(install_base):
   conn.commit()
   c.close()
   conn.close()
-  os.chdir(temp)
 
 class completeInstall(install):
   def run(self):
+    temp = os.getcwd()
+    try: os.chdir(os.path.join(self.install_base, "site-packages"))
+    except: os.chdir(os.path.join(self.install_base, "Lib/site-packages"))
     install.run(self)
     finishInstall(self.install_base)
+    os.chdir(temp)
 
 class completeDevelop(develop):
   def run(self):
+    temp = os.getcwd()
+    os.chdir(pathlib.Path(__file__).parent.parent.as_posix())
     develop.run(self)
     finishInstall(self.install_base)
+    os.chdir(temp)
 
 setup(name='pysec',
   version='1.0',
