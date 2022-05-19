@@ -1,3 +1,4 @@
+from datetime import datetime
 import sqlite3
 from typing import List, Tuple
 from . import basic, configs
@@ -41,6 +42,9 @@ class user(metaclass=ABCMeta):
     @abstractmethod
     def encryptWithUserKey(self, data:str|bytes, otherUsers:List[str]) -> bytes:
         pass
+    @abstractmethod
+    def generateNewKeys(self):
+        pass
 
 class standardUser(user):
     _userName:str = ""
@@ -79,6 +83,9 @@ class standardUser(user):
     def login(self, pwd:str, mfaToken:int|None=None):
         keys = basic.kms()
         self.__key = keys.getKey(self.id, pwd)
+        if datetime.now().year - datetime(self.getData("accountCreation")).year > 2: # As specified in https://csrc.nist.gov/Projects/Key-Management/Key-Management-Guidelines
+            self.generateNewKeys()
+            self.setData("accountCreation", datetime.now())
 
     def logout(self):
         pass
@@ -101,6 +108,7 @@ class standardUser(user):
         self.c.execute("INSERT INTO pubKeys VALUES (?, ?)", (self.id, self.pubKey))
         self.setData("userPrivateKey", self.privKey)
         self.setData("userPublicKey", self.pubKey)
+        self.setData("accountCreation", datetime.now())
 
     def decryptWithUserKey(self, data:str|bytes, sender:str) -> bytes:
         key = globals.getSharedKey(self.privKey, sender)
@@ -111,3 +119,6 @@ class standardUser(user):
         results = [globals._restEncrypt(data, key) for key in AESKeys]
         for i in AESKeys: globals.zeromem(i)
         return zip(otherUsers, results)
+
+    def generateNewKeys(self): # Both symetric and Public/Private 
+        pass
