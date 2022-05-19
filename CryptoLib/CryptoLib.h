@@ -12,6 +12,7 @@
 #include <openssl/err.h>
 #include <openssl/encoder.h>
 #include <openssl/decoder.h>
+#include <openssl/applink.c>
 namespace py = pybind11;
 
 // General 
