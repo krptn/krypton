@@ -61,6 +61,9 @@ class standardUser(user):
         
     def setData(self, __name: str, __value: any) -> None:
         self.c.execute(
+            "DELETE FROM {id} WHERE key=?".format(self.id), (__name,)
+        )
+        self.c.execute(
             "INSERT INTO {id} VALUES (? ,?)".format(self.id),
             (__name, __value)
         )
@@ -83,9 +86,9 @@ class standardUser(user):
     def login(self, pwd:str, mfaToken:int|None=None):
         keys = basic.kms()
         self.__key = keys.getKey(self.id, pwd)
-        if datetime.now().year - datetime(self.getData("accountCreation")).year > 2: # As specified in https://csrc.nist.gov/Projects/Key-Management/Key-Management-Guidelines
+        if datetime.now().year - datetime(self.getData("accountCreation")) > 2: # As specified in https://csrc.nist.gov/Projects/Key-Management/Key-Management-Guidelines
             self.generateNewKeys()
-            self.setData("accountCreation", datetime.now())
+            self.setData("accountKeysCreation", datetime.now())
 
     def logout(self):
         pass
@@ -108,7 +111,7 @@ class standardUser(user):
         self.c.execute("INSERT INTO pubKeys VALUES (?, ?)", (self.id, self.pubKey))
         self.setData("userPrivateKey", self.privKey)
         self.setData("userPublicKey", self.pubKey)
-        self.setData("accountCreation", datetime.now())
+        self.setData("accountKeysCreation", datetime.now().year)
 
     def decryptWithUserKey(self, data:str|bytes, sender:str) -> bytes:
         key = globals.getSharedKey(self.privKey, sender)
@@ -121,4 +124,11 @@ class standardUser(user):
         return zip(otherUsers, results)
 
     def generateNewKeys(self): # Both symetric and Public/Private 
-        pass
+        keys = globals.createECCKey()
+        self.pubKey = keys[0]
+        self.privKey = keys[1]
+        self.c.execute("CREATE TABLE {id} (key text, value blob)".format(self.id))
+        self.c.execute("INSERT INTO pubKeys VALUES (?, ?)", (self.id, self.pubKey))
+        self.setData("userPrivateKey", self.privKey)
+        self.setData("userPublicKey", self.pubKey)
+        self.setData("accountKeysCreation", datetime.now().year)

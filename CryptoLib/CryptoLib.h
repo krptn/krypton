@@ -4,15 +4,7 @@
 #pragma once
 
 #include <pybind11/pybind11.h>
-#include <openssl/crypto.h>
-#include <openssl/rand.h>
-#include <string>
-#include <openssl/conf.h>
 #include <openssl/evp.h>
-#include <openssl/err.h>
-#include <openssl/encoder.h>
-#include <openssl/decoder.h>
-#include <openssl/applink.c>
 namespace py = pybind11;
 
 // General 
@@ -27,15 +19,13 @@ py::bytes __cdecl AESEncrypt(char* text, py::bytes key);
 py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key);
 
 //Hashes
-char* __cdecl HASH_FOR_STORAGE(char* text);
 int compHash(const void* a, const void* b, const size_t size);
-py::bytes __cdecl getKeyFromPass(char* pwd);
-char* __cdecl PBKDF2(char* text, char* salt);
-char* __cdecl hashForStorage(char* text);
+char* __cdecl PBKDF2(char* text, char* salt, int iter);
+py::bytes __cdecl pySHA512(char* text);
 
 //ECC
 std::tuple<py::bytes, py::bytes> __cdecl createECCKey();
-py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey);
+py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey, py::bytes salt, int iter);
 int getPubKey(EVP_PKEY *pkey, char* out);
 int getPrivKey(EVP_PKEY *pkey, char* out);
 int setPubKey(EVP_PKEY *pkey, char* key, int len);

@@ -87,7 +87,7 @@ std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
 	return finalTuple;
 };
 
-py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey){
+py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey, py::bytes salt, int iter){
 	int secret_len = 32;
 	EVP_PKEY* pkey;
 	char privk = privKey.cast<char>();
@@ -106,7 +106,8 @@ py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey){
 	EVP_PKEY_free(peerkey);
 	EVP_PKEY_free(pkey);
 	char* pwd = base64(secret.get(), secret_len);
-	py::bytes key = getKeyFromPass((char*)pwd);
+	char C_salt = salt.cast<char>();
+	py::bytes key = PBKDF2((char*)pwd, &C_salt, iter);
 	delete[] pwd;
 	return key;
 };

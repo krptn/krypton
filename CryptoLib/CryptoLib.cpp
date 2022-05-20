@@ -1,9 +1,6 @@
 ﻿#include "CryptoLib.h"
 #include <pybind11/pybind11.h>
 #include <openssl/provider.h>
-#include <openssl/crypto.h>
-#include <openssl/rand.h>
-#include <openssl/conf.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
 #include <openssl/applink.c>
@@ -82,8 +79,7 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
-	m.def("hashForStorage", &hashForStorage, "Securely hashes the text", py::arg("text"));
-	m.def("getKeyFromPass", &getKeyFromPass, "Uses PBKDF2 to get the crypto key from the password.", py::arg("pwd"));
+	m.def("sha512", &pySHA512, "Hashes text with sha512", py::arg("text"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
 	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"));
 	m.def("fipsInit",&fipsInit,"Initialises openssl FIPS module.");
@@ -91,4 +87,4 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("getECCSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"));
 	m.def("base64encode", &base64, "Base 64 encode data with length.", py::arg("data"), py::arg("length"));
 	m.def("base64decode", &py_decode64, "Base 64 decode data with length.", py::arg("data"), py::arg("length"));
-}
+};

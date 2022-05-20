@@ -1,5 +1,6 @@
 import pathlib
 from setuptools import setup
+from glob import glob
 from setuptools.command.install import install
 from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
@@ -103,8 +104,8 @@ setup(name='pysec',
     'install': completeInstall,
     'develop':completeDevelop
   },
-  ext_modules=[Pybind11Extension('__CryptoLib', 
-    ['CryptoLib/CryptoLib.cpp', 'CryptoLib/aes.cpp', 'CryptoLib/ecc.cpp', 'CryptoLib/hashes.cpp'], 
+  ext_modules=[Pybind11Extension('__CryptoLib',
+    sorted(glob("CryptoLib/*.cpp")), 
     include_dirs=["openssl-install/include","CryptoLib"],
     library_dirs=["openssl-install/lib"],
     libraries=["libcrypto"])]
