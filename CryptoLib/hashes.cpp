@@ -21,13 +21,15 @@ char* __cdecl PBKDF2(char* text, char* salt, int iter) {
 		throw std::invalid_argument("Unable to hash data.");
 	}
 	return key;
-};
+}
 
 py::bytes __cdecl pySHA512(py::bytes text) {
 	char result[64];
-	int len = 64;
-	EVP_Q_digest(NULL, "sha512", NULL, text.cast<char*>(), 
+	int len;
+	char c_text = text.cast<char>();
+	EVP_Q_digest(NULL, "sha512", NULL, &c_text, 
 		text.attr("__len__")().cast<int>(), (unsigned char*)&result, 
 		(size_t *)&len);
-	py::bytes result = py::bytes(result, 64);
+	py::bytes bytes_result = py::bytes((const char*)&result, len);
+	return bytes_result;
 }

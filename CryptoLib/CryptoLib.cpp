@@ -3,7 +3,6 @@
 #include <openssl/provider.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
-#include <openssl/applink.c>
 
 using namespace std;
 namespace py = pybind11;
@@ -81,10 +80,11 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 	m.def("sha512", &pySHA512, "Hashes text with sha512", py::arg("text"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
-	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"));
-	m.def("fipsInit",&fipsInit,"Initialises openssl FIPS module.");
+	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"), py::arg("iter"));
+	m.def("fipsInit", &fipsInit,"Initialises openssl FIPS module.");
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
-	m.def("getECCSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"));
+	m.def("getECCSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"), 
+		py::arg("salt"), py::arg("iter"));
 	m.def("base64encode", &base64, "Base 64 encode data with length.", py::arg("data"), py::arg("length"));
 	m.def("base64decode", &py_decode64, "Base 64 decode data with length.", py::arg("data"), py::arg("length"));
-};
+}

@@ -5,6 +5,7 @@
 
 #include <pybind11/pybind11.h>
 #include <openssl/evp.h>
+
 namespace py = pybind11;
 
 // General 
@@ -18,12 +19,12 @@ void handleErrors();
 py::bytes __cdecl AESEncrypt(char* text, py::bytes key);
 py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key);
 
-//Hashes
+// Hashes
 int compHash(const void* a, const void* b, const size_t size);
 char* __cdecl PBKDF2(char* text, char* salt, int iter);
-py::bytes __cdecl pySHA512(char* text);
+py::bytes __cdecl pySHA512(py::bytes text);
 
-//ECC
+// ECC
 std::tuple<py::bytes, py::bytes> __cdecl createECCKey();
 py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey, py::bytes salt, int iter);
 int getPubKey(EVP_PKEY *pkey, char* out);

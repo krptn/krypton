@@ -6,69 +6,36 @@ from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
 import os
 import sys
-import sqlite3
 
 description = ""
 with open("README.md","r") as file:
   description=file.read()
 
-def finishInstall(install_base):
+def finishInstall():
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
   openssl_fips_conf = "openssl-config/fipsmodule.cnf"
-  try: 
-    open(openssl_fips_conf,"w").close()
-    print("Running self-tests for openssl fips validated module")
-    os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
-      .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
-  except:
-    print("Not doing openssl self-test. Please perform these manually.")
-
-  try:
+  open(openssl_fips_conf,"w").close()
+  print("Running self-tests for openssl fips validated module")
+  os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
+    .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
+  if not pathlib.Path(os.getcwd(), "pysec-data/").exists():
     os.mkdir("pysec-data")
-  except:
-    pass
-  try:
-    os.chdir("pysec-data")
-  except:
-    print("Not setting up db")
-    return
-
-  if pathlib.Path(os.getcwd(),"crypto.db").exists():
-    print("Not setting up crypto.db as it already exists")
-    return
-  conn = sqlite3.connect("crypto.db")
-  c = conn.cursor()
-  c.execute("CREATE TABLE crypto (id int, ctext blob)")
-  c.execute("INSERT INTO crypto VALUES (?, ?)", (0, b"Position Reserved"))
-  c.execute("CREATE TABLE keys (name text, key blob)")
-  conn.commit()
-  c.close()
-  conn.close()
-  if pathlib.Path(os.getcwd(),"altKMS.db").exists():
-    print("Not setting up altKMS.db as it already exists")
-    return
-  conn = sqlite3.connect("altKMS.db")
-  c = conn.cursor()
-  c.execute("CREATE TABLE keys (name text, key blob)")
-  conn.commit()
-  c.close()
-  conn.close()
 
 class completeInstall(install):
   def run(self):
     temp = os.getcwd()
+    install.run(self)
     try: os.chdir(os.path.join(self.install_base, "site-packages"))
     except: os.chdir(os.path.join(self.install_base, "Lib/site-packages"))
-    install.run(self)
-    finishInstall(self.install_base)
+    finishInstall()
     os.chdir(temp)
 
 class completeDevelop(develop):
   def run(self):
     temp = os.getcwd()
-    os.chdir(pathlib.Path(__file__).parent.parent.as_posix())
     develop.run(self)
-    finishInstall(self.install_base)
+    os.chdir(pathlib.Path(__file__).parent.as_posix())
+    finishInstall()
     os.chdir(temp)
 
 setup(name='pysec',
@@ -80,11 +47,11 @@ setup(name='pysec',
   author_email='mark.barsisiminszky@outlook.com',
   url='https://github.com/mbs9org/PySec',
   project_urls={
-    "Bug Tracker": "https://github.com/mbs9org/PySec/issues",
+    'Bug Tracker': "https://github.com/mbs9org/PySec/issues",
   },
   classifiers=[
-      "License :: OSI Approved :: Apache Software License",
-      "Operating System :: OS Independent",
+      'License :: OSI Approved :: Apache Software License',
+      'Operating System :: OS Independent',
       'Intended Audience :: Developers',
       'Intended Audience :: System Administrators',
       'Topic :: Security',
@@ -105,7 +72,7 @@ setup(name='pysec',
     'develop':completeDevelop
   },
   ext_modules=[Pybind11Extension('__CryptoLib',
-    sorted(glob("CryptoLib/*.cpp")), 
+    ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp", "CryptoLib/hashes.cpp", "openssl-install/include/openssl/applink.c"],
     include_dirs=["openssl-install/include","CryptoLib"],
     library_dirs=["openssl-install/lib"],
     libraries=["libcrypto"])]
