@@ -1,7 +1,6 @@
 ﻿import os
 import pathlib
 import sqlite3
-import shutil
 
 version = "1"
 
@@ -43,7 +42,7 @@ class configTemp():
         try:
             c.execute("CREATE TABLE crypto (id int, ctext blob)")
             c.execute("INSERT INTO crypto VALUES (?, ?)", (0, b"Position Reserved"))
-            c.execute("CREATE TABLE keys (name text, key blob)")
+            c.execute("CREATE TABLE keys (name text, key blob, salt blob)")
         except:
             pass
 
@@ -67,7 +66,7 @@ class configTemp():
             conn = path
         c = conn.cursor()
         try:
-            c.execute("CREATE TABLE keys (name text, key blob)")
+            c.execute("CREATE TABLE keys (name text, key blob, salt blob)")
         except:
             pass
         finally:
@@ -105,3 +104,20 @@ configs = configTemp()
 configs.SQLDefaultCryptoDBpath = os.path.join(sitePackage, "pysec-data/crypto.db")
 configs.SQLDefaultKeyDBpath = os.path.join(sitePackage, "pysec-data/altKMS.db")
 configs.SQLDefaultUserDBpath = os.path.join(sitePackage, "pysec-data/users.db")
+
+open(OPENSSL_CONFIG_FILE, "w").write("""
+config_diagnostics = 1
+openssl_conf = openssl_init
+
+.include fipsmodule.cnf
+
+[openssl_init]
+providers = provider_sect
+
+[provider_sect]
+fips = fips_sect
+base = base_sect
+
+[base_sect]
+activate = 1
+""")

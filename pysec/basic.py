@@ -3,24 +3,24 @@ import sqlite3
 from . import configs
 SQLDefaultCryptoDBpath:sqlite3.Connection = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath:sqlite3.Connection = configs.SQLDefaultKeyDBpath
-from .globals import _restEncrypt, _restDecrypt, zeromem, _getKey
+from .globals import _restEncrypt, _restDecrypt, zeromem, PBKDF2
 
 class kms():
-    def __cipher(self,text, pwd):
+    def __cipher(self,text, pwd, salt):
         if self._masterHSM:
             pass
         else:
-            key = _getKey(pwd)
+            key = PBKDF2(pwd, salt, 100000)
             r = _restEncrypt(text, key)
             zeromem(key)
             return r
  #Will also need to check the level of HSM: only master key or all keys. 
-    def __decipher(self, ctext:str|bytes, pwd:str|bytes):
+    def __decipher(self, ctext:str|bytes, pwd:str|bytes, salt):
         if self.hsmEnabled:
             pass
         else:
-            key = _getKey(pwd)
-            r = _restDecrypt(ctext, _getKey(pwd))
+            key = PBKDF2(pwd, salt, 100000)
+            r = _restDecrypt(ctext, key)
             zeromem(key)
             return r
     
@@ -35,9 +35,9 @@ class kms():
         pass
 
     def getKey(self, name:str, pwd:str|bytes=None) -> bytes:
-        self.c.execute("SELECT key FROM keys WHERE name == ?",(name,)) 
-        key = self.c.fetchone()[0]
-        r = self.__decipher(key, pwd)
+        self.c.execute("SELECT * FROM keys WHERE name == ?",(name,)) 
+        key = self.c.fetchone()
+        r = self.__decipher(key[1], pwd, key[2])
         return r
 
     def createNewKey(self, name:str, pwd:str|bytes=None) -> str:
@@ -45,8 +45,9 @@ class kms():
         if self.c.fetchone() != None:
             raise ValueError("Such a name already exists")
         k = os.urandom(32)
-        k = self.__cipher(k, pwd)
-        self.c.execute("INSERT INTO keys VALUES (?, ?)", (name, k))
+        s = os.urandom(12)
+        k = self.__cipher(k, pwd, s)
+        self.c.execute("INSERT INTO keys VALUES (?, ?, ?)", (name, k, s))
         self.keydb.commit()
         return k
     

@@ -1,28 +1,36 @@
 import unittest
-from pysec.basic import crypto
+from pysec.basic import crypto, kms
 from pysec import globals
 import os
 
 TEST_PWD = "Example"
 TEST_TEXT = "Example"
 UPDATE_TEST_TEXT = "Example2"
-class TestSecureStoreClass(unittest.TestCase):
 
-    def WriteRead(self):
+class TestKMS(unittest.TestCase):
+    def test(self):
+        id = os.urandom(32)
+        i = kms()
+        i.createNewKey(id, "Example")
+        self.assertEqual(len(i.getKey(id, 'Example')), 32)
+        i.removeKey(id, "Example")
+
+class testCryptoClass(unittest.TestCase):
+    def testWriteRead(self):
         test = crypto()
         a = test.secureCreate(TEST_TEXT,TEST_PWD)
         b = test.secureRead(a,TEST_PWD)
         test.secureDelete(a, TEST_PWD)
         self.assertEqual(TEST_TEXT,b)
     
-    def WriteUpdateRead(self):
+    def testWriteUpdateRead(self):
         test = crypto()
         a = test.secureCreate(TEST_TEXT, TEST_PWD)
         test.secureUpdate(a,UPDATE_TEST_TEXT,TEST_PWD)
         b = test.secureRead(a,TEST_PWD)
         self.assertEqual(UPDATE_TEST_TEXT,b)
     
-    def WriteDelete(self):
+    def testWriteDelete(self):
         test = crypto()
         a = test.secureCreate(TEST_TEXT, TEST_PWD)
         test.secureDelete(a, TEST_PWD)
@@ -39,8 +47,8 @@ class TestSecureStoreClass(unittest.TestCase):
 class TestCryptographicUnits(unittest.TestCase):
     def testAES(self):
         k = os.urandom(32)
-        r = globals._restEncrypt(k, "Hello")
-        fr = globals._restDecrypt(k, r)
+        r = globals._restEncrypt("Hello", k)
+        fr = globals._restDecrypt(r, k)
         self.assertEqual(fr, "Hello")
     def testKDF(self):
         kb = globals._getKey("abcdrf")

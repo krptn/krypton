@@ -10,9 +10,9 @@ namespace py = pybind11;
 
 // General 
 int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen);
-unsigned char *decode64(const char *input, int length);
-char *base64(const unsigned char *input, int length);
-py::bytes py_decode64(const char *input, int length);
+unsigned char *decode64(char* input, int length);
+char* base64(char* data, int length);
+py::bytes py_decode64(const char* input, int length);
 void handleErrors();
 
 // AES

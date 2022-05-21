@@ -44,15 +44,15 @@ int compHash(const void* a, const void* b, const size_t size)
 	return result; /* returns 0 if equal, nonzero otherwise */
 }
 
-char *base64(const unsigned char *input, int length) {
+char* base64(char* data, int length) {
   const auto pl = 4*((length+2)/3);
   char* output = new char[pl+1];
-  const auto ol = EVP_EncodeBlock(reinterpret_cast<unsigned char *>(output), input, length);
+  const auto ol = EVP_EncodeBlock(reinterpret_cast<unsigned char *>(output), (const unsigned char*)data, length);
   output[length] = '\0';
   return output;
 }
 
-unsigned char *decode64(const char *input, int length) {
+unsigned char *decode64(char* input, int length) {
   const auto pl = 3*length/4;
   unsigned char* output = new unsigned char[pl+1];
   const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
@@ -60,7 +60,7 @@ unsigned char *decode64(const char *input, int length) {
   return output;
 }
 
-py::bytes py_decode64(const char *input, int length) {
+py::bytes py_decode64(const char* input, int length) {
   const auto pl = 3*length/4;
   unsigned char* output = new unsigned char[pl+1];
   const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);

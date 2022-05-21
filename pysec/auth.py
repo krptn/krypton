@@ -103,7 +103,7 @@ class standardUser(user):
         pass
     
     def __saveNewUser(self):
-        self.id = globals.base64encode(globals._getKey(self._userName), 32)
+        self.id = globals.base64encode(globals._getKey(self._userName))
         keys = globals.createECCKey()
         self.pubKey = keys[0]
         self.privKey = keys[1]
