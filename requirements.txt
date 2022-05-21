@@ -3,5 +3,5 @@ colorama==0.4.4
 packaging==21.3
 pep517==0.12.0
 pybind11==2.9.2
-pyparsing==3.0.8
+pyparsing==3.0.9
 tomli==2.0.1
