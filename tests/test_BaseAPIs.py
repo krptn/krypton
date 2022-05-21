@@ -7,7 +7,7 @@ TEST_PWD = "Example"
 TEST_TEXT = "Example"
 UPDATE_TEST_TEXT = "Example2"
 
-class TestKMS(unittest.TestCase):
+class testKMS(unittest.TestCase):
     def test(self):
         id = os.urandom(32)
         i = kms()
@@ -44,7 +44,7 @@ class testCryptoClass(unittest.TestCase):
         else:
             self.assertFalse(True)
 
-class TestCryptographicUnits(unittest.TestCase):
+class testCryptographicUnits(unittest.TestCase):
     def testAES(self):
         k = os.urandom(32)
         r = base._restEncrypt("Hello", k)
@@ -68,7 +68,7 @@ class TestCryptographicUnits(unittest.TestCase):
         t = base.base64decode(b64)
         self.assertEqual(text, t.decode())
 """
-class TestUserAuth(unittest.TestCase):
+class testUserAuth(unittest.TestCase):
     pass
 """
 if __name__ == "__main__":
