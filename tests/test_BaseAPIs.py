@@ -1,6 +1,6 @@
 import unittest
 from pysec.basic import crypto, kms
-from pysec import globals
+from pysec import base
 import os
 
 TEST_PWD = "Example"
@@ -47,25 +47,25 @@ class testCryptoClass(unittest.TestCase):
 class TestCryptographicUnits(unittest.TestCase):
     def testAES(self):
         k = os.urandom(32)
-        r = globals._restEncrypt("Hello", k)
-        fr = globals._restDecrypt(r, k)
+        r = base._restEncrypt("Hello", k)
+        fr = base._restDecrypt(r, k)
         self.assertEqual(fr, "Hello")
     def testPBKDF2(self):
-        kb = globals.PBKDF2("abcdrf", os.urandom(12), 100000)
+        kb = base.PBKDF2("abcdrf", os.urandom(12), 100000)
         self.assertIsInstance(kb, bytes)
         self.assertEqual(len(kb), 32)
     def testECCKeyGen(self):
-        keys = globals.createECCKey()
-        self.assertIs(len(keys[0]) > 2 and len(keys[1]) > 2)
+        keys = base.createECCKey()
+        self.assertTrue(len(keys[0]) > 2 and len(keys[1]) > 2)
     def testECDH(self):
-        keys = globals.createECCKey()
-        keys2 = globals.createECCKey()
-        key = globals.getSharedKey(keys[1], keys2[0])
+        keys = base.createECCKey()
+        keys2 = base.createECCKey()
+        key = base.getSharedKey(keys[1], keys2[0])
         self.assertEqual(len(key), 32)
     def testBase64(self):
         text = "fdgdfgfdgdfsr"
-        b64 = globals.base64encode(text)
-        t = globals.base64decode(b64)
+        b64 = base.base64encode(text)
+        t = base.base64decode(b64)
         self.assertEqual(text, t.decode())
 """
 class TestUserAuth(unittest.TestCase):

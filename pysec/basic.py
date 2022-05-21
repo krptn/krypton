@@ -3,7 +3,7 @@ import sqlite3
 from . import configs
 SQLDefaultCryptoDBpath:sqlite3.Connection = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath:sqlite3.Connection = configs.SQLDefaultKeyDBpath
-from .globals import _restEncrypt, _restDecrypt, zeromem, PBKDF2
+from .base import _restEncrypt, _restDecrypt, zeromem, PBKDF2
 
 class kms():
     def __cipher(self,text, pwd, salt):

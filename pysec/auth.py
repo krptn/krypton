@@ -4,7 +4,7 @@ from typing import List, Tuple
 from . import basic, configs
 SQLDefaultUserDBpath = configs.SQLDefaultUserDBpath
 from abc import ABCMeta, abstractmethod
-from . import globals
+from . import base
 
 class user(metaclass=ABCMeta):
     _userName:str
@@ -103,8 +103,8 @@ class standardUser(user):
         pass
     
     def __saveNewUser(self):
-        self.id = globals.base64encode(globals._getKey(self._userName))
-        keys = globals.createECCKey()
+        self.id = base.base64encode(base._getKey(self._userName))
+        keys = base.createECCKey()
         self.pubKey = keys[0]
         self.privKey = keys[1]
         self.c.execute("CREATE TABLE {id} (key text, value blob)".format(self.id))
@@ -114,17 +114,17 @@ class standardUser(user):
         self.setData("accountKeysCreation", datetime.now().year)
 
     def decryptWithUserKey(self, data:str|bytes, sender:str) -> bytes:
-        key = globals.getSharedKey(self.privKey, sender)
+        key = base.getSharedKey(self.privKey, sender)
         
     
     def encryptWithUserKey(self, data:str|bytes, otherUsers:List[str]) -> List[Tuple[str, bytes]]:
-        AESKeys = [globals.getSharedKey(self.privKey, name) for name in otherUsers]
-        results = [globals._restEncrypt(data, key) for key in AESKeys]
-        for i in AESKeys: globals.zeromem(i)
+        AESKeys = [base.getSharedKey(self.privKey, name) for name in otherUsers]
+        results = [base._restEncrypt(data, key) for key in AESKeys]
+        for i in AESKeys: base.zeromem(i)
         return zip(otherUsers, results)
 
     def generateNewKeys(self): # Both symetric and Public/Private 
-        keys = globals.createECCKey()
+        keys = base.createECCKey()
         self.pubKey = keys[0]
         self.privKey = keys[1]
         self.c.execute("CREATE TABLE {id} (key text, value blob)".format(self.id))

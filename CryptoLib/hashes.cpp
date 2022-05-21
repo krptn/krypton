@@ -23,6 +23,18 @@ char* __cdecl PBKDF2(char* text, char* salt, int iter, int saltLen) {
 	return key;
 }
 
+py::bytes __cdecl pyPBKDF2(char* text, char* salt, int iter, int saltLen) {
+	char* key = new char[AES_KEY_LEN];
+	int len = strlen(text);
+	int a;
+	a = PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt, saltLen, iter, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)key);
+	OPENSSL_cleanse(text, len);
+	if (a != 1) {
+		throw std::invalid_argument("Unable to hash data.");
+	}
+	return py::bytes(key, AES_KEY_LEN);
+}
+
 py::bytes __cdecl pySHA512(py::bytes text) {
 	char result[64];
 	int len;

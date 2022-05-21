@@ -53,6 +53,7 @@ To install the extension and produce debuging symbols use:
 pip install -e .
 python setup.py build_ext --debug --inplace 
 ```
+To rebuild the extension (e.g: you made changes to the code), only run the second command. 
 
 To install the extension and not produce debuging symbols:
 ```shell
