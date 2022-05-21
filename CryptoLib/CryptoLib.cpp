@@ -3,11 +3,13 @@
 #include <openssl/provider.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
+#include <openssl/conf.h> 
 
 using namespace std;
 namespace py = pybind11;
 
 OSSL_PROVIDER *fips;
+OSSL_PROVIDER *base;
 
 bool fipsInit()
 {
@@ -17,6 +19,14 @@ bool fipsInit()
 		throw std::runtime_error("Failed to load fips provider.");
 		return false; 
 	}
+	EVP_set_default_properties(NULL, "fips=yes");
+
+	base = OSSL_PROVIDER_load(NULL, "base");
+    if (base == NULL) {
+		ERR_print_errors_fp(stderr);
+		throw std::runtime_error("Failed to load fips provider.");
+		return false; 
+    }
 	return true;
 }
 

@@ -1,6 +1,7 @@
 ﻿import os
 import pathlib
 import sqlite3
+import shutil
 
 version = "1"
 

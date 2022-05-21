@@ -1,6 +1,5 @@
 import pathlib
 from setuptools import setup
-from glob import glob
 from setuptools.command.install import install
 from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
@@ -25,8 +24,8 @@ class completeInstall(install):
   def run(self):
     temp = os.getcwd()
     install.run(self)
-    try: os.chdir(os.path.join(self.install_base, "site-packages"))
-    except: os.chdir(os.path.join(self.install_base, "Lib/site-packages"))
+    try: os.chdir(os.path.join(self.install_base, "site-packages/"))
+    except: os.chdir(os.path.join(self.install_base, "Lib/site-packages/"))
     finishInstall()
     os.chdir(temp)
 
@@ -72,7 +71,8 @@ setup(name='pysec',
     'develop':completeDevelop
   },
   ext_modules=[Pybind11Extension('__CryptoLib',
-    ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp", "CryptoLib/hashes.cpp", "openssl-install/include/openssl/applink.c"],
+    ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp", 
+      "CryptoLib/hashes.cpp", "openssl-install/include/openssl/applink.c"],
     include_dirs=["openssl-install/include","CryptoLib"],
     library_dirs=["openssl-install/lib"],
     libraries=["libcrypto"])]

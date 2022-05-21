@@ -5,3 +5,4 @@ include openssl-install/lib/ossl-modules/fips.dll
 include openssl-install/bin/openssl.exe
 graft openssl-config
 graft CryptoLib
+include openssl.cnf 
