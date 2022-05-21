@@ -13,8 +13,6 @@ with open("README.md","r") as file:
 def finishInstall():
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
   openssl_fips_conf = "openssl-config/fipsmodule.cnf"
-  open(openssl_fips_conf,"w").close()
-  print("Running self-tests for openssl fips validated module")
   os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
     .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
   if not pathlib.Path(os.getcwd(), "pysec-data/").exists():

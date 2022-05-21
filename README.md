@@ -50,8 +50,8 @@ perl Configure --prefix="C:\Users\markb\source\repos\PySec\openssl-install" --op
 
 To install the extension and produce debuging symbols use: 
 ```shell
-python setup.py build_ext --debug
 pip install -e .
+python setup.py build_ext --debug --inplace 
 ```
 
 To install the extension and not produce debuging symbols:

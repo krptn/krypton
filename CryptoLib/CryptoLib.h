@@ -21,7 +21,7 @@ py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key);
 
 // Hashes
 int compHash(const void* a, const void* b, const size_t size);
-char* __cdecl PBKDF2(char* text, char* salt, int iter);
+char* __cdecl PBKDF2(char* text, char* salt, int iter, int saltLen);
 py::bytes __cdecl pySHA512(py::bytes text);
 
 // ECC

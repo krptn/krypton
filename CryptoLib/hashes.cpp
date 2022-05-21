@@ -11,11 +11,11 @@ const int AES_KEY_LEN = 32;
 const int IV_SALT_LEN = 12;
 const auto PBKDF2_HASH_ALGO = EVP_sha512;
 
-char* __cdecl PBKDF2(char* text, char* salt, int iter) {
+char* __cdecl PBKDF2(char* text, char* salt, int iter, int saltLen) {
 	char* key = new char[AES_KEY_LEN];
 	int len = strlen(text);
 	int a;
-	a = PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt, IV_SALT_LEN, iter, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)key);
+	a = PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt, saltLen, iter, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)key);
 	OPENSSL_cleanse(text, len);
 	if (a != 1) {
 		throw std::invalid_argument("Unable to hash data.");

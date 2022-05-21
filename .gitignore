@@ -10,6 +10,7 @@ Data
 PySec.key 
 pysec-*/
 *.db
+CppProperties.json
 
 #Machine specific files
 CMakeSettings.json

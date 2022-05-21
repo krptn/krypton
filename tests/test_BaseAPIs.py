@@ -50,9 +50,10 @@ class TestCryptographicUnits(unittest.TestCase):
         r = globals._restEncrypt("Hello", k)
         fr = globals._restDecrypt(r, k)
         self.assertEqual(fr, "Hello")
-    def testKDF(self):
-        kb = globals._getKey("abcdrf")
+    def testPBKDF2(self):
+        kb = globals.PBKDF2("abcdrf", os.urandom(12), 100000)
         self.assertIsInstance(kb, bytes)
+        self.assertEqual(len(kb), 32)
     def testECCKeyGen(self):
         keys = globals.createECCKey()
         self.assertIs(len(keys[0]) > 2 and len(keys[1]) > 2)
@@ -65,7 +66,7 @@ class TestCryptographicUnits(unittest.TestCase):
         text = "fdgdfgfdgdfsr"
         b64 = globals.base64encode(text)
         t = globals.base64decode(b64)
-        self.assertEqual(text, t)
+        self.assertEqual(text, t.decode())
 """
 class TestUserAuth(unittest.TestCase):
     pass

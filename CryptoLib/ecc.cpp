@@ -107,7 +107,7 @@ py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey, py::bytes sa
 	EVP_PKEY_free(pkey);
 	char* pwd = base64((char*)secret.get(), secret_len);
 	char C_salt = salt.cast<char>();
-	py::bytes key = PBKDF2((char*)pwd, &C_salt, iter);
+	py::bytes key = PBKDF2((char*)pwd, &C_salt, iter, salt.attr("__len__")().cast<int>());
 	delete[] pwd;
 	return key;
 };

@@ -45,27 +45,33 @@ int compHash(const void* a, const void* b, const size_t size)
 }
 
 char* base64(char* data, int length) {
-  const auto pl = 4*((length+2)/3);
-  char* output = new char[pl+1];
-  const auto ol = EVP_EncodeBlock(reinterpret_cast<unsigned char *>(output), (const unsigned char*)data, length);
-  output[length] = '\0';
-  return output;
+	int pl;
+	if (length%3 == 0) {
+		pl = length*4;
+	} else {
+		pl = 4*((length+(3-(length%3)))/3);
+	}
+	char* output = new char[pl+1];
+	const auto ol = EVP_EncodeBlock(reinterpret_cast<unsigned char *>(output), (const unsigned char*)data, length);
+	output[pl] = '\0';
+	return output;
 }
 
 unsigned char *decode64(char* input, int length) {
-  const auto pl = 3*length/4;
-  unsigned char* output = new unsigned char[pl+1];
-  const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
-  output[length] = '\0';
-  return output;
+	const auto pl = (length/4)*3;
+	unsigned char* output = new unsigned char[pl+1];
+	const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
+	output[pl] = '\0';
+	return output;
 }
 
 py::bytes py_decode64(const char* input, int length) {
-  const auto pl = 3*length/4;
-  unsigned char* output = new unsigned char[pl+1];
-  const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
-  py::bytes result = py::bytes((const char*)output, length);
-  return result;
+	const auto pl = (length/4)*3;
+	unsigned char* output = new unsigned char[pl+1];
+	const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
+	output[pl] = '\0';
+	py::bytes result = py::bytes((const char*)output, pl);
+	return result;
 }
 
 void handleErrors() {
@@ -90,7 +96,7 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 	m.def("sha512", &pySHA512, "Hashes text with sha512", py::arg("text"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
-	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"), py::arg("iter"));
+	m.def("PBKDF2", &PBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"), py::arg("iter"), py::arg("saltLen"));
 	m.def("fipsInit", &fipsInit,"Initialises openssl FIPS module.");
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("getECCSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"), 
