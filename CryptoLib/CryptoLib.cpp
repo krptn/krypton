@@ -44,6 +44,18 @@ int compHash(const void* a, const void* b, const size_t size)
 	return result; /* returns 0 if equal, nonzero otherwise */
 }
 
+char* pymbToBuffer(py::bytes a) {
+	py::iterator it = a.begin();
+	char* buf = new char[a.attr("__len__")().cast<int>()];
+	int i = 0;
+	while (it != py::iterator::sentinel()){
+		buf[i] = (char)(*it).cast<char>();
+		++i;
+		++it;
+	};
+	return buf;
+}
+
 char* base64(char* data, int length) {
 	int pl;
 	if (length%3 == 0) {

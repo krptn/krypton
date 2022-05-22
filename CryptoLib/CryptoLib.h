@@ -14,6 +14,7 @@ unsigned char *decode64(char* input, int length);
 char* base64(char* data, int length);
 py::bytes py_decode64(const char* input, int length);
 void handleErrors();
+char* pymbToBuffer(py::bytes a);
 
 // AES
 py::bytes __cdecl AESEncrypt(char* text, py::bytes key);
@@ -26,7 +27,7 @@ py::bytes pyPBKDF2(char* text, char* salt, int iter, int saltLen);
 py::bytes __cdecl pySHA512(py::bytes text);
 
 // ECC
-std::tuple<py::bytes, py::bytes> __cdecl createECCKey();
+py::tuple __cdecl createECCKey();
 py::bytes __cdecl getSharedKey(py::bytes privKey, py::bytes pubKey, py::bytes salt, int iter);
 int getPubKey(EVP_PKEY *pkey, char* out);
 int getPrivKey(EVP_PKEY *pkey, char* out);

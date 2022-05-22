@@ -12,6 +12,7 @@ const int IV_SALT_LEN = 12;
 const auto PBKDF2_HASH_ALGO = EVP_sha512;
 
 char* __cdecl PBKDF2(char* text, char* salt, int iter, int saltLen) {
+	py::gil_scoped_release release;
 	char* key = new char[AES_KEY_LEN];
 	int len = strlen(text);
 	int a;
@@ -20,10 +21,12 @@ char* __cdecl PBKDF2(char* text, char* salt, int iter, int saltLen) {
 	if (a != 1) {
 		throw std::invalid_argument("Unable to hash data.");
 	}
+	py::gil_scoped_acquire acquire;
 	return key;
 }
 
 py::bytes __cdecl pyPBKDF2(char* text, char* salt, int iter, int saltLen) {
+	py::gil_scoped_release release;
 	char* key = new char[AES_KEY_LEN];
 	int len = strlen(text);
 	int a;
@@ -32,13 +35,14 @@ py::bytes __cdecl pyPBKDF2(char* text, char* salt, int iter, int saltLen) {
 	if (a != 1) {
 		throw std::invalid_argument("Unable to hash data.");
 	}
+	py::gil_scoped_acquire acquire;
 	return py::bytes(key, AES_KEY_LEN);
 }
 
 py::bytes __cdecl pySHA512(py::bytes text) {
 	char result[64];
 	int len;
-	char c_text = text.cast<char>();
+	char c_text = text.begin().cast<char>();
 	EVP_Q_digest(NULL, "sha512", NULL, &c_text, 
 		text.attr("__len__")().cast<int>(), (unsigned char*)&result, 
 		(size_t *)&len);

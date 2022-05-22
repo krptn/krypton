@@ -56,7 +56,7 @@ int setPrivKey(EVP_PKEY *pkey, char* key, int len){
 	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len)) handleErrors();
 	return 1;
 }
-std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
+py::tuple __cdecl createECCKey() {
 	unsigned char* pubResult;
 	unsigned char* privResult;
 	EVP_PKEY_CTX *ctx;
@@ -83,7 +83,7 @@ std::tuple<py::bytes, py::bytes> __cdecl createECCKey() {
 	delete[] privResult;
 	EVP_PKEY_CTX_free(ctx);
 	EVP_PKEY_free(pkey);
-	tuple<py::bytes, py::bytes> finalTuple(pr, r);
+	py::tuple finalTuple = py::make_tuple(r, pr);
 	return finalTuple;
 };
 
