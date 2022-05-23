@@ -9,9 +9,9 @@ __CryptoLib.fipsInit() #Load FIPS Validated resolver
 
 #Wrappers for __CryptoLib to help intelisense automatically figure out function arguments, etc..
 def _restEncrypt(data:str|bytes, key:bytes) -> bytes:
-    return __CryptoLib.AESEncrypt(data, key)
+    return __CryptoLib.AESEncrypt(data, key, len(data))
 def _restDecrypt(data:bytes, key:bytes) -> bytes:
-    return __CryptoLib.AESDecrypt(data, bytes)
+    return __CryptoLib.AESDecrypt(data, key)
 def base64encode(data:str|bytes) -> str:
     return __CryptoLib.base64encode(data, len(data))
 def base64decode(data:str|bytes) -> bytes|str:

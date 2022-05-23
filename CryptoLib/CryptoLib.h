@@ -17,7 +17,7 @@ void handleErrors();
 char* pymbToBuffer(py::bytes a);
 
 // AES
-py::bytes __cdecl AESEncrypt(char* text, py::bytes key);
+py::bytes __cdecl AESEncrypt(char* textc, py::bytes key, int msglenc);
 py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key);
 
 // Hashes
