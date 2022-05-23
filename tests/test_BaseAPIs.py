@@ -11,8 +11,9 @@ class testKMS(unittest.TestCase):
     def test(self):
         id = os.urandom(32)
         i = kms()
-        i.createNewKey(id, "Example")
+        k = i.createNewKey(id, "Example")
         self.assertEqual(len(i.getKey(id, 'Example')), 32)
+        self.assertEqual(k, i.getKey(id, 'Example'))
         i.removeKey(id, "Example")
 
 class testCryptoClass(unittest.TestCase):
@@ -49,7 +50,7 @@ class testCryptographicUnits(unittest.TestCase):
         k = os.urandom(32)
         r = base._restEncrypt("Hello", k)
         fr = base._restDecrypt(r, k)
-        self.assertEqual(fr, "Hello")
+        self.assertEqual(fr, b"Hello")
     def testPBKDF2(self):
         kb = base.PBKDF2("abcdrf", os.urandom(12), 100000)
         self.assertIsInstance(kb, bytes)
