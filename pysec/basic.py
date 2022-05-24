@@ -7,7 +7,7 @@ from .base import _restEncrypt, _restDecrypt, zeromem, PBKDF2
 
 class kms():
     def __cipher(self,text, pwd, salt):
-        if self._masterHSM:
+        if self._HSM:
             pass
         else:
             key = PBKDF2(pwd, salt, 100000)
@@ -27,6 +27,7 @@ class kms():
     def __init__(self, keyDB:sqlite3.Connection=SQLDefaultKeyDBpath)->None:
         self.keydb = keyDB
         self.c = keyDB.cursor()
+        self._HSM = False
     
     def exportKeys(self):
         pass

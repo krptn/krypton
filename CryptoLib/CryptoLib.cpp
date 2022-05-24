@@ -3,7 +3,10 @@
 #include <openssl/provider.h>
 #include <openssl/evp.h>
 #include <openssl/err.h>
-#include <openssl/conf.h> 
+
+#ifdef WIN
+#include <openssl/applink.c>
+#endif
 
 using namespace std;
 namespace py = pybind11;
@@ -54,7 +57,6 @@ char* pymbToBuffer(py::bytes a) {
 		++i;
 		++it;
 	};
-	buf[0] = b;
 	return buf;
 }
 
@@ -89,6 +91,7 @@ py::bytes py_decode64(const char* input, int length) {
 }
 
 void handleErrors() {
+	ERR_print_errors_fp(stderr);
 	throw invalid_argument("Unable to perform cryptographic operation");
 }
 

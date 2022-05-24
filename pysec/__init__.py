@@ -96,7 +96,6 @@ class configTemp():
         finally:
             conn.commit()
             c.close()
-            conn.close()
             self._userDB = conn
 
 configs = configTemp()

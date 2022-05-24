@@ -2,7 +2,7 @@ import ctypes
 import sqlite3
 import sys
 from . import configs
-__userC:sqlite3.Cursor = configs.SQLDefaultKeyDBpath.cursor()
+__userC:sqlite3.Cursor = configs.SQLDefaultUserDBpath.cursor()
 Adrr = id
 import __CryptoLib
 __CryptoLib.fipsInit() #Load FIPS Validated resolver 
@@ -18,11 +18,11 @@ def base64decode(data:str|bytes) -> bytes|str:
     return __CryptoLib.base64decode(data, len(data))
 def createECCKey() -> tuple[bytes, bytes]: # returns (publicKey, privateKey)
     return __CryptoLib.createECCKey()
-def ECDH(privKey:bytes, peerPubKey:bytes) -> bytes:
-    return __CryptoLib.getECCSharedKey(privKey, peerPubKey)
-def getSharedKey(privKey:bytes, peerName:str) -> bytes:
+def ECDH(privKey:str, peerPubKey:str, salt:bytes) -> bytes:
+    return __CryptoLib.getECCSharedKey(privKey, peerPubKey, salt, 100000)
+def getSharedKey(privKey:str, peerName:str, salt:bytes) -> bytes:
     key = __userC.execute("SELECT key FROM pubKeys WHERE name=?", (peerName,)).fetchone()
-    __CryptoLib.getSharedKey(privKey, key, __CryptoLib.sha512(peerName)[:12], 100000)
+    __CryptoLib.getSharedKey(privKey, key, salt, 100000)
 def PBKDF2(text:str|bytes, salt:str|bytes, iter:int) -> bytes:
     return __CryptoLib.PBKDF2(text, salt, iter, len(salt))
 

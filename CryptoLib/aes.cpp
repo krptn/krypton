@@ -17,7 +17,7 @@ py::bytes __cdecl AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	if (key.attr("__len__")().cast<int>() != 32){
 		throw std::invalid_argument("Key is of wrong size");
 	}
-	py::bytes ftext =  py::bytes("$") + py::bytes((char*)&msglenc, 1) + py::bytes(textc, msglenc);
+	py::bytes ftext = py::bytes((char*)&msglenc, 1) + py::bytes(textc, msglenc);
 	int msglen = ftext.attr("__len__")().cast<int>();
 	char* text = pymbToBuffer(ftext);
 	char* k = pymbToBuffer(key);
@@ -50,10 +50,11 @@ py::bytes __cdecl AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	ciphertext_len += len;
 	OPENSSL_cleanse(text, msglen);
 	OPENSSL_cleanse(k, 32);
-	delete[] k;
 	EVP_CIPHER_CTX_free(ctx);
 	py::gil_scoped_acquire acquire;
 	py::bytes bresult = py::bytes((const char*)out.get(), flen);
+	delete[] text;
+	delete[] k;
 	return bresult;
 }
 
@@ -67,7 +68,7 @@ py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key){
 	py::gil_scoped_release release;
 
 	int msglen = input_len - AUTH_TAG_LEN - IV_SALT_LEN;
-	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen + (long long)1]);
+	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
 	unsigned char* iv = (unsigned char*)b + input_len - IV_SALT_LEN;
 	unsigned char* tag = (unsigned char*)b + msglen;
 	EVP_CIPHER_CTX* ctx;
@@ -93,8 +94,9 @@ py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key){
 	if (!(ret >= 0)) {
 		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
-	out[plaintext_len] = '\0';
-	int plainMsgLen = out.get()[1];
+	int plainMsgLen = out.get()[0];
+	delete[] b;
+	delete[] k;
 	py::gil_scoped_acquire acquire;
-	return py::bytes((char*)out.get() + 2, plainMsgLen);
+	return py::bytes((char*)out.get() + 1, plainMsgLen);
 }

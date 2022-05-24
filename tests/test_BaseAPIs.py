@@ -61,7 +61,7 @@ class testCryptographicUnits(unittest.TestCase):
     def testECDH(self):
         keys = base.createECCKey()
         keys2 = base.createECCKey()
-        key = base.getSharedKey(keys[1], keys2[0])
+        key = base.ECDH(keys[1], keys2[0], os.urandom(12))
         self.assertEqual(len(key), 32)
     def testBase64(self):
         text = "fdgdfgfdgdfsr"

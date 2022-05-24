@@ -10,6 +10,10 @@ description = ""
 with open("README.md","r") as file:
   description=file.read()
 
+link_libararies = ["libcrypto"]
+if sys.platform == "win32":
+  link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
+
 def finishInstall():
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
   openssl_fips_conf = "openssl-config/fipsmodule.cnf"
@@ -23,7 +27,7 @@ class completeInstall(install):
     temp = os.getcwd()
     install.run(self)
     try: os.chdir(os.path.join(self.install_base, "site-packages/"))
-    except: os.chdir(os.path.join(self.install_base, "Lib/site-packages/"))
+    except FileNotFoundError: os.chdir(os.path.join(self.install_base, "Lib/site-packages/"))
     finishInstall()
     os.chdir(temp)
 
@@ -70,8 +74,9 @@ setup(name='pysec',
   },
   ext_modules=[Pybind11Extension('__CryptoLib',
     ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp", 
-      "CryptoLib/hashes.cpp", "openssl-install/include/openssl/applink.c"],
+      "CryptoLib/hashes.cpp"],
     include_dirs=["openssl-install/include","CryptoLib"],
     library_dirs=["openssl-install/lib"],
-    libraries=["libcrypto"])]
+    libraries=link_libararies,
+    define_macros=[('WIN', None)])]
 )
