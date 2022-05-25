@@ -49,8 +49,8 @@ class kms():
             raise ValueError("Such a name already exists")
         k = os.urandom(32)
         s = os.urandom(12)
-        ek = self.__cipher(k, pwd, s, configs.efaultIterations)
-        self.c.execute("INSERT INTO keys VALUES (?, ?, ?, ?, ?)", (name, ek, s, configs.defaultAlgorithm, configs.efaultIterations))
+        ek = self.__cipher(k, pwd, s, configs.defaultIterations)
+        self.c.execute("INSERT INTO keys VALUES (?, ?, ?, ?, ?)", (name, ek, s, configs.defaultAlgorithm, configs.defaultIterations))
         self.keydb.commit()
         return k
     
