@@ -15,14 +15,17 @@ const char* KEY_ENCODE_FORMAT = "PEM";
 const char* CIPHER_TYPE = "ECC";
 const int IV_SALT_LEN = 12;
 
-int getPubKey(EVP_PKEY *pkey, char* out){
+int getPubKey(EVP_PKEY *pkey, char* out) {
 	OSSL_ENCODER_CTX *ctx;
 	unsigned char* data = NULL;
 	size_t datalen;
 	ctx = OSSL_ENCODER_CTX_new_for_pkey(pkey, EVP_PKEY_PUBLIC_KEY, KEY_ENCODE_FORMAT, "SubjectPublicKeyInfo", NULL);
-	if (ctx == NULL) handleErrors();
-	if (1 != OSSL_ENCODER_CTX_set_cipher(ctx, NULL, NULL)) handleErrors();
-	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen)) handleErrors();
+	if ((OSSL_ENCODER_CTX_get_num_encoders(ctx) == 0) || (ctx == NULL)) 
+		handleErrors();
+	if (1 != OSSL_ENCODER_CTX_set_cipher(ctx, NULL, NULL)) 
+		handleErrors();
+	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen)) 
+		handleErrors();
 	if (out != NULL) {
 		memcpy_s(out, datalen, data, datalen);
 	}
@@ -34,14 +37,17 @@ int getPubKey(EVP_PKEY *pkey, char* out){
 // https://www.openssl.org/docs/man3.0/man3/EVP_PKEY_fromdata.html
 // https://www.openssl.org/docs/man3.0/man3/OSSL_ENCODER_to_bio.html
 // https://www.openssl.org/docs/man3.0/man3/OSSL_ENCODER_CTX_new_for_pkey.html#Output-types
-int getPrivKey(EVP_PKEY *pkey, char* out){
+int getPrivKey(EVP_PKEY *pkey, char* out) {
 	OSSL_ENCODER_CTX *ctx;
 	unsigned char* data = NULL;
 	size_t datalen;
 	ctx = OSSL_ENCODER_CTX_new_for_pkey(pkey, EVP_PKEY_KEYPAIR, KEY_ENCODE_FORMAT, "PrivateKeyInfo", NULL);
-	if (ctx == NULL) handleErrors();
-	if (1 != OSSL_ENCODER_CTX_set_cipher(ctx, NULL, NULL)) handleErrors();
-	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen)) handleErrors();
+	if ((OSSL_ENCODER_CTX_get_num_encoders(ctx) == 0) || (ctx == NULL)) 
+		handleErrors();
+	if (1 != OSSL_ENCODER_CTX_set_cipher(ctx, NULL, NULL)) 
+		handleErrors();
+	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen)) 
+		handleErrors();
 	if (out != NULL) {
 		memcpy_s(out, datalen, data, datalen);
 	}
@@ -52,20 +58,24 @@ int getPrivKey(EVP_PKEY *pkey, char* out){
 }
 
 // https://www.openssl.org/docs/man3.0/man3/OSSL_DECODER_CTX_new_for_pkey.html
-int setPubKey(EVP_PKEY *pkey, char* key, int len){
+int setPubKey(EVP_PKEY *pkey, char* key, int len) {
 	OSSL_DECODER_CTX *ctx;
-	ctx = OSSL_DECODER_CTX_new_for_pkey(&pkey, KEY_ENCODE_FORMAT, "SubjectPublicKeyInfo", NULL, EVP_PKEY_PUBLIC_KEY, NULL, NULL);
-	if (ctx == NULL) handleErrors();
-	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len)) handleErrors();
+	ctx = OSSL_DECODER_CTX_new_for_pkey(&pkey, KEY_ENCODE_FORMAT, "SubjectPublicKeyInfo", "EC", EVP_PKEY_PUBLIC_KEY, NULL, NULL);
+	if ((OSSL_DECODER_CTX_get_num_decoders(ctx) == 0) || (ctx == NULL)) 
+		handleErrors();
+	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len)) 
+		handleErrors();
 	OSSL_DECODER_CTX_free(ctx);
 	return 1;
 }
 
-int setPrivKey(EVP_PKEY *pkey, char* key, int len){
+int setPrivKey(EVP_PKEY *pkey, char* key, int len) {
 	OSSL_DECODER_CTX *ctx;
-	ctx = OSSL_DECODER_CTX_new_for_pkey(&pkey, KEY_ENCODE_FORMAT, "PrivateKeyInfo", NULL, EVP_PKEY_KEYPAIR, NULL, NULL);
-	if (ctx == NULL) handleErrors();
-	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len)) handleErrors();
+	ctx = OSSL_DECODER_CTX_new_for_pkey(&pkey, KEY_ENCODE_FORMAT, "PrivateKeyInfo", "EC", EVP_PKEY_KEYPAIR, NULL, NULL);
+	if ((OSSL_DECODER_CTX_get_num_decoders(ctx) == 0) || (ctx == NULL)) 
+		handleErrors();
+	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len)) 
+		handleErrors();
 	OSSL_DECODER_CTX_free(ctx);
 	return 1;
 }
@@ -97,9 +107,9 @@ py::tuple __cdecl createECCKey() {
 	OPENSSL_cleanse(privResult, len);
 	delete[] privResult;
 	EVP_PKEY_free(pkey);
-	py::tuple finalTuple = py::make_tuple(r, pr);
+	py::tuple finalTuple = py::make_tuple(pr, r);
 	return finalTuple;
-};
+}
 
 py::bytes __cdecl getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter) {
 	int secret_len = 32;
@@ -114,7 +124,7 @@ py::bytes __cdecl getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, 
 	if(1 != EVP_PKEY_derive_init(ctx)) handleErrors();
 	if(1 != EVP_PKEY_derive_set_peer(ctx, peerkey)) handleErrors();
 	if(1 != EVP_PKEY_derive(ctx, NULL, (size_t*)&secret_len)) handleErrors();
-	auto secret = unique_ptr<unsigned char[]>(new unsigned char[IV_SALT_LEN]);
+	auto secret = unique_ptr<unsigned char[]>(new unsigned char[secret_len]);
 	if(1 != (EVP_PKEY_derive(ctx, secret.get(), (size_t*)&secret_len))) handleErrors();
 	EVP_PKEY_CTX_free(ctx);
 	EVP_PKEY_free(peerkey);
@@ -124,4 +134,4 @@ py::bytes __cdecl getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, 
 	py::bytes key = PBKDF2((char*)pwd, &C_salt, iter, salt.attr("__len__")().cast<int>());
 	delete[] pwd;
 	return key;
-};
+}

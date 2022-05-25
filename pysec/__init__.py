@@ -40,8 +40,8 @@ class configTemp():
             conn = path
         c = conn.cursor()
         try:
-            c.execute("CREATE TABLE crypto (id int, ctext blob)")
-            c.execute("INSERT INTO crypto VALUES (?, ?)", (0, b"Position Reserved"))
+            c.execute("CREATE TABLE crypto (id int, ctext blob, salt blob)")
+            c.execute("INSERT INTO crypto VALUES (?, ?)", (0, b"Position Reserved", b"Position Reserved"))
             c.execute("CREATE TABLE keys (name text, key blob, salt blob)")
         except:
             pass

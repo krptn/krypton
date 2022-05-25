@@ -23,6 +23,7 @@ class testCryptoClass(unittest.TestCase):
         b = test.secureRead(a,TEST_PWD)
         test.secureDelete(a, TEST_PWD)
         self.assertEqual(TEST_TEXT,b)
+        test.secureDelete(a, TEST_PWD)
     
     def testWriteUpdateRead(self):
         test = crypto()
@@ -30,6 +31,7 @@ class testCryptoClass(unittest.TestCase):
         test.secureUpdate(a,UPDATE_TEST_TEXT,TEST_PWD)
         b = test.secureRead(a,TEST_PWD)
         self.assertEqual(UPDATE_TEST_TEXT,b)
+        test.secureDelete(a, TEST_PWD)
     
     def testWriteDelete(self):
         test = crypto()
@@ -57,11 +59,12 @@ class testCryptographicUnits(unittest.TestCase):
         self.assertEqual(len(kb), 32)
     def testECCKeyGen(self):
         keys = base.createECCKey()
-        self.assertTrue(len(keys[0]) > 2 and len(keys[1]) > 2)
+        self.assertTrue(keys[0].startswith("-----BEGIN PUBLIC KEY-----\n") and keys[0].endswith("\n-----END PUBLIC KEY-----\n"))
+        self.assertTrue(keys[1].startswith("-----BEGIN PRIVATE KEY-----\n") and keys[1].endswith("\n-----END PRIVATE KEY-----\n"))
     def testECDH(self):
         keys = base.createECCKey()
         keys2 = base.createECCKey()
-        key = base.ECDH(keys[1], keys2[0], os.urandom(12))
+        key = base.ECDH(keys[0], keys2[1], os.urandom(12))
         self.assertEqual(len(key), 32)
     def testBase64(self):
         text = "fdgdfgfdgdfsr"

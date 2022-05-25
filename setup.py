@@ -11,8 +11,10 @@ with open("README.md","r") as file:
   description=file.read()
 
 link_libararies = ["libcrypto"]
+macros = []
 if sys.platform == "win32":
   link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
+  macros = [("WIN", None)]
 
 def finishInstall():
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
@@ -78,5 +80,5 @@ setup(name='pysec',
     include_dirs=["openssl-install/include","CryptoLib"],
     library_dirs=["openssl-install/lib"],
     libraries=link_libararies,
-    define_macros=[('WIN', None)])]
+    define_macros=macros)]
 )

@@ -16,7 +16,7 @@ class kms():
             return r
  #Will also need to check the level of HSM: only master key or all keys. 
     def __decipher(self, ctext:str|bytes, pwd:str|bytes, salt):
-        if self.hsmEnabled:
+        if self._HSM:
             pass
         else:
             key = PBKDF2(pwd, salt, 100000)
@@ -42,19 +42,19 @@ class kms():
         return r
 
     def createNewKey(self, name:str, pwd:str|bytes=None) -> str:
-        self.c.execute("SELECT * FROM keys WHERE name=?",(name,))
+        self.c.execute("SELECT * FROM keys WHERE name==?",(name,))
         if self.c.fetchone() != None:
             raise ValueError("Such a name already exists")
         k = os.urandom(32)
         s = os.urandom(12)
-        k = self.__cipher(k, pwd, s)
-        self.c.execute("INSERT INTO keys VALUES (?, ?, ?)", (name, k, s))
+        ek = self.__cipher(k, pwd, s)
+        self.c.execute("INSERT INTO keys VALUES (?, ?, ?)", (name, ek, s))
         self.keydb.commit()
         return k
     
     def removeKey(self, name:str, pwd:str|bytes=None) -> None:
         zeromem(self.getKey(name, pwd))
-        self.c.execute("DELETE FROM crypto WHERE name=?", (name,))
+        self.c.execute("DELETE FROM keys WHERE name==?", (name,))
         return
 
 class crypto(kms):
@@ -81,7 +81,8 @@ class crypto(kms):
         id = self.id
         self.id+=1
         key = self.createNewKey(str(id), pwd)
-        self.c.execute("INSERT INTO crypto VALUES (?, ?)",(id,self.__cipher(data)))
+        salt = os.urandom(12)
+        self.c.execute("INSERT INTO crypto VALUES (?, ?, ?)",(id,self.__cipher(data, key, salt), salt))
         zeromem(key)
         self.keydb.commit()
         return id
