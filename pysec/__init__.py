@@ -22,6 +22,8 @@ os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 
 class configTemp():
+    defaultAlgorithm = "AES256GCM"
+    defaultIterations = 100000
     _cryptoDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/crypto.db"))
     _altKeyDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/altKMS.db"))
     _userDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/users.db"))
@@ -40,9 +42,9 @@ class configTemp():
             conn = path
         c = conn.cursor()
         try:
-            c.execute("CREATE TABLE crypto (id int, ctext blob, salt blob)")
+            c.execute("CREATE TABLE crypto (id int, ctext blob, salt blob, cipher text, saltIter int)")
             c.execute("INSERT INTO crypto VALUES (?, ?)", (0, b"Position Reserved", b"Position Reserved"))
-            c.execute("CREATE TABLE keys (name text, key blob, salt blob)")
+            c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
         except:
             pass
 
@@ -66,7 +68,7 @@ class configTemp():
             conn = path
         c = conn.cursor()
         try:
-            c.execute("CREATE TABLE keys (name text, key blob, salt blob)")
+            c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
         except:
             pass
         finally:
