@@ -90,6 +90,8 @@ class configTemp():
         try:
             c.execute("CREATE TABLE users (name text, id int)")
             c.execute("CREATE TABLE pubKeys (name text, key blob)")
+            c.execute("INSERT INTO crypto VALUES (?, ?, ?, ?, ?)", (0, b"Position Reserved", b"Position Reserved", "None", 0))
+            c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
         except:
             pass
         finally:

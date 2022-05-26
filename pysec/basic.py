@@ -6,7 +6,7 @@ SQLDefaultKeyDBpath:sqlite3.Connection = configs.SQLDefaultKeyDBpath
 from .base import _restEncrypt, _restDecrypt, zeromem, PBKDF2
 
 class kms():
-    def _cipher(self,text, pwd, salt, iter):
+    def _cipher(self, text:str|bytes, pwd:str|bytes, salt:bytes, iter:int):
         if self._HSM:
             pass
         else:
@@ -15,7 +15,7 @@ class kms():
             zeromem(key)
             return r
  #Will also need to check the level of HSM: only master key or all keys. 
-    def _decipher(self, ctext:str|bytes, pwd:str|bytes, salt, iter):
+    def _decipher(self, ctext:str|bytes, pwd:str|bytes, salt:bytes, iter:int):
         if self._HSM:
             pass
         else:
@@ -50,7 +50,13 @@ class kms():
         k = os.urandom(32)
         s = os.urandom(12)
         ek = self._cipher(k, pwd, s, configs.defaultIterations)
-        self.c.execute("INSERT INTO keys VALUES (?, ?, ?, ?, ?)", (name, ek, s, configs.defaultAlgorithm, configs.defaultIterations))
+        self.c.execute
+        (
+            "INSERT INTO keys VALUES (?, ?, ?, ?, ?)", 
+            (name, ek, s, 
+            configs.defaultAlgorithm, configs.defaultIterations
+            )
+        )
         self.keydb.commit()
         return k
     
@@ -76,17 +82,19 @@ class crypto(kms):
     def importData(self):
         pass
     
-    def secureCreate(self, data:bytes, pwd=None, id=None):
+    def secureCreate(self, data:bytes, pwd:str|bytes=None, id:int=None):
         if id == None:
             self.id+=1
             id = self.id
         key = self.createNewKey(str(id), pwd)
         salt = os.urandom(12)
-        self.c.execute("INSERT INTO crypto VALUES (?, ?, ?, ?, ?)",(id, 
+        self.c.execute
+        (
+            "INSERT INTO crypto VALUES (?, ?, ?, ?, ?)",(id, 
             self._cipher(data, key, salt, 0), 
             salt, configs.defaultAlgorithm, 
             self.c.execute("SELECT MAX(id) FROM crypto").fetchone()[0])
-            )
+        )
         zeromem(key)
         self.keydb.commit()
         return id
