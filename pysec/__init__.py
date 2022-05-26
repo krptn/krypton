@@ -41,17 +41,15 @@ class configTemp():
         else:
             conn = path
         c = conn.cursor()
-        try:
+        try: 
             c.execute("CREATE TABLE crypto (id int, ctext blob, salt blob, cipher text, saltIter int)")
-            c.execute("INSERT INTO crypto VALUES (?, ?)", (0, b"Position Reserved", b"Position Reserved"))
+            c.execute("INSERT INTO crypto VALUES (?, ?, ?, ?, ?)", (0, b"Position Reserved", b"Position Reserved", "None", 0))
             c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
         except:
             pass
-
-        finally:
-            conn.commit()
-            c.close()
-            self._cryptoDB = conn
+        conn.commit()
+        c.close()
+        self._cryptoDB = conn
 
     @property
     def SQLDefaultKeyDBpath(self):
@@ -59,7 +57,7 @@ class configTemp():
             Connection to the default database used to store Keys.
             Either set a string for sqlite3 database or Connection object for other databases.
         """
-        return self._cryptoDB 
+        return self._altKeyDB
     @SQLDefaultKeyDBpath.setter
     def SQLDefaultKeyDBpath(self, path:str|sqlite3.Connection):
         if isinstance(path, str):
@@ -67,14 +65,13 @@ class configTemp():
         else:
             conn = path
         c = conn.cursor()
-        try:
+        try: 
             c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
         except:
             pass
-        finally:
-            conn.commit()
-            c.close()
-            self._altKeyDB = conn
+        conn.commit()
+        c.close()
+        self._altKeyDB = conn
 
     @property
     def SQLDefaultUserDBpath(self):

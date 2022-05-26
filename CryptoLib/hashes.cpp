@@ -11,10 +11,9 @@ const int AES_KEY_LEN = 32;
 const int IV_SALT_LEN = 12;
 const auto PBKDF2_HASH_ALGO = EVP_sha512;
 
-char* __cdecl PBKDF2(char* text, char* salt, int iter, int saltLen) {
+char* __cdecl PBKDF2(char* text, int len, char* salt, int iter, int saltLen) {
 	py::gil_scoped_release release;
 	char* key = new char[AES_KEY_LEN];
-	int len = strlen(text);
 	int a;
 	a = PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt, saltLen, iter, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)key);
 	OPENSSL_cleanse(text, len);
@@ -25,10 +24,12 @@ char* __cdecl PBKDF2(char* text, char* salt, int iter, int saltLen) {
 	return key;
 }
 
-py::bytes __cdecl pyPBKDF2(char* text, char* salt, int iter, int saltLen) {
+py::bytes __cdecl pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen) {
+	if (iter == 0) {
+		return py::bytes(text, len);
+	}
 	py::gil_scoped_release release;
 	char* key = new char[AES_KEY_LEN];
-	int len = strlen(text);
 	int a;
 	a = PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt, saltLen, iter, PBKDF2_HASH_ALGO(), AES_KEY_LEN, (unsigned char*)key);
 	OPENSSL_cleanse(text, len);

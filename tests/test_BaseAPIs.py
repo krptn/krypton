@@ -22,16 +22,15 @@ class testCryptoClass(unittest.TestCase):
         a = test.secureCreate(TEST_TEXT,TEST_PWD)
         b = test.secureRead(a,TEST_PWD)
         test.secureDelete(a, TEST_PWD)
-        self.assertEqual(TEST_TEXT,b)
-        test.secureDelete(a, TEST_PWD)
+        self.assertEqual(TEST_TEXT, b.decode())
     
     def testWriteUpdateRead(self):
         test = crypto()
         a = test.secureCreate(TEST_TEXT, TEST_PWD)
         test.secureUpdate(a,UPDATE_TEST_TEXT,TEST_PWD)
         b = test.secureRead(a,TEST_PWD)
-        self.assertEqual(UPDATE_TEST_TEXT,b)
         test.secureDelete(a, TEST_PWD)
+        self.assertEqual(UPDATE_TEST_TEXT, b.decode())
     
     def testWriteDelete(self):
         test = crypto()
@@ -59,8 +58,8 @@ class testCryptographicUnits(unittest.TestCase):
         self.assertEqual(len(kb), 32)
     def testECCKeyGen(self):
         keys = base.createECCKey()
-        self.assertTrue(keys[0].startswith("-----BEGIN PUBLIC KEY-----\n") and keys[0].endswith("\n-----END PUBLIC KEY-----\n"))
-        self.assertTrue(keys[1].startswith("-----BEGIN PRIVATE KEY-----\n") and keys[1].endswith("\n-----END PRIVATE KEY-----\n"))
+        self.assertTrue(keys[0].startswith("-----BEGIN PRIVATE KEY-----\n") and keys[0].endswith("\n-----END PRIVATE KEY-----\n"))
+        self.assertTrue(keys[1].startswith("-----BEGIN PUBLIC KEY-----\n") and keys[1].endswith("\n-----END PUBLIC KEY-----\n"))
     def testECDH(self):
         keys = base.createECCKey()
         keys2 = base.createECCKey()

@@ -113,7 +113,7 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"), py::arg("msglen"));
 	m.def("sha512", &pySHA512, "Hashes text with sha512", py::arg("text"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
-	m.def("PBKDF2", &pyPBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("salt"), py::arg("iter"), py::arg("saltLen"));
+	m.def("PBKDF2", &pyPBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("textLen"), py::arg("salt"), py::arg("iter"), py::arg("saltLen"));
 	m.def("fipsInit", &fipsInit,"Initialises openssl FIPS module.");
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("getECCSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"), 
