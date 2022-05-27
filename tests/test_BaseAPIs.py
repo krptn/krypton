@@ -2,6 +2,7 @@ import unittest
 from pysec.basic import crypto, kms
 from pysec import base
 import os
+import time
 
 TEST_PWD = "Example"
 TEST_TEXT = "Example"
@@ -9,12 +10,13 @@ UPDATE_TEST_TEXT = "Example2"
 
 class testKMS(unittest.TestCase):
     def test(self):
-        id = os.urandom(32)
+        id = "test Key"
         i = kms()
         k = i.createNewKey(id, "Example")
-        self.assertEqual(len(i.getKey(id, 'Example')), 32)
-        self.assertEqual(k, i.getKey(id, 'Example'))
+        a = i.getKey(id, "Example")
         i.removeKey(id, "Example")
+        self.assertEqual(len(a), 32)
+        self.assertEqual(k, a)
 
 class testCryptoClass(unittest.TestCase):
     def testWriteRead(self):

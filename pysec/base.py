@@ -18,9 +18,9 @@ def base64decode(data:str|bytes) -> bytes|str:
     return __CryptoLib.base64decode(data, len(data))
 def createECCKey() -> tuple[bytes, bytes]: # returns (privateKey, PubKey)
     return __CryptoLib.createECCKey()
-def ECDH(privKey:str, peerPubKey:str, salt:bytes, hashNum:int=100000) -> bytes:
+def ECDH(privKey:str, peerPubKey:str, salt:bytes, hashNum:int=configs.defaultIterations) -> bytes:
     return __CryptoLib.getECCSharedKey(privKey, peerPubKey, salt, hashNum)
-def getSharedKey(privKey:str, peerName:str, salt:bytes, hashNum:int=100000) -> bytes:
+def getSharedKey(privKey:str, peerName:str, salt:bytes, hashNum:int=configs.defaultIterations) -> bytes:
     key = __userC.execute("SELECT key FROM pubKeys WHERE name=?", (peerName,)).fetchone()
     return __CryptoLib.getSharedKey(privKey, key, salt, hashNum)
 def PBKDF2(text:str|bytes, salt:str|bytes, iter:int) -> bytes:

@@ -120,18 +120,20 @@ py::bytes __cdecl getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, 
 	char* pubk = pymbToBuffer(pubKey.attr("encode")());
 	setPubKey(peerkey, pubk, privKey.attr("__len__")().cast<int>());
 	EVP_PKEY_CTX *ctx;
-	if(NULL == (ctx = EVP_PKEY_CTX_new(pkey, NULL))) handleErrors();
+	ctx = EVP_PKEY_CTX_new(pkey, NULL);
+	if(!ctx) handleErrors();
 	if(1 != EVP_PKEY_derive_init(ctx)) handleErrors();
 	if(1 != EVP_PKEY_derive_set_peer(ctx, peerkey)) handleErrors();
 	if(1 != EVP_PKEY_derive(ctx, NULL, (size_t*)&secret_len)) handleErrors();
-	auto secret = unique_ptr<unsigned char[]>(new unsigned char[secret_len]);
-	if(1 != (EVP_PKEY_derive(ctx, secret.get(), (size_t*)&secret_len))) handleErrors();
+	unsigned char* secret = new unsigned char[secret_len];
+	if(1 != (EVP_PKEY_derive(ctx, secret, (size_t*)&secret_len))) handleErrors();
 	EVP_PKEY_CTX_free(ctx);
 	EVP_PKEY_free(peerkey);
 	EVP_PKEY_free(pkey);
-	char* pwd = base64((char*)secret.get(), secret_len);
 	char C_salt = salt.cast<char>();
-	py::bytes key = PBKDF2((char*)pwd, strlen(pwd), &C_salt, iter, salt.attr("__len__")().cast<int>());
-	delete[] pwd;
+	py::bytes key = PBKDF2((char*)secret, secret_len, &C_salt, iter, salt.attr("__len__")().cast<int>());
+	delete[] secret;
+	delete[] privk;
+	delete[] pubk;
 	return key;
 }

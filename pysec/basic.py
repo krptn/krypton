@@ -1,6 +1,7 @@
 import os
 import sqlite3
-from . import configs
+from tkinter import E
+from . import configs, base
 SQLDefaultCryptoDBpath:sqlite3.Connection = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath:sqlite3.Connection = configs.SQLDefaultKeyDBpath
 from .base import _restEncrypt, _restDecrypt, zeromem, PBKDF2
@@ -36,23 +37,30 @@ class kms():
         pass
 
     def getKey(self, name:str, pwd:str|bytes=None) -> bytes:
-        self.c.execute("SELECT * FROM keys WHERE name == ?",(name,)) 
+        self.c.execute("SELECT * FROM keys WHERE name==?",(name,)) 
         key = self.c.fetchone()
+        if key == None:
+            raise KeyError("No such Key Exists")
         if key[3] != configs.defaultAlgorithm:
             raise ValueError("Unsupported Cipher") # This source code can be extended to support other ciphers also 
         r = self._decipher(key[1], pwd, key[2], key[4])
-        return r
+        if r[-1] != 36: ## Problem
+            raise KeyError("Wrong passwords have been provided.")
+        return base.base64decode(r[:-1])
+        
 
     def createNewKey(self, name:str, pwd:str|bytes=None) -> str:
         self.c.execute("SELECT * FROM keys WHERE name==?",(name,))
         if self.c.fetchone() != None:
-            raise ValueError("Such a name already exists")
+            raise KeyError("Such a name already exists")
         k = os.urandom(32)
         s = os.urandom(12)
-        ek = self._cipher(k, pwd, s, configs.defaultIterations)
-        self.c.execute
-        (
-            "INSERT INTO keys VALUES (?, ?, ?, ?, ?)", 
+        rebased = base.base64encode(k)
+        editedRebased = rebased+"$"
+        ek = self._cipher(editedRebased, pwd, s, configs.defaultIterations)
+        zeromem(rebased)
+        zeromem(editedRebased)
+        self.c.execute ("INSERT INTO keys VALUES (?, ?, ?, ?, ?)", 
             (name, ek, s, 
             configs.defaultAlgorithm, configs.defaultIterations
             )
@@ -85,19 +93,16 @@ class crypto(kms):
     def secureCreate(self, data:bytes, pwd:str|bytes=None, id:int=None):
         if id == None:
             self.id+=1
-            id = self.id
-        key = self.createNewKey(str(id), pwd)
+        key = self.createNewKey(str(self.id), pwd)
         salt = os.urandom(12)
-        self.c.execute
-        (
-            "INSERT INTO crypto VALUES (?, ?, ?, ?, ?)",(id, 
+        self.c.execute("INSERT INTO crypto VALUES (?, ?, ?, ?, ?)", (self.id, 
             self._cipher(data, key, salt, 0), 
             salt, configs.defaultAlgorithm, 
-            self.c.execute("SELECT MAX(id) FROM crypto").fetchone()[0])
+            configs.defaultIterations)
         )
         zeromem(key)
         self.keydb.commit()
-        return id
+        return self.id
     
     def secureRead(self, id:int, pwd:str|bytes):
         self.c.execute("SELECT * FROM crypto WHERE id==?", (id,))

@@ -23,7 +23,7 @@ os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 
 class configTemp():
     defaultAlgorithm = "AES256GCM"
-    defaultIterations = 100000
+    defaultIterations = 500000
     _cryptoDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/crypto.db"))
     _altKeyDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/altKMS.db"))
     _userDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/users.db"))
@@ -37,15 +37,16 @@ class configTemp():
     @SQLDefaultCryptoDBpath.setter
     def SQLDefaultCryptoDBpath(self, path:str|sqlite3.Connection) -> None:
         if isinstance(path, str):
-            conn = sqlite3.connect(path)
+            conn = sqlite3.connect(path, isolation_level=None)
         else:
             conn = path
         c = conn.cursor()
         try: 
             c.execute("CREATE TABLE crypto (id int, ctext blob, salt blob, cipher text, saltIter int)")
-            c.execute("INSERT INTO crypto VALUES (?, ?, ?, ?, ?)", (0, b"Position Reserved", b"Position Reserved", "None", 0))
+            if c.execute("SELECT MAX(id) FROM crypto").fetchone()[0] == None:
+                c.execute("INSERT INTO crypto VALUES (?, ?, ?, ?, ?)", (0, b"Position Reserved", b"Position Reserved", "None", 0))
             c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
-        except:
+        except sqlite3.OperationalError:
             pass
         conn.commit()
         c.close()
@@ -61,13 +62,13 @@ class configTemp():
     @SQLDefaultKeyDBpath.setter
     def SQLDefaultKeyDBpath(self, path:str|sqlite3.Connection):
         if isinstance(path, str):
-            conn = sqlite3.connect(path)
+            conn = sqlite3.connect(path, isolation_level=None)
         else:
             conn = path
         c = conn.cursor()
-        try: 
+        try:
             c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
-        except:
+        except sqlite3.OperationalError:
             pass
         conn.commit()
         c.close()
@@ -83,7 +84,7 @@ class configTemp():
     @SQLDefaultUserDBpath.setter
     def SQLDefaultUserDBpath(self, path:str|sqlite3.Connection):
         if isinstance(path,str):
-            conn = sqlite3.connect(path)
+            conn = sqlite3.connect(path, isolation_level=None)
         else:
             conn = path
         c = conn.cursor()
@@ -92,7 +93,7 @@ class configTemp():
             c.execute("CREATE TABLE pubKeys (name text, key blob)")
             c.execute("INSERT INTO crypto VALUES (?, ?, ?, ?, ?)", (0, b"Position Reserved", b"Position Reserved", "None", 0))
             c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
-        except:
+        except sqlite3.OperationalError:
             pass
         finally:
             conn.commit()
