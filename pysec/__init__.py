@@ -1,6 +1,9 @@
 ﻿import os
 import pathlib
-import sqlite3
+from select import select
+from sqlalchemy import MetaData, String, create_engine, Column, Integer, LargeBinary
+from sqlalchemy.orm import declarative_base, Session
+import sqlalchemy
 
 version = "1"
 
@@ -21,12 +24,41 @@ os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 
+Base = declarative_base()
+
+class DBschemas():
+    class cryptoTable(Base):
+        __tablename__="crypto"
+        id = Column(Integer, primary_key=True)
+        ctext = Column(LargeBinary)
+        salt = Column(LargeBinary)
+        cipher = Column(String)
+        saltIter = Column(Integer)
+
+    class keysTable(Base):
+        __tablename__ = "keys"
+        name = Column(String, primary_key=True)
+        key = Column(LargeBinary)
+        salt = Column(LargeBinary)
+        cipher = Column(String)
+        saltIter = Column(Integer)
+
+    class pubKeyTable(Base):
+        __tablename__ = "pubKeys"
+        name = Column(String, primary_key=True)
+        key = Column(LargeBinary)
+
+    class userTable(Base):
+        __tablename__ = "users"
+        name = Column(String, primary_key=True)
+        id = Column(LargeBinary)
+
 class configTemp():
     defaultAlgorithm = "AES256GCM"
     defaultIterations = 500000
-    _cryptoDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/crypto.db"))
-    _altKeyDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/altKMS.db"))
-    _userDB:sqlite3.Connection = sqlite3.connect(os.path.join(sitePackage, "pysec-data/users.db"))
+    _cryptoDB:sqlalchemy.engine = None
+    _altKeyDB:sqlalchemy.engine = None
+    _userDB:sqlalchemy.engine = None
     @property
     def SQLDefaultCryptoDBpath(self):
         """
@@ -35,22 +67,26 @@ class configTemp():
         """
         return self._cryptoDB
     @SQLDefaultCryptoDBpath.setter
-    def SQLDefaultCryptoDBpath(self, path:str|sqlite3.Connection) -> None:
-        if isinstance(path, str):
-            conn = sqlite3.connect(path, isolation_level=None)
-        else:
-            conn = path
-        c = conn.cursor()
-        try: 
-            c.execute("CREATE TABLE crypto (id int, ctext blob, salt blob, cipher text, saltIter int)")
-            if c.execute("SELECT MAX(id) FROM crypto").fetchone()[0] == None:
-                c.execute("INSERT INTO crypto VALUES (?, ?, ?, ?, ?)", (0, b"Position Reserved", b"Position Reserved", "None", 0))
-            c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
-        except sqlite3.OperationalError:
+    def SQLDefaultCryptoDBpath(self, path:str) -> None:
+        engine = create_engine(path, echo=True, future=True)
+        c = Session(engine)
+        try:
+            Base.metadata.create_all(engine)
+            stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id.in_(["0"]))
+            ctext = self.c.scalar(stmt).one()
+            if ctext == None:
+                stmt = DBschemas.cryptoTable(
+                    id = 0,
+                    ctext = b"Position Reserved",
+                    salt = b"Position Reserved",
+                    cipher = "None",
+                    saltIter = 0
+                )
+                c.add(stmt)
+        except:
             pass
-        conn.commit()
-        c.close()
-        self._cryptoDB = conn
+        finally:
+            self._cryptoDB = c
 
     @property
     def SQLDefaultKeyDBpath(self):
@@ -60,19 +96,13 @@ class configTemp():
         """
         return self._altKeyDB
     @SQLDefaultKeyDBpath.setter
-    def SQLDefaultKeyDBpath(self, path:str|sqlite3.Connection):
-        if isinstance(path, str):
-            conn = sqlite3.connect(path, isolation_level=None)
-        else:
-            conn = path
-        c = conn.cursor()
+    def SQLDefaultKeyDBpath(self, path:str):
+        conn = create_engine(path, echo=True, future=True)
         try:
-            c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
-        except sqlite3.OperationalError:
+            Base.metadata.create_all(conn)
+        except:
             pass
-        conn.commit()
-        c.close()
-        self._altKeyDB = conn
+        self._altKeyDB = Session(conn)
 
     @property
     def SQLDefaultUserDBpath(self):
@@ -82,29 +112,32 @@ class configTemp():
         """
         return self._userDB
     @SQLDefaultUserDBpath.setter
-    def SQLDefaultUserDBpath(self, path:str|sqlite3.Connection):
-        if isinstance(path,str):
-            conn = sqlite3.connect(path, isolation_level=None)
-        else:
-            conn = path
-        c = conn.cursor()
+    def SQLDefaultUserDBpath(self, path:str):
+        engine = create_engine(path, echo=True, future=True)
+        c = Session(engine)
         try:
-            c.execute("CREATE TABLE users (name text, id int)")
-            c.execute("CREATE TABLE pubKeys (name text, key blob)")
-            c.execute("INSERT INTO crypto VALUES (?, ?, ?, ?, ?)", (0, b"Position Reserved", b"Position Reserved", "None", 0))
-            c.execute("CREATE TABLE keys (name text, key blob, salt blob, cipher text, saltIter int)")
-        except sqlite3.OperationalError:
+            Base.metadata.create_all(engine)
+            stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == 0)
+            ctext = self.c.scalar(stmt).one()
+            if ctext == None:
+                stmt = DBschemas.cryptoTable(
+                    id = 0,
+                    ctext = b"Position Reserved",
+                    salt = b"Position Reserved",
+                    cipher = "None",
+                    saltIter = 0
+                )
+                c.add(stmt)
+        except:
             pass
         finally:
-            conn.commit()
-            c.close()
-            self._userDB = conn
+            self._userDB = c
 
 configs = configTemp()
 
-configs.SQLDefaultCryptoDBpath = os.path.join(sitePackage, "pysec-data/crypto.db")
-configs.SQLDefaultKeyDBpath = os.path.join(sitePackage, "pysec-data/altKMS.db")
-configs.SQLDefaultUserDBpath = os.path.join(sitePackage, "pysec-data/users.db")
+configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/crypto.db")
+configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/altKMS.db")
+configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/users.db")
 
 open(OPENSSL_CONFIG_FILE, "w").write("""
 config_diagnostics = 1

@@ -41,7 +41,7 @@ int getPrivKey(EVP_PKEY *pkey, char* out) {
 	OSSL_ENCODER_CTX *ctx;
 	unsigned char* data = NULL;
 	size_t datalen;
-	ctx = OSSL_ENCODER_CTX_new_for_pkey(pkey, EVP_PKEY_KEYPAIR, KEY_ENCODE_FORMAT, "PrivateKeyInfo", NULL);
+	ctx = OSSL_ENCODER_CTX_new_for_pkey(pkey, EVP_PKEY_KEYPAIR, KEY_ENCODE_FORMAT, "pkcs8", NULL);
 	if ((OSSL_ENCODER_CTX_get_num_encoders(ctx) == 0) || (ctx == NULL)) 
 		handleErrors();
 	if (1 != OSSL_ENCODER_CTX_set_cipher(ctx, NULL, NULL)) 
@@ -71,7 +71,7 @@ int setPubKey(EVP_PKEY *pkey, char* key, int len) {
 
 int setPrivKey(EVP_PKEY *pkey, char* key, int len) {
 	OSSL_DECODER_CTX *ctx;
-	ctx = OSSL_DECODER_CTX_new_for_pkey(&pkey, KEY_ENCODE_FORMAT, "PrivateKeyInfo", "EC", EVP_PKEY_KEYPAIR, NULL, NULL);
+	ctx = OSSL_DECODER_CTX_new_for_pkey(&pkey, KEY_ENCODE_FORMAT, "pkcs9", "EC", EVP_PKEY_KEYPAIR, NULL, NULL);
 	if ((OSSL_DECODER_CTX_get_num_decoders(ctx) == 0) || (ctx == NULL)) 
 		handleErrors();
 	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len)) 

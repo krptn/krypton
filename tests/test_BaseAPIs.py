@@ -19,7 +19,7 @@ class testKMS(unittest.TestCase):
         self.assertEqual(k, a)
 
 class testCryptoClass(unittest.TestCase):
-    def testWriteRead(self):
+    def testWriteReadDelete(self):
         test = crypto()
         a = test.secureCreate(TEST_TEXT,TEST_PWD)
         b = test.secureRead(a,TEST_PWD)

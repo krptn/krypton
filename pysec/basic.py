@@ -1,9 +1,9 @@
 import os
-import sqlite3
-from tkinter import E
-from . import configs, base
-SQLDefaultCryptoDBpath:sqlite3.Connection = configs.SQLDefaultCryptoDBpath
-SQLDefaultKeyDBpath:sqlite3.Connection = configs.SQLDefaultKeyDBpath
+from sqlalchemy import text, select
+from sqlalchemy.orm import Session
+from . import configs, base, DBschemas
+SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
+SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
 from .base import _restEncrypt, _restDecrypt, zeromem, PBKDF2
 
 class kms():
@@ -25,9 +25,8 @@ class kms():
             zeromem(key)
             return r
     
-    def __init__(self, keyDB:sqlite3.Connection=SQLDefaultKeyDBpath)->None:
-        self.keydb = keyDB
-        self.c = keyDB.cursor()
+    def __init__(self, keyDB:Session=SQLDefaultKeyDBpath)->None:
+        self.c:Session = keyDB
         self._HSM = False
     
     def exportKeys(self):
@@ -37,22 +36,23 @@ class kms():
         pass
 
     def getKey(self, name:str, pwd:str|bytes=None) -> bytes:
-        self.c.execute("SELECT * FROM keys WHERE name==?",(name,)) 
-        key = self.c.fetchone()
-        if key == None:
-            raise KeyError("No such Key Exists")
-        if key[3] != configs.defaultAlgorithm:
+        stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == name)
+        key:DBschemas.keysTable = self.c.scalars(stmt).one()
+        if key.cipher != configs.defaultAlgorithm:
             raise ValueError("Unsupported Cipher") # This source code can be extended to support other ciphers also 
-        r = self._decipher(key[1], pwd, key[2], key[4])
+        r = self._decipher(key.key, pwd, key.salt, key.saltIter)
         if r[-1] != 36: ## Problem
             raise KeyError("Wrong passwords have been provided.")
         return base.base64decode(r[:-1])
         
 
     def createNewKey(self, name:str, pwd:str|bytes=None) -> str:
-        self.c.execute("SELECT * FROM keys WHERE name==?",(name,))
-        if self.c.fetchone() != None:
-            raise KeyError("Such a name already exists")
+        stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == "name")
+        a = True
+        try: self.c.scalars(stmt).one()
+        except: a=False
+        finally: 
+            if a: raise KeyError("Such a name already exists")
         k = os.urandom(32)
         s = os.urandom(12)
         rebased = base.base64encode(k)
@@ -60,29 +60,34 @@ class kms():
         ek = self._cipher(editedRebased, pwd, s, configs.defaultIterations)
         zeromem(rebased)
         zeromem(editedRebased)
-        self.c.execute ("INSERT INTO keys VALUES (?, ?, ?, ?, ?)", 
-            (name, ek, s, 
-            configs.defaultAlgorithm, configs.defaultIterations
-            )
+        key = DBschemas.keysTable(
+            name = name,
+            key = ek,
+            salt = s,
+            cipher = configs.defaultAlgorithm,
+            saltIter = configs.defaultIterations
         )
-        self.keydb.commit()
+        self.c.add(key)
+        self.c.commit()
         return k
     
     def removeKey(self, name:str, pwd:str|bytes=None) -> None:
         zeromem(self.getKey(name, pwd))
-        self.c.execute("DELETE FROM keys WHERE name=?", (name,))
+        stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == name)
+        key:DBschemas.keysTable = self.c.scalars(stmt).one()
+        self.c.delete(key)
+        self.c.commit()
         return
 
 class crypto(kms):
     '''
     Ciphers and deciphers strings. Can also store strings securely and supports CRUD operations
     '''
-    def __init__(self, keyDB:sqlite3.Connection=SQLDefaultCryptoDBpath):
-        self.keydb = keyDB
-        self.c = self.keydb.cursor()
-        id = int(self.c.execute("SELECT MAX(id) FROM crypto").fetchone()[0])
+    def __init__(self, keyDB:Session=SQLDefaultCryptoDBpath):
+        self.c:Session = keyDB
+        id = int(self.c.execute(text("SELECT MAX(id) FROM crypto")).one()[0])
         self.id = id
-        super().__init__(self.keydb)
+        super().__init__(self.c)
     
     def exportData(self):
         pass
@@ -95,22 +100,23 @@ class crypto(kms):
             self.id+=1
         key = self.createNewKey(str(self.id), pwd)
         salt = os.urandom(12)
-        self.c.execute("INSERT INTO crypto VALUES (?, ?, ?, ?, ?)", (self.id, 
-            self._cipher(data, key, salt, 0), 
-            salt, configs.defaultAlgorithm, 
-            configs.defaultIterations)
+        keyOb = DBschemas.cryptoTable(
+            id = self.id,
+            ctext = self._cipher(data, key, salt, 0),
+            salt = salt,
+            cipher = configs.defaultAlgorithm,
+            saltIter = configs.defaultIterations
         )
+        self.c.add(keyOb)
         zeromem(key)
-        self.keydb.commit()
+        self.c.commit()
         return self.id
     
     def secureRead(self, id:int, pwd:str|bytes):
-        self.c.execute("SELECT * FROM crypto WHERE id==?", (id,))
-        ctext = self.c.fetchone()
-        if ctext == None:
-            raise ValueError("Your selected data does not exists")
+        stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == id)
+        ctext = self.c.scalar(stmt)
         key = self.getKey(str(id),pwd)
-        text = self._decipher(ctext[1], key, ctext[2], 0)
+        text = self._decipher(ctext.ctext, key, ctext.salt, 0)
         zeromem(key)
         return text
     
@@ -121,7 +127,8 @@ class crypto(kms):
     
     def secureDelete(self,id:int, pwd:str|bytes=None) -> None:
         zeromem(self.getKey(id,pwd))
-        self.c.execute("DELETE FROM crypto WHERE id=?",(id,))
+        stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == id)
+        key:DBschemas.cryptoTable = self.c.scalars(stmt).one()
+        self.c.delete(key)
         self.removeKey(str(id),pwd)
-        self.keydb.commit()
         return

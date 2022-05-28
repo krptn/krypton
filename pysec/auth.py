@@ -1,8 +1,8 @@
 from ast import Bytes
 from datetime import datetime
-import sqlite3
+from sqlalchemy import select, text
 from typing import List, Tuple
-from . import basic, configs
+from . import DBschemas, basic, configs
 SQLDefaultUserDBpath = configs.SQLDefaultUserDBpath
 from abc import ABCMeta, abstractmethod
 from . import base
@@ -55,28 +55,28 @@ class user(metaclass=ABCMeta):
 class standardUser(user):
     _userName:str = ""
     __key:bytes
-    c:sqlite3.Cursor
     def __init__(self, userName:str) -> None:
         super().__init__()
-        self.c:sqlite3.Cursor = SQLDefaultUserDBpath.cursor()
+        self.c = SQLDefaultUserDBpath
         self._userName = userName
-        self.id = self.c.execute("SELECT id FROM users WHERE name=?", (userName,)).fetchone()
-        if self.id == None:
+        stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName)
+        try: self.id = self.c.scalars(stmt).one()[0]
+        except:
             self.__saveNewUser()
-            self.id = self.c.execute("SELECT id FROM users WHERE name=?", (userName,)).fetchone()
+            self.id = self.c.execute(text("SELECT id FROM users WHERE name=:name"), {"name":userName}).fetchone()
         
     def setData(self, __name: str, __value: any) -> None:
         self.c.execute(
-            "INSERT INTO {id} VALUES (? ,?)".format(self.id),
-            (__name, __value)
+            text("INSERT INTO :id VALUES (:name, :value)"),
+            {"id":self.id, "name":__name, "value":__value}
         )
         SQLDefaultUserDBpath.commit()
     
     def getData(self, __name: str) -> any:
         result = self.c.execute(
-            "SELECT value FROM {id} WHERE key=?".format(self.id), 
-            (__name,)
-        ).fetchone()
+            text("SELECT value FROM :id WHERE key=:name"), 
+            {"name":__name, "id":self.id}
+        ).fetchone()["value"]
         if result == None:
             raise AttributeError()
         return result
@@ -113,7 +113,11 @@ class standardUser(user):
         self.pubKey = keys[0]
         self.privKey = keys[1]
         self.c.execute("CREATE TABLE {id} (key text, value blob)".format(self.id))
-        self.c.execute("INSERT INTO pubKeys VALUES (?, ?)", (self.id, self.pubKey))
+        key = DBschemas.pubKeyTable(
+            name = self.id,
+            key = self.pubKey
+        )
+        self.c.add(key)
         self.setData("userPrivateKey", self.privKey)
         self.setData("userPublicKey", self.pubKey)
         self.setData("userSalt", salt)
@@ -142,8 +146,13 @@ class standardUser(user):
         base.zeromem(backups)
         self.privKey = keys[0]
         self.pubKey = keys[1]
-        self.c.execute("DELETE FROM pubKeys WHERE name=?", (self.id, ))
-        self.c.execute("INSERT INTO pubKeys VALUES (?, ?)", (self.id, self.pubKey))
+        stmt = select(DBschemas.pubKeyTable).where(DBschemas.pubKeyTable.name == self.id)
+        self.c.delete(stmt)
+        key = DBschemas.pubKeyTable(
+            name = self.id,
+            key = self.pubKey
+        )
+        self.c.add(key)
         self.setData("userPrivateKey", self.privKey)
         self.setData("userPublicKey", self.pubKey)
         self.setData("accountKeysCreation", datetime.now().year)

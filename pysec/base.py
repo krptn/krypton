@@ -1,8 +1,9 @@
 import ctypes
 import sqlite3
 import sys
-from . import configs
-__userC:sqlite3.Cursor = configs.SQLDefaultUserDBpath.cursor()
+
+from sqlalchemy import select
+from . import configs, DBschemas
 Adrr = id
 import __CryptoLib
 __CryptoLib.fipsInit() #Load FIPS Validated resolver 
@@ -21,7 +22,8 @@ def createECCKey() -> tuple[bytes, bytes]: # returns (privateKey, PubKey)
 def ECDH(privKey:str, peerPubKey:str, salt:bytes, hashNum:int=configs.defaultIterations) -> bytes:
     return __CryptoLib.getECCSharedKey(privKey, peerPubKey, salt, hashNum)
 def getSharedKey(privKey:str, peerName:str, salt:bytes, hashNum:int=configs.defaultIterations) -> bytes:
-    key = __userC.execute("SELECT key FROM pubKeys WHERE name=?", (peerName,)).fetchone()
+    stmt = select(DBschemas.pubKeyTable).where(DBschemas.pubKeyTable.name == peerName)
+    key = configs.SQLDefaultUserDBpath.scalars(stmt).one()["key"]
     return __CryptoLib.getSharedKey(privKey, key, salt, hashNum)
 def PBKDF2(text:str|bytes, salt:str|bytes, iter:int) -> bytes:
     return __CryptoLib.PBKDF2(text, len(text), salt, iter, len(salt))
