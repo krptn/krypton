@@ -69,6 +69,7 @@ setup(name='pysec',
     "../openssl-config/fipsmodule.cnf"]},
   packages=['pysec'],
   python_requires=">3.8",
+  requires=["SQLAlchemy"],
   include_package_data=True,
   cmdclass={
     'install': completeInstall,
