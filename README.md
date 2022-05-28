@@ -16,9 +16,8 @@ View aditional security mitigations: [Security Features](security/sec_feature_pl
 import pysec
 # Before doing anything else, set the default location for the databases to be used. 
 # Elsehow, it will be stores in site-packages/pysec-data.
-# There is no need to create the databses: pysec will do that for you.
-# To use another non-sqlite3 database. Please create the database and pass the Connection object.
-# The connection object does not have to be sqlite3.Connection but should have same (or very similar) API.
+# It should be a string to be passed to sqlalchemy to create an engine: https://docs.sqlalchemy.org/en/14/tutorial/engine.html
+# See the above link to see what that is. 
 pysec.configs.SQLDefaultCryptoDBpath = "Path/example.db"
 pysec.configs.SQLDefaultKeyDBpath = "Path/key.db"
 # Create a instance of crypto - a class for encrypting and storing sensitive data.
