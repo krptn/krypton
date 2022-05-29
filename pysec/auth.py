@@ -1,7 +1,5 @@
-from ast import Bytes
 from datetime import datetime
 from sqlalchemy import select, text
-from typing import List, Tuple
 from . import DBschemas, basic, configs
 SQLDefaultUserDBpath = configs.SQLDefaultUserDBpath
 from abc import ABCMeta, abstractmethod
@@ -43,7 +41,7 @@ class user(metaclass=ABCMeta):
     def decryptWithUserKey(self, data:str|bytes, sender:str) -> bytes:
         pass
     @abstractmethod
-    def encryptWithUserKey(self, data:str|bytes, otherUsers:List[str]) -> bytes:
+    def encryptWithUserKey(self, data:str|bytes, otherUsers:list[str]) -> bytes:
         pass
     @abstractmethod
     def generateNewKeys(self):
@@ -129,7 +127,7 @@ class standardUser(user):
         key = base.getSharedKey(self.privKey, sender)
         
     
-    def encryptWithUserKey(self, data:str|bytes, otherUsers:List[str]) -> List[Tuple[str, bytes, bytes]]:
+    def encryptWithUserKey(self, data:str|bytes, otherUsers:list[str]) -> list[tuple[str, bytes, bytes]]:
         salts = [os.urandom(12) for name in otherUsers]
         AESKeys = [base.getSharedKey(self.privKey, name, salts[i], configs.defaultIterations) 
             for i, name in enumerate(otherUsers)]
@@ -140,7 +138,7 @@ class standardUser(user):
     def generateNewKeys(self): # Both symetric and Public/Private 
         keys = base.createECCKey()
         backups = self.getData("backupKeys")
-        backupList:List[Bytes] = pickle.loads(backups)
+        backupList:list[bytes] = pickle.loads(backups)
         backupList.append(self.privKey)
         self.setData("backupKeys", pickle.dumps(backupList))
         for x in backups: base.zeromem(x)

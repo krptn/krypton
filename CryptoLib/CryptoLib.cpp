@@ -23,7 +23,6 @@ bool fipsInit()
 		return false; 
 	}
 	EVP_set_default_properties(NULL, "fips=yes");
-
 	base = OSSL_PROVIDER_load(NULL, "base");
     if (base == NULL) {
 		ERR_print_errors_fp(stderr);

@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import text, select, func
+from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 from . import configs, base, DBschemas
 SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
