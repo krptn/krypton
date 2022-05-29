@@ -59,11 +59,12 @@ class standardUser(user):
         super().__init__()
         self.c = SQLDefaultUserDBpath
         self._userName = userName
-        stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName)
-        try: self.id = self.c.scalars(stmt).one()[0]
+        stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName).limit(1)
+        try: self.id = self.c.scalar(stmt)[0]
         except:
             self.__saveNewUser()
-            self.id = self.c.execute(text("SELECT id FROM users WHERE name=:name"), {"name":userName}).fetchone()
+            stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName).limit(1)
+            self.id = self.c.scalar(stmt)[0]
         
     def setData(self, __name: str, __value: any) -> None:
         self.c.execute(
@@ -147,6 +148,7 @@ class standardUser(user):
         self.privKey = keys[0]
         self.pubKey = keys[1]
         stmt = select(DBschemas.pubKeyTable).where(DBschemas.pubKeyTable.name == self.id)
+        stmt = self.c.scalar(stmt)
         self.c.delete(stmt)
         key = DBschemas.pubKeyTable(
             name = self.id,

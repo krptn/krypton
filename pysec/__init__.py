@@ -1,7 +1,6 @@
 ﻿import os
 import pathlib
-from select import select
-from sqlalchemy import MetaData, String, create_engine, Column, Integer, LargeBinary
+from sqlalchemy import String, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session
 import sqlalchemy
 
@@ -37,7 +36,8 @@ class DBschemas():
 
     class keysTable(Base):
         __tablename__ = "keys"
-        name = Column(String, primary_key=True)
+        id = Column(Integer, primary_key=True)
+        name = Column(String)
         key = Column(LargeBinary)
         salt = Column(LargeBinary)
         cipher = Column(String)
@@ -45,12 +45,14 @@ class DBschemas():
 
     class pubKeyTable(Base):
         __tablename__ = "pubKeys"
-        name = Column(String, primary_key=True)
+        number = Column(Integer, primary_key=True)
+        name = Column(String)
         key = Column(LargeBinary)
 
     class userTable(Base):
         __tablename__ = "users"
-        name = Column(String, primary_key=True)
+        number = Column(Integer, primary_key=True)
+        name = Column(String)
         id = Column(LargeBinary)
 
 class configTemp():
@@ -68,25 +70,22 @@ class configTemp():
         return self._cryptoDB
     @SQLDefaultCryptoDBpath.setter
     def SQLDefaultCryptoDBpath(self, path:str) -> None:
-        engine = create_engine(path, echo=True, future=True)
+        engine = create_engine(path, echo=False, future=True)
         c = Session(engine)
-        try:
-            Base.metadata.create_all(engine)
-            stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id.in_(["0"]))
-            ctext = self.c.scalar(stmt).one()
-            if ctext == None:
-                stmt = DBschemas.cryptoTable(
-                    id = 0,
-                    ctext = b"Position Reserved",
-                    salt = b"Position Reserved",
-                    cipher = "None",
-                    saltIter = 0
-                )
-                c.add(stmt)
+        Base.metadata.create_all(engine)
+        stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == 1)
+        try: c.scalar(stmt)
         except:
-            pass
-        finally:
-            self._cryptoDB = c
+            stmt = DBschemas.cryptoTable(
+                id = 1,
+                ctext = b"Position Reserved",
+                salt = b"Position Reserved",
+                cipher = "None",
+                saltIter = 0
+            )
+            c.add(stmt)
+        c.commit()
+        self._cryptoDB = c
 
     @property
     def SQLDefaultKeyDBpath(self):
@@ -97,12 +96,11 @@ class configTemp():
         return self._altKeyDB
     @SQLDefaultKeyDBpath.setter
     def SQLDefaultKeyDBpath(self, path:str):
-        conn = create_engine(path, echo=True, future=True)
-        try:
-            Base.metadata.create_all(conn)
-        except:
-            pass
-        self._altKeyDB = Session(conn)
+        conn = create_engine(path, echo=False, future=True)
+        c = Session(conn)
+        Base.metadata.create_all(conn)
+        c.commit()
+        self._altKeyDB = c
 
     @property
     def SQLDefaultUserDBpath(self):
@@ -113,31 +111,19 @@ class configTemp():
         return self._userDB
     @SQLDefaultUserDBpath.setter
     def SQLDefaultUserDBpath(self, path:str):
-        engine = create_engine(path, echo=True, future=True)
+        engine = create_engine(path, echo=False, future=True)
         c = Session(engine)
-        try:
-            Base.metadata.create_all(engine)
-            stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == 0)
-            ctext = self.c.scalar(stmt).one()
-            if ctext == None:
-                stmt = DBschemas.cryptoTable(
-                    id = 0,
-                    ctext = b"Position Reserved",
-                    salt = b"Position Reserved",
-                    cipher = "None",
-                    saltIter = 0
-                )
-                c.add(stmt)
-        except:
-            pass
-        finally:
-            self._userDB = c
+        Base.metadata.create_all(engine)
+        c.commit()
+        self._userDB = c
 
 configs = configTemp()
 
 configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/crypto.db")
 configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/altKMS.db")
 configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/users.db")
+
+configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/cryptoDB?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
 
 open(OPENSSL_CONFIG_FILE, "w").write("""
 config_diagnostics = 1

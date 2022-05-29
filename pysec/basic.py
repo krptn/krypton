@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import text, select
+from sqlalchemy import text, select, func
 from sqlalchemy.orm import Session
 from . import configs, base, DBschemas
 SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
@@ -36,8 +36,8 @@ class kms():
         pass
 
     def getKey(self, name:str, pwd:str|bytes=None) -> bytes:
-        stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == name)
-        key:DBschemas.keysTable = self.c.scalars(stmt).one()
+        stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == name).limit(1)
+        key:DBschemas.keysTable = self.c.scalar(stmt)
         if key.cipher != configs.defaultAlgorithm:
             raise ValueError("Unsupported Cipher") # This source code can be extended to support other ciphers also 
         r = self._decipher(key.key, pwd, key.salt, key.saltIter)
@@ -73,8 +73,8 @@ class kms():
     
     def removeKey(self, name:str, pwd:str|bytes=None) -> None:
         zeromem(self.getKey(name, pwd))
-        stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == name)
-        key:DBschemas.keysTable = self.c.scalars(stmt).one()
+        stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == name).limit(1)
+        key:DBschemas.keysTable = self.c.scalar(stmt)
         self.c.delete(key)
         self.c.commit()
         return
@@ -85,8 +85,9 @@ class crypto(kms):
     '''
     def __init__(self, keyDB:Session=SQLDefaultCryptoDBpath):
         self.c:Session = keyDB
-        id = int(self.c.execute(text("SELECT MAX(id) FROM crypto")).one()[0])
-        self.id = id
+        stmt = select(func.max(DBschemas.cryptoTable.id))
+        self.id = self.c.scalar(stmt)
+        print(self.id)
         super().__init__(self.c)
     
     def exportData(self):
@@ -113,7 +114,7 @@ class crypto(kms):
         return self.id
     
     def secureRead(self, id:int, pwd:str|bytes):
-        stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == id)
+        stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == id).limit(1)
         ctext = self.c.scalar(stmt)
         key = self.getKey(str(id),pwd)
         text = self._decipher(ctext.ctext, key, ctext.salt, 0)
@@ -128,7 +129,7 @@ class crypto(kms):
     def secureDelete(self,id:int, pwd:str|bytes=None) -> None:
         zeromem(self.getKey(id,pwd))
         stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == id)
-        key:DBschemas.cryptoTable = self.c.scalars(stmt).one()
+        key:DBschemas.cryptoTable = self.c.scalar(stmt)
         self.c.delete(key)
         self.removeKey(str(id),pwd)
         return

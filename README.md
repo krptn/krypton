@@ -17,9 +17,11 @@ import pysec
 # Before doing anything else, set the default location for the databases to be used. 
 # Elsehow, it will be stores in site-packages/pysec-data.
 # It should be a string to be passed to sqlalchemy to create an engine: https://docs.sqlalchemy.org/en/14/tutorial/engine.html
-# See the above link to see what that is. 
-pysec.configs.SQLDefaultCryptoDBpath = "Path/example.db"
-pysec.configs.SQLDefaultKeyDBpath = "Path/key.db"
+# See the above link to see what that is. Please also make sure to setup the required sql drivers for your server.
+# Here are setup instructions for different servers: https://docs.sqlalchemy.org/en/14/dialects/index.html
+# For example: "mssql+pyodbc://localhost/cryptoDB?driver=ODBC+Driver+18+for+SQL+Server"
+pysec.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
+pysec.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
 # Create a instance of crypto - a class for encrypting and storing sensitive data.
 myCrypto = pysec.basic.crypto()
 # It supports C.R.U.D. operations:
