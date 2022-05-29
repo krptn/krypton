@@ -43,10 +43,7 @@ class testCryptoClass(unittest.TestCase):
             test.secureRead(a, TEST_PWD)
         except:
             working = True
-        if working:
-            self.assertFalse(False)
-        else:
-            self.assertFalse(True)
+        self.assertTrue(working)
 
 class testCryptographicUnits(unittest.TestCase):
     def testAES(self):

@@ -38,6 +38,8 @@ class kms():
     def getKey(self, name:str, pwd:str|bytes=None) -> bytes:
         stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == name).limit(1)
         key:DBschemas.keysTable = self.c.scalar(stmt)
+        if key == None:
+            raise ValueError("Such key does not exist")
         if key.cipher != configs.defaultAlgorithm:
             raise ValueError("Unsupported Cipher") # This source code can be extended to support other ciphers also 
         r = self._decipher(key.key, pwd, key.salt, key.saltIter)
@@ -87,7 +89,6 @@ class crypto(kms):
         self.c:Session = keyDB
         stmt = select(func.max(DBschemas.cryptoTable.id))
         self.id = self.c.scalar(stmt)
-        print(self.id)
         super().__init__(self.c)
     
     def exportData(self):
@@ -127,7 +128,7 @@ class crypto(kms):
         return
     
     def secureDelete(self,id:int, pwd:str|bytes=None) -> None:
-        zeromem(self.getKey(id,pwd))
+        zeromem(self.getKey(str(id),pwd))
         stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == id)
         key:DBschemas.cryptoTable = self.c.scalar(stmt)
         self.c.delete(key)

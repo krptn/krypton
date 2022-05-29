@@ -19,7 +19,7 @@ CMakeSettings.json
 openssl-install/
 openssl-config/ 
 *.pyd 
-fipsmodule.cnf 
+exampleDB/
 
 # User-specific files
 *.rsuser

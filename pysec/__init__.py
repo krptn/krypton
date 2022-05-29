@@ -73,9 +73,12 @@ class configTemp():
         engine = create_engine(path, echo=False, future=True)
         c = Session(engine)
         Base.metadata.create_all(engine)
+        error = False
         stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == 1)
-        try: c.scalar(stmt)
-        except:
+        x = None
+        try: x = c.scalar(stmt)
+        except: error = True
+        if x == None or error:
             stmt = DBschemas.cryptoTable(
                 id = 1,
                 ctext = b"Position Reserved",
@@ -123,7 +126,8 @@ configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage,
 configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/altKMS.db")
 configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/users.db")
 
-configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/cryptoDB?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
+#configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/crypto?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
+#configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"
 
 open(OPENSSL_CONFIG_FILE, "w").write("""
 config_diagnostics = 1
