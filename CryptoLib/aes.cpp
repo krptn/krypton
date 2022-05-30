@@ -13,8 +13,9 @@ int MAX_CRYPTO_LEN = 549755813632;
 const int AES_KEY_LEN = 32;
 const int IV_SALT_LEN = 12;
 const int AUTH_TAG_LEN = 16;
+const auto AES_ALGO = EVP_aes_256_gcm;
 py::bytes __cdecl AESEncrypt(char* textc, py::bytes key, int msglenc) {
-	if (key.attr("__len__")().cast<int>() != 32){
+	if (key.attr("__len__")().cast<int>() != AES_KEY_LEN){
 		throw std::invalid_argument("Key is of wrong size");
 	}
 	py::bytes ftext = py::bytes((char*)&msglenc, 1) + py::bytes(textc, msglenc);
@@ -34,7 +35,7 @@ py::bytes __cdecl AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	int ciphertext_len;
 	if (!(ctx = EVP_CIPHER_CTX_new()))
 		handleErrors();
-	if (1 != EVP_EncryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
+	if (1 != EVP_EncryptInit_ex(ctx, AES_ALGO(), NULL, NULL, NULL))
 		handleErrors();
 	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL))
 		handleErrors();
@@ -59,7 +60,7 @@ py::bytes __cdecl AESEncrypt(char* textc, py::bytes key, int msglenc) {
 }
 
 py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key){
-	if (key.attr("__len__")().cast<int>() != 32){
+	if (key.attr("__len__")().cast<int>() != AES_KEY_LEN){
 		throw std::invalid_argument("Key is of wrong size");
 	}
 	int input_len = ctext_b.attr("__len__")().cast<int>();
@@ -76,7 +77,7 @@ py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key){
 	int plaintext_len;
 	if (!(ctx = EVP_CIPHER_CTX_new()))
 		handleErrors();
-	if (!EVP_DecryptInit_ex(ctx, EVP_aes_256_gcm(), NULL, NULL, NULL))
+	if (!EVP_DecryptInit_ex(ctx, AES_ALGO(), NULL, NULL, NULL))
 		handleErrors();
 	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL))
 		handleErrors();
