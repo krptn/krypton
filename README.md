@@ -61,19 +61,13 @@ To install the extension and not produce debuging symbols:
 pip install . 
 ```
 # Use custom databases
-https://docs.sqlalchemy.org/en/14/dialects/index.html
-
 Here is an example for how to set the database to be used:
 ```python
 import pysec
 pysec.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
 pysec.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
-# You should set it to a string to be passed to SQLAlchemy to create an engine.
-# Here are instructions for different servers: https://docs.sqlalchemy.org/en/14/dialects/index.html
-# In the above link please click the ODBC that you want to use to see the connection string. 
-# For example with Microsoft SQL Server with pyodbc and Windows Authentication:
-# "mssql+pyodbc://localhost/cryptoDB?driver=ODBC+Driver+18+for+SQL+Server"
 ```
+To see what these strings should contain please see [Databases](DATABASES.md)
 
 # Planned: 
 - APIs for other languages

@@ -29,8 +29,8 @@ py::bytes __cdecl pySHA512(py::bytes text);
 
 // ECC
 py::tuple __cdecl createECCKey();
-py::bytes __cdecl getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter);
+py::bytes __cdecl getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter, int keylen);
 int getPubKey(EVP_PKEY *pkey, char* out);
 int getPrivKey(EVP_PKEY *pkey, char* out);
-int setPubKey(EVP_PKEY *pkey, char* key, int len);
-int setPrivKey(EVP_PKEY *pkey, char* key, int len);
+int setPubKey(EVP_PKEY **pkey, char* key, int len);
+int setPrivKey(EVP_PKEY **pkey, char* key, int len);

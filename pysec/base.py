@@ -18,12 +18,12 @@ def base64decode(data:str|bytes) -> bytes|str:
     return __CryptoLib.base64decode(data, len(data))
 def createECCKey() -> tuple[bytes, bytes]: # returns (privateKey, PubKey)
     return __CryptoLib.createECCKey()
-def ECDH(privKey:str, peerPubKey:str, salt:bytes, hashNum:int=configs.defaultIterations) -> bytes:
-    return __CryptoLib.getECCSharedKey(privKey, peerPubKey, salt, hashNum)
-def getSharedKey(privKey:str, peerName:str, salt:bytes, hashNum:int=configs.defaultIterations) -> bytes:
+def ECDH(privKey:str, peerPubKey:str, salt:bytes, hashNum:int=configs.defaultIterations, keylen:int=32) -> bytes:
+    return __CryptoLib.getECCSharedKey(privKey, peerPubKey, salt, hashNum, keylen)
+def getSharedKey(privKey:str, peerName:str, salt:bytes, hashNum:int=configs.defaultIterations, keylen:int=32) -> bytes:
     stmt = select(DBschemas.pubKeyTable).where(DBschemas.pubKeyTable.name == peerName)
     key = configs.SQLDefaultUserDBpath.scalar(stmt)["key"]
-    return __CryptoLib.getSharedKey(privKey, key, salt, hashNum)
+    return __CryptoLib.getSharedKey(privKey, key, salt, hashNum, keylen)
 def PBKDF2(text:str|bytes, salt:str|bytes, iter:int, keylen:int=32) -> bytes:
     return __CryptoLib.PBKDF2(text, len(text), salt, iter, len(salt), keylen)
 
