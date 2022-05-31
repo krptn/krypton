@@ -71,7 +71,7 @@ class configTemp():
         return self._cryptoDB
     @SQLDefaultCryptoDBpath.setter
     def SQLDefaultCryptoDBpath(self, path:str) -> None:
-        engine = create_engine(path, echo=True, future=True)
+        engine = create_engine(path, echo=False, future=True)
         c = Session(engine)
         Base.metadata.create_all(engine)
         error = False
