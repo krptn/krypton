@@ -1,7 +1,6 @@
 ﻿#include "CryptoLib.h"
 #include <pybind11/pybind11.h>
 #include <openssl/provider.h>
-#include <openssl/evp.h>
 #include <openssl/err.h>
 
 #ifdef WIN
@@ -59,36 +58,6 @@ char* pymbToBuffer(py::bytes a) {
 	return buf;
 }
 
-char* base64(char* data, int length) {
-	int pl;
-	if (length%3 == 0) {
-		pl = length*4;
-	} else {
-		pl = 4*((length+(3-(length%3)))/3);
-	}
-	char* output = new char[pl+1];
-	const auto ol = EVP_EncodeBlock(reinterpret_cast<unsigned char *>(output), (const unsigned char*)data, length);
-	output[pl] = '\0';
-	return output;
-}
-
-unsigned char *decode64(char* input, int length) {
-	const auto pl = (length/4)*3;
-	unsigned char* output = new unsigned char[pl+1];
-	const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
-	output[pl] = '\0';
-	return output;
-}
-
-py::bytes py_decode64(const char* input, int length) {
-	const auto pl = (length/4)*3;
-	unsigned char* output = new unsigned char[pl+1];
-	const auto ol = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
-	output[pl] = '\0';
-	py::bytes result = py::bytes((const char*)output, pl).attr("rstrip")(py::bytes("\x00", 1));
-	return result;
-}
-
 void handleErrors() {
 	ERR_print_errors_fp(stderr);
 	throw invalid_argument("Unable to perform cryptographic operation");
@@ -112,7 +81,7 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"), py::arg("msglen"));
 	m.def("sha512", &pySHA512, "Hashes text with sha512", py::arg("text"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
-	m.def("PBKDF2", &pyPBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("textLen"), py::arg("salt"), py::arg("iter"), py::arg("saltLen"));
+	m.def("PBKDF2", &pyPBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("textLen"), py::arg("salt"), py::arg("iter"), py::arg("saltLen"), py::arg("keylen"));
 	m.def("fipsInit", &fipsInit,"Initialises openssl FIPS module.");
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("getECCSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"), 

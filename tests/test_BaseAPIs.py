@@ -57,7 +57,7 @@ class testCryptographicUnits(unittest.TestCase):
         self.assertEqual(len(kb), 32)
     def testECCKeyGen(self):
         keys = base.createECCKey()
-        self.assertTrue(keys[0].startswith("-----BEGIN PRIVATE KEY-----\n") and keys[0].endswith("\n-----END PRIVATE KEY-----\n"))
+        self.assertTrue(keys[0].startswith("-----BEGIN EC PRIVATE KEY-----\n") and keys[0].endswith("\n-----END EC PRIVATE KEY-----\n"))
         self.assertTrue(keys[1].startswith("-----BEGIN PUBLIC KEY-----\n") and keys[1].endswith("\n-----END PUBLIC KEY-----\n"))
     def testECDH(self):
         keys = base.createECCKey()

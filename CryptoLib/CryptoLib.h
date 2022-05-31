@@ -23,8 +23,8 @@ py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key);
 
 // Hashes
 int compHash(const void* a, const void* b, const size_t size);
-char* __cdecl PBKDF2(char* text, int len, char* salt, int iter, int saltLen);
-py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen);
+char* __cdecl PBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen=32);
+py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen=32);
 py::bytes __cdecl pySHA512(py::bytes text);
 
 // ECC

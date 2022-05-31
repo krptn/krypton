@@ -1,5 +1,6 @@
 ﻿import os
 import pathlib
+from tkinter.tix import Tree
 from sqlalchemy import String, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session
 import sqlalchemy
@@ -31,7 +32,7 @@ class DBschemas():
         id = Column(Integer, primary_key=True)
         ctext = Column(LargeBinary)
         salt = Column(LargeBinary)
-        cipher = Column(String)
+        cipher = Column(String(20)) # We should not need more then this
         saltIter = Column(Integer)
 
     class keysTable(Base):
@@ -40,19 +41,19 @@ class DBschemas():
         name = Column(String)
         key = Column(LargeBinary)
         salt = Column(LargeBinary)
-        cipher = Column(String)
+        cipher = Column(String(20))
         saltIter = Column(Integer)
 
     class pubKeyTable(Base):
         __tablename__ = "pubKeys"
         number = Column(Integer, primary_key=True)
-        name = Column(String)
+        name = Column(String(44))
         key = Column(LargeBinary)
 
     class userTable(Base):
         __tablename__ = "users"
         number = Column(Integer, primary_key=True)
-        name = Column(String)
+        name = Column(String(50))
         id = Column(LargeBinary)
 
 class configTemp():
@@ -70,7 +71,7 @@ class configTemp():
         return self._cryptoDB
     @SQLDefaultCryptoDBpath.setter
     def SQLDefaultCryptoDBpath(self, path:str) -> None:
-        engine = create_engine(path, echo=False, future=True)
+        engine = create_engine(path, echo=True, future=True)
         c = Session(engine)
         Base.metadata.create_all(engine)
         error = False
@@ -128,6 +129,7 @@ configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "
 
 #configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/crypto?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
 #configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"
+#configs.SQLDefaultCryptoDBpath = "mysql+pymysql://test:test@localhost:3306/cryptodb"
 
 open(OPENSSL_CONFIG_FILE, "w").write("""
 config_diagnostics = 1
