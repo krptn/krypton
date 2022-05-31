@@ -38,7 +38,7 @@ class DBschemas():
     class keysTable(Base):
         __tablename__ = "keys"
         id = Column(Integer, primary_key=True)
-        name = Column(String)
+        name = Column(String(20))
         key = Column(LargeBinary)
         salt = Column(LargeBinary)
         cipher = Column(String(20))
@@ -129,7 +129,7 @@ configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "
 
 #configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/crypto?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
 #configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"
-configs.SQLDefaultCryptoDBpath = "mysql+pymysql://test:test@localhost:3306/cryptodb"
+#configs.SQLDefaultCryptoDBpath = "mysql+pymysql://test:test@localhost:3306/cryptodb"
 
 open(OPENSSL_CONFIG_FILE, "w").write("""
 config_diagnostics = 1

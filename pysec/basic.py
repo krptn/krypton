@@ -49,6 +49,8 @@ class kms():
         
 
     def createNewKey(self, name:str, pwd:str|bytes=None) -> str:
+        if len(name) > 20:
+            raise ValueError("Name must be less then 20 characters long")
         stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == "name")
         a = True
         try: self.c.scalars(stmt).one()
