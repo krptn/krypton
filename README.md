@@ -32,6 +32,12 @@ Being Developed
 # Integration with web frameworks
 To be made after User Auth 
 
+# Crypto Class
+[Crypto Class](README-CRYPTO.md)
+
+# Key Management System
+[Key Management System](README-KMS.md)
+
 # Use custom databases
 Here is an example for how to set the database to be used:
 ```python
