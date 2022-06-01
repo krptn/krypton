@@ -1,4 +1,4 @@
-![DevSkim Analysis](https://github.com/mbs9org/PySec/actions/workflows/CodeReview.yml/badge.svg) -> see security/result.sarif (plenty of false positives) for JSON representation (analysis by https://github.com/marketplace/actions/devskim). 
+[![Python Lint](https://github.com/mbs9org/PySec/actions/workflows/pyTest.yml/badge.svg?event=pull_request)](https://github.com/mbs9org/PySec/actions/workflows/pyTest.yml)
 
 **Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want there code to be used for such purposes. 
 
@@ -14,12 +14,7 @@ View aditional security mitigations: [Security Features](security/sec_feature_pl
 # Crypto 
 ```python
 import pysec
-# Before doing anything else, set the default location for the databases to be used. 
-# Elsehow, it will be stores in site-packages/pysec-data.
-# It should be a string to be passed to sqlalchemy to create an engine: https://docs.sqlalchemy.org/en/14/tutorial/engine.html
-# See the above link to see what that is. Please also make sure to setup the required sql drivers for your server.
-# Here are setup instructions for different servers: https://docs.sqlalchemy.org/en/14/dialects/index.html
-# For example: "mssql+pyodbc://localhost/cryptoDB?driver=ODBC+Driver+18+for+SQL+Server"
+# Setting these DBpaths are optional but strongly recomeneded. Please see Databases section for more info on this. 
 pysec.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
 pysec.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
 # Create a instance of crypto - a class for encrypting and storing sensitive data.
@@ -37,7 +32,16 @@ Being Developed
 # Integration with web frameworks
 To be made after User Auth 
 
-# Optional: store keys in HSMs so Admin can decrypt user data
+# Use custom databases
+Here is an example for how to set the database to be used:
+```python
+import pysec
+pysec.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
+pysec.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
+```
+To see what these strings should contain please see [Databases](DATABASES.md)
+
+# Optional: store keys in HSM
 After integrations with web frameworks
 
 # Build/Setup the extension for development
@@ -60,14 +64,6 @@ To install the extension and not produce debuging symbols:
 ```shell
 pip install . 
 ```
-# Use custom databases
-Here is an example for how to set the database to be used:
-```python
-import pysec
-pysec.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
-pysec.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
-```
-To see what these strings should contain please see [Databases](DATABASES.md)
 
 # Planned: 
 - APIs for other languages
