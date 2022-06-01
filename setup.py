@@ -69,7 +69,12 @@ setup(name='pysec',
     "../openssl-config/fipsmodule.cnf"]},
   packages=['pysec'],
   python_requires=">3.8",
-  requires=["SQLAlchemy"],
+  install_requires=["SQLAlchemy"],
+  extras_require={
+        "MSSQL": ["pyodbc"],
+        "MySQL": ["mysqlclient"],
+        "PostgreSQL": ["psycopg2"]
+  },
   include_package_data=True,
   cmdclass={
     'install': completeInstall,
@@ -81,5 +86,5 @@ setup(name='pysec',
     include_dirs=["openssl-install/include","CryptoLib"],
     library_dirs=["openssl-install/lib"],
     libraries=link_libararies,
-    define_macros=macros)]
+    define_macros=macros)],
 )

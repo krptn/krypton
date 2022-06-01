@@ -2,7 +2,6 @@ import unittest
 from pysec.basic import crypto, kms
 from pysec import base
 import os
-import time
 
 TEST_PWD = "Example"
 TEST_TEXT = "Example"
@@ -62,8 +61,10 @@ class testCryptographicUnits(unittest.TestCase):
     def testECDH(self):
         keys = base.createECCKey()
         keys2 = base.createECCKey()
-        key = base.ECDH(keys[0], keys2[1], os.urandom(12))
+        salt = os.urandom(12)
+        key = base.ECDH(keys[0], keys2[1], salt, keylen=32)
         self.assertEqual(len(key), 32)
+        self.assertEqual(key, base.ECDH(keys[0], keys2[1], salt, keylen=32))
     def testBase64(self):
         text = "fdgdfgfdgdfsr"
         b64 = base.base64encode(text)

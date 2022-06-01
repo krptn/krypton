@@ -17,9 +17,9 @@ To you windows authentication, please remove user:password from the string.
 
 
 ## MySQL
-Please install [pymysql](https://pypi.org/project/PyMySQL/). 
+Please install [mysqlclient](https://pypi.org/project/mysqlclient/). 
 ```python
-"mysql+pymysql://user:password@host:port/database"
+"mysql+mysqldb://user:password@host:port/database"
 ```
 
 ## SQLite

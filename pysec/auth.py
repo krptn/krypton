@@ -53,6 +53,7 @@ class user(metaclass=ABCMeta):
 class standardUser(user):
     _userName:str = ""
     __key:bytes
+    saved = True
     def __init__(self, userName:str) -> None:
         super().__init__()
         self.c = SQLDefaultUserDBpath
@@ -60,7 +61,7 @@ class standardUser(user):
         stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName).limit(1)
         try: self.id = self.c.scalar(stmt)[0]
         except:
-            self.__saveNewUser()
+            self.saved = False
             stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName).limit(1)
             self.id = self.c.scalar(stmt)[0]
         
@@ -105,7 +106,9 @@ class standardUser(user):
     def createOTP(self):
         pass
     
-    def __saveNewUser(self):
+    def saveNewUser(self):
+        if self.saved:
+            raise ValueError("This user is already saved.")
         salt = os.urandom(12)
         self.id = base.base64encode(base.PBKDF2(self._userName, salt, configs.defaultIterations))
         keys = base.createECCKey()
