@@ -1,10 +1,17 @@
 import os
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
+from datetime import date, datetime
 from . import configs, base, DBschemas
 SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
 from .base import _restEncrypt, _restDecrypt, zeromem, PBKDF2
+
+class KeyManagementError(Exception):
+    def __init__(self, *args: object) -> None:
+        self.message = args[0]
+    def __str__(self) -> str:
+        return self.message
 
 class kms():
     def _cipher(self, text:str|bytes, pwd:str|bytes, salt:bytes, iter:int):
@@ -35,22 +42,25 @@ class kms():
     def importKeys(self):
         pass
 
-    def getKey(self, name:str, pwd:str|bytes=None) -> bytes:
+    def getKey(self, name:str, pwd:str|bytes=None, force:bool=False) -> bytes:
         stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == name).limit(1)
         key:DBschemas.keysTable = self.c.scalar(stmt)
         if key == None:
             raise ValueError("Such key does not exist")
+        if datetime.now().year - key.year >= configs.defaultCryptoperiod and not force:
+            raise KeyManagementError("This key has expired. Please add force to the argument to retrieve it anyway. Please update or remove/create the key to regenerate a new one.")
         if key.cipher != configs.defaultAlgorithm:
             raise ValueError("Unsupported Cipher") # This source code can be extended to support other ciphers also 
         r = self._decipher(key.key, pwd, key.salt, key.saltIter)
         if r[-1] != 36: ## Problem
-            raise KeyError("Wrong passwords have been provided.")
+            raise ValueError("Wrong passwords have been provided.")
         return base.base64decode(r[:-1])
         
 
     def createNewKey(self, name:str, pwd:str|bytes=None) -> str:
         if len(name) > 20:
             raise ValueError("Name must be less then 20 characters long")
+        now = 100
         stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == "name")
         a = True
         try: self.c.scalars(stmt).one()
@@ -69,14 +79,15 @@ class kms():
             key = ek,
             salt = s,
             cipher = configs.defaultAlgorithm,
-            saltIter = configs.defaultIterations
+            saltIter = configs.defaultIterations,
+            year = now
         )
         self.c.add(key)
         self.c.commit()
         return k
     
     def removeKey(self, name:str, pwd:str|bytes=None) -> None:
-        zeromem(self.getKey(name, pwd))
+        zeromem(self.getKey(name, pwd, True))
         stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == name).limit(1)
         key:DBschemas.keysTable = self.c.scalar(stmt)
         self.c.delete(key)
@@ -119,8 +130,14 @@ class crypto(kms):
     def secureRead(self, id:int, pwd:str|bytes):
         stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == id).limit(1)
         ctext = self.c.scalar(stmt)
-        key = self.getKey(str(id),pwd)
+        reset = False
+        try: key = self.getKey(str(id), pwd)
+        except KeyManagementError:
+            reset = True
+            key = self.getKey(str(id), pwd, True)
         text = self._decipher(ctext.ctext, key, ctext.salt, 0)
+        if reset:
+            self.secureUpdate(id, text, pwd)
         zeromem(key)
         return text
     
@@ -130,7 +147,7 @@ class crypto(kms):
         return
     
     def secureDelete(self,id:int, pwd:str|bytes=None) -> None:
-        zeromem(self.getKey(str(id),pwd))
+        zeromem(self.getKey(str(id), pwd, True))
         stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == id)
         key:DBschemas.cryptoTable = self.c.scalar(stmt)
         self.c.delete(key)

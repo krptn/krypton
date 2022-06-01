@@ -36,7 +36,7 @@ To be made after User Auth
 [Crypto Class](README-CRYPTO.md)
 
 # Key Management System
-[Key Management System](README-KMS.md)
+This module uses a custom Key Management System that aims to conform to all NIST Recomendations. This contains a low-level interface and is not recomended to be called directly: it's primary purpose is to help other high-level interfaces. 
 
 # Use custom databases
 Here is an example for how to set the database to be used:

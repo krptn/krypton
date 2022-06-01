@@ -1,5 +1,9 @@
 # Custom Databases 
 
+**Warning**: While all data that is saved to these databases are encrypted where necessary, please make sure that passwords for user accounts, user privileges, backup, etc. are properly configured in the database. Just because the data is encrypted, an unauthorized user can still delete it. 
+
+Internally, these strings are passed to SQLAlchemy to create an engine. To add extra connection parameters, please refer to SQLAlchemy's and/or your chosen database's SQL Driver documentation. 
+
 ## Microsoft SQL Server
 You need to install [pyodbc](https://pypi.org/project/pyodbc/) and [Microsoft ODBC Driver for SQL Server](https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver16)
 

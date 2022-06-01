@@ -43,6 +43,7 @@ class DBschemas():
         salt = Column(LargeBinary)
         cipher = Column(String(20))
         saltIter = Column(Integer)
+        year = Column(Integer)
 
     class pubKeyTable(Base):
         __tablename__ = "pubKeys"
@@ -59,6 +60,7 @@ class DBschemas():
 class configTemp():
     defaultAlgorithm = "AES256GCM"
     defaultIterations = 500000
+    defaultCryptoperiod = 2
     _cryptoDB:sqlalchemy.engine = None
     _altKeyDB:sqlalchemy.engine = None
     _userDB:sqlalchemy.engine = None
@@ -129,7 +131,7 @@ configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "
 
 #configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/crypto?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
 #configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"
-configs.SQLDefaultCryptoDBpath = "mysql+mysqldb://test:test@localhost:3306/cryptodb"
+#configs.SQLDefaultCryptoDBpath = "mysql+mysqldb://test:test@localhost:3306/cryptodb"
 
 open(OPENSSL_CONFIG_FILE, "w").write("""
 config_diagnostics = 1

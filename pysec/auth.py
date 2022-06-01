@@ -54,6 +54,8 @@ class standardUser(user):
     _userName:str = ""
     __key:bytes
     saved = True
+    logedin = False
+    keys:basic.kms
     def __init__(self, userName:str) -> None:
         super().__init__()
         self.c = SQLDefaultUserDBpath
@@ -73,10 +75,10 @@ class standardUser(user):
         SQLDefaultUserDBpath.commit()
     
     def getData(self, __name: str) -> any:
-        result = self.c.execute(
+        result = self.c.scalar(
             text("SELECT value FROM :id WHERE key=:name"), 
             {"name":__name, "id":self.id}
-        ).fetchone()["value"]
+        ).value # Don't forget to check backuped keys to decrypt data 
         if result == None:
             raise AttributeError()
         return result
@@ -85,11 +87,10 @@ class standardUser(user):
         pass
 
     def login(self, pwd:str, mfaToken:int|None=None):
-        keys = basic.kms(SQLDefaultUserDBpath)
-        self.__key = keys.getKey(self.id, pwd)
-        if datetime.now().year - datetime(self.getData("accountKeysCreation")) > 1: # As specified in https://csrc.nist.gov/Projects/Key-Management/Key-Management-Guidelines
-            self.generateNewKeys()   # Note: this does not extend to passwords as it makes people use simple, easy to remember, and repteaded passwords
-            self.setData("accountKeysCreation", datetime.now()) # https://www.sans.org/blog/time-for-password-expiration-to-die/ 
+        self.keys = basic.kms(SQLDefaultUserDBpath)
+        try: self.__key = self.keys.getKey(self.id, pwd)
+        except: self.generateNewKeys()
+        self.logedin = True
 
     def logout(self):
         pass
@@ -113,40 +114,49 @@ class standardUser(user):
         self.id = base.base64encode(base.PBKDF2(self._userName, salt, configs.defaultIterations))
         keys = base.createECCKey()
         self.pubKey = keys[0]
-        self.privKey = keys[1]
+        self.__privKey = keys[1]
         self.c.execute("CREATE TABLE {id} (key text, value blob)".format(self.id))
         key = DBschemas.pubKeyTable(
             name = self.id,
             key = self.pubKey
         )
         self.c.add(key)
-        self.setData("userPrivateKey", self.privKey)
+        self.setData("userPrivateKey", self.__privKey)
         self.setData("userPublicKey", self.pubKey)
         self.setData("userSalt", salt)
-        self.setData("accountKeysCreation", datetime.now().year)
         self.setData("backupKeys", pickle.dumps([]))
+        self.setData("backupAESKeys", pickle.dumps([]))
 
     def decryptWithUserKey(self, data:str|bytes, sender:str) -> bytes: # Will also need to check the backup keys if decryption fails
-        key = base.getSharedKey(self.privKey, sender)
+        key = base.getSharedKey(self.__privKey, sender)
         
     
     def encryptWithUserKey(self, data:str|bytes, otherUsers:list[str]) -> list[tuple[str, bytes, bytes]]:
         salts = [os.urandom(12) for name in otherUsers]
-        AESKeys = [base.getSharedKey(self.privKey, name, salts[i], configs.defaultIterations) 
+        AESKeys = [base.getSharedKey(self.__privKey, name, salts[i], configs.defaultIterations) 
             for i, name in enumerate(otherUsers)]
         results = [base._restEncrypt(data, key) for key in AESKeys]
         for i in AESKeys: base.zeromem(i)
         return zip(otherUsers, results, salts)
 
-    def generateNewKeys(self): # Both symetric and Public/Private 
+    def generateNewKeys(self, pwd): # Both symetric and Public/Private 
         keys = base.createECCKey()
         backups = self.getData("backupKeys")
         backupList:list[bytes] = pickle.loads(backups)
-        backupList.append(self.privKey)
+        backupList.append(self.__privKey)
         self.setData("backupKeys", pickle.dumps(backupList))
         for x in backups: base.zeromem(x)
         base.zeromem(backups)
-        self.privKey = keys[0]
+        backups = self.getData("backupAESKeys")
+        backupList:list[bytes] = pickle.loads(backups)
+        backupList.append(self.__key)
+        self.setData("backupAESKeys", pickle.dumps(backupList))
+        for x in backups: base.zeromem(x)
+        base.zeromem(backups)
+
+        self.keys.removeKey(self.id, pwd)
+        self.__key = self.keys.createNewKey(self.id, pwd)
+        self.__privKey = keys[0]
         self.pubKey = keys[1]
         stmt = select(DBschemas.pubKeyTable).where(DBschemas.pubKeyTable.name == self.id)
         stmt = self.c.scalar(stmt)
@@ -156,6 +166,6 @@ class standardUser(user):
             key = self.pubKey
         )
         self.c.add(key)
-        self.setData("userPrivateKey", self.privKey)
+        self.setData("userPrivateKey", self.__privKey)
         self.setData("userPublicKey", self.pubKey)
         self.setData("accountKeysCreation", datetime.now().year)
