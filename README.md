@@ -8,22 +8,20 @@
 - Easy API
 - FIPS Validated Cryptography (via OPENSSL)
 - Planned User Authentication with OAuth integration
+- Planned integration with popular web frameworks
 
 View aditional security mitigations: [Security Features](security/sec_feature_plan.md)
 
-# Crypto 
+### Example usage of the Crypto Class: 
 ```python
-import pysec
-# Setting these DBpaths are optional but strongly recomeneded. Please see Databases section for more info on this. 
-pysec.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
-pysec.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
+from pysec import basic
 # Create a instance of crypto - a class for encrypting and storing sensitive data.
-myCrypto = pysec.basic.crypto()
+myCrypto = basic.crypto()
+pwd = "Perhaps provided by the user"
 # It supports C.R.U.D. operations:
-id = myCrypto.secureCreate("Example data", 
-    "Password - perhaps provided by the user") #id is an intiger
-print("The data is", myCrypto.secureRead(id, 
-        "Password - perhaps provided by the user"))
+id = myCrypto.secureCreate("Example data", pwd) #id is an intiger
+print("The data is:")
+print(myCrypto.secureRead(id, pwd)) # prints Example data
 ```
 
 # User Auth

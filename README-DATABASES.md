@@ -4,6 +4,13 @@
 
 Internally, these strings are passed to SQLAlchemy to create an engine. To add extra connection parameters, please refer to SQLAlchemy's and/or your chosen database's SQL Driver documentation. 
 
+Please set these strings at:
+```python
+pysec.configs.SQLDefaultCryptoDBpath = # for DB used by Crypto Class
+pysec.configs.SQLDefaultKeyDBpath =  # for DB used by Key Management System (you most likely don't need this)
+pysec.configs.SQLDefaultUserDBpath = # for DB used by User Authentication System 
+```
+
 ## Microsoft SQL Server
 You need to install [pyodbc](https://pypi.org/project/pyodbc/) and [Microsoft ODBC Driver for SQL Server](https://docs.microsoft.com/en-us/sql/connect/odbc/download-odbc-driver-for-sql-server?view=sql-server-ver16)
 
