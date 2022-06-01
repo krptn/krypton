@@ -6,7 +6,7 @@ Usage is dead simple. It automatically regenerates key after the number of years
 from pysec.basic import crypto
 
 cryptoObject = crypto()
-id = cryptoObject.secureCreate("data", "pwd") # returns an intiger
+id = cryptoObject.secureCreate("data", "pwd") # returns an integer
 print("Reading data:")
 print(cryptoObject.secureRead(id, "pwd")) # Prints data
 
