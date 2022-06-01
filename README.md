@@ -39,7 +39,7 @@ import pysec
 pysec.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
 pysec.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
 ```
-To see what these strings should contain please see [Databases](DATABASES.md)
+To see what these strings should contain please see [Databases](README-DATABASES.md)
 
 # Optional: store keys in HSM
 After integrations with web frameworks
