@@ -6,7 +6,7 @@ Simple, pythonic configuration:
 ```python
 import pysec
 
-pysec.defaultAlgorithm = "exmaple: AES256GCM" # Sets which symetric cipher to use (currently only AES256GCM is supported)
+pysec.defaultAlgorithm = "exmaple: AES256GCM" # Sets which symmetric cipher to use (currently only AES256GCM is supported)
 
 pysec.defaultIterations = 600000 # Number of iterations for PBKDF2
 
