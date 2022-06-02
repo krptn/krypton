@@ -45,6 +45,9 @@ pysec.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
 ```
 To see what these strings should contain please see [Databases](README-DATABASES.md)
 
+# Settings
+[Configurations](README-CONFIGS.md)
+
 # Optional: store keys in HSM
 After integrations with web frameworks
 
