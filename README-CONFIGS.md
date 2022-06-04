@@ -10,7 +10,7 @@ pysec.configs.defaultAlgorithm = "exmaple: AES256GCM" # Sets which symmetric cip
 
 pysec.configs.defaultIterations = 600000 # Number of iterations for PBKDF2
 
-pysec.configs.defaultCryptoperiod = 2 # Approx. Number of years for the cryptoperiod of a key
+pysec.configs.defaultCryptoperiod = 2 # Approx. number of years for the cryptoperiod of a key
 ```
 
 For the following settings please see [Databases](README-DATABASES.md) 
