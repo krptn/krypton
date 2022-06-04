@@ -6,11 +6,11 @@ Simple, pythonic configuration:
 ```python
 import pysec
 
-pysec.defaultAlgorithm = "exmaple: AES256GCM" # Sets which symmetric cipher to use (currently only AES256GCM is supported)
+pysec.configs.defaultAlgorithm = "exmaple: AES256GCM" # Sets which symmetric cipher to use (currently only AES256GCM is supported)
 
-pysec.defaultIterations = 600000 # Number of iterations for PBKDF2
+pysec.configs.defaultIterations = 600000 # Number of iterations for PBKDF2
 
-pysec.defaultCryptoperiod = 2 # Approx. Number of years for the cryptoperiod of a key
+pysec.configs.defaultCryptoperiod = 2 # Approx. Number of years for the cryptoperiod of a key
 ```
 
 For the following settings please see [Databases](README-DATABASES.md) 
