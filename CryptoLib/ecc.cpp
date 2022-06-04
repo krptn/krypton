@@ -112,9 +112,9 @@ py::bytes __cdecl getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, 
 	EVP_PKEY* peerkey = NULL;
 	EVP_PKEY_CTX *ctx;
 	size_t secretLen;
-	char* privk = pymbToBuffer(privKey.attr("encode")());
+	char* privk = pyStrToBuffer(privKey);
 	setPrivKey(&pkey, privk, privKey.attr("__len__")().cast<int>());
-	char* pubk = pymbToBuffer(pubKey.attr("encode")());
+	char* pubk = pyStrToBuffer(pubKey);
 	setPubKey(&peerkey, pubk, privKey.attr("__len__")().cast<int>());
 	ctx = EVP_PKEY_CTX_new(pkey, NULL);
 	if(!ctx) handleErrors();

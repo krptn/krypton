@@ -1,7 +1,7 @@
 import os
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
-from datetime import date, datetime
+from datetime import datetime
 from . import configs, base, DBschemas
 SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
@@ -60,7 +60,6 @@ class kms():
     def createNewKey(self, name:str, pwd:str|bytes=None) -> str:
         if len(name) > 20:
             raise ValueError("Name must be less then 20 characters long")
-        now = 100
         stmt = select(DBschemas.keysTable).where(DBschemas.keysTable.name == "name")
         a = True
         try: self.c.scalars(stmt).one()
@@ -80,7 +79,7 @@ class kms():
             salt = s,
             cipher = configs.defaultAlgorithm,
             saltIter = configs.defaultIterations,
-            year = now
+            year = datetime.today().year
         )
         self.c.add(key)
         self.c.commit()

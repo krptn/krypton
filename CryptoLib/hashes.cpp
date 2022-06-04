@@ -40,13 +40,3 @@ py::bytes __cdecl pyPBKDF2(char* text, int len, char* salt, int iter, int saltLe
 	return py::bytes(key, keylen);
 }
 
-py::bytes __cdecl pySHA512(py::bytes text) {
-	char result[64];
-	int len;
-	char c_text = text.begin().cast<char>();
-	EVP_Q_digest(NULL, "sha512", NULL, &c_text, 
-		text.attr("__len__")().cast<int>(), (unsigned char*)&result, 
-		(size_t *)&len);
-	py::bytes bytes_result = py::bytes((const char*)&result, len);
-	return bytes_result;
-}
