@@ -1,6 +1,6 @@
 # Configuration
 
-**Note:** a change in settings will not result in decryption and re-encryption of data to apply the settings. Instead they are applied when new data is encrypted or modified - thereby slowly phasing out the old configuration. 
+**Note:** a change in settings will not result in decryption and re-encryption of data to apply the changes. Instead they are applied when new data is encrypted or old data modified - thereby slowly phasing out the old configuration. 
 
 Simple, pythonic configuration:
 ```python
