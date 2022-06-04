@@ -70,10 +70,23 @@ class testCryptographicUnits(unittest.TestCase):
         b64 = base.base64encode(text)
         t = base.base64decode(b64)
         self.assertEqual(text, t.decode())
-"""
-class testUserAuth(unittest.TestCase):
-    pass
-"""
+
+class testAuth(unittest.TestCase):
+    def testCreateNewUser(self):
+        pass
+    def testResetPWD(self):
+        pass
+    def testEncrypt(self):
+        pass
+    def testDecrypt(self):
+        pass
+    def testMFA(self):
+        pass
+    def testOTP(self):
+        pass
+    def testLoginOut(self):
+        pass
+
 if __name__ == "__main__":
     unittest.main()
 
