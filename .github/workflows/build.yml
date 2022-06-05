@@ -1,4 +1,4 @@
-name: Create Wheel
+name: Live Test
 on:
   workflow_dispatch:
 
@@ -17,8 +17,8 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
           cd ${{ github.workspace }}
-          mkdr openssl-config
-          mkdr openssl-install
+          mkdir openssl-config
+          mkdir openssl-install
       - name: Build
         run: |
           cd '${{ github.workspace }}/openssl'
