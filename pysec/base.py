@@ -1,10 +1,10 @@
 import ctypes
 import sys
+import __CryptoLib
 from sqlalchemy import select
 from . import configs, DBschemas
 
 Adrr = id
-import __CryptoLib
 #Load FIPS Validated resolver 
 __CryptoLib.fipsInit() 
 

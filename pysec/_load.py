@@ -4,12 +4,12 @@ from sqlalchemy import String, create_engine, Column, Integer, LargeBinary, sele
 from sqlalchemy.orm import declarative_base, Session
 import sqlalchemy
 
-sitePackage = pathlib.Path(__file__).parent.parent.as_posix()
+SITE_PACKAGE = pathlib.Path(__file__).parent.parent.as_posix()
 
-OPENSSL_CONFIG = os.path.join(sitePackage, "openssl-config")
+OPENSSL_CONFIG = os.path.join(SITE_PACKAGE, "openssl-config")
 OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG, "openssl.cnf")
-OPENSSL_BIN = os.path.join(sitePackage, "openssl-install/bin")
-OPENSSL_MODULES = os.path.join(sitePackage, "openssl-install/lib/ossl-modules")
+OPENSSL_BIN = os.path.join(SITE_PACKAGE, "openssl-install/bin")
+OPENSSL_MODULES = os.path.join(SITE_PACKAGE, "openssl-install/lib/ossl-modules")
 
 os.add_dll_directory(OPENSSL_BIN)
 os.add_dll_directory(OPENSSL_MODULES)
@@ -118,9 +118,9 @@ class configTemp():
 
 configs = configTemp()
 
-configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/crypto.db")
-configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/altKMS.db")
-configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(sitePackage, "pysec-data/users.db")
+configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(SITE_PACKAGE, "pysec-data/crypto.db")
+configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(SITE_PACKAGE, "pysec-data/altKMS.db")
+configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(SITE_PACKAGE, "pysec-data/users.db")
 
 #configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/crypto?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
 #configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"

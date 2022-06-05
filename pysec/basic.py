@@ -22,7 +22,7 @@ class kms():
             r = _restEncrypt(text, key)
             zeromem(key)
             return r
- #Will also need to check the level of HSM: only master key or all keys. 
+ #Will also need to check the level of HSM: only master key or all keys.
     def _decipher(self, ctext:str|bytes, pwd:str|bytes, salt:bytes, iter:int):
         if self._HSM:
             pass
