@@ -1,4 +1,4 @@
-[![Python Lint](https://github.com/mbs9org/PySec/actions/workflows/pyTest.yml/badge.svg?event=pull_request)](https://github.com/mbs9org/PySec/actions/workflows/pyTest.yml)
+[![Python Lint](https://github.com/mbs9org/PySec/actions/workflows/pyTest.yml/badge.svg)](https://github.com/mbs9org/PySec/actions/workflows/pyTest.yml)
 
 **Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want there code to be used for such purposes. 
 
