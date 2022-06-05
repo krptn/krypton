@@ -1,4 +1,5 @@
 import os
+import sys
 import pathlib
 from sqlalchemy import String, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session
@@ -11,8 +12,11 @@ OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG, "openssl.cnf")
 OPENSSL_BIN = os.path.join(SITE_PACKAGE, "openssl-install/bin")
 OPENSSL_MODULES = os.path.join(SITE_PACKAGE, "openssl-install/lib/ossl-modules")
 
-os.add_dll_directory(OPENSSL_BIN)
-os.add_dll_directory(OPENSSL_MODULES)
+if sys.platform == "win32":
+    os.add_dll_directory(OPENSSL_BIN)
+    os.add_dll_directory(OPENSSL_MODULES)
+else:
+    os.environ['PATH'] = OPENSSL_BIN + os.pathsep + OPENSSL_MODULES + os.pathsep + os.environ['PATH']
 os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
