@@ -24,10 +24,9 @@ jobs:
       - name: Build
         run: |
           cd openssl
-          sudo apt install perl
           perl Configure --prefix=${{ github.workspace }}/openssl/openssl-install --openssldir=${{ github.workspace }}/openssl/openssl-config enable-fips
-          make
-          make install
+          make -j2 
+          make -j2 install
           cd ..
       - name: Run Test
         run: |
