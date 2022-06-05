@@ -30,7 +30,7 @@ def userExistRequired(func):
             raise UserError("This user has not yet been saved.")
 
 def logon(userName):
-    stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName).limit(1)
+    stmt = select(DBschemas.UserTable.id).where(DBschemas.userTable.name == userName).limit(1)
     
 
 class user(metaclass=ABCMeta):
@@ -79,18 +79,18 @@ class standardUser(user):
     __key:bytes
     saved = True
     logedin = False
-    keys:basic.kms
+    keys:basic.KMS
     def __init__(self, userName:str) -> None:
         super().__init__()
         self.__privKey = self.getData("userPrivateKey")
         self.pubKey = self.getData("userPublicKey")
         self.c = SQLDefaultUserDBpath
         self._userName = userName
-        stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName).limit(1)
+        stmt = select(DBschemas.UserTable.id).where(DBschemas.userTable.name == userName).limit(1)
         try: self.id = self.c.scalar(stmt)[0]
         except:
             self.saved = False
-            stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName).limit(1)
+            stmt = select(DBschemas.UserTable.id).where(DBschemas.userTable.name == userName).limit(1)
             self.id = self.c.scalar(stmt)[0]
     
     @userExistRequired 
@@ -114,7 +114,7 @@ class standardUser(user):
         pass
     @userExistRequired
     def login(self, pwd:str, mfaToken:int|None=None):
-        self.keys = basic.kms(SQLDefaultUserDBpath)
+        self.keys = basic.KMS(SQLDefaultUserDBpath)
         try:
             self.__key = self.keys.getKey(self.id, pwd)
         except basic.KeyManagementError:
@@ -145,7 +145,7 @@ class standardUser(user):
         self.pubKey = keys[0]
         self.__privKey = keys[1]
         self.c.execute(f"CREATE TABLE {id} (key text, value blob)".format(id=self.id))
-        key = DBschemas.pubKeyTable(
+        key = DBschemas.PubKeyTable(
             name = self.id,
             key = self.pubKey
         )
@@ -187,10 +187,10 @@ class standardUser(user):
         self.__key = self.keys.createNewKey(self.id, pwd)
         self.__privKey = keys[0]
         self.pubKey = keys[1]
-        stmt = select(DBschemas.pubKeyTable).where(DBschemas.pubKeyTable.name == self.id)
+        stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.id)
         stmt = self.c.scalar(stmt)
         self.c.delete(stmt)
-        key = DBschemas.pubKeyTable(
+        key = DBschemas.PubKeyTable(
             name = self.id,
             key = self.pubKey
         )

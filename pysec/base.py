@@ -1,12 +1,12 @@
 import ctypes
 import sys
-import __CryptoLib
 from sqlalchemy import select
+import __CryptoLib
 from . import configs, DBschemas
 
 Adrr = id
-#Load FIPS Validated resolver 
-__CryptoLib.fipsInit() 
+#Load FIPS Validated resolver
+__CryptoLib.fipsInit()
 
 #Wrappers for __CryptoLib to help intelisense automatically figure out function arguments, etc..
 def _restEncrypt(data:str|bytes, key:bytes) -> bytes:
@@ -23,11 +23,11 @@ def createECCKey() -> tuple[bytes, bytes]:
 def ECDH(privKey:str, peerPubKey:str, salt:bytes, hashNum:int=configs.defaultIterations, keylen:int=32) -> bytes:
     return __CryptoLib.getECCSharedKey(privKey, peerPubKey, salt, hashNum, keylen)
 def getSharedKey(privKey:str, peerName:str, salt:bytes, hashNum:int=configs.defaultIterations, keylen:int=32) -> bytes:
-    stmt = select(DBschemas.pubKeyTable).where(DBschemas.pubKeyTable.name == peerName)
+    stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == peerName)
     key = configs.SQLDefaultUserDBpath.scalar(stmt)["key"]
     return __CryptoLib.getSharedKey(privKey, key, salt, hashNum, keylen)
-def PBKDF2(text:str|bytes, salt:str|bytes, iter:int, keylen:int=32) -> bytes:
-    return __CryptoLib.PBKDF2(text, len(text), salt, iter, len(salt), keylen)
+def PBKDF2(text:str|bytes, salt:str|bytes, iterations:int, keylen:int=32) -> bytes:
+    return __CryptoLib.PBKDF2(text, len(text), salt, iterations, len(salt), keylen)
 
 #C-Style function to clear the content of str and bytes
 def zeromem(obj:str)->int:

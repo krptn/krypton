@@ -1,5 +1,5 @@
 import unittest
-from pysec.basic import crypto, kms
+from pysec.basic import Crypto, KMS
 from pysec import base
 import os
 
@@ -10,7 +10,7 @@ UPDATE_TEST_TEXT = "Example2"
 class testKMS(unittest.TestCase):
     def test(self):
         id = "test Key"
-        i = kms()
+        i = KMS()
         k = i.createNewKey(id, "Example")
         a = i.getKey(id, "Example")
         i.removeKey(id, "Example")
@@ -19,22 +19,22 @@ class testKMS(unittest.TestCase):
 
 class testCryptoClass(unittest.TestCase):
     def testWriteReadDelete(self):
-        test = crypto()
+        test = Crypto()
         a = test.secureCreate(TEST_TEXT,TEST_PWD)
         b = test.secureRead(a,TEST_PWD)
         test.secureDelete(a, TEST_PWD)
         self.assertEqual(TEST_TEXT, b.decode())
-    
+
     def testWriteUpdateRead(self):
-        test = crypto()
+        test = Crypto()
         a = test.secureCreate(TEST_TEXT, TEST_PWD)
         test.secureUpdate(a,UPDATE_TEST_TEXT,TEST_PWD)
         b = test.secureRead(a,TEST_PWD)
         test.secureDelete(a, TEST_PWD)
         self.assertEqual(UPDATE_TEST_TEXT, b.decode())
-    
+
     def testWriteDelete(self):
-        test = crypto()
+        test = Crypto()
         a = test.secureCreate(TEST_TEXT, TEST_PWD)
         test.secureDelete(a, TEST_PWD)
         working = False

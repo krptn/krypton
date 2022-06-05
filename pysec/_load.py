@@ -1,3 +1,6 @@
+"""
+Loads up databases and sets configuration needed by OPENSSL FIPS module.
+"""
 import os
 import sys
 import pathlib
@@ -24,7 +27,9 @@ os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 Base = declarative_base()
 
 class DBschemas():
-    class cryptoTable(Base):
+    """Database Schema"""
+    class CryptoTable(Base):
+        """Database Schema"""
         __tablename__="crypto"
         id = Column(Integer, primary_key=True)
         ctext = Column(LargeBinary)
@@ -32,7 +37,8 @@ class DBschemas():
         cipher = Column(String(20)) # We should not need more then this
         saltIter = Column(Integer)
 
-    class keysTable(Base):
+    class KeysTable(Base):
+        """Database Schema"""
         __tablename__ = "keys"
         id = Column(Integer, primary_key=True)
         name = Column(String(20))
@@ -42,19 +48,22 @@ class DBschemas():
         saltIter = Column(Integer)
         year = Column(Integer)
 
-    class pubKeyTable(Base):
+    class PubKeyTable(Base):
+        """Database Schema"""
         __tablename__ = "pubKeys"
         number = Column(Integer, primary_key=True)
         name = Column(String(44))
         key = Column(LargeBinary)
 
-    class userTable(Base):
+    class UserTable(Base):
+        """Database Schema"""
         __tablename__ = "users"
         number = Column(Integer, primary_key=True)
         name = Column(String(44))
         id = Column(LargeBinary)
 
-class configTemp():
+class ConfigTemp():
+    """Configuration templates"""
     defaultAlgorithm = "AES256GCM"
     defaultIterations = 500000
     defaultCryptoperiod = 2
@@ -70,16 +79,22 @@ class configTemp():
         return self._cryptoDB
     @SQLDefaultCryptoDBpath.setter
     def SQLDefaultCryptoDBpath(self, path:str) -> None:
+        """
+            Connection to the default database used to store Encrypted Data.
+            Either set a string for sqlite3 database or Connection object for other databases.
+        """
         engine = create_engine(path, echo=False, future=True)
         c = Session(engine)
         Base.metadata.create_all(engine)
         error = False
-        stmt = select(DBschemas.cryptoTable).where(DBschemas.cryptoTable.id == 1)
-        x = None
-        try: x = c.scalar(stmt)
-        except: error = True
-        if x == None or error:
-            stmt = DBschemas.cryptoTable(
+        stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id == 1)
+        test = None
+        try:
+            test = c.scalar(stmt)
+        except:
+            error = True
+        if test is None or error:
+            stmt = DBschemas.CryptoTable(
                 id = 1,
                 ctext = b"Position Reserved",
                 salt = b"Position Reserved",
@@ -99,6 +114,10 @@ class configTemp():
         return self._altKeyDB
     @SQLDefaultKeyDBpath.setter
     def SQLDefaultKeyDBpath(self, path:str):
+        """
+            Connection to the default database used to store Encrypted Data.
+            Either set a string for sqlite3 database or Connection object for other databases.
+        """
         conn = create_engine(path, echo=False, future=True)
         c = Session(conn)
         Base.metadata.create_all(conn)
@@ -114,13 +133,17 @@ class configTemp():
         return self._userDB
     @SQLDefaultUserDBpath.setter
     def SQLDefaultUserDBpath(self, path:str):
+        """
+            Connection to the default database used to store Encrypted Data.
+            Either set a string for sqlite3 database or Connection object for other databases.
+        """
         engine = create_engine(path, echo=False, future=True)
         c = Session(engine)
         Base.metadata.create_all(engine)
         c.commit()
         self._userDB = c
 
-configs = configTemp()
+configs = ConfigTemp()
 
 configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(SITE_PACKAGE, "pysec-data/crypto.db")
 configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(SITE_PACKAGE, "pysec-data/altKMS.db")

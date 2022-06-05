@@ -3,9 +3,9 @@
 Usage is dead simple. It automatically regenerates key after the number of years in pysec.configs.defaultCryptoperiod have passed. 
 
 ```python
-from pysec.basic import crypto
+from pysec.basic import Crypto
 
-cryptoObject = crypto()
+cryptoObject = Crypto()
 id = cryptoObject.secureCreate("data", "pwd") # returns an integer
 print("Reading data:")
 print(cryptoObject.secureRead(id, "pwd")) # Prints data

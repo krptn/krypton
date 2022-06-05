@@ -19,14 +19,14 @@ bool fipsInit()
 	if (fips == NULL) {
 		ERR_print_errors_fp(stderr);
 		throw std::runtime_error("Failed to load fips provider.");
-		return false; 
+		return false;
 	}
 	EVP_set_default_properties(NULL, "fips=yes");
 	base = OSSL_PROVIDER_load(NULL, "base");
     if (base == NULL) {
 		ERR_print_errors_fp(stderr);
 		throw std::runtime_error("Failed to load fips provider.");
-		return false; 
+		return false;
     }
 	return true;
 }
@@ -92,11 +92,11 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"), py::arg("msglen"));
-	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len")); 
+	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len"));
 	m.def("PBKDF2", &pyPBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("textLen"), py::arg("salt"), py::arg("iter"), py::arg("saltLen"), py::arg("keylen"));
 	m.def("fipsInit", &fipsInit,"Initialises openssl FIPS module.");
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
-	m.def("getECCSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"), 
+	m.def("getECCSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"),
 		py::arg("salt"), py::arg("iter"), py::arg("keylen"));
 	m.def("base64encode", &base64, "Base 64 encode data with length.", py::arg("data"), py::arg("length"));
 	m.def("base64decode", &py_decode64, "Base 64 decode data with length.", py::arg("data"), py::arg("length"));

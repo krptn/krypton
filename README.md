@@ -13,8 +13,8 @@ View aditional security mitigations: [Security Features](security/sec_feature_pl
 ### Example usage of the Crypto Class: 
 ```python
 from pysec import basic
-# Create a instance of crypto - a class for encrypting and storing sensitive data.
-myCrypto = basic.crypto()
+# Create a instance of Crypto - a class for encrypting and storing sensitive data.
+myCrypto = basic.Crypto()
 pwd = "Perhaps provided by the user"
 # It supports C.R.U.D. operations:
 id = myCrypto.secureCreate("Example data", pwd) #id is an intiger

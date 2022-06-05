@@ -20,9 +20,9 @@ int getPubKey(EVP_PKEY *pkey, char* out) {
 	unsigned char* data = NULL;
 	size_t datalen;
 	ctx = OSSL_ENCODER_CTX_new_for_pkey(pkey, EVP_PKEY_PUBLIC_KEY, KEY_ENCODE_FORMAT, NULL, NULL);
-	if ((OSSL_ENCODER_CTX_get_num_encoders(ctx) == 0) || (ctx == NULL)) 
+	if ((OSSL_ENCODER_CTX_get_num_encoders(ctx) == 0) || (ctx == NULL))
 		handleErrors();
-	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen)) 
+	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen))
 		handleErrors();
 	if (out != NULL) {
 		memcpy_s(out, datalen, data, datalen);
@@ -40,9 +40,9 @@ int getPrivKey(EVP_PKEY *pkey, char* out) {
 	unsigned char* data = NULL;
 	size_t datalen;
 	ctx = OSSL_ENCODER_CTX_new_for_pkey(pkey, EVP_PKEY_KEYPAIR, KEY_ENCODE_FORMAT, NULL, NULL);
-	if ((OSSL_ENCODER_CTX_get_num_encoders(ctx) == 0) || (ctx == NULL)) 
+	if ((OSSL_ENCODER_CTX_get_num_encoders(ctx) == 0) || (ctx == NULL))
 		handleErrors();
-	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen)) 
+	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen))
 		handleErrors();
 	if (out != NULL) {
 		memcpy_s(out, datalen, data, datalen);
@@ -57,9 +57,9 @@ int getPrivKey(EVP_PKEY *pkey, char* out) {
 int setPubKey(EVP_PKEY **pkey, char* key, int len) {
 	OSSL_DECODER_CTX *ctx;
 	ctx = OSSL_DECODER_CTX_new_for_pkey(pkey, KEY_ENCODE_FORMAT, NULL, "EC", EVP_PKEY_PUBLIC_KEY, NULL, NULL);
-	if ((OSSL_DECODER_CTX_get_num_decoders(ctx) == 0) || (ctx == NULL)) 
+	if ((OSSL_DECODER_CTX_get_num_decoders(ctx) == 0) || (ctx == NULL))
 		handleErrors();
-	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len)) 
+	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len))
 		handleErrors();
 	OSSL_DECODER_CTX_free(ctx);
 	return 1;
@@ -68,9 +68,9 @@ int setPubKey(EVP_PKEY **pkey, char* key, int len) {
 int setPrivKey(EVP_PKEY **pkey, char* key, int len) {
 	OSSL_DECODER_CTX *ctx;
 	ctx = OSSL_DECODER_CTX_new_for_pkey(pkey, KEY_ENCODE_FORMAT, NULL, "EC", EVP_PKEY_KEYPAIR, NULL, NULL);
-	if ((OSSL_DECODER_CTX_get_num_decoders(ctx) == 0) || (ctx == NULL)) 
+	if ((OSSL_DECODER_CTX_get_num_decoders(ctx) == 0) || (ctx == NULL))
 		handleErrors();
-	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len)) 
+	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len))
 		handleErrors();
 	OSSL_DECODER_CTX_free(ctx);
 	return 1;
