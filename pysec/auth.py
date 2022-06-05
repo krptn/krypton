@@ -29,6 +29,10 @@ def userExistRequired(func):
         else:
             raise UserError("This user has not yet been saved.")
 
+def logon(userName):
+    stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName).limit(1)
+    
+
 class user(metaclass=ABCMeta):
     @abstractmethod
     def delete(self):
@@ -88,6 +92,7 @@ class standardUser(user):
             self.saved = False
             stmt = select(DBschemas.userTable.id).where(DBschemas.userTable.name == userName).limit(1)
             self.id = self.c.scalar(stmt)[0]
+    
     @userExistRequired 
     def setData(self, __name: str, __value: any) -> None:
         self.c.execute(
