@@ -21,10 +21,9 @@ jobs:
           mkdir openssl-install
       - name: Build
         run: |
-          ls
-          cd '${{ github.workspace }}/openssl'
-          ls
-          Configure --prefix=${{ github.workspace }}/openssl-install --openssldir=${{ github.workspace }}/openssl-config enable-fips
+          cd openssl
+          git pull
+          .\Configure --prefix=${{ github.workspace }}/openssl-install --openssldir=${{ github.workspace }}/openssl-config enable-fips
           make
           make install
           cd ..
