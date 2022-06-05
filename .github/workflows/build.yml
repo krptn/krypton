@@ -22,7 +22,7 @@ jobs:
       - name: Build
         run: |
           cd '${{ github.workspace }}/openssl'
-          dir 
+          ls
           ./Configure --prefix=${{ github.workspace }}/openssl-install --openssldir=${{ github.workspace }}/openssl-config enable-fips
           make
           make install
