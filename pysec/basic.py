@@ -27,7 +27,6 @@ class KMS():
             r = _restEncrypt(text, key)
             zeromem(key)
             return r
- #Will also need to check the level of HSM: only master key or all keys.
     def _decipher(self, ctext:str|bytes, pwd:str|bytes, salt:bytes, iterations:int):
         if self._HSM:
             return None
