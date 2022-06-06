@@ -26,8 +26,8 @@ jobs:
           cd openssl
           perl Configure --prefix=${{ github.workspace }}/openssl/openssl-install --openssldir=${{ github.workspace }}/openssl/openssl-config enable-fips
           make -j3 
-          make -j3 install
+          sudo make -j3 install
           cd ..
       - name: Run Test
         run: |
-          python -m unittest tests/test_BaseAPIs.py
+          sudo python -m unittest tests/test_BaseAPIs.py
