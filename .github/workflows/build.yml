@@ -46,8 +46,6 @@ jobs:
           cache: 'pip'
       - name: Install VS Tools
         uses: ilammy/msvc-dev-cmd@v1
-        with:
-          toolset: 16.XX
       - name: NASM and Perl
         run: |
             choco install nasm
