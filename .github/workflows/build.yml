@@ -53,19 +53,20 @@ jobs:
             choco install strawberryperl
       - name: Install dependencies
         run: |
+          cd ${{ github.workspace }}
           python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
-          cd ${{ github.workspace }}
           mkdir openssl-config
           mkdir openssl-install
       - name: Build
         run: |
           cd openssl
-          perl Configure --prefix=${{ github.workspace }}/openssl/openssl-install --openssldir=${{ github.workspace }}/openssl/openssl-config enable-fips
-          nmake -j3 
-          nmake -j3 install
-          cd ..
+          perl Configure --prefix=${{ github.workspace }}/openssl-install --openssldir=${{ github.workspace }}/openssl-config enable-fips
+          set CL=/MP
+          nmake
+          nmake install
       - name: Run Test
         run: |
+          cd ${{ github.workspace }} 
           pip install .
           python -m unittest tests/test_BaseAPIs.py
