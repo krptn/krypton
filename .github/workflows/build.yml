@@ -32,6 +32,7 @@ jobs:
         run: |
           pip install .
           python -m unittest tests/test_BaseAPIs.py
+  
   buildWin:
     runs-on: windows-latest
     steps:
@@ -44,7 +45,7 @@ jobs:
           python-version: '3.9'
           cache: 'pip'
       - name: Install VS Tools
-      - uses: ilammy/msvc-dev-cmd@v1
+        uses: ilammy/msvc-dev-cmd@v1
         with:
           toolset: 16.XX
       - name: NASM and Perl
