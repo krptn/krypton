@@ -76,7 +76,7 @@ void handleErrors() {
 	throw invalid_argument("Unable to perform cryptographic operation");
 }
 
-int __cdecl AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen = 0) {
+int AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen = 0) {
 	int lena;
 	if (Optionalstrlen == 0) {
 		lena = strlen(content);

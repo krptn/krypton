@@ -11,7 +11,7 @@ const int AES_KEY_LEN = 32;
 const int IV_SALT_LEN = 12;
 const auto PBKDF2_HASH_ALGO = EVP_sha512;
 
-char* __cdecl PBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen) {
+char* PBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen) {
 	py::gil_scoped_release release;
 	char* key = new char[keylen];
 	int a;
@@ -24,7 +24,7 @@ char* __cdecl PBKDF2(char* text, int len, char* salt, int iter, int saltLen, int
 	return key;
 }
 
-py::bytes __cdecl pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen) {
+py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen) {
 	if (iter == 0) {
 		return py::bytes(text, len);
 	}

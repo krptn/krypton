@@ -75,7 +75,7 @@ int setPrivKey(EVP_PKEY **pkey, char* key, int len) {
 	OSSL_DECODER_CTX_free(ctx);
 	return 1;
 }
-py::tuple __cdecl createECCKey() {
+py::tuple createECCKey() {
 	char* pubResult;
 	char* privResult;
 	EVP_PKEY_CTX *ctx;
@@ -107,7 +107,7 @@ py::tuple __cdecl createECCKey() {
 	return finalTuple;
 }
 
-py::bytes __cdecl getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter, int keylen) {
+py::bytes getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter, int keylen) {
 	EVP_PKEY* pkey = NULL;
 	EVP_PKEY* peerkey = NULL;
 	EVP_PKEY_CTX *ctx;

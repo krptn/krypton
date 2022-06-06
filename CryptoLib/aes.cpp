@@ -15,7 +15,7 @@ const int IV_SALT_LEN = 12;
 const int AUTH_TAG_LEN = 16;
 const auto AES_ALGO = EVP_aes_256_gcm;
 
-py::bytes __cdecl AESEncrypt(char* textc, py::bytes key, int msglenc) {
+py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	if (key.attr("__len__")().cast<int>() != AES_KEY_LEN){
 		throw std::invalid_argument("Key is of wrong size");
 	}
@@ -60,7 +60,7 @@ py::bytes __cdecl AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	return bresult;
 }
 
-py::bytes __cdecl AESDecrypt(py::bytes ctext_b, py::bytes key){
+py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 	if (key.attr("__len__")().cast<int>() != AES_KEY_LEN){
 		throw std::invalid_argument("Key is of wrong size");
 	}
