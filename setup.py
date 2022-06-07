@@ -12,6 +12,7 @@ with open("README.md","r") as file:
 
 link_libararies = ["libcrypto"]
 macros = []
+dynamic_links = [""]
 if sys.platform == "win32":
   link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
   macros = [("WIN", None)]
@@ -105,7 +106,7 @@ setup(name='pysec',
     ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp", 
       "CryptoLib/hashes.cpp", "CryptoLib/bases.cpp"],
     include_dirs=["openssl-install/include","CryptoLib"],
-    library_dirs=["openssl-install/lib"],
+    library_dirs=["openssl-install/lib", "openssl-install/bin"],
     libraries=link_libararies,
     define_macros=macros)],
 )

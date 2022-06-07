@@ -30,6 +30,7 @@ jobs:
           cd ..
       - name: Build
         run: |
+          pip install --upgrade build
           python -m build
       - uses: actions/upload-artifact@v3
         with:
@@ -70,6 +71,7 @@ jobs:
           nmake install
       - name: Build
         run: |
+          pip install --upgrade build
           py -m build
       - uses: actions/upload-artifact@v3
         with:
