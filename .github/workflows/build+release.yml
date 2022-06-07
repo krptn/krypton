@@ -18,7 +18,7 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           python -m pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt
+          python -m pip install -r requirements.txt
           mkdir openssl-config
           mkdir openssl-install
       - name: Build
@@ -30,7 +30,7 @@ jobs:
           cd ..
       - name: Build
         run: |
-          pip install --upgrade build
+          python -m pip install --upgrade build
           python -m build
       - uses: actions/upload-artifact@v3
         with:
@@ -58,8 +58,8 @@ jobs:
       - name: Install dependencies
         run: |
           cd ${{ github.workspace }}
-          python -m pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt
+          py -m pip install --upgrade pip setuptools wheel
+          py -m pip install -r requirements.txt
           mkdir openssl-config
           mkdir openssl-install
       - name: Build
@@ -71,7 +71,7 @@ jobs:
           nmake install
       - name: Build
         run: |
-          pip install --upgrade build
+          py -m pip install --upgrade build
           py -m build
       - uses: actions/upload-artifact@v3
         with:
