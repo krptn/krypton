@@ -25,7 +25,7 @@ int getPubKey(EVP_PKEY *pkey, char* out) {
 	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen))
 		handleErrors();
 	if (out != NULL) {
-		memcpy_s(out, datalen, data, datalen);
+		memcpy(out, data, datalen);
 	}
 	OPENSSL_free(data);
 	OSSL_ENCODER_CTX_free(ctx);
@@ -45,7 +45,7 @@ int getPrivKey(EVP_PKEY *pkey, char* out) {
 	if (!OSSL_ENCODER_to_data(ctx, &data, &datalen))
 		handleErrors();
 	if (out != NULL) {
-		memcpy_s(out, datalen, data, datalen);
+		memcpy(out, data, datalen);
 	}
 	OPENSSL_cleanse(data, datalen);
 	OPENSSL_free(data);

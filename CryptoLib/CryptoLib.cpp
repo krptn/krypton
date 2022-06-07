@@ -76,18 +76,6 @@ void handleErrors() {
 	throw invalid_argument("Unable to perform cryptographic operation");
 }
 
-int AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen = 0) {
-	int lena;
-	if (Optionalstrlen == 0) {
-		lena = strlen(content);
-	}
-	else {
-		lena = Optionalstrlen;
-	}
-	memcpy_s(buffer + len, lena, content, lena);
-	return 0;
-}
-
 PYBIND11_MODULE(__CryptoLib, m) {
 	m.doc() = "Cryptographical component of PySec. Only for use inside the PySec module.";
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));

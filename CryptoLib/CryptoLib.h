@@ -11,7 +11,6 @@
 namespace py = pybind11;
 
 // General
-int AddToStrBuilder(char* buffer, char* content, int len, int Optionalstrlen);
 unsigned char *decode64(char* input, int length);
 char* base64(char* data, int length);
 py::bytes py_decode64(const char* input, int length);
