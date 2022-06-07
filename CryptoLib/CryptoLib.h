@@ -3,6 +3,7 @@
 
 #pragma once
 #define OPENSSL_NO_DEPRECATED
+#define __STDC_WANT_LIB_EXT1__ 1
 
 #include <pybind11/pybind11.h>
 #include <openssl/evp.h>
