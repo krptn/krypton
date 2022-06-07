@@ -30,7 +30,7 @@ def userExistRequired(func):
             raise UserError("This user has not yet been saved.")
 
 def logon(userName):
-    stmt = select(DBschemas.UserTable.id).where(DBschemas.userTable.name == userName).limit(1)
+    stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName).limit(1)
     
 
 class user(metaclass=ABCMeta):
@@ -86,11 +86,11 @@ class standardUser(user):
         self.pubKey = self.getData("userPublicKey")
         self.c = SQLDefaultUserDBpath
         self._userName = userName
-        stmt = select(DBschemas.UserTable.id).where(DBschemas.userTable.name == userName).limit(1)
+        stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName).limit(1)
         try: self.id = self.c.scalar(stmt)[0]
         except:
             self.saved = False
-            stmt = select(DBschemas.UserTable.id).where(DBschemas.userTable.name == userName).limit(1)
+            stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName).limit(1)
             self.id = self.c.scalar(stmt)[0]
     
     @userExistRequired 
