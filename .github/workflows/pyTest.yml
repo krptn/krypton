@@ -23,4 +23,4 @@ jobs:
       - name: Lint with pylint
         run: |
           pip install pylint
-          pylint pysec/
+          pylint --fail-under=7 pysec/
