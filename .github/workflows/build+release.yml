@@ -35,11 +35,10 @@ jobs:
       - name: Build
         run: |
           py -m build
-      - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: actions/upload-artifact@v3
         with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
+          name: AutoBuild
+          path: ${{ github.workspace }}/dist
   
   buildWin:
     runs-on: windows-latest
@@ -81,8 +80,24 @@ jobs:
       - name: Build
         run: |
           py -m build
-      - name: Publish a Python distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: actions/upload-artifact@v3
         with:
-          user: __token__
-          password: ${{ secrets.PYPI_API_TOKEN }}
+          name: AutoBuild
+          path: ${{ github.workspace }}/dist
+
+  release:
+    runs-on: ubuntu-latest
+    steps: 
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v3
+        with:
+          name: AutoBuild
+      - uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "weeklyAuto"
+          prerelease: true
+          title: "Development Build"
+          files: |
+            LICENSE.md
+            dist/*.whl

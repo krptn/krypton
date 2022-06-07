@@ -19,10 +19,30 @@ if sys.platform == "win32":
 def finishInstall():
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib/ossl-modules/fips.so" 
   openssl_fips_conf = "openssl-config/fipsmodule.cnf"
+  openssl_conf = "openssl-config/openssl.cnf"
+  pysec_data = pathlib.Path(pathlib.Path.home(), ".pysec-data/")
   os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
     .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
-  if not pathlib.Path(os.getcwd(), "pysec-data/").exists():
-    os.mkdir("pysec-data")
+  
+  open(openssl_conf, "w").write("""
+  config_diagnostics = 1
+  openssl_conf = openssl_init
+
+  .include fipsmodule.cnf
+
+  [openssl_init]
+  providers = provider_sect
+
+  [provider_sect]
+  fips = fips_sect
+  base = base_sect
+
+  [base_sect]
+  activate = 1
+  """)
+
+  if not pysec_data.exists():
+    os.mkdir(pysec_data.as_posix())
 
 class completeInstall(install):
   def run(self):

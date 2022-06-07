@@ -14,6 +14,7 @@ OPENSSL_CONFIG = os.path.join(SITE_PACKAGE, "openssl-config")
 OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG, "openssl.cnf")
 OPENSSL_BIN = os.path.join(SITE_PACKAGE, "openssl-install/bin")
 OPENSSL_MODULES = os.path.join(SITE_PACKAGE, "openssl-install/lib/ossl-modules")
+USER_DIR = pathlib.Path.home()
 
 if sys.platform == "win32":
     os.add_dll_directory(OPENSSL_BIN)
@@ -145,27 +146,10 @@ class ConfigTemp():
 
 configs = ConfigTemp()
 
-configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(SITE_PACKAGE, "pysec-data/crypto.db")
-configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(SITE_PACKAGE, "pysec-data/altKMS.db")
-configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(SITE_PACKAGE, "pysec-data/users.db")
+configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".pysec-data/crypto.db")
+configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".pysec-data/altKMS.db")
+configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".pysec-data/users.db")
 
 #configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/crypto?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
 #configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"
 #configs.SQLDefaultCryptoDBpath = "mysql+mysqldb://test:test@localhost:3306/cryptodb"
-
-open(OPENSSL_CONFIG_FILE, "w").write("""
-config_diagnostics = 1
-openssl_conf = openssl_init
-
-.include fipsmodule.cnf
-
-[openssl_init]
-providers = provider_sect
-
-[provider_sect]
-fips = fips_sect
-base = base_sect
-
-[base_sect]
-activate = 1
-""")
