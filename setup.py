@@ -24,23 +24,24 @@ def finishInstall():
   os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
     .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
   
-  open(openssl_conf, "w").write("""
-  config_diagnostics = 1
-  openssl_conf = openssl_init
+  try: open(openssl_conf, "w").write("""
+      config_diagnostics = 1
+      openssl_conf = openssl_init
 
-  .include fipsmodule.cnf
+      .include fipsmodule.cnf
 
-  [openssl_init]
-  providers = provider_sect
+      [openssl_init]
+      providers = provider_sect
 
-  [provider_sect]
-  fips = fips_sect
-  base = base_sect
+      [provider_sect]
+      fips = fips_sect
+      base = base_sect
 
-  [base_sect]
-  activate = 1
-  """)
-
+      [base_sect]
+      activate = 1
+      """)
+  except FileNotFoundError:
+    pass
   if not pysec_data.exists():
     os.mkdir(pysec_data.as_posix())
 
