@@ -28,10 +28,6 @@ jobs:
           make -j3 
           sudo make -j3 install
           cd ..
-      - name: Run Test
-        run: |
-          pip install .
-          python -m unittest tests/test_BaseAPIs.py
       - name: Build
         run: |
           py -m build
@@ -72,11 +68,6 @@ jobs:
           set CL=/MP
           nmake
           nmake install
-      - name: Run Test
-        run: |
-          cd ${{ github.workspace }} 
-          pip install .
-          python -m unittest tests/test_BaseAPIs.py
       - name: Build
         run: |
           py -m build
