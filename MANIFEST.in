@@ -1,8 +1,11 @@
 graft openssl-install/include
-include openssl-install/lib/libcrypto.*
-include openssl-install/bin/libcrypto-3-x64.*
-include openssl-install/lib/ossl-modules/fips.*
-include openssl-install/bin/openssl.*
+include openssl-install/lib/libcrypto.lib
+include openssl-install/bin/libcrypto-3-x64.dll
+include openssl-install/lib/ossl-modules/fips.dll
+include openssl-install/bin/openssl.exe
+include openssl-install/bin/openssl
+include openssl-install/lib64/libcrypto.so
+include openssl-install/lib64/ossl-modules/fips.so
 graft openssl-config
 graft CryptoLib
 include openssl.cnf 
