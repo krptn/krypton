@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -33,40 +33,3 @@ jobs:
           python -m pip install .
           python -m unittest tests/test_BaseAPIs.py
   
-  buildWin:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          submodules: 'true'
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-          cache: 'pip'
-      - name: Install VS Tools
-        uses: ilammy/msvc-dev-cmd@v1
-      - name: NASM and Perl
-        run: |
-            choco install nasm
-            echo "C:\Program Files\NASM" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-            choco install strawberryperl
-      - name: Install dependencies
-        run: |
-          cd ${{ github.workspace }}
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install -r requirements.txt
-          mkdir openssl-config
-          mkdir openssl-install
-      - name: Build
-        run: |
-          cd openssl
-          perl Configure --prefix=${{ github.workspace }}/openssl-install --openssldir=${{ github.workspace }}/openssl-config enable-fips
-          set CL=/MP
-          nmake
-          nmake install
-      - name: Run Test
-        run: |
-          cd ${{ github.workspace }} 
-          python -m pip install .
-          python -m unittest tests/test_BaseAPIs.py
