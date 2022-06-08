@@ -12,11 +12,11 @@ with open("README.md","r") as file:
 
 link_libararies = ["libcrypto"]
 macros = []
-runtime_libs = None
+runtime_libs = ["openssl-install/lib64"]
 if sys.platform == "win32":
   link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
   macros = [("WIN", None)]
-  runtime_libs = ["openssl-install/lib64"]
+  runtime_libs = None
 
 def finishInstall():
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib64/ossl-modules/fips.so" 
