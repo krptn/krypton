@@ -8,4 +8,3 @@ include openssl-install/lib64/libcrypto.so
 include openssl-install/lib64/ossl-modules/fips.so
 graft openssl-config
 graft CryptoLib
-include openssl.cnf 
