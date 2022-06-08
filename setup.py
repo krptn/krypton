@@ -10,7 +10,7 @@ description = ""
 with open("README.md","r") as file:
   description=file.read()
 
-link_libararies = ["libcrypto"]
+link_libararies = ["crypto"]
 macros = []
 runtime_libs = ["openssl-install/lib64"]
 if sys.platform == "win32":

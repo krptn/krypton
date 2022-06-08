@@ -5,6 +5,7 @@ include openssl-install/lib/ossl-modules/fips.dll
 include openssl-install/bin/openssl.exe
 include openssl-install/bin/openssl
 include openssl-install/lib64/libcrypto.so
+include openssl-install/lib64/libcrypto.a
 include openssl-install/lib64/ossl-modules/fips.so
 graft openssl-config
 graft CryptoLib

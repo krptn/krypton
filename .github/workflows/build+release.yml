@@ -86,12 +86,7 @@ jobs:
       - uses: actions/download-artifact@v3
         with:
           name: AutoBuild
-      - uses: "marvinpinto/action-automatic-releases@latest"
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: "weeklyAuto"
-          prerelease: true
-          title: "Development Build"
-          files: |
-            LICENSE.md
-            dist/*.whl
+      - name: Release
+        run: |
+          GITHUB_TOKEN=${{ secrets.App }}
+          gh release create weeklyDev dist/*.whl -t "Weekly Auto" -p --notes "weekly dev build"
