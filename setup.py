@@ -16,7 +16,7 @@ runtime_libs = None
 if sys.platform == "win32":
   link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
   macros = [("WIN", None)]
-  runtime_libs = ["openssl-install/bin"]
+  runtime_libs = ["openssl-install/lib64"]
 
 def finishInstall():
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib64/ossl-modules/fips.so" 
@@ -107,7 +107,7 @@ setup(name='pysec',
     ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp", 
       "CryptoLib/hashes.cpp", "CryptoLib/bases.cpp"],
     include_dirs=["openssl-install/include", "CryptoLib"],
-    library_dirs=["openssl-install/lib", "openssl-install/bin"],
+    library_dirs=["openssl-install/lib", "openssl-install/lib64"],
     libraries=link_libararies,
     runtime_library_dirs=runtime_libs,
     define_macros=macros)],
