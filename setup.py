@@ -23,6 +23,8 @@ def finishInstall():
   openssl_fips_conf = "openssl-config/fipsmodule.cnf"
   openssl_conf = "openssl-config/openssl.cnf"
   pysec_data = pathlib.Path(pathlib.Path.home(), ".pysec-data/")
+  if not pysec_data.exists():
+    os.mkdir(pysec_data.as_posix())
   os.system('"openssl-install\\bin\\openssl" fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
     .format(openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
   
@@ -44,8 +46,6 @@ def finishInstall():
       """)
   except FileNotFoundError:
     pass
-  if not pysec_data.exists():
-    os.mkdir(pysec_data.as_posix())
 
 class completeInstall(install):
   def run(self):

@@ -150,6 +150,6 @@ configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".
 configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".pysec-data/altKMS.db")
 configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".pysec-data/users.db")
 
-#configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/crypto?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
+#configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/cryptodb?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
 #configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"
 #configs.SQLDefaultCryptoDBpath = "mysql+mysqldb://test:test@localhost:3306/cryptodb"
