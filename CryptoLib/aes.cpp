@@ -9,7 +9,7 @@
 using namespace std;
 namespace py = pybind11;
 
-int MAX_CRYPTO_LEN = 549755813632;
+long int MAX_CRYPTO_LEN = 549755813632;
 const int AES_KEY_LEN = 32;
 const int IV_SALT_LEN = 12;
 const int AUTH_TAG_LEN = 16;
