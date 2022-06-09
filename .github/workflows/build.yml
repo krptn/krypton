@@ -33,6 +33,6 @@ jobs:
           cd ..
       - name: Run Test
         run: |
-          python -m pip install .
+          python -m pip install -e .
           python -m unittest tests/test_BaseAPIs.py
   
