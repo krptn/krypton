@@ -5,7 +5,7 @@
 A user authentication and access management system based entirely on cryptographic primitives.
 
 What we mean by that is:
-- All Data is encrypted: any data can be request by the developer to be secured
+- All Data is encrypted (any data can be request by the developer to be secured)
 - Only the appropriate users' credentials can unlock the cryptosystem 
 
 # PySec 
