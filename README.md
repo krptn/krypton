@@ -1,5 +1,13 @@
 **Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want there code to be used for such purposes. 
 
+# What is this?
+
+A user authentication and access management system based entirely on cryptographic primitives.
+
+What we mean by that is:
+- All Data is encrypted: any data can be request by the developer to be secured
+- Only the appropriate users' credentials can unlock the cryptosystem 
+
 # PySec 
 - Secure Storage of Data
 - Authentication for Users
