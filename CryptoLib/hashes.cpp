@@ -25,9 +25,6 @@ char* PBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen)
 }
 
 py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen) {
-	if (iter == 0) {
-		return py::bytes(text, len);
-	}
 	py::gil_scoped_release release;
 	char* key = new char[keylen];
 	int a;

@@ -22,32 +22,12 @@ def finishInstall():
   os.environ["OPENSSL_MODULES"] = os.path.join(pathlib.Path(__file__).parent.as_posix(), "openssl-install/lib/ossl-modules")
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib64/ossl-modules/fips.so" 
   openssl_fips_conf = "openssl-config/fipsmodule.cnf"
-  openssl_conf = "openssl-config/openssl.cnf"
   openssl = '"openssl-install\\bin\\openssl"' if sys.platform == "win32" else './openssl-install/bin/openssl'
   pysec_data = pathlib.Path(pathlib.Path.home(), ".pysec-data/")
   if not pysec_data.exists():
     os.mkdir(pysec_data.as_posix())
   os.system('{openssl} fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
     .format(openssl=openssl, openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
-  
-  try: open(openssl_conf, "w").write("""
-      config_diagnostics = 1
-      openssl_conf = openssl_init
-
-      .include fipsmodule.cnf
-
-      [openssl_init]
-      providers = provider_sect
-
-      [provider_sect]
-      fips = fips_sect
-      base = base_sect
-
-      [base_sect]
-      activate = 1
-      """)
-  except FileNotFoundError:
-    pass
 
 class completeInstall(install):
   def run(self):
