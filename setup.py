@@ -19,6 +19,7 @@ if sys.platform == "win32":
   runtime_libs = None
 
 def finishInstall():
+  os.environ["OPENSSL_MODULES"] = os.path.join(pathlib.Path(__file__).parent.as_posix(), "openssl-install/lib/ossl-modules")
   openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib64/ossl-modules/fips.so" 
   openssl_fips_conf = "openssl-config/fipsmodule.cnf"
   openssl_conf = "openssl-config/openssl.cnf"
