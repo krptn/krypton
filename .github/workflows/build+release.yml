@@ -37,6 +37,7 @@ jobs:
           cd ..
       - name: Build
         run: |
+          source ../pysecenv/bin/activate
           python -m pip install --upgrade build
           python -m build --no-isolation 
       - uses: actions/upload-artifact@v3
