@@ -20,6 +20,8 @@ jobs:
           cd ..
           python -m venv pysecenv
           source pysecenv/bin/activate
+          mkdir pysecenv/Lib
+          mkdir pysecenv/Lib/site-packages
           sudo chmod -R a+rwx ${{ github.workspace }}
           cd ${{ github.workspace }}
           python -m pip install --upgrade pip setuptools wheel
