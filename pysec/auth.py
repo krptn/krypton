@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 import pickle
 from abc import ABCMeta, abstractmethod
-from typing import ByteString
+from typing import ByteString, SupportsInt
 from sqlalchemy import select, text
 from . import DBschemas, basic, configs
 from . import base
@@ -39,7 +39,7 @@ class user(metaclass=ABCMeta):
     def delete(self):
         pass
     @abstractmethod
-    def login(self, pwd:str, mfaToken:int|None=None):
+    def login(self, pwd:str, mfaToken:SupportsInt=None):
         pass
     @abstractmethod
     def logout(self):
@@ -114,7 +114,7 @@ class standardUser(user):
     def delete(self):
         pass
     @userExistRequired
-    def login(self, pwd:str, mfaToken:int|None=None):
+    def login(self, pwd:str, mfaToken:SupportsInt=None):
         self.keys = basic.KMS(SQLDefaultUserDBpath)
         try:
             self.__key = self.keys.getKey(self.id, pwd)
