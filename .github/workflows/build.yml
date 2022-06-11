@@ -36,8 +36,10 @@ jobs:
           make -j3 
           sudo make -j3 install
           cd ..
+          source ../pysecenv/bin/activate
           pip install -e .
       - name: Run Test
         run: |
+          source ../pysecenv/bin/activate
           sudo python -m unittest tests/test_BaseAPIs.py
   
