@@ -1,6 +1,9 @@
 name: Release
 on:
   workflow_dispatch:
+  
+env:
+  GH_TOKEN: ${{ secrets.App }}
 
 jobs:
   buildLinux:
@@ -96,5 +99,4 @@ jobs:
           name: AutoBuild
       - name: Release
         run: |
-          GITHUB_TOKEN=${{ secrets.App }}
-          gh release create weeklyDev dist/*.whl -t "Weekly Auto" -p --notes "weekly dev build"
+          gh release create weeklyDev dist/* -t "Weekly Auto" -p --notes "weekly dev build"

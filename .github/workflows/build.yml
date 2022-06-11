@@ -40,6 +40,8 @@ jobs:
           pip install -e .
       - name: Run Test
         run: |
-          source ../pysecenv/bin/activate
+          cd ..
+          source pysecenv/bin/activate
+          cd ${{ github.workspace }}
           sudo python -m unittest tests/test_BaseAPIs.py
   
