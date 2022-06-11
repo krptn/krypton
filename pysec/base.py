@@ -22,7 +22,7 @@ def _restDecrypt(data:bytes, key:bytes) -> bytes:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.AESDecrypt(data, key)
-def base64encode(data:str|bytes) -> str:
+def base64encode(data:ByteString) -> str:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.base64encode(data, len(data))
@@ -51,5 +51,5 @@ def PBKDF2(text:ByteString, salt:ByteString, iterations:int, keylen:int=32) -> b
     return __CryptoLib.PBKDF2(text, len(text), salt, iterations, len(salt), keylen)
 
 def zeromem(obj:str)->int:
-    #C-Style function to clear the content of str and bytes
+    """C-Style function to clear the content of str and bytes"""
     return ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))

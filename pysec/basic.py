@@ -1,8 +1,8 @@
 from datetime import datetime
 import os
+from typing import ByteString
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
-from typing import ByteString
 from . import configs, base, DBschemas
 SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
@@ -24,11 +24,10 @@ class KMS():
         """The title says it all"""
         if self._HSM:
             return None
-        else:
-            key = PBKDF2(pwd, salt, iterations)
-            r = _restEncrypt(text, key)
-            zeromem(key)
-            return r
+        key = PBKDF2(pwd, salt, iterations)
+        r = _restEncrypt(text, key)
+        zeromem(key)
+        return r
     def _decipher(self, ctext:ByteString, pwd:ByteString, salt:bytes, iterations:int):
         """The title says it all"""
         if self._HSM:

@@ -1,3 +1,6 @@
+"""
+Opens a python shell to interact with pysec. 
+"""
 import subprocess
 import sys
 
