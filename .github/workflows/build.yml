@@ -39,5 +39,5 @@ jobs:
           pip install -e .
       - name: Run Test
         run: |
-          python -m unittest tests/test_BaseAPIs.py
+          sudo python -m unittest tests/test_BaseAPIs.py
   
