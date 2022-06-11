@@ -31,6 +31,7 @@ def userExistRequired(func):
             raise UserError("This user has not yet been saved.")
 
 def logon(userName):
+    """The method name says it all."""
     stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName).limit(1)
 
 
@@ -96,6 +97,7 @@ class standardUser(user):
 
     @userExistRequired
     def setData(self, __name: str, __value: any) -> None:
+        """The method name says it all."""
         self.c.execute(
             text("INSERT INTO :id VALUES (:name, :value)"),
             {"id":self.id, "name":__name, "value":__value}
@@ -103,6 +105,7 @@ class standardUser(user):
         SQLDefaultUserDBpath.commit()
     @userExistRequired
     def getData(self, __name: str) -> any:
+        """The method name says it all."""
         result = self.c.scalar(
             text("SELECT value FROM :id WHERE key=:name"),
             {"name":__name, "id":self.id}
@@ -112,9 +115,11 @@ class standardUser(user):
         return result
     @userExistRequired
     def delete(self):
+        """The method name says it all."""
         pass
     @userExistRequired
     def login(self, pwd:str, mfaToken:SupportsInt=None):
+        """The method name says it all."""
         self.keys = basic.KMS(SQLDefaultUserDBpath)
         try:
             self.__key = self.keys.getKey(self.id, pwd)
@@ -123,21 +128,27 @@ class standardUser(user):
         self.logedin = True
     @userExistRequired
     def logout(self):
+        """The method name says it all."""
         pass
     @userExistRequired
     def resetPWD(self):
+        """The method name says it all."""
         pass
     @userExistRequired
     def enableMFA(self):
+        """The method name says it all."""
         pass
     @userExistRequired
     def disableMFA(self):
+        """The method name says it all."""
         pass
     @userExistRequired
     def createOTP(self):
+        """The method name says it all."""
         pass
     @userExistRequired
     def saveNewUser(self):
+        """The method name says it all."""
         if self.saved:
             raise ValueError("This user is already saved.")
         salt = os.urandom(12)
@@ -157,11 +168,14 @@ class standardUser(user):
         self.setData("backupKeys", pickle.dumps([]))
         self.setData("backupAESKeys", pickle.dumps([]))
     @userExistRequired
-    def decryptWithUserKey(self, data:ByteString, sender:str, salt:bytes) -> bytes: # Will also need to check the backup keys if decryption fails
+    def decryptWithUserKey(self, data:ByteString, sender:str, salt:bytes) -> bytes:
+        """The method name says it all."""
+        # Will also need to check the backup keys if decryption fails
         key = base.getSharedKey(self.__privKey, sender, salt)
 
     @userExistRequired
     def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]) -> list[tuple[str, bytes, bytes]]:
+        """The method name says it all."""
         salts = [os.urandom(12) for name in otherUsers]
         AESKeys = [base.getSharedKey(self.__privKey, name, salts[i], configs.defaultIterations)
             for i, name in enumerate(otherUsers)]
@@ -169,7 +183,8 @@ class standardUser(user):
         for i in AESKeys: base.zeromem(i)
         return zip(otherUsers, results, salts)
     @userExistRequired
-    def generateNewKeys(self, pwd): # Both symetric and Public/Private
+    def generateNewKeys(self, pwd):
+        """The method name says it all."""
         keys = base.createECCKey()
         backups = self.getData("backupKeys")
         backupList:list[bytes] = pickle.loads(backups)

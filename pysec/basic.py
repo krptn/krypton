@@ -1,3 +1,6 @@
+"""
+Basic security related classes.
+"""
 from datetime import datetime
 import os
 from typing import ByteString
@@ -57,9 +60,9 @@ class KMS():
         if key is None:
             raise ValueError("Such key does not exist")
         if datetime.now().year - key.year >= configs.defaultCryptoperiod and not force:
-            raise KeyManagementError("This key has expired. Please add force to the argument to retrieve it anyway. Please update or remove/create the key to regenerate a new one.")
+            raise KeyManagementError("This key has expired. Please add force to the argument to retrieve it anyway.")
         if key.cipher != configs.defaultAlgorithm:
-            raise ValueError("Unsupported Cipher") # This source code can be extended to support other ciphers also
+            raise ValueError("Unsupported Cipher") 
         r = self._decipher(key.key, pwd, key.salt, key.saltIter)
         if r[-1] != 36: ## Problem
             raise ValueError("Wrong passwords have been provided.")
