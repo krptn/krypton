@@ -13,19 +13,23 @@ SITE_PACKAGE = pathlib.Path(__file__).parent.parent.as_posix()
 OPENSSL_CONFIG = os.path.join(SITE_PACKAGE, "openssl-config")
 OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG, "openssl.cnf")
 OPENSSL_BIN = os.path.join(SITE_PACKAGE, "openssl-install/bin")
+OPENSSL_EXE = os.path.join(OPENSSL_BIN, "openssl.exe" if sys.platform == "win32" else "openssl")
+LINUX_OSSL_LIB = os.path.join(SITE_PACKAGE, "openssl-install/lib64")
 RELATIVE_OSSL_MOD = ("openssl-install/lib/ossl-modules" if sys.platform == "win32" 
     else "openssl-install/lib64/ossl-modules")
-OPENSSL_MODULES = os.path.join(SITE_PACKAGE, "openssl-install/lib/ossl-modules")
+OPENSSL_MODULES = os.path.join(SITE_PACKAGE, RELATIVE_OSSL_MOD)
 USER_DIR = pathlib.Path.home()
 
 if sys.platform == "win32":
     os.add_dll_directory(OPENSSL_BIN)
     os.add_dll_directory(OPENSSL_MODULES)
 else:
-    os.environ['PATH'] = OPENSSL_BIN + os.pathsep + OPENSSL_MODULES + os.pathsep + os.environ['PATH']
+    os.environ['PATH'] = OPENSSL_BIN + os.pathsep + OPENSSL_MODULES + os.pathsep + LINUX_OSSL_LIB + os.pathsep + OPENSSL_MODULES + os.pathsep + os.environ['PATH']
+    os.environ['LD_LIBRARY_PATH'] = LINUX_OSSL_LIB
 os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
+os.environ["OPENSSL"] = OPENSSL_BIN
 
 Base = declarative_base()
 
