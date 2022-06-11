@@ -25,7 +25,6 @@ jobs:
           source pysecenv/bin/activate
           sudo chmod -R a+rwx ${{ github.workspace }}
           cd ${{ github.workspace }}
-          python -m pip install -e .
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -r requirements.txt
           mkdir openssl-config
