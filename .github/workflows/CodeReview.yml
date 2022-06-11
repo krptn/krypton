@@ -1,9 +1,9 @@
 name: Code Quality chk
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
-    workflow_dispatch:
-    schedule:
-      - cron: '1 9 * * 1'
+  workflow_dispatch:
+  pull_request:
+   types: [opened, reopened]
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
@@ -16,30 +16,3 @@ jobs:
         with:
           output-filename: devskim-results.sarif
           output-directory: security
-
-      - name: Upload File
-        run: |
-          cd '${{ github.workspace }}/security'
-          curl -u MBS9Admin:${{ secrets.App }} -H "Accept: application/vnd.github.v3+json" https://api.github.com/repos/${{ github.repository }}/contents/security/result.sarif | jq . > result.json
-          a="$(jq .sha result.json)"
-          echo 'sha is '$a
-          cat devskim-results.sarif > resultm.json
-          h="$(<resultm.json)"
-          h="$(echo -n $h | base64)"
-          result='{"message":"Upload SARIF from DevSkim Aalysis","content":"'$h'","sha":'$a'}'
-          echo "${result}" > resultm.json
-          result="$(tr -d '\n' < resultm.json)"
-          echo "result is ${result}"
-          curl \
-            -X PUT \
-            -u MBS9Admin:${{ secrets.App }} \
-            -H "Accept: application/vnd.github.v3.base64+json" \
-          https://api.github.com/repos/${{ github.repository }}/contents/security/result.sarif \
-          -d "${result}"
-          
-      #- uses: github/codeql-action/upload-sarif@v1
-        #with:
-        #h="$(echo "$(<devskim-results.sarif)" | sed 's/"/\\"/g')"
-          #sarif_file: devskim-results.sarif
-          #cat devskim-results.sarif | tr -s '\n' '\\' > resultm.json
-      # Steps represent a sequence of tasks that will be executed as part of the job
