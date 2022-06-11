@@ -7,13 +7,14 @@ import sys
 from sqlalchemy import select
 import __CryptoLib
 from . import configs, DBschemas
+from typing import ByteString
 
 Adrr = id
 #Load FIPS Validated resolver
 __CryptoLib.fipsInit()
 
 #Wrappers for __CryptoLib to help intelisense automatically figure out function arguments, etc..
-def _restEncrypt(data:str|bytes, key:bytes) -> bytes:
+def _restEncrypt(data:ByteString, key:bytes) -> bytes:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.AESEncrypt(data, key, len(data))
@@ -25,7 +26,7 @@ def base64encode(data:str|bytes) -> str:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.base64encode(data, len(data))
-def base64decode(data:str|bytes) -> bytes|str:
+def base64decode(data:ByteString) -> ByteString:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.base64decode(data, len(data))
@@ -44,7 +45,7 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, hashNum:int=configs.defa
     stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == peerName)
     key = configs.SQLDefaultUserDBpath.scalar(stmt)["key"]
     return __CryptoLib.getSharedKey(privKey, key, salt, hashNum, keylen)
-def PBKDF2(text:str|bytes, salt:str|bytes, iterations:int, keylen:int=32) -> bytes:
+def PBKDF2(text:ByteString, salt:ByteString, iterations:int, keylen:int=32) -> bytes:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.PBKDF2(text, len(text), salt, iterations, len(salt), keylen)

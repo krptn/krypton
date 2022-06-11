@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
+from typing import ByteString
 from . import configs, base, DBschemas
 SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
@@ -19,7 +20,7 @@ class KMS():
     """
     They Key Management System
     """
-    def _cipher(self, text:str|bytes, pwd:str|bytes, salt:bytes, iterations:int):
+    def _cipher(self, text:ByteString, pwd:ByteString, salt:bytes, iterations:int):
         """The title says it all"""
         if self._HSM:
             return None
@@ -28,7 +29,7 @@ class KMS():
             r = _restEncrypt(text, key)
             zeromem(key)
             return r
-    def _decipher(self, ctext:str|bytes, pwd:str|bytes, salt:bytes, iterations:int):
+    def _decipher(self, ctext:ByteString, pwd:ByteString, salt:bytes, iterations:int):
         """The title says it all"""
         if self._HSM:
             return None
@@ -50,7 +51,7 @@ class KMS():
         """The title says it all"""
         pass
 
-    def getKey(self, name:str, pwd:str|bytes=None, force:bool=False) -> bytes:
+    def getKey(self, name:str, pwd:ByteString=None, force:bool=False) -> bytes:
         """The title says it all"""
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
         key:DBschemas.KeysTable = self.c.scalar(stmt)
@@ -66,7 +67,7 @@ class KMS():
         return base.base64decode(r[:-1])
 
 
-    def createNewKey(self, name:str, pwd:str|bytes=None) -> str:
+    def createNewKey(self, name:str, pwd:ByteString=None) -> str:
         """The title says it all"""
         if len(name) > 20:
             raise ValueError("Name must be less then 20 characters long")
@@ -97,7 +98,7 @@ class KMS():
         self.c.commit()
         return k
 
-    def removeKey(self, name:str, pwd:str|bytes=None) -> None:
+    def removeKey(self, name:str, pwd:ByteString=None) -> None:
         """The title says it all"""
         zeromem(self.getKey(name, pwd, True))
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
@@ -125,7 +126,7 @@ class Crypto(KMS):
         """The title says it all"""
         pass
 
-    def secureCreate(self, data:bytes, pwd:str|bytes=None, num:int=None):
+    def secureCreate(self, data:bytes, pwd:ByteString=None, num:int=None):
         """The title says it all"""
         if num is None:
             self.num+=1
@@ -143,7 +144,7 @@ class Crypto(KMS):
         self.c.commit()
         return self.num
 
-    def secureRead(self,num:int, pwd:str|bytes):
+    def secureRead(self,num:int, pwd:ByteString):
         """The title says it all"""
         stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id ==num).limit(1)
         ctext = self.c.scalar(stmt)
@@ -159,12 +160,12 @@ class Crypto(KMS):
         zeromem(key)
         return text
 
-    def secureUpdate(self, num:int, new:str|bytes, pwd:str|bytes):
+    def secureUpdate(self, num:int, new:ByteString, pwd:ByteString):
         """The title says it all"""
         self.secureDelete(num, pwd)
         self.secureCreate(new, pwd, num)
 
-    def secureDelete(self, num:int, pwd:str|bytes=None) -> None:
+    def secureDelete(self, num:int, pwd:ByteString=None) -> None:
         """The title says it all"""
         zeromem(self.getKey(str(num), pwd, True))
         stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id == num)

@@ -6,6 +6,7 @@ from datetime import datetime
 import os
 import pickle
 from abc import ABCMeta, abstractmethod
+from typing import ByteString
 from sqlalchemy import select, text
 from . import DBschemas, basic, configs
 from . import base
@@ -62,10 +63,10 @@ class user(metaclass=ABCMeta):
     def setData(self, __name: str, __value: any) -> None:
         pass
     @abstractmethod
-    def decryptWithUserKey(self, data:str|bytes, sender:str, salt:bytes) -> bytes:
+    def decryptWithUserKey(self, data:ByteString, sender:str, salt:bytes) -> bytes:
         pass
     @abstractmethod
-    def encryptWithUserKey(self, data:str|bytes, otherUsers:list[str]) -> bytes:
+    def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]) -> bytes:
         pass
     @abstractmethod
     def generateNewKeys(self, pwd):
@@ -156,11 +157,11 @@ class standardUser(user):
         self.setData("backupKeys", pickle.dumps([]))
         self.setData("backupAESKeys", pickle.dumps([]))
     @userExistRequired
-    def decryptWithUserKey(self, data:str|bytes, sender:str, salt:bytes) -> bytes: # Will also need to check the backup keys if decryption fails
+    def decryptWithUserKey(self, data:ByteString, sender:str, salt:bytes) -> bytes: # Will also need to check the backup keys if decryption fails
         key = base.getSharedKey(self.__privKey, sender, salt)
 
     @userExistRequired
-    def encryptWithUserKey(self, data:str|bytes, otherUsers:list[str]) -> list[tuple[str, bytes, bytes]]:
+    def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]) -> list[tuple[str, bytes, bytes]]:
         salts = [os.urandom(12) for name in otherUsers]
         AESKeys = [base.getSharedKey(self.__privKey, name, salts[i], configs.defaultIterations)
             for i, name in enumerate(otherUsers)]
