@@ -5,6 +5,7 @@ from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
 import os
 import sys
+import ctypes
 
 description = ""
 with open("README.md","r") as file:
@@ -76,7 +77,8 @@ setup(name='pysec',
     "../openssl-install/lib64/libcrypto.so",
     "../openssl-install/lib64/libcrypto.a",
     "../openssl-install/lib64/ossl-modules/fips.so",
-    "../openssl-install/lib64/libcrypto.so.3"]},
+    "../openssl-install/lib64/libcrypto.so.3",
+    "../openssl-install/lib64/libssl.so.3"]},
   packages=['pysec'],
   python_requires=">3.8",
   install_requires=["SQLAlchemy"],

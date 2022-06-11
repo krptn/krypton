@@ -4,6 +4,7 @@ Loads up databases and sets configuration needed by OPENSSL FIPS module.
 import os
 import sys
 import pathlib
+import ctypes
 from sqlalchemy import String, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session
 import sqlalchemy
@@ -24,8 +25,7 @@ if sys.platform == "win32":
     os.add_dll_directory(OPENSSL_BIN)
     os.add_dll_directory(OPENSSL_MODULES)
 else:
-    os.environ['PATH'] = OPENSSL_BIN + os.pathsep + OPENSSL_MODULES + os.pathsep + LINUX_OSSL_LIB + os.pathsep + OPENSSL_MODULES + os.pathsep + os.environ['PATH']
-    os.environ['LD_LIBRARY_PATH'] = LINUX_OSSL_LIB
+    ctypes.CDLL(os.path.join(LINUX_OSSL_LIB, "libcrypto.so.3")) # Alone, it will never find this 
 os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
@@ -160,7 +160,7 @@ configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".py
 #configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"
 #configs.SQLDefaultCryptoDBpath = "mysql+mysqldb://test:test@localhost:3306/cryptodb"
 
-open(OPENSSL_CONFIG_FILE, "w").write("""
+OSSL_CONF = """
 config_diagnostics = 1
 openssl_conf = openssl_init
 
@@ -175,4 +175,7 @@ base = base_sect
 
 [base_sect]
 activate = 1
-""")
+"""
+
+with open(OPENSSL_CONFIG_FILE, "w") as file:
+    file.write(OSSL_CONF)
