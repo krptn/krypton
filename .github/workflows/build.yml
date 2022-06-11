@@ -42,6 +42,7 @@ jobs:
         run: |
           cd ..
           source pysecenv/bin/activate
+          sudo chmod -R a+rwx ${{ github.workspace }}
           cd ${{ github.workspace }}
-          sudo python -m unittest tests/test_BaseAPIs.py
+          python -m unittest tests/test_BaseAPIs.py
   
