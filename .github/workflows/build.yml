@@ -1,7 +1,8 @@
 name: Live Test
 on:
   workflow_dispatch:
-
+  pull_request:
+   types: [opened, reopened]
 jobs:
   test:
     runs-on: ubuntu-latest

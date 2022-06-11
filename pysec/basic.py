@@ -22,7 +22,7 @@ class KMS():
     def _cipher(self, text:str|bytes, pwd:str|bytes, salt:bytes, iterations:int):
         """The title says it all"""
         if self._HSM:
-            pass
+            return None
         else:
             key = PBKDF2(pwd, salt, iterations)
             r = _restEncrypt(text, key)
