@@ -94,9 +94,14 @@ jobs:
     needs: [buildLinux, buildWin]
     steps: 
       - uses: actions/checkout@v3
+      - name: Create Dir
+        run: |
+          cd ${{ secrets.workspace }}
+          mkdir dist
       - uses: actions/download-artifact@v3
         with:
           name: AutoBuild
+          path: ${{ secrets.workspace }}/dist
       - name: Release
         run: |
           gh release create weeklyDev dist/* -t "Weekly Auto" -p --notes "weekly dev build"
