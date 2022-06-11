@@ -31,7 +31,7 @@ def userExistRequired(func):
 
 def logon(userName):
     stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName).limit(1)
-    
+
 
 class user(metaclass=ABCMeta):
     @abstractmethod
@@ -92,20 +92,20 @@ class standardUser(user):
             self.saved = False
             stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName).limit(1)
             self.id = self.c.scalar(stmt)[0]
-    
-    @userExistRequired 
+
+    @userExistRequired
     def setData(self, __name: str, __value: any) -> None:
         self.c.execute(
             text("INSERT INTO :id VALUES (:name, :value)"),
             {"id":self.id, "name":__name, "value":__value}
         )
         SQLDefaultUserDBpath.commit()
-    @userExistRequired 
+    @userExistRequired
     def getData(self, __name: str) -> any:
         result = self.c.scalar(
-            text("SELECT value FROM :id WHERE key=:name"), 
+            text("SELECT value FROM :id WHERE key=:name"),
             {"name":__name, "id":self.id}
-        ).value # Don't forget to check backuped keys to decrypt data 
+        ).value # Don't forget to check backuped keys to decrypt data
         if result is None:
             raise AttributeError()
         return result
@@ -155,20 +155,20 @@ class standardUser(user):
         self.setData("userSalt", salt)
         self.setData("backupKeys", pickle.dumps([]))
         self.setData("backupAESKeys", pickle.dumps([]))
-    @userExistRequired 
+    @userExistRequired
     def decryptWithUserKey(self, data:str|bytes, sender:str, salt:bytes) -> bytes: # Will also need to check the backup keys if decryption fails
         key = base.getSharedKey(self.__privKey, sender, salt)
-        
+
     @userExistRequired
     def encryptWithUserKey(self, data:str|bytes, otherUsers:list[str]) -> list[tuple[str, bytes, bytes]]:
         salts = [os.urandom(12) for name in otherUsers]
-        AESKeys = [base.getSharedKey(self.__privKey, name, salts[i], configs.defaultIterations) 
+        AESKeys = [base.getSharedKey(self.__privKey, name, salts[i], configs.defaultIterations)
             for i, name in enumerate(otherUsers)]
         results = [base._restEncrypt(data, key) for key in AESKeys]
         for i in AESKeys: base.zeromem(i)
         return zip(otherUsers, results, salts)
-    @userExistRequired 
-    def generateNewKeys(self, pwd): # Both symetric and Public/Private 
+    @userExistRequired
+    def generateNewKeys(self, pwd): # Both symetric and Public/Private
         keys = base.createECCKey()
         backups = self.getData("backupKeys")
         backupList:list[bytes] = pickle.loads(backups)

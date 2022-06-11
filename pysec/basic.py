@@ -20,6 +20,7 @@ class KMS():
     They Key Management System
     """
     def _cipher(self, text:str|bytes, pwd:str|bytes, salt:bytes, iterations:int):
+        """The title says it all"""
         if self._HSM:
             pass
         else:
@@ -28,6 +29,7 @@ class KMS():
             zeromem(key)
             return r
     def _decipher(self, ctext:str|bytes, pwd:str|bytes, salt:bytes, iterations:int):
+        """The title says it all"""
         if self._HSM:
             return None
         key = PBKDF2(pwd, salt, iterations)
@@ -36,16 +38,20 @@ class KMS():
         return r
 
     def __init__(self, keyDB:Session=SQLDefaultKeyDBpath)->None:
+        """The title says it all"""
         self.c:Session = keyDB
         self._HSM = False
 
     def exportKeys(self):
+        """The title says it all"""
         pass
 
     def importKeys(self):
+        """The title says it all"""
         pass
 
     def getKey(self, name:str, pwd:str|bytes=None, force:bool=False) -> bytes:
+        """The title says it all"""
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
         key:DBschemas.KeysTable = self.c.scalar(stmt)
         if key is None:
@@ -61,11 +67,12 @@ class KMS():
 
 
     def createNewKey(self, name:str, pwd:str|bytes=None) -> str:
+        """The title says it all"""
         if len(name) > 20:
             raise ValueError("Name must be less then 20 characters long")
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == "name")
         a = True
-        try: 
+        try:
             self.c.scalars(stmt).one()
         except:
             a=False
@@ -91,6 +98,7 @@ class KMS():
         return k
 
     def removeKey(self, name:str, pwd:str|bytes=None) -> None:
+        """The title says it all"""
         zeromem(self.getKey(name, pwd, True))
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
         key:DBschemas.KeysTable = self.c.scalar(stmt)
@@ -103,18 +111,22 @@ class Crypto(KMS):
     Crypto Class (see Documentation)
     '''
     def __init__(self, keyDB:Session=SQLDefaultCryptoDBpath):
+        """The title says it all"""
         self.c:Session = keyDB
         stmt = select(func.max(DBschemas.CryptoTable.id))
         self.num = self.c.scalar(stmt)
         super().__init__(self.c)
 
     def exportData(self):
+        """The title says it all"""
         pass
 
     def importData(self):
+        """The title says it all"""
         pass
 
     def secureCreate(self, data:bytes, pwd:str|bytes=None, num:int=None):
+        """The title says it all"""
         if num is None:
             self.num+=1
         key = self.createNewKey(str(self.num), pwd)
@@ -132,10 +144,11 @@ class Crypto(KMS):
         return self.num
 
     def secureRead(self,num:int, pwd:str|bytes):
+        """The title says it all"""
         stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id ==num).limit(1)
         ctext = self.c.scalar(stmt)
         reset = False
-        try: 
+        try:
             key = self.getKey(str(num), pwd)
         except KeyManagementError:
             reset = True
@@ -147,10 +160,12 @@ class Crypto(KMS):
         return text
 
     def secureUpdate(self, num:int, new:str|bytes, pwd:str|bytes):
+        """The title says it all"""
         self.secureDelete(num, pwd)
         self.secureCreate(new, pwd, num)
 
     def secureDelete(self, num:int, pwd:str|bytes=None) -> None:
+        """The title says it all"""
         zeromem(self.getKey(str(num), pwd, True))
         stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id == num)
         key:DBschemas.CryptoTable = self.c.scalar(stmt)
