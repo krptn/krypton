@@ -1,14 +1,14 @@
-# Custom Databases 
+# Custom Databases
 
-**Warning**: While all data that is saved to these databases are encrypted where necessary, please make sure that passwords for user accounts, user privileges, backup, etc. are properly configured in the database. Just because the data is encrypted, an unauthorized user can still delete it. 
+**Warning**: While all data that is saved to these databases are encrypted where necessary, please make sure that passwords for user accounts, user privileges, backup, etc. are properly configured in the database. Just because the data is encrypted, an unauthorized user can still delete it.
 
-Internally, these strings are passed to SQLAlchemy to create an engine. To add extra connection parameters, please refer to SQLAlchemy's and/or your chosen database's SQL Driver documentation. 
+Internally, these strings are passed to SQLAlchemy to create an engine. To add extra connection parameters, please refer to SQLAlchemy's and/or your chosen database's SQL Driver documentation.
 
 Please set these strings at:
 ```python
 pysec.configs.SQLDefaultCryptoDBpath = # for DB used by Crypto Class
 pysec.configs.SQLDefaultKeyDBpath =  # for DB used by Key Management System (you most likely don't need this)
-pysec.configs.SQLDefaultUserDBpath = # for DB used by User Authentication System 
+pysec.configs.SQLDefaultUserDBpath = # for DB used by User Authentication System
 ```
 
 ## Microsoft SQL Server
@@ -21,14 +21,14 @@ The string that you need to pass to this extension should look like this:
 ```
 
 If you are only doing development you may add the following to prevent installing an SSL certificate:
-```python 
+```python
 &Encrypt=no
-```  
-To you windows authentication, please remove user:password from the string. 
+```
+To you windows authentication, please remove user:password from the string.
 
 
 ## MySQL
-Please install [mysqlclient](https://pypi.org/project/mysqlclient/). 
+Please install [mysqlclient](https://pypi.org/project/mysqlclient/).
 ```python
 "mysql+mysqldb://user:password@host:port/database"
 ```
