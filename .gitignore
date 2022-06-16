@@ -4,7 +4,7 @@
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
 c_cpp_properties.json
-#App Generated Local Files
+#App Generated Files
 keystore.db
 Data
 PySec.key 
