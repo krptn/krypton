@@ -1,6 +1,6 @@
-# Crypto Class 
+# Crypto Class
 
-Usage is dead simple. It automatically regenerates key after the number of years in pysec.configs.defaultCryptoperiod have passed. 
+Usage is dead simple. It automatically regenerates key after the number of years in pysec.configs.defaultCryptoperiod have passed.
 
 ```python
 from pysec.basic import Crypto
