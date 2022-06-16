@@ -7,8 +7,6 @@
 using namespace std;
 namespace py = pybind11;
 
-const int AES_KEY_LEN = 32;
-const int IV_SALT_LEN = 12;
 const auto PBKDF2_HASH_ALGO = EVP_sha512;
 
 char* PBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen) {

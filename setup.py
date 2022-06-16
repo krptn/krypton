@@ -10,6 +10,9 @@ import ctypes
 description = ""
 with open("README.md","r") as file:
   description=file.read()
+extra_args = None
+if sys.argv.count("--debug") >= 1 and sys.platform != "win32":
+  extra_args = ["-g"]
 
 link_libararies = ["crypto"]
 macros = []
@@ -99,5 +102,7 @@ setup(name='pysec',
     library_dirs=["openssl-install/lib", "openssl-install/lib64"],
     libraries=link_libararies,
     runtime_library_dirs=runtime_libs,
+    extra_compile_args=extra_args,
+    extra_link_args=extra_args,
     define_macros=macros)],
 )

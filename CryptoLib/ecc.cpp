@@ -13,7 +13,6 @@ namespace py = pybind11;
 int ECC_DEFAULT_CURVE = NID_X9_62_prime256v1;
 const char* KEY_ENCODE_FORMAT = "PEM";
 const char* CIPHER_TYPE = "ECC";
-const int IV_SALT_LEN = 12;
 
 int getPubKey(EVP_PKEY *pkey, char* out) {
 	OSSL_ENCODER_CTX *ctx;
