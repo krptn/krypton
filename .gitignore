@@ -19,6 +19,8 @@ CMakeSettings.json
 openssl-install/
 openssl-config/ 
 *.pyd 
+*.so
+pysec.egg-info/ 
 exampleDB/
 
 # User-specific files
