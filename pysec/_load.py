@@ -26,6 +26,7 @@ if sys.platform == "win32":
     os.add_dll_directory(OPENSSL_MODULES)
 else:
     ctypes.CDLL(os.path.join(LINUX_OSSL_LIB, "libcrypto.so.3")) # Alone, it will never find this
+    ctypes.CDLL(os.path.join(LINUX_OSSL_LIB, "libssl.so.3"))
 os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
