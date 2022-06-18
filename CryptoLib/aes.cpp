@@ -23,7 +23,6 @@ py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	int msglen = ftext.attr("__len__")().cast<int>();
 	char* text = pymbToBuffer(ftext);
 	char* k = pymbToBuffer(key);
-	py::gil_scoped_release release;
 	int rem = AUTH_TAG_LEN - (msglen % AUTH_TAG_LEN);
 	int flen = msglen + (long long)rem + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN;
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[flen]);
@@ -53,7 +52,6 @@ py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	OPENSSL_cleanse(text, msglen);
 	OPENSSL_cleanse(k, 32);
 	EVP_CIPHER_CTX_free(ctx);
-	py::gil_scoped_acquire acquire;
 	py::bytes bresult = py::bytes((const char*)out.get(), flen);
 	delete[] text;
 	delete[] k;
@@ -67,8 +65,6 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 	int input_len = ctext_b.attr("__len__")().cast<int>();
 	char* b = pymbToBuffer(ctext_b);
 	char* k = pymbToBuffer(key);
-	py::gil_scoped_release release;
-
 	int msglen = input_len - AUTH_TAG_LEN - IV_SALT_LEN;
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[msglen]);
 	unsigned char* iv = (unsigned char*)b + input_len - IV_SALT_LEN;
@@ -99,6 +95,5 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 	int plainMsgLen = out.get()[0];
 	delete[] b;
 	delete[] k;
-	py::gil_scoped_acquire acquire;
 	return py::bytes((char*)out.get() + 1, plainMsgLen);
 }
