@@ -12,7 +12,7 @@ What we mean by that is:
 - Secure Storage of Data
 - Authentication for Users
 - Easy API
-- FIPS Validated Cryptography (via OPENSSL)
+- FIPS Validated Cryptography (via OPENSSL3)
 - Planned User Authentication with OAuth integration
 - Planned integration with popular web frameworks
 
@@ -71,7 +71,7 @@ To install the extension and produce debuging symbols use:
 pip install -e .
 python setup.py build_ext --debug --inplace
 ```
-To rebuild the extension (e.g: you made changes to the code), only run the second command.
+To rebuild __CryptoLib extension, only run the second command.
 
 To install the extension and not produce debuging symbols:
 ```shell
