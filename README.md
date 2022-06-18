@@ -58,7 +58,7 @@ To see what these strings should contain please see [Databases](README-DATABASES
 After integrations with web frameworks
 
 # Build/Setup the extension for development
-First please build and install openssl3 before building pysec. Currently only windows is supported. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /openssl-install directory), --openssldir=DIR (replace DIR with your /openssl-config directory) and enable-fips option.
+First please build and install openssl3 before building pysec. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /openssl-install directory), --openssldir=DIR (replace DIR with your /openssl-config directory) and enable-fips option.
 To create debug binaries, you need to pass the --debug option also.
 
 For example (Windows example):
