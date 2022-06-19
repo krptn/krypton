@@ -35,7 +35,7 @@ jobs:
           cd openssl
           perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
           make -j3 
-          sudo make -j3 install
+          make -j3 install
           cd ..
           source ../krenv/bin/activate
           pip install -e .

@@ -36,10 +36,11 @@ jobs:
           cd openssl
           perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
           make -j3 
-          sudo make -j3 install
+          make -j3 install
           cd ..
       - name: Build
         run: |
+          sudo chmod -R a+rwx ${{ github.workspace }}
           source ../krenv/bin/activate
           python -m pip install --upgrade build
           python -m build --no-isolation 
