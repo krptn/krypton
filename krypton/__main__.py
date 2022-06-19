@@ -1,5 +1,5 @@
 """
-Opens a python shell to interact with pysec. 
+Opens a python shell to interact with krypton. 
 """
 import subprocess
 import sys

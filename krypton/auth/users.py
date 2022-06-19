@@ -1,5 +1,5 @@
 """
-Provides User Authentication
+Provides User Models
 """
 
 from datetime import datetime
@@ -8,8 +8,8 @@ import pickle
 from abc import ABCMeta, abstractmethod
 from typing import ByteString, SupportsInt
 from sqlalchemy import select, text
-from . import DBschemas, basic, configs
-from . import base
+from .. import DBschemas, basic, configs
+from .. import base
 
 SQLDefaultUserDBpath = configs.SQLDefaultUserDBpath
 
@@ -29,11 +29,6 @@ def userExistRequired(func):
             func(*args, **kwargs)
         else:
             raise UserError("This user has not yet been saved.")
-
-def logon(userName):
-    """The method name says it all."""
-    stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName).limit(1)
-
 
 class user(metaclass=ABCMeta):
     @abstractmethod

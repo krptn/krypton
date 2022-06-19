@@ -1,5 +1,5 @@
 ﻿"""
-https://github.com/mbs9org/PySec
+https://github.com/krptn/krypton
 A user authentication and access management system based entirely on cryptographic primitives.
 
 What we mean by that is:
