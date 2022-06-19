@@ -4,7 +4,8 @@
 
 # Controls when the action will run. 
 name: Dependabot auto-merge
-on: pull_request
+on:
+  workflow_dispatch:
 
 permissions:
   contents: write
