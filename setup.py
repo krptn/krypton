@@ -80,14 +80,9 @@ setup(name='krypton',
     "../openssl-install/lib64/libcrypto.a",
     "../openssl-install/lib64/ossl-modules/fips.so",
     "../openssl-install/lib64/libcrypto.so.3",
-<<<<<<< HEAD
-    "../openssl-install/lib64/libssl.so.3"]},
-  packages=['krypton'],
-=======
     "../openssl-install/lib64/libssl.so.3",
     "../openssl-install/lib64/libssl.so"]},
-  packages=['pysec'],
->>>>>>> b775f605ae0a9d978dff4618b0ee7c71831e9d6d
+  packages=['krypton'],
   python_requires=">3.8",
   install_requires=["SQLAlchemy"],
   extras_require={
