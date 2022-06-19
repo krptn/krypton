@@ -15,18 +15,18 @@ if sys.argv.count("--debug") >= 1 and sys.platform != "win32":
 
 link_libararies = ["crypto", "ssl"]
 macros = []
-runtime_libs = ["openssl-install/lib64"]
+runtime_libs = ["kr-openssl-install/lib64"]
 if sys.platform == "win32":
   link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
   macros = [("WIN", None)]
   runtime_libs = None
 
 def finishInstall():
-  os.environ["OPENSSL_MODULES"] = os.path.join(pathlib.Path(__file__).parent.as_posix(), "openssl-install/lib/ossl-modules")
-  openssl_fips_module = "openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "openssl-install/lib64/ossl-modules/fips.so" 
-  openssl_fips_conf = "openssl-config/fipsmodule.cnf"
-  openssl = '"openssl-install\\bin\\openssl"' if sys.platform == "win32" else './openssl-install/bin/openssl'
-  pysec_data = pathlib.Path(pathlib.Path.home(), ".pysec-data/")
+  os.environ["OPENSSL_MODULES"] = os.path.join(pathlib.Path(__file__).parent.as_posix(), "kr-openssl-install/lib/ossl-modules")
+  openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so" 
+  openssl_fips_conf = "kr-openssl-config/fipsmodule.cnf"
+  openssl = '"kr-openssl-install\\bin\\openssl"' if sys.platform == "win32" else './kr-openssl-install/bin/openssl'
+  pysec_data = pathlib.Path(pathlib.Path.home(), ".krypton-data/")
   if not pysec_data.exists():
     os.mkdir(pysec_data.as_posix())
   os.system('{openssl} fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
@@ -54,11 +54,10 @@ setup(name='krypton',
   description='krypton',
   long_description=description,
   long_description_content_type="text/markdown",
-  author='Mark Barsi-Siminszky',
-  author_email='mark.barsisiminszky@outlook.com',
-  url='https://github.com/mbs9org/PySec',
+  author='Krypton',
+  url='https://github.com/krptn/krypton',
   project_urls={
-    'Bug Tracker': "https://github.com/mbs9org/PySec/issues",
+    'Bug Tracker': "https://github.com/krptn/krypton/issues",
   },
   classifiers=[
       'License :: OSI Approved :: Apache Software License',

@@ -8,7 +8,7 @@ What we mean by that is:
 - All Data is encrypted (any data can be request by the developer to be secured)
 - Only the appropriate users' credentials can unlock the cryptosystem
 
-# PySec
+# Krypton
 - Secure Storage of Data
 - Authentication for Users
 - Easy API
@@ -20,7 +20,7 @@ View aditional security mitigations: [Security Features](security/sec_feature_pl
 
 ### Example usage of the Crypto Class:
 ```python
-from pysec import basic
+from krypton import basic
 # Create a instance of Crypto - a class for encrypting and storing sensitive data.
 myCrypto = basic.Crypto()
 pwd = "Perhaps provided by the user"
@@ -45,9 +45,9 @@ This module uses a custom Key Management System that aims to conform to all NIST
 # Use custom databases
 Here is an example for how to set the database to be used:
 ```python
-import pysec
-pysec.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
-pysec.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
+import krypton
+krypton.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
+krypton.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
 ```
 To see what these strings should contain please see [Databases](README-DATABASES.md)
 
@@ -58,12 +58,12 @@ To see what these strings should contain please see [Databases](README-DATABASES
 After integrations with web frameworks
 
 # Build/Setup the extension for development
-First please build and install openssl3 before building pysec. Please install openssl in the /openssl-install and place configs in /openssl-config directory (where /openssl-install and /openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /openssl-install directory), --openssldir=DIR (replace DIR with your /openssl-config directory) and enable-fips option.
+First please build and install openssl3 before building pysec. Please install openssl in the /kr-openssl-install and place configs in /kr-openssl-config directory (where /kr-openssl-install and /kr-openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /kr-openssl-install directory), --openssldir=DIR (replace DIR with your /kr-openssl-config directory) and enable-fips option.
 To create debug binaries, you need to pass the --debug option also.
 
 For example (Windows example):
 ```shell
-perl Configure --prefix="C:\Users\markb\source\repos\PySec\openssl-install" --openssldir="C:\Users\markb\source\repos\PySec\openssl-config" enable-fips --debug
+perl Configure --prefix="C:\Users\markb\source\repos\PySec\kr-openssl-install" --openssldir="C:\Users\markb\source\repos\PySec\kr-openssl-config" enable-fips --debug
 ```
 
 To install the extension and produce debuging symbols use:

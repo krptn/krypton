@@ -4,19 +4,19 @@
 
 Simple, pythonic configuration:
 ```python
-import pysec
+import krypton
 
-pysec.configs.defaultAlgorithm = "exmaple: AES256GCM" # Sets which symmetric cipher to use (currently only AES256GCM is supported)
+krypton.configs.defaultAlgorithm = "exmaple: AES256GCM" # Sets which symmetric cipher to use (currently only AES256GCM is supported)
 
-pysec.configs.defaultIterations = 600000 # Number of iterations for PBKDF2
+krypton.configs.defaultIterations = 600000 # Number of iterations for PBKDF2
 
-pysec.configs.defaultCryptoperiod = 2 # Approx. number of years for the cryptoperiod of a key
+krypton.configs.defaultCryptoperiod = 2 # Approx. number of years for the cryptoperiod of a key
 ```
 
 For the following settings please see [Databases](README-DATABASES.md)
 
 ```python
-pysec.configs.SQLDefaultCryptoDBpath = # for DB used by Crypto Class
-pysec.configs.SQLDefaultKeyDBpath =  # for DB used by Key Management System (you most likely don't need this)
-pysec.configs.SQLDefaultUserDBpath = # for DB used by User Authentication System
+krypton.configs.SQLDefaultCryptoDBpath = # for DB used by Crypto Class
+krypton.configs.SQLDefaultKeyDBpath =  # for DB used by Key Management System (you most likely don't need this)
+krypton.configs.SQLDefaultUserDBpath = # for DB used by User Authentication System
 ```

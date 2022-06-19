@@ -16,8 +16,8 @@ CppProperties.json
 CMakeSettings.json
 .vs/
 .vscode/
-openssl-install/
-openssl-config/ 
+kr-openssl-install/
+kr-openssl-config/ 
 *.pyd 
 *.so
 pysec.egg-info/ 

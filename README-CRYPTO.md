@@ -3,7 +3,7 @@
 Usage is dead simple. It automatically regenerates key after the number of years in pysec.configs.defaultCryptoperiod have passed.
 
 ```python
-from pysec.basic import Crypto
+from krypton.basic import Crypto
 
 cryptoObject = Crypto()
 id = cryptoObject.secureCreate("data", "pwd") # returns an integer

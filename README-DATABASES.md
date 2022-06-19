@@ -6,9 +6,9 @@ Internally, these strings are passed to SQLAlchemy to create an engine. To add e
 
 Please set these strings at:
 ```python
-pysec.configs.SQLDefaultCryptoDBpath = # for DB used by Crypto Class
-pysec.configs.SQLDefaultKeyDBpath =  # for DB used by Key Management System (you most likely don't need this)
-pysec.configs.SQLDefaultUserDBpath = # for DB used by User Authentication System
+krypton.configs.SQLDefaultCryptoDBpath = # for DB used by Crypto Class
+krypton.configs.SQLDefaultKeyDBpath =  # for DB used by Key Management System (you most likely don't need this)
+krypton.configs.SQLDefaultUserDBpath = # for DB used by User Authentication System
 ```
 
 ## Microsoft SQL Server
