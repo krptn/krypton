@@ -27,7 +27,7 @@ class KMS():
         """The title says it all"""
         if self._HSM:
             return None
-        key = PBKDF2(pwd, salt, iterations)
+        key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
         r = _restEncrypt(text, key)
         zeromem(key)
         return r
@@ -35,7 +35,7 @@ class KMS():
         """The title says it all"""
         if self._HSM:
             return None
-        key = PBKDF2(pwd, salt, iterations)
+        key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
         r = _restDecrypt(ctext, key)
         zeromem(key)
         return r

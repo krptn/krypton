@@ -9,8 +9,11 @@ import sys
 description = ""
 with open("README.md","r") as file:
   description=file.read()
+extra_args = None
+if sys.argv.count("--debug") >= 1 and sys.platform != "win32":
+  extra_args = ["-g"]
 
-link_libararies = ["crypto"]
+link_libararies = ["crypto", "ssl"]
 macros = []
 runtime_libs = ["openssl-install/lib64"]
 if sys.platform == "win32":
@@ -77,8 +80,14 @@ setup(name='krypton',
     "../openssl-install/lib64/libcrypto.a",
     "../openssl-install/lib64/ossl-modules/fips.so",
     "../openssl-install/lib64/libcrypto.so.3",
+<<<<<<< HEAD
     "../openssl-install/lib64/libssl.so.3"]},
   packages=['krypton'],
+=======
+    "../openssl-install/lib64/libssl.so.3",
+    "../openssl-install/lib64/libssl.so"]},
+  packages=['pysec'],
+>>>>>>> b775f605ae0a9d978dff4618b0ee7c71831e9d6d
   python_requires=">3.8",
   install_requires=["SQLAlchemy"],
   extras_require={
@@ -98,5 +107,7 @@ setup(name='krypton',
     library_dirs=["openssl-install/lib", "openssl-install/lib64"],
     libraries=link_libararies,
     runtime_library_dirs=runtime_libs,
+    extra_compile_args=extra_args,
+    extra_link_args=extra_args,
     define_macros=macros)],
 )
