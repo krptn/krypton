@@ -5,7 +5,6 @@ from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
 import os
 import sys
-import ctypes
 
 description = ""
 with open("README.md","r") as file:
@@ -47,9 +46,9 @@ class completeDevelop(develop):
     finishInstall()
     os.chdir(temp)
 
-setup(name='pysec',
+setup(name='krypton',
   version='1.0',
-  description='pysec',
+  description='krypton',
   long_description=description,
   long_description_content_type="text/markdown",
   author='Mark Barsi-Siminszky',
@@ -79,7 +78,7 @@ setup(name='pysec',
     "../openssl-install/lib64/ossl-modules/fips.so",
     "../openssl-install/lib64/libcrypto.so.3",
     "../openssl-install/lib64/libssl.so.3"]},
-  packages=['pysec'],
+  packages=['krypton'],
   python_requires=">3.8",
   install_requires=["SQLAlchemy"],
   extras_require={

@@ -152,9 +152,9 @@ class ConfigTemp():
 
 configs = ConfigTemp()
 
-configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".pysec-data/crypto.db")
-configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".pysec-data/altKMS.db")
-configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".pysec-data/users.db")
+configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krypton-data/crypto.db")
+configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krypton-data/altKMS.db")
+configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krypton-data/users.db")
 
 #configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/cryptodb?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
 #configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"

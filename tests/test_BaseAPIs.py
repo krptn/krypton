@@ -1,6 +1,6 @@
 import unittest
-from pysec.basic import Crypto, KMS
-from pysec import base
+from krypton.basic import Crypto, KMS
+from krypton import base
 import os
 
 TEST_PWD = "Example"
