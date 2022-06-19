@@ -22,7 +22,8 @@ jobs:
         uses: actions/stale@v5
         with:
           # Token for the repository. Can be passed in using `{{ secrets.GITHUB_TOKEN }}`.
-          repo-token: ${{secrets.App}}  
+          repo-token: ${{secrets.App}}
+          exempt-issue-labels: no-stale
           stale-issue-message: Closing issue in 7 days, this is a stale issue.
           stale-pr-message: Closing PR in 7 days, this is a stale issue.
           close-issue-message: Closed due to inactivity.
