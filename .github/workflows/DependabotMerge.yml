@@ -1,30 +1,20 @@
-# This is a basic workflow to help you get started with Actions
-
-#name: Auto Merge Dependabot
-
-# Controls when the action will run. 
 name: Dependabot auto-merge
-on:
-  workflow_dispatch:
+on: pull_request
 
 permissions:
   contents: write
 
 jobs:
-  dependabot:
+  merge:
     runs-on: ubuntu-latest
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
-      - name: Dependabot metadata
-        id: metadata
-        uses: dependabot/fetch-metadata@v1.3.1
-        with:
-          github-token: "${{ secrets.App }}"
       - name: Enable auto-merge for Dependabot PRs
         run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.App}}
+## Alternative (redundent) implementation
 #on:
 #  pull_request_target:
 #    types: [opened]

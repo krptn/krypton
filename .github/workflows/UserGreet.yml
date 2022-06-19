@@ -1,12 +1,13 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Greet User!
 
 # Controls when the action will run. 
 on:
-  workflow_dispatch:
-  # Triggers the workflow on push or pull request events but only for the master branch
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+  pull_request:
+    types:
+      - opened
+  issues:
+    types:
+      - opened
 jobs:
   # This workflow contains a single job called "build"
   run:
@@ -23,4 +24,4 @@ jobs:
             -u MBS9Admin:${{ secrets.App }} \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/comments \
-            -d '{"body":"**Note: this is an automated message send to every issue. It is not meant personally to you. ** Welcome! We hope you like our project! We value your precious feedback, and we always want to improve. However, we would like to request the following: until a human looks at your issue, could you please verify that you have not included copyrighted material that is not owned by either you or by us? If you have, could you please verify that you have a license for the content in question?  Thank you very much in advance!"}'
+            -d '{"body":"Welcome to Krypton! Your issue/pull request is recieved and will be picked up by one of our maintainers. Thank you for your patience!"}'

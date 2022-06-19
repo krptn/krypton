@@ -3,6 +3,7 @@
 # Please see the documentation for all configuration options:
 # https://docs.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
+### Updates are only checked monthly because we use Mend Renovate. Dependabot only kicks in renovate fails.
 version: 2
 updates:
   - package-ecosystem: "github-actions" # See documentation for possible values
