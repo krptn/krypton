@@ -20,7 +20,7 @@ kr-openssl-install/
 kr-openssl-config/ 
 *.pyd 
 *.so
-pysec.egg-info/ 
+krypton.egg-info/ 
 exampleDB/
 
 # User-specific files
