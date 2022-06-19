@@ -17,7 +17,7 @@ You need to install [pyodbc](https://pypi.org/project/pyodbc/) and [Microsoft OD
 The string that you need to pass to this extension should look like this:
 
 ```python
-"mssql+pyodbc://user:password@server:port/dbname?driver=odbc driver e.g:ODBC+Driver+18+for+SQL+Server"
+"mssql+pyodbc://user:password@host:port/dbname?driver=odbc driver e.g:ODBC+Driver+18+for+SQL+Server"
 ```
 
 If you are only doing development you may add the following to prevent installing an SSL certificate:
