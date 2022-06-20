@@ -63,7 +63,7 @@ To create debug binaries, you need to pass the --debug option also.
 
 For example (Windows example):
 ```shell
-perl Configure --prefix="C:\Users\markb\source\repos\PySec\kr-openssl-install" --openssldir="C:\Users\markb\source\repos\PySec\kr-openssl-config" enable-fips --debug
+perl Configure --prefix="C:\Users\markb\source\repos\krypton\kr-openssl-install" --openssldir="C:\Users\markb\source\repos\krypton\kr-openssl-config" enable-fips --debug
 ```
 
 To install the extension and produce debuging symbols use:
