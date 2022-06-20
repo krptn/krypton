@@ -127,7 +127,9 @@ py::bytes getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter
 	EVP_PKEY_free(pkey);
 	char* C_salt = pymbToBuffer(salt);
 	int saltLen = salt.attr("__len__")().cast<int>();
-	py::bytes key = pyPBKDF2((char*)secret, (int)secretLen, C_salt, iter, saltLen, keylen);
+	char* key = PBKDF2((char*)secret, (int)secretLen, C_salt, iter, saltLen, keylen);
+	py::bytes pyKey = py::bytes(key, keylen);
+	delete[] key;
 	delete[] secret;
 	delete[] privk;
 	delete[] pubk; 
