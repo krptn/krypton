@@ -134,5 +134,5 @@ py::bytes getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter
 	delete[] privk;
 	delete[] pubk; 
 	delete[] C_salt;
-	return key;
+	return pyKey;
 }
