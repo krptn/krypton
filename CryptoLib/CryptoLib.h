@@ -24,7 +24,6 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key);
 
 // Hashes
 int compHash(const void* a, const void* b, const size_t size);
-char* PBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen=32);
 py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen=32);
 
 // ECC

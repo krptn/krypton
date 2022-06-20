@@ -111,10 +111,13 @@ py::bytes getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter
 	EVP_PKEY* peerkey = NULL;
 	EVP_PKEY_CTX *ctx;
 	size_t secretLen;
+	int saltLen = salt.attr("__len__")().cast<int>();
+	char* C_salt = pymbToBuffer(salt);
 	char* privk = pyStrToBuffer(privKey);
 	setPrivKey(&pkey, privk, privKey.attr("__len__")().cast<int>());
 	char* pubk = pyStrToBuffer(pubKey);
 	setPubKey(&peerkey, pubk, privKey.attr("__len__")().cast<int>());
+	
 	ctx = EVP_PKEY_CTX_new(pkey, NULL);
 	if(!ctx) handleErrors();
 	if(1 != EVP_PKEY_derive_init(ctx)) handleErrors();
@@ -125,14 +128,10 @@ py::bytes getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter
 	EVP_PKEY_CTX_free(ctx);
 	EVP_PKEY_free(peerkey);
 	EVP_PKEY_free(pkey);
-	char* C_salt = pymbToBuffer(salt);
-	int saltLen = salt.attr("__len__")().cast<int>();
-	char* key = PBKDF2((char*)secret, (int)secretLen, C_salt, iter, saltLen, keylen);
-	py::bytes pyKey = py::bytes(key, keylen);
-	delete[] key;
+	py::bytes key = pyPBKDF2((char*)secret, (int)secretLen, C_salt, iter, saltLen, keylen);
 	delete[] secret;
 	delete[] privk;
 	delete[] pubk; 
 	delete[] C_salt;
-	return pyKey;
+	return key;
 }
