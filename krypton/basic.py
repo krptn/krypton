@@ -125,14 +125,6 @@ class Crypto(KMS):
         self.num = self.c.scalar(stmt)
         super().__init__(self.c)
 
-    def exportData(self):
-        """The title says it all"""
-        pass
-
-    def importData(self):
-        """The title says it all"""
-        pass
-
     def secureCreate(self, data:bytes, pwd:ByteString=None, num:int=None):
         """The title says it all"""
         if num is None:
