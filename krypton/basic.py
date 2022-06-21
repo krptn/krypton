@@ -64,13 +64,18 @@ class KMS():
         if key.cipher != configs.defaultAlgorithm:
             raise ValueError("Unsupported Cipher") 
         r = self._decipher(key.key, pwd, key.salt, key.saltIter)
-        if r[-1] != 36: ## Problem
-            raise ValueError("Wrong passwords have been provided.")
-        return base.base64decode(r[:-1])
+        splited = r.split("$")
+        if splited[1] != name.encode() or splited[2] != key.year: ## Problem
+            raise ValueError("Wrong passwords have been provided or the encrypted data has been tampered with.")
+        result = base.base64decode(splited[0])
+        zeromem(r)
+        zeromem(splited[0])
+        return result
 
 
     def createNewKey(self, name:str, pwd:ByteString=None) -> str:
         """The title says it all"""
+        year = datetime.today().year
         if len(name) > 20:
             raise ValueError("Name must be less then 20 characters long")
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == "name")
@@ -84,7 +89,7 @@ class KMS():
         k = os.urandom(32)
         s = os.urandom(12)
         rebased = base.base64encode(k)
-        editedRebased = rebased+"$"
+        editedRebased = rebased+f"${name}${year}"
         ek = self._cipher(editedRebased, pwd, s, configs.defaultIterations)
         zeromem(rebased)
         zeromem(editedRebased)
@@ -94,7 +99,7 @@ class KMS():
             salt = s,
             cipher = configs.defaultAlgorithm,
             saltIter = configs.defaultIterations,
-            year = datetime.today().year
+            year = year
         )
         self.c.add(key)
         self.c.commit()
