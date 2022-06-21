@@ -64,8 +64,8 @@ class KMS():
         if key.cipher != configs.defaultAlgorithm:
             raise ValueError("Unsupported Cipher") 
         r = self._decipher(key.key, pwd, key.salt, key.saltIter)
-        splited = r.split("$")
-        if splited[1] != name.encode() or splited[2] != key.year: ## Problem
+        splited = r.split(b"$")
+        if splited[1] != name.encode() or splited[2] != str(key.year).encode(): ## Problem
             raise ValueError("Wrong passwords have been provided or the encrypted data has been tampered with.")
         result = base.base64decode(splited[0])
         zeromem(r)
