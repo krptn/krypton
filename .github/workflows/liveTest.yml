@@ -31,15 +31,17 @@ jobs:
           python -m pip install -r requirements.txt
           mkdir kr-openssl-config
           mkdir kr-openssl-install
-      - name: Build
+      - name: Build OSSL
         run: |
           cd openssl
           perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
           make -j3 
           make -j3 install
           cd ..
+      - name: Install extension
+        run: |
           source ../krenv/bin/activate
-          pip install -e .
+          pip install .
       - name: Run Test
         run: |
           cd ..
