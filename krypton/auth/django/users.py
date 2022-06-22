@@ -7,8 +7,8 @@ class djangoUser(standardUser, AbstractBaseUser):
     pass
 
 class kryptonUserManager(BaseUserManager):
-    def create_user(self, email, date_of_birth, password=None):
+    def create_user(self, email, password=None, fidoToken=None):
         pass
 
-    def create_superuser(self, email, date_of_birth, password=None):
+    def create_superuser(self, email, password=None, fidoToken=None):
         pass

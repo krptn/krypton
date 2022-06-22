@@ -1,4 +1,3 @@
-
 class UserDoesNotExist(Exception):
     """Exception to be raised on error when a non-existend user is authenticated"""
     def __init__(self, *args: object) -> None:
@@ -10,5 +9,5 @@ class UserDoesNotExist(Exception):
 def authUser(id, *creds):
     pass
 
-def newUserFromForm(self, commit=True,*args):
+def newUserFromForm(self, commit=True, *args):
     pass
