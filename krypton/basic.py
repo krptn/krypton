@@ -45,14 +45,6 @@ class KMS():
         self.c:Session = keyDB
         self._HSM = False
 
-    def exportKeys(self):
-        """The title says it all"""
-        pass
-
-    def importKeys(self):
-        """The title says it all"""
-        pass
-
     def getKey(self, name:str, pwd:ByteString=None, force:bool=False) -> bytes:
         """The title says it all"""
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
@@ -62,11 +54,11 @@ class KMS():
         if datetime.now().year - key.year >= configs.defaultCryptoperiod and not force:
             raise KeyManagementError("This key has expired. Please add force to the argument to retrieve it anyway.")
         if key.cipher != configs.defaultAlgorithm:
-            raise ValueError("Unsupported Cipher") 
+            raise ValueError("Unsupported Cipher")
         r = self._decipher(key.key, pwd, key.salt, key.saltIter)
         splited = r.split(b"$")
         if splited[1] != name.encode() or splited[2] != str(key.year).encode(): ## Problem
-            raise ValueError("Wrong passwords have been provided or the encrypted data has been tampered with.")
+            raise ValueError("Wrong passwords have been provided or the database has been tampered with.")
         result = base.base64decode(splited[0])
         zeromem(r)
         zeromem(splited[0])

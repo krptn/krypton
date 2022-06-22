@@ -31,10 +31,11 @@ print(myCrypto.secureRead(id, pwd)) # prints Example data
 ```
 
 # User Auth
-Being Developed
+Direct API is not yet available. Please see [integrations](#Integration-with-web-frameworks) to user authentication in a webapp.
 
 # Integration with web frameworks
-To be made after User Auth
+[Django](README-DJANGO.md)
+[Flask](README-FLASK.md)
 
 # Crypto Class
 [Crypto Class](README-CRYPTO.md)
