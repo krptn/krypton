@@ -34,9 +34,8 @@ print(myCrypto.secureRead(id, pwd)) # prints Example data
 Direct API is not yet available. Please see [integrations](#Integration-with-web-frameworks) to user authentication in a webapp.
 
 # Integration with web frameworks
-[Django](README-DJANGO.md)
-
-[Flask](README-FLASK.md)
+- [Django](README-DJANGO.md)
+- [Flask](README-FLASK.md)
 
 # Crypto Class
 [Crypto Class](README-CRYPTO.md)
