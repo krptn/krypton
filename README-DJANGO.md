@@ -1,6 +1,6 @@
 Please configure your Django project to use the following Auth Backend:
 ```python
-krypton.auth.integ.authBackends.kryptonBackend
+krypton.auth.django.authBackends.kryptonBackend
 ```
 
 Also, replace your user model to krypton.auth.django.users.djangoUser
@@ -10,7 +10,7 @@ Please point the User Manager to be krypton.auth.django.users.kryptonUserManager
 
 Please make sure that in your user registration form your saved method is coded like this:
 ```python
-from krypton.auth.integ import login
+from krypton.auth.django import login
 class RegisterForm(UserCreationForm):
     ...
     save = login.newUserFromForm
@@ -19,6 +19,6 @@ class RegisterForm(UserCreationForm):
 Alternatively you can use the predefined form in krypton.auth.django.forms
 
 ```python
-from krypton.auth.integ import forms
+from krypton.auth.django import forms
 form = forms.RegisterForm
 ```
