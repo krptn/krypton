@@ -34,7 +34,7 @@ extension-pkg-whitelist=
 fail-on=
 
 # Specify a score threshold to be exceeded before program exits with error.
-fail-under=10
+fail-under=7.5
 
 # Interpret the stdin as a python script, whose filename needs to be passed as
 # the module_or_package argument.
@@ -174,7 +174,7 @@ attr-naming-style=camelCase
 # Regular expression matching correct attribute names. Overrides attr-naming-
 # style. If left empty, attribute names will be checked with the set naming
 # style.
-#attr-rgx=
+attr-rgx=^_
 
 # Bad variable names which should always be refused, separated by a comma.
 bad-names=foo,
@@ -266,7 +266,7 @@ module-naming-style=camelCase
 
 # Regular expression matching correct module names. Overrides module-naming-
 # style. If left empty, module names will be checked with the set naming style.
-#module-rgx=
+module-rgx=^_
 
 # Colon-delimited sets of names that determine each other's naming style when
 # the name regexes allow several styles.

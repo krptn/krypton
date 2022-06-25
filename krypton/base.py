@@ -35,7 +35,7 @@ def createECCKey() -> tuple[bytes, bytes]:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.createECCKey()
-def ECDH(privKey:str, peerPubKey:str, salt:bytes, 
+def ECDH(privKey:str, peerPubKey:str, salt:bytes,
         hashNum:int=configs.defaultIterations, keylen:int=32) -> bytes:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""

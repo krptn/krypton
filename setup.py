@@ -22,7 +22,6 @@ if sys.platform == "win32":
   runtime_libs = None
 
 def finishInstall():
-  os.environ["OPENSSL_MODULES"] = os.path.join(pathlib.Path(__file__).parent.as_posix(), "kr-openssl-install/lib/ossl-modules")
   openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so" 
   openssl_fips_conf = "kr-openssl-config/fipsmodule.cnf"
   openssl = '"kr-openssl-install\\bin\\openssl"' if sys.platform == "win32" else './kr-openssl-install/bin/openssl'

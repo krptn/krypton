@@ -34,9 +34,9 @@ os.environ["OPENSSL"] = OPENSSL_BIN
 
 Base = declarative_base()
 
-class DBschemas():
+class DBschemas(): # pylint: disable=too-few-public-methods
     """Database Schema"""
-    class CryptoTable(Base):
+    class CryptoTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema"""
         __tablename__="crypto"
         id = Column(Integer, primary_key=True)
@@ -45,7 +45,7 @@ class DBschemas():
         cipher = Column(String(20)) # We should not need more then this
         saltIter = Column(Integer)
 
-    class KeysTable(Base):
+    class KeysTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema"""
         __tablename__ = "keys"
         id = Column(Integer, primary_key=True)
@@ -56,14 +56,14 @@ class DBschemas():
         saltIter = Column(Integer)
         year = Column(Integer)
 
-    class PubKeyTable(Base):
+    class PubKeyTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema"""
         __tablename__ = "pubKeys"
         number = Column(Integer, primary_key=True)
         name = Column(String(44))
         key = Column(LargeBinary)
 
-    class UserTable(Base):
+    class UserTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema"""
         __tablename__ = "users"
         number = Column(Integer, primary_key=True)

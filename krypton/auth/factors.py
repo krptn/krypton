@@ -1,11 +1,23 @@
+"""
+Different Auth Factors available inside krypton.
+"""
+
 class password:
-    pass
+    """
+    Simple password authentication.
+    """
 
 class otp:
-    pass
+    """
+    Simple OTP authentication
+    """
 
 class recoveryCode:
-    pass
+    """
+    Restore an account using a recovery code.
+    """
 
 class fido:
-    pass
+    """
+    FIDO authentication support.
+    """

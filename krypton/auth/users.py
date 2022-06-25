@@ -33,43 +33,43 @@ def userExistRequired(func):
 class user(metaclass=ABCMeta):
     @abstractmethod
     def delete(self):
-        pass
+        """The method name says it all."""
     @abstractmethod
     def login(self, pwd:str, mfaToken:SupportsInt=None):
-        pass
+        """The method name says it all."""
     @abstractmethod
     def logout(self):
-        pass
+        """The method name says it all."""
     @abstractmethod
     def enableMFA(self):
-        pass
+        """The method name says it all."""
     @abstractmethod
     def disableMFA(self):
-        pass
+        """The method name says it all."""
     @abstractmethod
     def createOTP(self):
-        pass
+        """The method name says it all."""
     @abstractmethod
     def saveNewUser(self):
-        pass
+        """The method name says it all."""
     @abstractmethod
     def getData(self, __name: str) -> any:
-        pass
+        """The method name says it all."""
     @abstractmethod
     def setData(self, __name: str, __value: any) -> None:
-        pass
+        """The method name says it all."""
     @abstractmethod
     def decryptWithUserKey(self, data:ByteString, sender:str, salt:bytes) -> bytes:
-        pass
+        """The method name says it all."""
     @abstractmethod
     def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]) -> bytes:
-        pass
+        """The method name says it all."""
     @abstractmethod
     def generateNewKeys(self, pwd):
-        pass
+        """The method name says it all."""
     @abstractmethod
     def resetPWD(self):
-        pass
+        """The method name says it all."""
 
 class standardUser(user):
     _userName:str = ""
@@ -124,23 +124,23 @@ class standardUser(user):
     @userExistRequired
     def logout(self):
         """The method name says it all."""
-        pass
+
     @userExistRequired
     def resetPWD(self):
         """The method name says it all."""
-        pass
+
     @userExistRequired
     def enableMFA(self):
         """The method name says it all."""
-        pass
+
     @userExistRequired
     def disableMFA(self):
         """The method name says it all."""
-        pass
+
     @userExistRequired
     def createOTP(self):
         """The method name says it all."""
-        pass
+
     @userExistRequired
     def saveNewUser(self):
         """The method name says it all."""

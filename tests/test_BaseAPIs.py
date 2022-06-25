@@ -71,7 +71,7 @@ class testCryptographicUnits(unittest.TestCase):
         t = base.base64decode(b64)
         self.assertEqual(text, t.decode())
 
-class testAuth(unittest.TestCase):
+class testDjangoAuth(unittest.TestCase):
     def testCreateNewUser(self):
         pass
     def testResetPWD(self):
