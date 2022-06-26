@@ -1,3 +1,5 @@
+from .. import DBschemas
+from sqlalchemy import select, func
 """
 Functions to manage user logi for django.
 """
@@ -9,11 +11,3 @@ class UserDoesNotExist(Exception):
         super().__init__()
     def __str__(self) -> str:
         return self.message
-
-def authUser(userId, *creds):
-    """Authenticate a user and return user object"""
-    pass
-
-def newUserFromForm(self, commit=True, *args):
-    """Authenticate a user and return user object from Form Data"""
-    pass

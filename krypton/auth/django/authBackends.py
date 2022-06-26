@@ -2,7 +2,8 @@
 Authentication Backends for Django.
 """
 from django.contrib.auth.backends import BaseBackend
-from .. import login
+from sqlalchemy import select
+from ... import DBschemas
 from . import users
 
 class kryptonBackend(BaseBackend):
@@ -11,12 +12,22 @@ class kryptonBackend(BaseBackend):
     """
     def authenticate(self, request, username=None, password=None, mfaToken=None, fidoKey=None):
         """Authenticates a user with supplied credentials"""
+        stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == username).limit(1)
         try:
-            user = login.authUser(username, password, mfaToken, fidoKey)
-        except login.UserDoesNotExist:
-            user = users.djangoUser(userName=username)
+            self.c.scalar(stmt)[0]
+            user = users.djangoUser(username)
+        except:
+            user = users.djangoUser(username)
             user.saveNewUser()
         return user
 
     def get_user(self, user_id: int):
         """Gets a user from an id"""
+        stmt = select(DBschemas.UserTable.name).where(DBschemas.UserTable.id == user_id).limit(1)
+        try: 
+            name = self.c.scalar(stmt)[0]
+            user = users.djangoUser(name)
+        except:
+            return None
+        return user
+

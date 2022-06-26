@@ -7,7 +7,7 @@ import os
 import pickle
 from abc import ABCMeta, abstractmethod
 from typing import ByteString, SupportsInt
-from sqlalchemy import select, text
+from sqlalchemy import select, text, func
 from .. import DBschemas, basic, configs
 from .. import base
 
@@ -87,8 +87,6 @@ class standardUser(user):
         try: self.id = self.c.scalar(stmt)[0]
         except:
             self.saved = False
-            stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName).limit(1)
-            self.id = self.c.scalar(stmt)[0]
 
     @userExistRequired
     def setData(self, __name: str, __value: any) -> None:
@@ -147,7 +145,8 @@ class standardUser(user):
         if self.saved:
             raise ValueError("This user is already saved.")
         salt = os.urandom(12)
-        self.id = base.base64encode(base.PBKDF2(self._userName, salt, configs.defaultIterations))
+        stmt = select(func.max(DBschemas.CryptoTable.id))
+        self.id = self.c.scalar(stmt) + 1
         keys = base.createECCKey()
         self.pubKey = keys[0]
         self.__privKey = keys[1]

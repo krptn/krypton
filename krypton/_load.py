@@ -59,16 +59,15 @@ class DBschemas(): # pylint: disable=too-few-public-methods
     class PubKeyTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema"""
         __tablename__ = "pubKeys"
-        number = Column(Integer, primary_key=True)
+        id = Column(Integer, primary_key=True)
         name = Column(String(44))
         key = Column(LargeBinary)
 
     class UserTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema"""
         __tablename__ = "users"
-        number = Column(Integer, primary_key=True)
+        id = Column(LargeBinary, primary_key=True)
         name = Column(String(44))
-        id = Column(LargeBinary)
 
 class ConfigTemp():
     """Configuration templates"""
