@@ -61,7 +61,7 @@ After integrations with web frameworks
 # Build/Setup the extension for development
 *Note:* currently only 64-bit environments have been tested. 
 
-First please build and install openssl3 before building pysec. Please install openssl in the /kr-openssl-install and place configs in /kr-openssl-config directory (where /kr-openssl-install and /kr-openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /kr-openssl-install directory), --openssldir=DIR (replace DIR with your /kr-openssl-config directory) and enable-fips option.
+First please build and install openssl3 before building krypton. Please install openssl in the /kr-openssl-install and place configs in /kr-openssl-config directory (where /kr-openssl-install and /kr-openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /kr-openssl-install directory), --openssldir=DIR (replace DIR with your /kr-openssl-config directory) and enable-fips option.
 To create debug binaries, you need to pass the --debug option also.
 
 For example (Windows example):
