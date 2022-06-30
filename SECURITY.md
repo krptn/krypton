@@ -34,7 +34,6 @@ JkkllOfcoNubAYCPEz9jFNYeayKdROwtbST2oZKvWGFb4RV9CUNsRthv2Li1Wi7a
 jvjfgqLJZ7jbgDgBgKrKO6igSL4nYzeIw3aaQcT6RMGHKPhi6oy9vUcFs9zLHQHw
 bZhoRC95lHKg6nTBfQ==
 =Rngz
-
 -----END PGP PUBLIC KEY BLOCK-----
 
 ```
