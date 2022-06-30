@@ -8,7 +8,7 @@ For custom user models please define you model to inherit krypton.auth.django.us
 
 Please point the User Manager to be krypton.auth.django.users.kryptonUserManager or to a subclass of it
 
-Please make sure that in your user registration form your saved method is coded like this:
+Please make sure that in your user registration form your saved method is configured like this:
 ```python
 from krypton.auth.django import login
 class RegisterForm(UserCreationForm):

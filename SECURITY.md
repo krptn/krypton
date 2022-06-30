@@ -14,12 +14,11 @@ Please make sure the following information is clearly stated: what is it about; 
 
 Depending on the severity of the vulnerability, you might want to encrypt it with GPG/PGP before sending it.
 
-Our key is available on pgp.mit.edu and keys.gnupg.net with a key-id of 7126492594E7DCA0 and is also copy/pasted into the buttom of this file.
+Our key is uploaded to pgp.mit.edu, keys.openpgp.org and should be available on keys.gnupg.net (please use whichever is best available to you), with a key id of 7126492594E7DCA0. It is also copy/pasted into the bottom of this file.
 
-(It is enough to run one of the commands to import the key but both are listed here)
+(Please substitute "server" with your preferred server from the above mentioned)
 ```shell
-gpg --keyserver keys.gnupg.net --recv-keys 7126492594E7DCA0
-gpg --keyserver pgp.mit.edu --recv-keys 7126492594E7DCA0
+gpg --keyserver server --recv-keys 7126492594E7DCA0
 ```
 
 The following ECC (nistp384, encrypt & sign) was created 2022-06-30 and key expires 2025-06-29:
