@@ -14,8 +14,8 @@ Please make sure the following information is clearly stated: what is it about; 
 
 Depending on the severity of the vulnerability, you might want to encrypt it with GPG/PGP before sending it. 
 
-The following ECC (nistp384) was created 2022-06-30 and key expires 2025-06-29:
-```
+The following ECC (nistp384, encrypt & sign) was created 2022-06-30 and key expires 2025-06-29:
+``` 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mG8EYr2dPRMFK4EEACIDAwTc05svlFaiiWGCRxJ1FLdMJXXm1zRBn7XUnOm2AOUQ
