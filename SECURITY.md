@@ -2,17 +2,17 @@
 
 ## Supported Versions
 
-Only the most recent version is supported; however, we are still interested in learning about security vulnerabilities in previous versions. 
+Only the most recent version is supported; however, we are still interested in learning about security vulnerabilities in previous versions.
 
 ## Reporting a Vulnerability
 
-Email security vulnerabilities to security@krptn.dev with the subject "Security Vulnerability Report" and the title/name of the vulnerability. 
- 
+Email security vulnerabilities to security@krptn.dev with the subject "Security Vulnerability Report" and the title/name of the vulnerability.
+
 Please make sure the following information is clearly stated: what is it about; severity of the vulnerability; what does it affect; how to exploit it; any recommendations on how to fix it; anything else you would like to say.
 
 ## GPG
 
-Depending on the severity of the vulnerability, you might want to encrypt it with GPG/PGP before sending it. 
+Depending on the severity of the vulnerability, you might want to encrypt it with GPG/PGP before sending it.
 
 Our key is available on pgp.mit.edu and keys.gnupg.net with a key-id of 7126492594E7DCA0 and is also copy/pasted into the buttom of this file.
 
@@ -23,7 +23,7 @@ gpg --keyserver pgp.mit.edu --recv-keys 7126492594E7DCA0
 ```
 
 The following ECC (nistp384, encrypt & sign) was created 2022-06-30 and key expires 2025-06-29:
-``` 
+```
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
 mG8EYr2dPRMFK4EEACIDAwTc05svlFaiiWGCRxJ1FLdMJXXm1zRBn7XUnOm2AOUQ
