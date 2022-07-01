@@ -3,6 +3,10 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Env file
+.env
+.secrets
+
 c_cpp_properties.json
 #App Generated Files
 keystore.db
