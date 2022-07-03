@@ -8,7 +8,6 @@ What we mean by that is:
 """
 from ._load import *
 from . import basic
-from . import auth
 
 version = "1"
 
