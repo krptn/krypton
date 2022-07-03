@@ -1,5 +1,5 @@
 """
-Loads CryptoLib and creates wrappers for cryptographic modules
+Loads __CryptoLib and contains wrappers.
 """
 
 import ctypes
@@ -10,6 +10,7 @@ import __CryptoLib
 from . import configs, DBschemas
 
 Adrr = id
+
 #Load FIPS Validated resolver
 __CryptoLib.fipsInit()
 
@@ -30,10 +31,10 @@ def base64decode(data:ByteString) -> ByteString:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.base64decode(data, len(data))
-# returns (privateKey, PubKey)
 def createECCKey() -> tuple[bytes, bytes]:
     """Wrappers for __CryptoLib
-    To help intelisense automatically figure out function arguments, etc.."""
+    To help intelisense automatically figure out function arguments, etc..
+    It returns (privateKey, publicKey)"""
     return __CryptoLib.createECCKey()
 def ECDH(privKey:str, peerPubKey:str, salt:bytes,
         hashNum:int=configs.defaultIterations, keylen:int=32) -> bytes:
