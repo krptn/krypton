@@ -6,20 +6,26 @@ from pybind11.setup_helpers import Pybind11Extension
 import os
 import sys
 
+DEBUG = sys.argv.count("--debug") >= 1
+
 description = ""
 with open("README.md","r") as file:
   description=file.read()
-extra_args = None
-if sys.argv.count("--debug") >= 1 and sys.platform != "win32":
-  extra_args = ["-g"]
+extra_args = []
+if DEBUG and sys.platform != "win32":
+  extra_args += ["-g"]
+if not DEBUG and sys.platform != "win32":
+  extra_args += ["-O2"]
+if not DEBUG and sys.platform == "win32":
+  extra_args += ["/O2"]
 
 link_libararies = ["crypto", "ssl"]
 macros = []
 runtime_libs = ["kr-openssl-install/lib64"]
 if sys.platform == "win32":
   link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
-  macros = [("WIN", None)]
-  runtime_libs = None
+  macros += [("WIN", None)]
+  runtime_libs = []
 
 def finishInstall():
   openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so" 
