@@ -21,4 +21,3 @@ py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int k
 	py::gil_scoped_acquire acquire;
 	return py::bytes(key, keylen);
 }
-
