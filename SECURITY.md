@@ -6,22 +6,22 @@ Only the most recent version is supported; however, we are still interested in l
 
 ## Reporting a Vulnerability
 
-Email security vulnerabilities to security@krptn.dev with the subject "Security Vulnerability Report" and the title/name of the vulnerability.
+Email security vulnerabilities to `security@krptn.dev` with the subject `"Security Report"` and the title/name of the vulnerability.
 
-Please make sure the following information is clearly stated: what is it about; severity of the vulnerability; what does it affect; how to exploit it; any recommendations on how to fix it; anything else you would like to say.
+Please make sure the following information is clearly stated: what is it; severity of the vulnerability; what does it affect; how to exploit it; any recommendations on how to fix it; anything else you would like to say.
 
 ## GPG
 
 Depending on the severity of the vulnerability, you might want to encrypt it with GPG/PGP before sending it.
 
-Our key is uploaded to pgp.mit.edu, keys.openpgp.org and should be available on keys.gnupg.net (please use whichever is best available to you), with a key id of 7126492594E7DCA0. It is also copy/pasted into the bottom of this file.
+Our key is uploaded to `pgp.mit.edu`, `keys.openpgp.org` and should be available on `keys.gnupg.net` (please use whichever is best available to you), with a key id of `7126492594E7DCA0`. It is also copy/pasted into the bottom of this file.
 
 (Please substitute "server" with your preferred server from the above mentioned)
 ```shell
 gpg --keyserver server --recv-keys 7126492594E7DCA0
 ```
 
-The following ECC (nistp384, encrypt & sign) was created 2022-06-30 and key expires 2025-06-29:
+The following EC (nistp384, encrypt & sign) key was created on 2022-06-30 and expires on 2025-06-29:
 ```
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
