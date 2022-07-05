@@ -47,9 +47,9 @@ py::bytes pyHKDF(char* secret, int len, char* salt, int saltLen, int keylen) {
 	kctx = EVP_KDF_CTX_new(kdf);
 	EVP_KDF_free(kdf);
 
-	*p++ = OSSL_PARAM_construct_utf8_string("digest", "SHA512", 6);
+	*p++ = OSSL_PARAM_construct_utf8_string("digest", (void*)"SHA512", 6);
 	*p++ = OSSL_PARAM_construct_octet_string("key", secret, len);
-	*p++ = OSSL_PARAM_construct_octet_string("info", "HKDF in __Cryptolib", 19);
+	*p++ = OSSL_PARAM_construct_octet_string("info", (void*)"HKDF in __Cryptolib", 19);
 	*p++ = OSSL_PARAM_construct_octet_string("key", salt, saltLen);
 	*p = OSSL_PARAM_construct_end();
 	if (EVP_KDF_derive(kctx, out, keylen, params) <= 0) {
