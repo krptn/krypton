@@ -37,20 +37,6 @@ bool fipsInit()
 	return true;
 }
 
-int compHash(const void* a, const void* b, const size_t size)
-{
-	const unsigned char* _a = (const unsigned char*)a;
-	const unsigned char* _b = (const unsigned char*)b;
-	unsigned char result = 0;
-	size_t i;
-
-	for (i = 0; i < size; i++) {
-		result |= _a[i] ^ _b[i];
-	}
-
-	return result; /* returns 0 if equal, nonzero otherwise */
-}
-
 char* pymbToBuffer(py::bytes a) {
 	py::iterator it = a.begin();
 	int b = a.attr("__len__")().cast<int>();
@@ -89,10 +75,11 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len"));
 	m.def("PBKDF2", &pyPBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("textLen"), py::arg("salt"), 
 		py::arg("iter"), py::arg("saltLen"), py::arg("keylen"));
+	m.def("HKDF", &pyHKDF, py::arg("secret"), py::arg("len"), py::arg("salt"), py::arg("saltLen"), py::arg("keyLen"));
 	m.def("fipsInit", &fipsInit,"Initialises openssl FIPS module.");
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
-	m.def("getECCSharedKey", &getSharedKey, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"),
-		py::arg("salt"), py::arg("iter"), py::arg("keylen"));
+	m.def("ECDH", &ECDH, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"),
+		py::arg("salt"), py::arg("keylen"));
 	m.def("base64encode", &base64, "Base 64 encode data with length.", py::arg("data"), py::arg("length"));
 	m.def("base64decode", &py_decode64, "Base 64 decode data with length.", py::arg("data"), py::arg("length"));
 }

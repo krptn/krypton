@@ -36,18 +36,16 @@ def createECCKey() -> tuple[bytes, bytes]:
     To help intelisense automatically figure out function arguments, etc..
     It returns (privateKey, publicKey)"""
     return __CryptoLib.createECCKey()
-def ECDH(privKey:str, peerPubKey:str, salt:bytes,
-        hashNum:int=configs.defaultIterations, keylen:int=32) -> bytes:
+def ECDH(privKey:str, peerPubKey:str, salt:bytes, keylen:int=32) -> bytes:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
-    return __CryptoLib.getECCSharedKey(privKey, peerPubKey, salt, hashNum, keylen)
-def getSharedKey(privKey:str, peerName:str, salt:bytes,
-        hashNum:int=configs.defaultIterations, keylen:int=32) -> bytes:
+    return __CryptoLib.ECDH(privKey, peerPubKey, salt, keylen)
+def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> bytes:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == peerName)
     key = configs.SQLDefaultUserDBpath.scalar(stmt)["key"]
-    return __CryptoLib.getSharedKey(privKey, key, salt, hashNum, keylen)
+    return __CryptoLib.ECDH(privKey, key, salt, keylen)
 def PBKDF2(text:ByteString, salt:ByteString, iterations:int, keylen:int=32) -> bytes:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""

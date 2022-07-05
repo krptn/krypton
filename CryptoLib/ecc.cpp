@@ -106,7 +106,7 @@ py::tuple createECCKey() {
 	return finalTuple;
 }
 
-py::bytes getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter, int keylen) {
+py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen) {
 	EVP_PKEY* pkey = NULL;
 	EVP_PKEY* peerkey = NULL;
 	EVP_PKEY_CTX *ctx;
@@ -114,9 +114,11 @@ py::bytes getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter
 	int saltLen = salt.attr("__len__")().cast<int>();
 	char* C_salt = pymbToBuffer(salt);
 	char* privk = pyStrToBuffer(privKey);
-	setPrivKey(&pkey, privk, privKey.attr("__len__")().cast<int>());
+	int privkLen = privKey.attr("__len__")().cast<int>();
+	setPrivKey(&pkey, privk, privkLen);
 	char* pubk = pyStrToBuffer(pubKey);
-	setPubKey(&peerkey, pubk, privKey.attr("__len__")().cast<int>());
+	int pubkLen = privKey.attr("__len__")().cast<int>();
+	setPubKey(&peerkey, pubk, pubkLen);
 	
 	ctx = EVP_PKEY_CTX_new(pkey, NULL);
 	if(!ctx) handleErrors();
@@ -128,8 +130,10 @@ py::bytes getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter
 	EVP_PKEY_CTX_free(ctx);
 	EVP_PKEY_free(peerkey);
 	EVP_PKEY_free(pkey);
-	py::bytes key = pyPBKDF2((char*)secret, (int)secretLen, C_salt, iter, saltLen, keylen);
+	py::bytes key = pyHKDF((char*)secret, (int)secretLen, C_salt, saltLen, keylen);
+	OPENSSL_cleanse(secret, secretLen);
 	delete[] secret;
+	OPENSSL_cleanse(privk, privkLen);
 	delete[] privk;
 	delete[] pubk; 
 	delete[] C_salt;

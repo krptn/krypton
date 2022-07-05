@@ -171,7 +171,7 @@ class standardUser(user):
     def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]) -> list[tuple[str, bytes, bytes]]:
         """The method name says it all."""
         salts = [os.urandom(12) for name in otherUsers]
-        AESKeys = [base.getSharedKey(self.__privKey, name, salts[i], configs.defaultIterations)
+        AESKeys = [base.getSharedKey(self.__privKey, name, salts[i])
             for i, name in enumerate(otherUsers)]
         results = [base._restEncrypt(data, key) for key in AESKeys]
         for i in AESKeys: base.zeromem(i)

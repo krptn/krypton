@@ -25,10 +25,11 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key);
 // Hashes
 int compHash(const void* a, const void* b, const size_t size);
 py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen=32);
+py::bytes pyHKDF(char* secret, int len, char* salt, int saltLen, int keylen);
 
 // ECC
 py::tuple createECCKey();
-py::bytes getSharedKey(py::str privKey, py::str pubKey, py::bytes salt, int iter, int keylen);
+py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen);
 int getPubKey(EVP_PKEY *pkey, char* out);
 int getPrivKey(EVP_PKEY *pkey, char* out);
 int setPubKey(EVP_PKEY **pkey, char* key, int len);
