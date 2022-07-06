@@ -201,5 +201,5 @@ def cleanUpSessions():
         result = configs.SQLDefaultUserDBpath.scalars(stmt)
         configs.SQLDefaultUserDBpath.delete(result)
         configs.SQLDefaultUserDBpath.commit()
-cleaner = threading.Thread(target=cleanUpSessions())
+cleaner = threading.Thread(target=cleanUpSessions)
 cleaner.start()
