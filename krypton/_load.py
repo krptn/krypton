@@ -3,9 +3,12 @@ Loads up databases and sets configuration needed by OPENSSL FIPS module.
 """
 import os
 import sys
+import time
 import pathlib
 import ctypes
-from sqlalchemy import String, create_engine, Column, Integer, LargeBinary, select
+import datetime
+import threading
+from sqlalchemy import DateTime, String, Text, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session
 import sqlalchemy
 
@@ -42,17 +45,17 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         id = Column(Integer, primary_key=True)
         ctext = Column(LargeBinary)
         salt = Column(LargeBinary)
-        cipher = Column(String(20)) # We should not need more then this
+        cipher = Column(Text)
         saltIter = Column(Integer)
 
     class KeysTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema"""
         __tablename__ = "keys"
         id = Column(Integer, primary_key=True)
-        name = Column(String(20))
+        name = Column(Text)
         key = Column(LargeBinary)
         salt = Column(LargeBinary)
-        cipher = Column(String(20))
+        cipher = Column(Text)
         saltIter = Column(Integer)
         year = Column(Integer)
 
@@ -60,23 +63,33 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         """Database Schema"""
         __tablename__ = "pubKeys"
         id = Column(Integer, primary_key=True)
-        name = Column(String(44))
+        name = Column(Text)
         key = Column(LargeBinary)
 
     class UserTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema"""
         __tablename__ = "users"
         id = Column(LargeBinary, primary_key=True)
-        name = Column(String(44))
+        name = Column(Text)
+        pwdAuthToken = Column(LargeBinary)
+    
+    class SessionKeys(Base): # pylint: disable=too-few-public-methods
+        """Database Schema"""
+        __tablename__ = "sessions"
+        id = Column(LargeBinary, primary_key=True)
+        key = Column(Text)
+        exp = Column(DateTime)
+        iss = Column(DateTime)
 
 class ConfigTemp():
     """Configuration templates"""
     defaultAlgorithm = "AES256GCM"
     defaultIterations = 500000
     defaultCryptoperiod = 2
-    _cryptoDB:sqlalchemy.engine = None
-    _altKeyDB:sqlalchemy.engine = None
-    _userDB:sqlalchemy.engine = None
+    defaultSessionPeriod = 15 # Minutes
+    _cryptoDB:Session = None
+    _altKeyDB:Session = None
+    _userDB:Session = None
     @property
     def SQLDefaultCryptoDBpath(self):
         """
@@ -179,3 +192,14 @@ activate = 1
 
 with open(OPENSSL_CONFIG_FILE, "w") as file:
     file.write(OSSL_CONF)
+
+def cleanUpSessions():
+    while True:
+        time.sleep(900)
+        now = datetime.datetime.now()
+        stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.exp <= now)
+        result = configs.SQLDefaultUserDBpath.scalars(stmt)
+        configs.SQLDefaultUserDBpath.delete(result)
+        configs.SQLDefaultUserDBpath.commit()
+cleaner = threading.Thread(target=cleanUpSessions())
+cleaner.start()

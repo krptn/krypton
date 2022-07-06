@@ -2,12 +2,14 @@
 Provides User Models
 """
 
-from datetime import datetime
+import datetime
 import os
 import pickle
 from abc import ABCMeta, abstractmethod
 from typing import ByteString, SupportsInt
 from sqlalchemy import select, text, func
+from tomlkit import date
+from . import factors
 from .. import DBschemas, basic, configs
 from .. import base
 
@@ -110,15 +112,25 @@ class standardUser(user):
     def delete(self):
         """The method name says it all."""
         pass
+
     @userExistRequired
-    def login(self, pwd:str, mfaToken:SupportsInt=None):
+    def login(self, pwd:str, otp:str, fido:str):
         """The method name says it all."""
-        self.keys = basic.KMS(SQLDefaultUserDBpath)
-        try:
-            self.__key = self.keys.getKey(self.id, pwd)
-        except basic.KeyManagementError:
-            self.generateNewKeys(pwd)
+        stmt = select(DBschemas.UserTable.pwdAuthToken).where(DBschemas.UserTable.id == self.id)
+        try: authTag = self.c.scalar(stmt)[0]
+        except: raise UserError("User must have a password set.")
+        result = factors.password.auth(authTag, pwd)
+        if result is False: raise UserError("User must have a password set.")
+        key = b""
+        token = DBschemas.SessionKeys(
+            id = self.id,
+            key = key,
+            iss = datetime.datetime.now(),
+            exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
+        )
+        self.c.add(token)
         self.logedin = True
+    
     @userExistRequired
     def logout(self):
         """The method name says it all."""

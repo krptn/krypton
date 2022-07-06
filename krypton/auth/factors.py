@@ -4,8 +4,17 @@ from .. import base
 Different Auth Factors available inside krypton.
 """
 
-
 TEST_TEXT = "kryptonAuth"
+
+class authFailed(Exception):
+    """
+    Exception to be raised when an error occures in a user model.
+    """
+    def __init__(self, *args: object) -> None:
+        self.message = args[0]
+        super().__init__()
+    def __str__(self) -> str:
+        return self.message
 
 class password:
     """
@@ -25,8 +34,8 @@ class password:
         authTag = f"{base.base64encode(base.restEncrypt(text, key))}${base.base64encode(salt)}"
         return authTag
     @staticmethod
-    def auth(authTag:str, pwd:str):
-        """Authenticate a user"""
+    def auth(authTag:str, pwd:str) -> bytes:
+        """Authenticate a user. Returns False on failure."""
         splited = authTag.split("$")
         ctext, salt = base.base64decode(splited[0]), base.base64decode(splited[1])
         key = base.PBKDF2(pwd, salt)
@@ -34,7 +43,7 @@ class password:
         if text.startswith(TEST_TEXT):
             return key ## Success
         else:
-            return False ## Failure
+            return False
 
 
 class otp:
