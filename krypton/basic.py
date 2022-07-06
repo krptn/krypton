@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from . import configs, base, DBschemas
 SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
-from .base import _restEncrypt, _restDecrypt, zeromem, PBKDF2
+from .base import restEncrypt, restDecrypt, zeromem, PBKDF2
 
 class KeyManagementError(Exception):
     """Exception to be raised on error in KMS"""
@@ -28,7 +28,7 @@ class KMS():
         if self._HSM:
             return None
         key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
-        r = _restEncrypt(text, key)
+        r = restEncrypt(text, key)
         zeromem(key)
         return r
     def _decipher(self, ctext:ByteString, pwd:ByteString, salt:bytes, iterations:int):
@@ -36,7 +36,7 @@ class KMS():
         if self._HSM:
             return None
         key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
-        r = _restDecrypt(ctext, key)
+        r = restDecrypt(ctext, key)
         zeromem(key)
         return r
 

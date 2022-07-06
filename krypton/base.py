@@ -15,11 +15,11 @@ Adrr = id
 __CryptoLib.fipsInit()
 
 #Wrappers for __CryptoLib to help intelisense automatically figure out function arguments, etc..
-def _restEncrypt(data:ByteString, key:bytes) -> bytes:
+def restEncrypt(data:ByteString, key:bytes) -> bytes:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.AESEncrypt(data, key, len(data))
-def _restDecrypt(data:bytes, key:bytes) -> bytes:
+def restDecrypt(data:bytes, key:bytes) -> bytes:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.AESDecrypt(data, key)

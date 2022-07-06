@@ -140,10 +140,13 @@ class standardUser(user):
         """The method name says it all."""
 
     @userExistRequired
-    def saveNewUser(self):
-        """The method name says it all."""
+    def saveNewUser(self, **kwargs):
+        """The method name says it all.
+        It accepts following **kwargs: pwd:str, fido:str.
+        """
         if self.saved:
             raise ValueError("This user is already saved.")
+        
         salt = os.urandom(12)
         stmt = select(func.max(DBschemas.CryptoTable.id))
         self.id = self.c.scalar(stmt) + 1
@@ -173,7 +176,7 @@ class standardUser(user):
         salts = [os.urandom(12) for name in otherUsers]
         AESKeys = [base.getSharedKey(self.__privKey, name, salts[i])
             for i, name in enumerate(otherUsers)]
-        results = [base._restEncrypt(data, key) for key in AESKeys]
+        results = [base.restEncrypt(data, key) for key in AESKeys]
         for i in AESKeys: base.zeromem(i)
         return zip(otherUsers, results, salts)
     @userExistRequired
