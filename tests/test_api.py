@@ -47,8 +47,8 @@ class testCryptoClass(unittest.TestCase):
 class testCryptographicUnits(unittest.TestCase):
     def testAES(self):
         k = os.urandom(32)
-        r = base._restEncrypt("Hello", k)
-        fr = base._restDecrypt(r, k)
+        r = base.restEncrypt("Hello", k)
+        fr = base.restDecrypt(r, k)
         self.assertEqual(fr, b"Hello")
     def testPBKDF2(self):
         kb = base.PBKDF2("abcdrf", os.urandom(12), 100000)
