@@ -9,6 +9,9 @@ from django.contrib.auth.models import (
 from ..users import standardUser
 
 class djangoUser(standardUser, AbstractBaseUser):
+    def __init__(self, userID: str) -> None:
+        standardUser.__init__(self, userID)
+        self.is_authenticated = self.loggedin
     """Django user object"""
     """
     identifier = models.CharField(max_length=40, unique=True)

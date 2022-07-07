@@ -80,7 +80,7 @@ class standardUser(user):
     _userName:str = ""
     __key:bytes = None
     saved = True
-    logedin = False
+    loggedin = False
     keys:basic.KMS
     def __init__(self, userID:str) -> None:
         if userID == None:
@@ -134,7 +134,7 @@ class standardUser(user):
             exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
         )
         self.c.add(token)
-        self.logedin = True
+        self.loggedin = True
         return key
     
     @userExistRequired
