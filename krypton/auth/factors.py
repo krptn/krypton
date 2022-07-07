@@ -45,7 +45,6 @@ class password:
         else:
             return False
 
-
 class otp:
     """
     Simple OTP authentication

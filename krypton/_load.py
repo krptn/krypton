@@ -85,6 +85,7 @@ class ConfigTemp():
     """Configuration templates"""
     defaultAlgorithm = "AES256GCM"
     defaultIterations = 500000
+    defaultErrorPage = ""
     defaultCryptoperiod = 2
     defaultSessionPeriod = 15 # Minutes
     _cryptoDB:Session = None

@@ -40,6 +40,9 @@ class user(metaclass=ABCMeta):
     def login(self, pwd:str, mfaToken:SupportsInt=None):
         """The method name says it all."""
     @abstractmethod
+    def restoreSession(self):
+        """Resume a session after a new request"""
+    @abstractmethod
     def logout(self):
         """The method name says it all."""
     @abstractmethod
@@ -75,18 +78,20 @@ class user(metaclass=ABCMeta):
 
 class standardUser(user):
     _userName:str = ""
-    __key:bytes
+    __key:bytes = None
     saved = True
     logedin = False
     keys:basic.KMS
-    def __init__(self, userName:str) -> None:
+    def __init__(self, userID:str) -> None:
+        if userID == None:
+            return
         super().__init__()
         self.__privKey = self.getData("userPrivateKey")
         self.pubKey = self.getData("userPublicKey")
         self.c = SQLDefaultUserDBpath
-        self._userName = userName
-        stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName).limit(1)
-        try: self.id = self.c.scalar(stmt)[0]
+        self.id = userID
+        stmt = select(DBschemas.UserTable.name).where(DBschemas.UserTable.id == userID).limit(1)
+        try: self._userName = self.c.scalar(stmt)[0]
         except:
             self.saved = False
 
@@ -116,25 +121,33 @@ class standardUser(user):
     @userExistRequired
     def login(self, pwd:str, otp:str, fido:str):
         """The method name says it all."""
-        stmt = select(DBschemas.UserTable.pwdAuthToken).where(DBschemas.UserTable.id == self.id)
+        stmt = select(DBschemas.UserTable.pwdAuthToken).where(DBschemas.UserTable.id == self.id).limit(1)
         try: authTag = self.c.scalar(stmt)[0]
         except: raise UserError("User must have a password set.")
-        result = factors.password.auth(authTag, pwd)
-        if result is False: raise UserError("User must have a password set.")
-        key = b""
+        self.__key = factors.password.auth(authTag, pwd)
+        if self.__key is False: raise UserError("User must have a password set.")
+        key = os.urandom(32)
         token = DBschemas.SessionKeys(
             id = self.id,
-            key = key,
+            key = base.restEncrypt(self.__key, key),
             iss = datetime.datetime.now(),
             exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
         )
         self.c.add(token)
         self.logedin = True
+        return key
     
     @userExistRequired
     def logout(self):
         """The method name says it all."""
-
+    @userExistRequired
+    def restoreSession(self, key):
+        """The method name says it all."""
+        stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.id == self.id).limit(1)
+        row:DBschemas.SessionKeys = self.c.scalars(stmt)[0]
+        if row.exp < datetime.datetime.now():
+            raise UserError("Session has expired")
+        self.__key = base.restDecrypt(row.key, key)
     @userExistRequired
     def resetPWD(self):
         """The method name says it all."""
@@ -154,7 +167,7 @@ class standardUser(user):
     @userExistRequired
     def saveNewUser(self, **kwargs):
         """The method name says it all.
-        It accepts following **kwargs: pwd:str, fido:str.
+        It accepts following **kwargs: pwd:str, fido:str, name:str.
         """
         if self.saved:
             raise ValueError("This user is already saved.")
@@ -169,6 +182,12 @@ class standardUser(user):
         key = DBschemas.PubKeyTable(
             name = self.id,
             key = self.pubKey
+        )
+        self.c.add(key)
+        key = DBschemas.UserTable(
+            id = self.id,
+            name = kwargs["name"],
+            pwdAuthToken = factors.password.getAuth(kwargs["pwd"])
         )
         self.c.add(key)
         self.setData("userPrivateKey", self.__privKey)
