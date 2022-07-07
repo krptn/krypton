@@ -46,7 +46,7 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> bytes:
     stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == peerName)
     key = configs.SQLDefaultUserDBpath.scalar(stmt)["key"]
     return __CryptoLib.ECDH(privKey, key, salt, keylen)
-def PBKDF2(text:ByteString, salt:ByteString, iterations:int, keylen:int=32) -> bytes:
+def PBKDF2(text:ByteString, salt:ByteString, iterations:int=configs.defaultIterations, keylen:int=32) -> bytes:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.PBKDF2(text, len(text), salt, iterations, len(salt), keylen)
