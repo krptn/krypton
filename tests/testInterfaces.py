@@ -7,7 +7,7 @@ TEST_PWD = "Example"
 TEST_TEXT = "Example"
 UPDATE_TEST_TEXT = "Example2"
 
-class testKMS(unittest.TestCase):
+class KMS(unittest.TestCase):
     def test(self):
         id = "test Key"
         i = KMS()
@@ -17,7 +17,7 @@ class testKMS(unittest.TestCase):
         self.assertEqual(len(a), 32)
         self.assertEqual(k, a)
 
-class testCryptoClass(unittest.TestCase):
+class CryptoClass(unittest.TestCase):
     def testWriteReadDelete(self):
         test = Crypto()
         a = test.secureCreate(TEST_TEXT,TEST_PWD)
@@ -44,34 +44,7 @@ class testCryptoClass(unittest.TestCase):
             working = True
         self.assertTrue(working)
 
-class testCryptographicUnits(unittest.TestCase):
-    def testAES(self):
-        k = os.urandom(32)
-        r = base.restEncrypt("Hello", k)
-        fr = base.restDecrypt(r, k)
-        self.assertEqual(fr, b"Hello")
-    def testPBKDF2(self):
-        kb = base.PBKDF2("abcdrf", os.urandom(12), 100000)
-        self.assertIsInstance(kb, bytes)
-        self.assertEqual(len(kb), 32)
-    def testECCKeyGen(self):
-        keys = base.createECCKey()
-        self.assertTrue(keys[0].startswith("-----BEGIN EC PRIVATE KEY-----\n") and keys[0].endswith("\n-----END EC PRIVATE KEY-----\n"))
-        self.assertTrue(keys[1].startswith("-----BEGIN PUBLIC KEY-----\n") and keys[1].endswith("\n-----END PUBLIC KEY-----\n"))
-    def testECDH(self):
-        keys = base.createECCKey()
-        keys2 = base.createECCKey()
-        salt = os.urandom(12)
-        key = base.ECDH(keys[0], keys2[1], salt, keylen=32)
-        self.assertEqual(len(key), 32)
-        self.assertEqual(key, base.ECDH(keys[0], keys2[1], salt, keylen=32))
-    def testBase64(self):
-        text = "fdgdfgfdgdfsr"
-        b64 = base.base64encode(text)
-        t = base.base64decode(b64)
-        self.assertEqual(text, t.decode())
-
-class testDjangoAuth(unittest.TestCase):
+class DjangoAuth(unittest.TestCase):
     def testCreateNewUser(self):
         pass
     def testResetPWD(self):
@@ -89,4 +62,3 @@ class testDjangoAuth(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
