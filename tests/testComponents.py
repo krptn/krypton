@@ -31,11 +31,11 @@ class CryptographicUnits(unittest.TestCase):
         self.assertEqual(text, t.decode())
 
 class AuthFactors(unittest.TestCase):
-    def password(self):
+    def testPassword(self):
         PWD = "TEST_PWD"
         tag = factors.password.getAuth(PWD)
         result = factors.password.auth(tag, PWD)
-        self.assertTrue(type(result) == str)
+        self.assertTrue(type(result) == bytes)
         self.assertTrue(len(result) == 32)
 
 if __name__ == "__main__":

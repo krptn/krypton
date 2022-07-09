@@ -4,7 +4,7 @@ from .. import base
 Different Auth Factors available inside krypton.
 """
 
-TEST_TEXT = "kryptonAuth"
+TEST_TEXT = b"kryptonAuth"
 
 class authFailed(Exception):
     """

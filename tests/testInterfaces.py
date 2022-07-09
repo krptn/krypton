@@ -7,7 +7,7 @@ TEST_PWD = "Example"
 TEST_TEXT = "Example"
 UPDATE_TEST_TEXT = "Example2"
 
-class KMS(unittest.TestCase):
+class KeyManagement(unittest.TestCase):
     def test(self):
         id = "test Key"
         i = KMS()

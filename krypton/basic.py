@@ -64,7 +64,6 @@ class KMS():
         zeromem(splited[0])
         return result
 
-
     def createNewKey(self, name:str, pwd:ByteString=None) -> str:
         """The title says it all"""
         year = datetime.today().year
