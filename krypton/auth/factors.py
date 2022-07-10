@@ -1,8 +1,8 @@
-import os
-from .. import base
 """
 Different Auth Factors available inside krypton.
 """
+import os
+from .. import base
 
 TEST_TEXT = b"kryptonAuth"
 

@@ -3,14 +3,10 @@ Loads up databases and sets configuration needed by OPENSSL FIPS module.
 """
 import os
 import sys
-import time
 import pathlib
 import ctypes
-import datetime
-import threading
-from sqlalchemy import DateTime, String, Text, create_engine, Column, Integer, LargeBinary, select
+from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session
-import sqlalchemy
 
 SITE_PACKAGE = pathlib.Path(__file__).parent.parent.as_posix()
 
@@ -161,6 +157,21 @@ class ConfigTemp():
         engine = create_engine(path, echo=False, future=True)
         c = Session(engine)
         Base.metadata.create_all(engine)
+        error = False
+
+        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == 1)
+        test = None
+        try:
+            test = c.scalar(stmt)
+        except:
+            error = True
+        if test is None or error:
+            stmt = DBschemas.UserTable(
+                id = 1,
+                name = "Position Reserved",
+                pwdAuthToken = b"Position Reserved"
+            )
+            c.add(stmt)
         c.commit()
         self._userDB = c
 
