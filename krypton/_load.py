@@ -194,13 +194,18 @@ activate = 1
 with open(OPENSSL_CONFIG_FILE, "w") as file:
     file.write(OSSL_CONF)
 
+"""
 def cleanUpSessions():
     while True:
-        time.sleep(900)
+        time.sleep(15)
         now = datetime.datetime.now()
         stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.exp <= now)
         result = configs.SQLDefaultUserDBpath.scalars(stmt)
-        configs.SQLDefaultUserDBpath.delete(result)
+        try:
+            configs.SQLDefaultUserDBpath.delete(result)
+        except:
+            pass
         configs.SQLDefaultUserDBpath.commit()
 cleaner = threading.Thread(target=cleanUpSessions)
 cleaner.start()
+"""
