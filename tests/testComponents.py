@@ -38,5 +38,7 @@ class AuthFactors(unittest.TestCase):
         self.assertTrue(type(result) == bytes)
         self.assertTrue(len(result) == 32)
 
+
+
 if __name__ == "__main__":
     unittest.main()
