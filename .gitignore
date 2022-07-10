@@ -26,6 +26,7 @@ kr-openssl-config/
 *.so
 krypton.egg-info/ 
 exampleDB/
+.dccache
 
 # User-specific files
 *.rsuser
