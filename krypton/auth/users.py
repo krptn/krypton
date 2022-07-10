@@ -9,7 +9,7 @@ from abc import ABCMeta, abstractmethod
 from typing import ByteString, SupportsInt
 from sqlalchemy import select, text, func
 from tomlkit import date
-from . import factors
+from . import factors, _utils
 from .. import DBschemas, basic, configs
 from .. import base
 
@@ -143,10 +143,11 @@ class standardUser(user):
     @userExistRequired
     def restoreSession(self, key):
         """The method name says it all."""
+        _utils.cleanUpSessions()
         stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.id == self.id).limit(1)
         row:DBschemas.SessionKeys = self.c.scalars(stmt)[0]
-        if row.exp < datetime.datetime.now():
-            raise UserError("Session has expired")
+        """if row.exp < datetime.datetime.now(): # Because we just cleaned up sessions it is uneeded
+            raise UserError("Session has expired")"""
         self.__key = base.restDecrypt(row.key, key)
     @userExistRequired
     def resetPWD(self):
