@@ -65,7 +65,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
     class UserTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema"""
         __tablename__ = "users"
-        id = Column(LargeBinary, primary_key=True)
+        id = Column(Integer, primary_key=True)
         name = Column(Text)
         pwdAuthToken = Column(LargeBinary)
     
