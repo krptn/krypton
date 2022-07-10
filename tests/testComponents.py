@@ -32,9 +32,9 @@ class CryptographicUnits(unittest.TestCase):
 
 class AuthFactors(unittest.TestCase):
     def testPassword(self):
-        PWD = "TEST_PWD"
-        tag = factors.password.getAuth(PWD)
-        result = factors.password.auth(tag, PWD)
+        TEST = "TEST"
+        tag = factors.password.getAuth(TEST)
+        result = factors.password.auth(tag, TEST)
         self.assertTrue(type(result) == bytes)
         self.assertTrue(len(result) == 32)
 
