@@ -7,4 +7,4 @@ pyparsing==3.0.9
 tomli==2.0.1
 SQLAlchemy==1.4.39
 greenlet==1.1.2
-Django==4.0.6
+Django==4.0.5
