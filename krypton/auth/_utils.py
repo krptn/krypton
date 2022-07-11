@@ -1,15 +1,12 @@
 import time
 import datetime
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from .. import configs, DBschemas
 
-def cleanUpSessions():
-    time.sleep(15)
+def cleanUpSessions(userID = None):
     now = datetime.datetime.now()
-    stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.exp <= now)
-    result = configs.SQLDefaultUserDBpath.scalars(stmt)
-    try:
-        configs.SQLDefaultUserDBpath.delete(result)
-    except:
-        pass
+    if userID is not None:
+        configs.SQLDefaultCryptoDBpath.execute(delete(DBschemas.SessionKeys).where(DBschemas.SessionKeys.Uid == userID))
+    configs.SQLDefaultCryptoDBpath.execute(delete(DBschemas.SessionKeys).where(DBschemas.SessionKeys.exp <= now))
+    configs.SQLDefaultUserDBpath.flush()
     configs.SQLDefaultUserDBpath.commit()

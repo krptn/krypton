@@ -7,7 +7,7 @@ import os
 import pickle
 from abc import ABCMeta, abstractmethod
 from typing import ByteString, SupportsInt
-from sqlalchemy import select, text, func
+from sqlalchemy import delete, select, text, func
 from functools import wraps
 from . import factors, _utils
 from .bases import user
@@ -44,7 +44,7 @@ class standardUser(user):
     saved = True
     loggedin = False
     keys:basic.KMS
-    def __init__(self, userID:str) -> None:
+    def __init__(self, userID:int) -> None:
         super().__init__()
         self.c = SQLDefaultUserDBpath
         if userID == None:
@@ -63,7 +63,6 @@ class standardUser(user):
         """The method name says it all."""
         try: self.deleteData(name)
         except: pass
-        debug = base.restEncrypt(value, self.__key)
         entry = DBschemas.UserData(
             Uid = self.id,
             name = base.PBKDF2(name, self.salt),
@@ -81,13 +80,25 @@ class standardUser(user):
         if result is None:
             raise AttributeError()
         return base.restDecrypt(result, self.__key)
+    
     @userExistRequired
     def deleteData(self, name:str) -> None:
         pass
+
     @userExistRequired
     def delete(self):
         """The method name says it all."""
-        pass
+        _utils.cleanUpSessions(self.id)
+        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id)
+        values = self.c.scalar(stmt)
+        self.c.delete(values)
+        stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.id)
+        values = self.c.scalar(stmt)
+        self.c.delete(values)
+        self.c.execute(delete(DBschemas.UserData).where(DBschemas.UserData.Uid == self.id))
+        self.c.flush()
+        self.c.commit()
+        return None
 
     @userExistRequired
     def login(self, pwd:str, otp:str, fido:str):
@@ -105,12 +116,14 @@ class standardUser(user):
             exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
         )
         self.c.add(token)
+        self.c.commit()
         self.loggedin = True
         return key
     
     @userExistRequired
     def logout(self):
         """The method name says it all."""
+    
     @userExistRequired
     def restoreSession(self, key):
         """The method name says it all."""
@@ -120,6 +133,7 @@ class standardUser(user):
         """if row.exp < datetime.datetime.now(): # Because we just cleaned up sessions it is uneeded
             raise UserError("Session has expired")"""
         self.__key = base.restDecrypt(row.key, key)
+    
     @userExistRequired
     def resetPWD(self):
         """The method name says it all."""
@@ -160,14 +174,17 @@ class standardUser(user):
             pwdAuthToken = tag,
             salt = self.salt
         )
-        self.__key = factors.password.auth(tag, pwd)
         self.c.add(userEntry)
-        self.c.commit()
+        self.c.flush()
+        self.__key = factors.password.auth(tag, pwd)
         self.saved = True
         self.setData("userPrivateKey", self.__privKey)
         self.setData("userPublicKey", self.pubKey)
         self.setData("backupKeys", pickle.dumps([]))
         self.setData("backupAESKeys", pickle.dumps([]))
+        self.c.flush()
+        self.c.commit()
+    
     @userExistRequired
     def decryptWithUserKey(self, data:ByteString, sender:str, salt:bytes) -> bytes:
         """The method name says it all."""
@@ -212,6 +229,7 @@ class standardUser(user):
             key = self.pubKey
         )
         self.c.add(key)
+        self.c.flush()
         self.setData("userPrivateKey", self.__privKey)
         self.setData("userPublicKey", self.pubKey)
         self.setData("accountKeysCreation", datetime.now().year)

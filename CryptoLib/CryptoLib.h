@@ -34,3 +34,6 @@ int getPubKey(EVP_PKEY *pkey, char* out);
 int getPrivKey(EVP_PKEY *pkey, char* out);
 int setPubKey(EVP_PKEY **pkey, char* key, int len);
 int setPrivKey(EVP_PKEY **pkey, char* key, int len);
+
+// OTPs
+bool verifyTOTP(py::bytes secret, py::bytes value);

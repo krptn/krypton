@@ -4,7 +4,7 @@ Different Auth Factors available inside krypton.
 import os
 from .. import base
 
-TEST_TEXT = b"kryptonAuth"
+KCV = b"kryptonAuth"
 
 class authFailed(Exception):
     """
@@ -30,7 +30,7 @@ class password:
         """Generate an authenication tag to be authenticated against."""
         salt = os.urandom(12)
         key = base.PBKDF2(pwd, salt)
-        text = TEST_TEXT + os.urandom(32)
+        text = KCV + os.urandom(32)
         authTag = f"{base.base64encode(base.restEncrypt(text, key))}${base.base64encode(salt)}"
         return authTag
     @staticmethod
@@ -40,7 +40,7 @@ class password:
         ctext, salt = base.base64decode(splited[0]), base.base64decode(splited[1])
         key = base.PBKDF2(pwd, salt)
         text = base.restDecrypt(ctext, key) # This raises an error if authentication fails.
-        if text.startswith(TEST_TEXT):
+        if text.startswith(KCV):
             return key ## Success
         else:
             return False

@@ -98,6 +98,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         iss: DateTime"""
         __tablename__ = "sessions"
         id = Column(Integer, primary_key=True)
+        Uid = Column(Integer)
         key = Column(Text)
         exp = Column(DateTime)
         iss = Column(DateTime)
@@ -164,6 +165,7 @@ class ConfigTemp():
                 saltIter = 0
             )
             c.add(stmt)
+        c.autoflush = True
         c.commit()
         self._cryptoDB = c
 
@@ -183,6 +185,7 @@ class ConfigTemp():
         conn = create_engine(path, echo=False, future=True)
         c = Session(conn)
         Base.metadata.create_all(conn)
+        c.autoflush = True
         c.commit()
         self._altKeyDB = c
 
@@ -217,6 +220,7 @@ class ConfigTemp():
                 pwdAuthToken = b"Position Reserved"
             )
             c.add(stmt)
+        c.autoflush = True
         c.commit()
         self._userDB = c
 

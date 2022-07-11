@@ -2,9 +2,13 @@ import unittest
 from krypton.auth import users
 
 class userAuth(unittest.TestCase):
-    def testCreateNewUser(self):
-        model = users.standardUser(None)
-        model.saveNewUser("Test", "TEST")
+    def setUp(self) -> None:
+        self.model = users.standardUser(None)
+        self.model.saveNewUser("Test", "TEST")
+        return super().setUp()
+    def tearDown(self) -> None:
+        self.model.delete()
+        return super().tearDown()
     def testLoginOut(self):
         pass
     def testResetPWD(self):
@@ -18,8 +22,6 @@ class userAuth(unittest.TestCase):
     def testOTP(self):
         pass
     def testLoginOut(self):
-        pass
-    def testDelete(self):
         pass
     def testDB(self):
         pass
