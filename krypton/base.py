@@ -31,7 +31,7 @@ def base64decode(data:ByteString) -> ByteString:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc.."""
     return __CryptoLib.base64decode(data, len(data))
-def createECCKey() -> tuple[bytes, bytes]:
+def createECCKey() -> tuple[str, str]:
     """Wrappers for __CryptoLib
     To help intelisense automatically figure out function arguments, etc..
     It returns (privateKey, publicKey)"""

@@ -10,11 +10,13 @@ from typing import ByteString, SupportsInt
 from sqlalchemy import select, text, func
 from functools import wraps
 from . import factors, _utils
-from .. import DBschemas, basic, configs
+from .bases import user
+from .. import DBschemas, basic, configs, Globalsalt
 from .. import base
 
 SQLDefaultUserDBpath = configs.SQLDefaultUserDBpath
-
+ITER = 500000
+LEN = 32
 class UserError(Exception):
     """
     Exception to be raised when an error occures in a user model.
@@ -29,62 +31,16 @@ def userExistRequired(func):
     @wraps(func)
     def inner1(self, *args, **kwargs):
         if self.saved:
-            func(*args, **kwargs)
+            func(self, *args, **kwargs)
         else:
             raise UserError("This user has not yet been saved.")
     return inner1
-
-class user(metaclass=ABCMeta):
-    @abstractmethod
-    def delete(self):
-        """The method name says it all."""
-    @abstractmethod
-    def login(self, pwd:str, mfaToken:SupportsInt=None):
-        """The method name says it all."""
-    @abstractmethod
-    def restoreSession(self):
-        """Resume a session after a new request"""
-    @abstractmethod
-    def logout(self):
-        """The method name says it all."""
-    @abstractmethod
-    def enableMFA(self):
-        """The method name says it all."""
-    @abstractmethod
-    def disableMFA(self):
-        """The method name says it all."""
-    @abstractmethod
-    def createOTP(self):
-        """The method name says it all."""
-    @abstractmethod
-    def saveNewUser(self):
-        """The method name says it all."""
-    @abstractmethod
-    def getData(self, name: str) -> any:
-        """The method name says it all."""
-    @abstractmethod
-    def setData(self, name: str, value: any) -> None:
-        """The method name says it all."""
-    @abstractmethod
-    def deleteData(self, name:str) -> None:
-        pass
-    @abstractmethod
-    def decryptWithUserKey(self, data:ByteString, sender:str, salt:bytes) -> bytes:
-        """The method name says it all."""
-    @abstractmethod
-    def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]) -> bytes:
-        """The method name says it all."""
-    @abstractmethod
-    def generateNewKeys(self, pwd):
-        """The method name says it all."""
-    @abstractmethod
-    def resetPWD(self):
-        """The method name says it all."""
 
 class standardUser(user):
     """Please pass None to __init__ to create a new user, after that call saveNewUser with required args."""
     _userName:str = ""
     __key:bytes = None
+    salt:bytes
     saved = True
     loggedin = False
     keys:basic.KMS
@@ -107,23 +63,24 @@ class standardUser(user):
         """The method name says it all."""
         try: self.deleteData(name)
         except: pass
+        debug = base.restEncrypt(value, self.__key)
         entry = DBschemas.UserData(
             Uid = self.id,
-            name = name.encode("utf-8"), ## Should be encrypt
-            value = value.encode()
+            name = base.PBKDF2(name, self.salt),
+            value = base.restEncrypt(value, self.__key)
         )
         self.c.add(entry)
         self.c.commit()
     @userExistRequired
     def getData(self, name: str) -> any:
         """The method name says it all."""
-        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == name 
+        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == base.PBKDF2(name, self.salt) 
             and DBschemas.UserData.Uid == self.id)
         result = self.c.scalar(stmt)
         # Don't forget to check backuped keys to decrypt data
         if result is None:
             raise AttributeError()
-        return result
+        return base.restDecrypt(result, self.__key)
     @userExistRequired
     def deleteData(self, name:str) -> None:
         pass
@@ -185,7 +142,7 @@ class standardUser(user):
         if self.saved:
             raise ValueError("This user is already saved.")
         
-        salt = os.urandom(12)
+        self.salt = os.urandom(12)
         stmt = select(func.max(DBschemas.UserTable.id))
         self.id = self.c.scalar(stmt) + 1
         keys = base.createECCKey()
@@ -196,17 +153,19 @@ class standardUser(user):
             key = self.pubKey
         )
         self.c.add(key)
+        tag = factors.password.getAuth(pwd)
         userEntry = DBschemas.UserTable(
             id = self.id,
-            name = name,
-            pwdAuthToken = factors.password.getAuth(pwd)
+            name = base.PBKDF2(name, Globalsalt, ITER, LEN),
+            pwdAuthToken = tag,
+            salt = self.salt
         )
+        self.__key = factors.password.auth(tag, pwd)
         self.c.add(userEntry)
         self.c.commit()
         self.saved = True
         self.setData("userPrivateKey", self.__privKey)
         self.setData("userPublicKey", self.pubKey)
-        self.setData("userSalt", salt)
         self.setData("backupKeys", pickle.dumps([]))
         self.setData("backupAESKeys", pickle.dumps([]))
     @userExistRequired

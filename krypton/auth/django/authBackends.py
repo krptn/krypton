@@ -5,7 +5,8 @@ from django.contrib.auth.backends import BaseBackend
 from django.contrib.auth import login
 from django.http import HttpRequest
 from sqlalchemy import select
-from ... import DBschemas
+from ... import DBschemas, base, Globalsalt
+from ..users import ITER, LEN
 from . import users
 
 class kryptonBackend(BaseBackend):
@@ -14,7 +15,7 @@ class kryptonBackend(BaseBackend):
     """
     def authenticate(self, request:HttpRequest, username=None, password=None, mfaToken=None, fidoKey=None):
         """Authenticates a user with supplied credentials"""
-        stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == username).limit(1)
+        stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == base.PBKDF2(username, Globalsalt, ITER, LEN)).limit(1)
         try:
             Uid = self.c.scalar(stmt)[0]
         except:

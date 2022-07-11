@@ -75,17 +75,19 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         __tablename__ = "pubKeys"
         id = Column(Integer, primary_key=True)
         name = Column(Text)
-        key = Column(LargeBinary)
+        key = Column(Text)
 
     class UserTable(Base): # pylint: disable=too-few-public-methods
         """Database 
         id: int
         name: str
-        pwdAuthToken: bytes"""
+        pwdAuthToken: bytes,
+        salt: bytes"""
         __tablename__ = "users"
         id = Column(Integer, primary_key=True)
         name = Column(Text)
-        pwdAuthToken = Column(LargeBinary)
+        pwdAuthToken = Column(Text)
+        salt = Column(LargeBinary)
     
     class SessionKeys(Base): # pylint: disable=too-few-public-methods
         """Database Schema
@@ -105,11 +107,20 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         Uid: int
         name: bytes
         value: bytes"""
-        __tablename__ = "sessions"
+        __tablename__ = "userData"
         id = Column(Integer, primary_key=True)
         Uid = Column(Integer)
         name = Column(LargeBinary)
         value = Column(LargeBinary)
+    
+    class KrConfig(Base): # pylint: disable=too-few-public-methods
+        """Database Schema
+        name: str
+        value: bytes"""
+        __tablename__ = "krconfig"
+        id = Column(Integer, primary_key=True)
+        name = Column(Text)
+        value = Column(Text)
     
 class ConfigTemp():
     """Configuration templates"""
@@ -122,7 +133,7 @@ class ConfigTemp():
     _altKeyDB:Session = None
     _userDB:Session = None
     @property
-    def SQLDefaultCryptoDBpath(self):
+    def SQLDefaultCryptoDBpath(self) -> Session:
         """
             Connection to the default database used to store Encrypted Data.
             Either set a string for sqlite3 database or Connection object for other databases.
@@ -157,7 +168,7 @@ class ConfigTemp():
         self._cryptoDB = c
 
     @property
-    def SQLDefaultKeyDBpath(self):
+    def SQLDefaultKeyDBpath(self) -> Session:
         """
             Connection to the default database used to store Keys.
             Either set a string for sqlite3 database or Connection object for other databases.
@@ -176,7 +187,7 @@ class ConfigTemp():
         self._altKeyDB = c
 
     @property
-    def SQLDefaultUserDBpath(self):
+    def SQLDefaultUserDBpath(self) -> Session:
         """
             Connection to the default database used to store User Data.
             Either set a string for sqlite3 database or Connection object for other databases.
@@ -215,7 +226,7 @@ configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".
 configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krypton-data/altKMS.db")
 configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krypton-data/users.db")
 
-configs.SQLDefaultUserDBpath = "mssql+pyodbc://localhost/userDB?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
+#configs.SQLDefaultUserDBpath = "mssql+pyodbc://localhost/userDB?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
 #configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"
 #configs.SQLDefaultCryptoDBpath = "mysql+mysqldb://test:test@localhost:3306/cryptodb"
 
@@ -238,3 +249,14 @@ activate = 1
 
 with open(OPENSSL_CONFIG_FILE, "w") as file:
     file.write(OSSL_CONF)
+
+stmt = select(DBschemas.KrConfig.value).where(DBschemas.KrConfig.name == "SALT")
+Globalsalt = configs.SQLDefaultCryptoDBpath.scalar(stmt)
+if Globalsalt == None:
+    Globalsalt = os.urandom(12)
+    entry = DBschemas.KrConfig(
+        name = "SALT",
+        value = salt
+    )
+    configs.SQLDefaultCryptoDBpath.add(entry)
+configs.SQLDefaultCryptoDBpath.commit()

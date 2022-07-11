@@ -5,6 +5,8 @@ class userAuth(unittest.TestCase):
     def testCreateNewUser(self):
         model = users.standardUser(None)
         model.saveNewUser("Test", "TEST")
+    def testLoginOut(self):
+        pass
     def testResetPWD(self):
         pass
     def testEncrypt(self):
