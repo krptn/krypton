@@ -41,7 +41,8 @@ Direct API is not yet available. Please see [integrations](#Integration-with-web
 [Crypto Class](README-CRYPTO.md)
 
 # Key Management System
-This module uses a custom Key Management System that aims to conform to all NIST Recomendations. This contains a low-level interface and is not recomended to be called directly: it's primary purpose is to help other high-level interfaces.
+This module uses a custom Key Management System for AES-256 Keys.
+See [KMS](README-KMS.md) for more information.
 
 # Use custom databases
 Here is an example for how to set the database to be used:

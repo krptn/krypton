@@ -8,7 +8,7 @@ import pickle
 from abc import ABCMeta, abstractmethod
 from typing import ByteString, SupportsInt
 from sqlalchemy import select, text, func
-from tomlkit import date
+from functools import wraps
 from . import factors, _utils
 from .. import DBschemas, basic, configs
 from .. import base
@@ -26,11 +26,13 @@ class UserError(Exception):
         return self.message
 
 def userExistRequired(func):
-    def inner1(*args, **kwargs):
-        if args[0].saved:
+    @wraps(func)
+    def inner1(self, *args, **kwargs):
+        if self.saved:
             func(*args, **kwargs)
         else:
             raise UserError("This user has not yet been saved.")
+    return inner1
 
 class user(metaclass=ABCMeta):
     @abstractmethod
@@ -58,11 +60,14 @@ class user(metaclass=ABCMeta):
     def saveNewUser(self):
         """The method name says it all."""
     @abstractmethod
-    def getData(self, __name: str) -> any:
+    def getData(self, name: str) -> any:
         """The method name says it all."""
     @abstractmethod
-    def setData(self, __name: str, __value: any) -> None:
+    def setData(self, name: str, value: any) -> None:
         """The method name says it all."""
+    @abstractmethod
+    def deleteData(self, name:str) -> None:
+        pass
     @abstractmethod
     def decryptWithUserKey(self, data:ByteString, sender:str, salt:bytes) -> bytes:
         """The method name says it all."""
@@ -77,42 +82,51 @@ class user(metaclass=ABCMeta):
         """The method name says it all."""
 
 class standardUser(user):
+    """Please pass None to __init__ to create a new user, after that call saveNewUser with required args."""
     _userName:str = ""
     __key:bytes = None
     saved = True
     loggedin = False
     keys:basic.KMS
     def __init__(self, userID:str) -> None:
-        if userID == None:
-            return
         super().__init__()
-        self.__privKey = self.getData("userPrivateKey")
-        self.pubKey = self.getData("userPublicKey")
         self.c = SQLDefaultUserDBpath
+        if userID == None:
+            self.saved = False
+            return
         self.id = userID
         stmt = select(DBschemas.UserTable.name).where(DBschemas.UserTable.id == userID).limit(1)
         try: self._userName = self.c.scalar(stmt)[0]
         except:
             self.saved = False
+        self.__privKey = self.getData("userPrivateKey")
+        self.pubKey = self.getData("userPublicKey")
 
     @userExistRequired
-    def setData(self, __name: str, __value: any) -> None:
+    def setData(self, name: str, value: any) -> None:
         """The method name says it all."""
-        self.c.execute(
-            text("INSERT INTO :id VALUES (:name, :value)"),
-            {"id":self.id, "name":__name, "value":__value}
+        try: self.deleteData(name)
+        except: pass
+        entry = DBschemas.UserData(
+            Uid = self.id,
+            name = name.encode("utf-8"), ## Should be encrypt
+            value = value.encode()
         )
-        SQLDefaultUserDBpath.commit()
+        self.c.add(entry)
+        self.c.commit()
     @userExistRequired
-    def getData(self, __name: str) -> any:
+    def getData(self, name: str) -> any:
         """The method name says it all."""
-        result = self.c.scalar(
-            text("SELECT value FROM :id WHERE key=:name"),
-            {"name":__name, "id":self.id}
-        ).value # Don't forget to check backuped keys to decrypt data
+        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == name 
+            and DBschemas.UserData.Uid == self.id)
+        result = self.c.scalar(stmt)
+        # Don't forget to check backuped keys to decrypt data
         if result is None:
             raise AttributeError()
         return result
+    @userExistRequired
+    def deleteData(self, name:str) -> None:
+        pass
     @userExistRequired
     def delete(self):
         """The method name says it all."""
@@ -144,7 +158,7 @@ class standardUser(user):
     def restoreSession(self, key):
         """The method name says it all."""
         _utils.cleanUpSessions()
-        stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.id == self.id).limit(1)
+        stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.Uid == self.id).limit(1)
         row:DBschemas.SessionKeys = self.c.scalars(stmt)[0]
         """if row.exp < datetime.datetime.now(): # Because we just cleaned up sessions it is uneeded
             raise UserError("Session has expired")"""
@@ -164,33 +178,32 @@ class standardUser(user):
     @userExistRequired
     def createOTP(self):
         """The method name says it all."""
-
-    @userExistRequired
-    def saveNewUser(self, **kwargs):
+    def saveNewUser(self, name:str, pwd:str, fido:str=None):
         """The method name says it all.
-        It accepts following **kwargs: pwd:str, fido:str, name:str.
+        It accepts following args: pwd:str, fido:str, name:str.
         """
         if self.saved:
             raise ValueError("This user is already saved.")
         
         salt = os.urandom(12)
-        stmt = select(func.max(DBschemas.CryptoTable.id))
+        stmt = select(func.max(DBschemas.UserTable.id))
         self.id = self.c.scalar(stmt) + 1
         keys = base.createECCKey()
         self.pubKey = keys[0]
         self.__privKey = keys[1]
-        self.c.execute(f"CREATE TABLE {id} (key text, value blob)".format(id=self.id))
         key = DBschemas.PubKeyTable(
             name = self.id,
             key = self.pubKey
         )
         self.c.add(key)
-        key = DBschemas.UserTable(
+        userEntry = DBschemas.UserTable(
             id = self.id,
-            name = kwargs["name"],
-            pwdAuthToken = factors.password.getAuth(kwargs["pwd"])
+            name = name,
+            pwdAuthToken = factors.password.getAuth(pwd)
         )
-        self.c.add(key)
+        self.c.add(userEntry)
+        self.c.commit()
+        self.saved = True
         self.setData("userPrivateKey", self.__privKey)
         self.setData("userPublicKey", self.pubKey)
         self.setData("userSalt", salt)

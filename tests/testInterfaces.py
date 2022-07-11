@@ -44,21 +44,5 @@ class CryptoClass(unittest.TestCase):
             working = True
         self.assertTrue(working)
 
-class DjangoAuth(unittest.TestCase):
-    def testCreateNewUser(self):
-        pass
-    def testResetPWD(self):
-        pass
-    def testEncrypt(self):
-        pass
-    def testDecrypt(self):
-        pass
-    def testMFA(self):
-        pass
-    def testOTP(self):
-        pass
-    def testLoginOut(self):
-        pass
-
 if __name__ == "__main__":
     unittest.main()

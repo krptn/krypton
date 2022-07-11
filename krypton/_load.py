@@ -36,7 +36,12 @@ Base = declarative_base()
 class DBschemas(): # pylint: disable=too-few-public-methods
     """Database Schema"""
     class CryptoTable(Base): # pylint: disable=too-few-public-methods
-        """Database Schema"""
+        """Database Schema
+        - id: int
+        - ctext: bytes
+        - salt: bytes
+        - cipher: str
+        - saltIter: int"""
         __tablename__="crypto"
         id = Column(Integer, primary_key=True)
         ctext = Column(LargeBinary)
@@ -45,7 +50,14 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         saltIter = Column(Integer)
 
     class KeysTable(Base): # pylint: disable=too-few-public-methods
-        """Database Schema"""
+        """Database Schema
+        id: int
+        name: str
+        key: bytes
+        salt: bytes
+        cipher: str
+        saltIter: int
+        year: int"""
         __tablename__ = "keys"
         id = Column(Integer, primary_key=True)
         name = Column(Text)
@@ -56,27 +68,49 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         year = Column(Integer)
 
     class PubKeyTable(Base): # pylint: disable=too-few-public-methods
-        """Database Schema"""
+        """Database Schema
+        id: int
+        name: str
+        key: bytes"""
         __tablename__ = "pubKeys"
         id = Column(Integer, primary_key=True)
         name = Column(Text)
         key = Column(LargeBinary)
 
     class UserTable(Base): # pylint: disable=too-few-public-methods
-        """Database Schema"""
+        """Database 
+        id: int
+        name: str
+        pwdAuthToken: bytes"""
         __tablename__ = "users"
         id = Column(Integer, primary_key=True)
         name = Column(Text)
         pwdAuthToken = Column(LargeBinary)
     
     class SessionKeys(Base): # pylint: disable=too-few-public-methods
-        """Database Schema"""
+        """Database Schema
+        id: int
+        Uid: bytes
+        key: str
+        exp: DateTime
+        iss: DateTime"""
         __tablename__ = "sessions"
-        id = Column(LargeBinary, primary_key=True)
+        id = Column(Integer, primary_key=True)
         key = Column(Text)
         exp = Column(DateTime)
         iss = Column(DateTime)
-
+    
+    class UserData(Base): # pylint: disable=too-few-public-methods
+        """Database Schema -- This is ugly.
+        Uid: int
+        name: bytes
+        value: bytes"""
+        __tablename__ = "sessions"
+        id = Column(Integer, primary_key=True)
+        Uid = Column(Integer)
+        name = Column(LargeBinary)
+        value = Column(LargeBinary)
+    
 class ConfigTemp():
     """Configuration templates"""
     defaultAlgorithm = "AES256GCM"
@@ -181,7 +215,7 @@ configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".
 configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krypton-data/altKMS.db")
 configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krypton-data/users.db")
 
-#configs.SQLDefaultCryptoDBpath = "mssql+pyodbc://localhost/cryptodb?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
+configs.SQLDefaultUserDBpath = "mssql+pyodbc://localhost/userDB?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
 #configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"
 #configs.SQLDefaultCryptoDBpath = "mysql+mysqldb://test:test@localhost:3306/cryptodb"
 
