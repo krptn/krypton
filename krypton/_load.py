@@ -256,7 +256,7 @@ if Globalsalt == None:
     Globalsalt = os.urandom(12)
     entry = DBschemas.KrConfig(
         name = "SALT",
-        value = salt
+        value = Globalsalt
     )
     configs.SQLDefaultCryptoDBpath.add(entry)
 configs.SQLDefaultCryptoDBpath.commit()
