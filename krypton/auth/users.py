@@ -73,7 +73,7 @@ class standardUser(user):
     @userExistRequired
     def getData(self, name: str) -> any:
         """The method name says it all."""
-        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == base.PBKDF2(name, self.salt) 
+        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == self._userName 
             and DBschemas.UserData.Uid == self.id)
         result = self.c.scalar(stmt)
         # Don't forget to check backuped keys to decrypt data
