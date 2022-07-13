@@ -73,17 +73,20 @@ class standardUser(user):
     @userExistRequired
     def getData(self, name: str) -> any:
         """The method name says it all."""
-        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == self._userName 
+        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == base.PBKDF2(name, self.salt) 
             and DBschemas.UserData.Uid == self.id)
         result = self.c.scalar(stmt)
         # Don't forget to check backuped keys to decrypt data
         if result is None:
             raise AttributeError()
-        return base.restDecrypt(result, self.__key)
+        text = base.restDecrypt(result, self.__key)
+        return text
     
     @userExistRequired
     def deleteData(self, name:str) -> None:
-        pass
+        stmt = delete(DBschemas.UserData).where(DBschemas.UserData.name == base.PBKDF2(name, self.salt)  
+            and DBschemas.UserData.Uid == self.id)
+        self.c.execute(stmt)
 
     @userExistRequired
     def delete(self):

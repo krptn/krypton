@@ -34,7 +34,9 @@ py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int k
 		throw std::invalid_argument("Unable to hash data.");
 	}
 	py::gil_scoped_acquire acquire;
-	return py::bytes(key, keylen);
+	py::bytes final = py::bytes(key, keylen);
+	delete[] key;
+	return final;
 }
 
 py::bytes pyHKDF(char* secret, int len, char* salt, int saltLen, int keylen) {

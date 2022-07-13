@@ -24,7 +24,10 @@ class userAuth(unittest.TestCase):
     def testLoginOut(self):
         pass
     def testDB(self):
-        pass
+        self.model.setData("test", b"TEST_VALUE")
+        result = self.model.getData("test")
+        self.model.deleteData("test")
+        self.assertEqual(result, b"TEST_VALUE")
 
 if __name__ == "__main__":
     unittest.main()
