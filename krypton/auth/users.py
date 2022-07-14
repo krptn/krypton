@@ -31,7 +31,7 @@ def userExistRequired(func):
     @wraps(func)
     def inner1(self, *args, **kwargs):
         if self.saved:
-            func(self, *args, **kwargs)
+            return func(self, *args, **kwargs)
         else:
             raise UserError("This user has not yet been saved.")
     return inner1
