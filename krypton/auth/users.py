@@ -43,7 +43,8 @@ class standardUser(user):
     salt:bytes
     saved = True
     loggedin = False
-    keys:basic.KMS
+    backupKeys:list[str]
+    backupAESKeys:list[bytes]
     def __init__(self, userID:int) -> None:
         super().__init__()
         self.c = SQLDefaultUserDBpath
@@ -65,7 +66,7 @@ class standardUser(user):
         except: pass
         entry = DBschemas.UserData(
             Uid = self.id,
-            name = base.PBKDF2(name, self.salt),
+            name = base.PBKDF2(name, self.salt), ## Problem: How to raise iteration count
             value = base.restEncrypt(value, self.__key)
         )
         self.c.add(entry)
@@ -73,7 +74,7 @@ class standardUser(user):
     @userExistRequired
     def getData(self, name: str) -> any:
         """The method name says it all."""
-        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == base.PBKDF2(name, self.salt) 
+        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == base.PBKDF2(name, self.salt)
             and DBschemas.UserData.Uid == self.id)
         result = self.c.scalar(stmt)
         # Don't forget to check backuped keys to decrypt data
@@ -219,9 +220,7 @@ class standardUser(user):
         self.setData("backupAESKeys", pickle.dumps(backupList))
         for x in backups: base.zeromem(x)
         base.zeromem(backups)
-
-        self.keys.removeKey(self.id, pwd)
-        self.__key = self.keys.createNewKey(self.id, pwd)
+        self.__key = os.urandom(32)
         self.__privKey = keys[0]
         self.pubKey = keys[1]
         stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.id)
