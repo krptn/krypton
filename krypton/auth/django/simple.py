@@ -6,7 +6,7 @@ from django.shortcuts import render
 def loginRequired(func):
     @wraps(func)
     def inner(request:HttpRequest, *args, **kwargs):
-        if request.loggedin == False:
+        if not request.loggedin:
             if configs.defaultErrorPage != "":
                 return render(request, configs.defaultErrorPage)
             else:

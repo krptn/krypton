@@ -5,16 +5,14 @@ Provides User Models
 import datetime
 import os
 import pickle
-from abc import ABCMeta, abstractmethod
 from typing import ByteString, SupportsInt
-from sqlalchemy import delete, select, text, func
+from sqlalchemy import delete, select, func
 from functools import wraps
 from . import factors, _utils
 from .bases import user
-from .. import DBschemas, basic, configs, Globalsalt
+from .. import DBschemas, configs, Globalsalt
 from .. import base
 
-SQLDefaultUserDBpath = configs.SQLDefaultUserDBpath
 ITER = 500000
 LEN = 32
 class UserError(Exception):
@@ -47,7 +45,7 @@ class standardUser(user):
     backupAESKeys:list[bytes]
     def __init__(self, userID:int) -> None:
         super().__init__()
-        self.c = SQLDefaultUserDBpath
+        self.c = configs.SQLDefaultUserDBpath
         if userID == None:
             self.saved = False
             return

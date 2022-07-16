@@ -13,12 +13,19 @@ class kryptonBackend(BaseBackend):
     """
     Authentication Backend for Django.
     """
-    def authenticate(self, request:HttpRequest, username=None, password=None, mfaToken=None, fidoKey=None):
+    def authenticate(self,
+            request:HttpRequest,
+            username=None,
+            password=None,
+            mfaToken=None,
+            fidoKey=None
+        ):
         """Authenticates a user with supplied credentials"""
-        stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == base.PBKDF2(username, Globalsalt, ITER, LEN)).limit(1)
-        try:
-            Uid = self.c.scalar(stmt)[0]
-        except:
+        stmt = select(DBschemas.UserTable.id).where(
+            DBschemas.UserTable.name == base.PBKDF2(username, Globalsalt, ITER, LEN)
+            ).limit(1)
+        Uid = self.c.scalar(stmt)
+        if Uid is None:
             return None
         user = users.djangoUser(Uid)
         try: token = user.login(pwd=password, otp=mfaToken, fido=fidoKey)

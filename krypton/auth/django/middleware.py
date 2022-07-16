@@ -1,14 +1,26 @@
+"""
+Django middleware to add user object as needed to the request.
+"""
 from .users import djangoUser
 from ..users import UserError
 from django.http import HttpRequest
 
 
 def kryptonLoginMiddleware(get_response):
+    """
+    Django middleware to add user object as needed to the request.
+    """
     # One-time configuration and initialization.
     def skipAuth(request:HttpRequest):
-            response = get_response(request)
-            return response
+        """
+        Return without login
+        """
+        response = get_response(request)
+        return response
     def KrLoginMiddleWare(request:HttpRequest):
+        """
+        Middleware
+        """
         auth = False
         try: 
             token = request.session["_KryptonSessionToken"]

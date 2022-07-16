@@ -229,7 +229,7 @@ function-naming-style=camelCase
 # Regular expression matching correct function names. Overrides function-
 # naming-style. If left empty, function names will be checked with the set
 # naming style.
-function-rgx=(^_)|AES|ECDH|PBKDF2
+function-rgx=(^_|Kr)|AES|ECDH|PBKDF2
 
 # Good variable names which should always be accepted, separated by a comma.
 good-names=i,
