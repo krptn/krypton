@@ -1,9 +1,10 @@
 """
 Django middleware to add user object as needed to the request.
 """
+
+from django.http import HttpRequest
 from .users import djangoUser
 from ..users import UserError
-from django.http import HttpRequest
 
 
 def kryptonLoginMiddleware(get_response):
@@ -21,14 +22,14 @@ def kryptonLoginMiddleware(get_response):
         """
         Middleware
         """
-        auth = False
-        try: 
+        try:
             token = request.session["_KryptonSessionToken"]
             Uid = request.session["_KryptonUserID"]
         except KeyError:
             return skipAuth(request)
         user = djangoUser(Uid)
-        try: user.restoreSession(token)
+        try:
+            user.restoreSession(token)
         except UserError:
             return skipAuth(request)
         request.user = user

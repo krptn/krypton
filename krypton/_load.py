@@ -78,7 +78,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         key = Column(Text)
 
     class UserTable(Base): # pylint: disable=too-few-public-methods
-        """Database 
+        """Database
         id: int
         name: str
         pwdAuthToken: bytes,
@@ -88,7 +88,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         name = Column(Text)
         pwdAuthToken = Column(Text)
         salt = Column(LargeBinary)
-    
+
     class SessionKeys(Base): # pylint: disable=too-few-public-methods
         """Database Schema
         id: int
@@ -102,7 +102,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         key = Column(Text)
         exp = Column(DateTime)
         iss = Column(DateTime)
-    
+
     class UserData(Base): # pylint: disable=too-few-public-methods
         """Database Schema -- This is ugly.
         Uid: int
@@ -113,7 +113,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         Uid = Column(Integer)
         name = Column(LargeBinary)
         value = Column(LargeBinary)
-    
+
     class KrConfig(Base): # pylint: disable=too-few-public-methods
         """Database Schema
         name: str
@@ -122,7 +122,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         id = Column(Integer, primary_key=True)
         name = Column(Text)
         value = Column(Text)
-    
+
 class ConfigTemp():
     """Configuration templates"""
     defaultAlgorithm = "AES256GCM"
@@ -256,7 +256,7 @@ with open(OPENSSL_CONFIG_FILE, "w") as file:
 
 stmt = select(DBschemas.KrConfig.value).where(DBschemas.KrConfig.name == "SALT")
 Globalsalt = configs.SQLDefaultCryptoDBpath.scalar(stmt)
-if Globalsalt == None:
+if Globalsalt is None:
     Globalsalt = os.urandom(12)
     entry = DBschemas.KrConfig(
         name = "SALT",

@@ -2,10 +2,9 @@
 Authentication Backends for Django.
 """
 from django.contrib.auth.backends import BaseBackend
-from django.contrib.auth import login
 from django.http import HttpRequest
 from sqlalchemy import select
-from ... import DBschemas, base, Globalsalt
+from ... import DBschemas, base, Globalsalt, configs
 from ..users import ITER, LEN
 from . import users
 
@@ -15,23 +14,32 @@ class kryptonBackend(BaseBackend):
     """
     def authenticate(self,
             request:HttpRequest,
-            username=None,
-            password=None,
-            mfaToken=None,
-            fidoKey=None
+            username:str,
+            creds:dict,
         ):
-        """Authenticates a user with supplied credentials"""
+        """authenticate Authenicate User with Credentials
+
+        Arguments:
+            request -- Django's HTTPRequest
+            username -- Username
+            creds -- Dictionary of credentials where password, mfaToken, fidoKey can be mapped.
+
+        Returns:
+            User Model or None is authentication fails
+        """
         stmt = select(DBschemas.UserTable.id).where(
             DBschemas.UserTable.name == base.PBKDF2(username, Globalsalt, ITER, LEN)
             ).limit(1)
-        Uid = self.c.scalar(stmt)
-        if Uid is None:
+        UId = configs.SQLDefaultUserDBpath.scalar(stmt)
+        if UId is None:
             return None
-        user = users.djangoUser(Uid)
-        try: token = user.login(pwd=password, otp=mfaToken, fido=fidoKey)
-        except: return None
+        user = users.djangoUser(UId)
+        try:
+            token = user.login(pwd=creds["password"], mfaToken=creds["mfaToken"], fido=creds["fidoKey"])
+        except:
+            return None
         request.session["_KryptonSessionToken"] = token
-        request.session["_KryptonUserID"] = Uid
+        request.session["_KryptonUserID"] = UId
         return user
 
     def get_user(self, user_id: int):

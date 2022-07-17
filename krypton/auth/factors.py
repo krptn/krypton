@@ -3,7 +3,6 @@ Different Auth Factors available inside krypton.
 """
 import os
 
-from django import conf
 from .. import base
 from .. import configs
 
@@ -31,7 +30,14 @@ class password:
     """
     @staticmethod
     def getAuth(pwd:str):
-        """Generate an authenication tag to be authenticated against."""
+        """getAuth generate authentication tag for alter use
+
+        Arguments:
+            pwd -- Password
+
+        Returns:
+            Auth tag
+        """
         salt = os.urandom(12)
         key = base.PBKDF2(pwd, salt, keylen=KEY_LEN)
         text = KCV + os.urandom(32)
@@ -39,7 +45,15 @@ class password:
         return authTag
     @staticmethod
     def auth(authTag:str, pwd:str) -> bytes:
-        """Authenticate a user. Returns False on failure."""
+        """auth Authenticate against a tag
+
+        Arguments:
+            authTag -- Tag
+            pwd -- Password
+
+        Returns:
+            Encryption key if success, False otherwise
+        """
         splited = authTag.split("$")
         ctext, salt, iter = base.base64decode(splited[0]), base.base64decode(splited[1]), int(splited[2])
         key = base.PBKDF2(pwd, salt, iter, KEY_LEN)

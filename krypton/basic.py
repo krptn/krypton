@@ -12,7 +12,13 @@ SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
 from .base import restEncrypt, restDecrypt, zeromem, PBKDF2
 
 class KeyManagementError(Exception):
-    """Exception to be raised on error in KMS"""
+    """KeyManagementError Error in Key Management
+
+    For exmaple, compliance issues
+
+    Arguments:
+        Exception -- Inherits base Exception class
+    """
     def __init__(self, *args: object) -> None:
         self.message = args[0]
         super().__init__()
@@ -24,7 +30,17 @@ class KMS():
     They Key Management System
     """
     def _cipher(self, text:ByteString, pwd:ByteString, salt:bytes, iterations:int):
-        """The title says it all"""
+        """_cipher Encrypt a string
+
+        Arguments:
+            text -- Plaintext
+            pwd -- Password
+            salt -- Sakt for hashing
+            iterations -- Iterations for hashing
+
+        Returns:
+            Ciphertext
+        """
         if self._HSM:
             return None
         key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
@@ -32,7 +48,17 @@ class KMS():
         zeromem(key)
         return r
     def _decipher(self, ctext:ByteString, pwd:ByteString, salt:bytes, iterations:int):
-        """The title says it all"""
+        """_decipher Decrypt a string
+
+        Arguments:
+            ctext -- Ciphertext
+            pwd -- Password
+            salt -- Salt for Hashing
+            iterations -- Iterations for hasing
+
+        Returns:
+            Plaintext
+        """
         if self._HSM:
             return None
         key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
@@ -46,7 +72,24 @@ class KMS():
         self._HSM = False
 
     def getKey(self, name:str, pwd:ByteString=None, force:bool=False) -> bytes:
-        """The title says it all"""
+        """getKey Get a Key based on args
+
+        Arguments:
+            name -- Name of the key to get
+
+        Keyword Arguments:
+            pwd -- Password (default: {None})
+            force -- Override Cryptoperiod Compliance errors (default: {False})
+
+        Raises:
+            ValueError: If the key does not exist
+            KeyManagementError: If the key has expired - set force=True to override
+            ValueError: If an unsupported cipher is used
+            ValueError: Wrong passwords were provided or the key was tampered with
+
+        Returns:
+            The key as python bytes
+        """
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
         key:DBschemas.KeysTable = self.c.scalar(stmt)
         if key is None:
@@ -65,10 +108,21 @@ class KMS():
         return result
 
     def createNewKey(self, name:str, pwd:ByteString=None) -> str:
-        """The title says it all"""
+        """createNewKey Create a new key and store it
+
+        Arguments:
+            name -- Name of the Key
+
+        Keyword Arguments:
+            pwd -- Password (default: {None})
+
+        Raises:
+            KeyError: If key with same name already exists
+
+        Returns:
+            The key as python bytes
+        """
         year = datetime.today().year
-        if len(name) > 20:
-            raise ValueError("Name must be less then 20 characters long")
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == "name")
         a = True
         try:
@@ -97,7 +151,14 @@ class KMS():
         return k
 
     def removeKey(self, name:str, pwd:ByteString=None) -> None:
-        """The title says it all"""
+        """removeKey Delete a Key
+
+        Arguments:
+            name -- Name of the Key
+
+        Keyword Arguments:
+            pwd -- Password (default: {None})
+        """
         zeromem(self.getKey(name, pwd, True))
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
         key:DBschemas.KeysTable = self.c.scalar(stmt)
@@ -116,14 +177,26 @@ class Crypto(KMS):
         self.num = self.c.scalar(stmt)
         super().__init__(self.c)
 
-    def secureCreate(self, data:bytes, pwd:ByteString=None, num:int=None):
-        """The title says it all"""
-        if num is None:
+    def secureCreate(self, data:ByteString, pwd:ByteString=None, _num:int=None):
+        """secureCreate Store Encrypted Data
+
+        Arguments:
+            data -- Plaintext data
+
+        Keyword Arguments:
+            pwd -- Password To Decrypt (default: {None})
+            _num -- Not good idea to set! Id to store in DB (default: {None})
+
+        Returns:
+            Integer to be passed to secureRead to return data
+        """
+        if _num is None:
             self.num+=1
-        key = self.createNewKey(str(self.num), pwd)
+            _num = self.num
+        key = self.createNewKey(str(_num), pwd)
         salt = os.urandom(12)
         keyOb = DBschemas.CryptoTable(
-            id = self.num,
+            id = _num,
             ctext = self._cipher(data, key, salt, 0),
             salt = salt,
             cipher = configs.defaultAlgorithm,
@@ -132,10 +205,18 @@ class Crypto(KMS):
         self.c.add(keyOb)
         zeromem(key)
         self.c.commit()
-        return self.num
+        return _num
 
     def secureRead(self,num:int, pwd:ByteString):
-        """The title says it all"""
+        """secureRead Read data from secureCreate
+
+        Arguments:
+            num -- Integer retuned from secureCreate
+            pwd -- Password set in secureCreate
+
+        Returns:
+            Plaintext data
+        """
         stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id ==num).limit(1)
         ctext = self.c.scalar(stmt)
         reset = False
@@ -151,12 +232,25 @@ class Crypto(KMS):
         return text
 
     def secureUpdate(self, num:int, new:ByteString, pwd:ByteString):
-        """The title says it all"""
+        """secureUpdate Update Entry Set by secureCreate
+
+        Arguments:
+            num -- Integer id of entry
+            new -- New data to set
+            pwd -- Password
+        """
         self.secureDelete(num, pwd)
         self.secureCreate(new, pwd, num)
 
     def secureDelete(self, num:int, pwd:ByteString=None) -> None:
-        """The title says it all"""
+        """secureDelete Delete Data set by secureCreate
+
+        Arguments:
+            num -- Integer id of entry
+
+        Keyword Arguments:
+            pwd -- Password (default: {None})
+        """
         zeromem(self.getKey(str(num), pwd, True))
         stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id == num)
         key:DBschemas.CryptoTable = self.c.scalar(stmt)
