@@ -92,7 +92,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
     class SessionKeys(Base): # pylint: disable=too-few-public-methods
         """Database Schema
         id: int
-        Uid: bytes
+        Uid: int
         key: str
         exp: DateTime
         iss: DateTime"""

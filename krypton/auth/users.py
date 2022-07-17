@@ -49,7 +49,7 @@ def userExistRequired(func):
         """
         if self.saved and self.loggedin:
             return func(self, *args, **kwargs)
-        raise UserError("This user has not yet been saved.")
+        raise UserError("This user has not yet been saved or is logged out.")
     return inner1
 
 class standardUser(user):
@@ -57,6 +57,7 @@ class standardUser(user):
     _userName:str = ""
     __key:bytes = None
     salt:bytes
+    sessionKey:bytes
     saved = True
     loggedin = False
     backupKeys:list[str]
@@ -167,14 +168,15 @@ class standardUser(user):
         if not self.saved:
             return None
         stmt = select(DBschemas.UserTable.pwdAuthToken).where(DBschemas.UserTable.id == self.id).limit(1)
-        try: authTag = self.c.scalar(stmt)[0]
+        try: authTag = self.c.scalar(stmt)
         except: raise UserError("User must have a password set.")
         self.__key = factors.password.auth(authTag, pwd)
         if self.__key is False: raise UserError("User must have a password set.")
         key = os.urandom(32)
+        self.sessionKey = base.restEncrypt(self.__key, key)
         token = DBschemas.SessionKeys(
-            id = self.id,
-            key = base.restEncrypt(self.__key, key),
+            Uid = self.id,
+            key = self.sessionKey,
             iss = datetime.datetime.now(),
             exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
         )
@@ -190,9 +192,15 @@ class standardUser(user):
 
     @userExistRequired
     def logout(self):
+        """logout Logout the user and delete the current Session
+        """
         base.zeromem(self.__key)
         base.zeromem(self.__privKey)
-        _utils.cleanUpSessions(self.id)
+        stmt = delete(DBschemas.SessionKeys).where(DBschemas.SessionKeys.key == self.sessionKey)
+        self.c.execute(stmt)
+        self.c.flush()
+        self.c.commit()
+        self.loggedin = False
         return
 
     @userExistRequired
@@ -203,6 +211,7 @@ class standardUser(user):
             key -- Session Key
         """
         _utils.cleanUpSessions()
+        self.sessionKey = key
         stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.Uid == self.id).limit(1)
         row:DBschemas.SessionKeys = self.c.scalars(stmt)[0]
         self.__key = base.restDecrypt(row.key, key)
@@ -268,6 +277,7 @@ class standardUser(user):
         self.setData("backupAESKeys", pickle.dumps([]))
         self.c.flush()
         self.c.commit()
+        self.login(pwd=pwd)
 
     @userExistRequired
     def decryptWithUserKey(self, data:ByteString, salt:bytes, sender=None) -> bytes:

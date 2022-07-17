@@ -7,10 +7,12 @@ class userAuth(unittest.TestCase):
         self.model.saveNewUser("Test", "TEST")
         return super().setUp()
     def tearDown(self) -> None:
+        self.model.loggedin = True
         self.model.delete()
         return super().tearDown()
     def testLoginOut(self):
-        pass
+        self.model.logout()
+        self.model.login(pwd="TEST")
     def testResetPWD(self):
         pass
     def testEncrypt(self):
@@ -20,8 +22,6 @@ class userAuth(unittest.TestCase):
     def testMFA(self):
         pass
     def testOTP(self):
-        pass
-    def testLoginOut(self):
         pass
     def testDB(self):
         self.model.setData("test", b"TEST_VALUE")
