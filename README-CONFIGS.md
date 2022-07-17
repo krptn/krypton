@@ -11,6 +11,8 @@ krypton.configs.defaultAlgorithm = "exmaple: AES256GCM" # Sets which symmetric c
 krypton.configs.defaultIterations = 600000 # Number of iterations for PBKDF2
 
 krypton.configs.defaultCryptoperiod = 2 # Approx. number of years for the cryptoperiod of a key
+
+krypton.defaultSessionPeriod = 15 # Number of minutes before a user Session is destroyed.
 ```
 
 For the following settings please see [Databases](README-DATABASES.md)

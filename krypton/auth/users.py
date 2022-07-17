@@ -47,7 +47,7 @@ def userExistRequired(func):
         Returns:
             N/A
         """
-        if self.saved:
+        if self.saved and self.loggedin:
             return func(self, *args, **kwargs)
         raise UserError("This user has not yet been saved.")
     return inner1
@@ -61,10 +61,13 @@ class standardUser(user):
     loggedin = False
     backupKeys:list[str]
     backupAESKeys:list[bytes]
-    def __init__(self, userID:int) -> None:
+    def __init__(self, userID:int=None, userName:str=None) -> None:
         super().__init__()
         self.c = configs.SQLDefaultUserDBpath
-        if userID == None:
+        if userID is None and userName is not None:
+            userID = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName)
+            userID = configs.SQLDefaultUserDBpath.scalar(userID)
+        if userID is None:
             self.saved = False
             return
         self.id = userID
@@ -83,11 +86,13 @@ class standardUser(user):
             name -- key
             value -- value
         """
-        try: self.deleteData(name)
-        except: pass
+        try: 
+            self.deleteData(name)
+        except: 
+            pass
         entry = DBschemas.UserData(
             Uid = self.id,
-            name = base.PBKDF2(name, self.salt), ## Problem: How to raise iteration count
+            name = name,
             value = base.restEncrypt(value, self.__key)
         )
         self.c.add(entry)
@@ -106,7 +111,7 @@ class standardUser(user):
         Returns:
             The value
         """
-        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == base.PBKDF2(name, self.salt)
+        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == name
             and DBschemas.UserData.Uid == self.id)
         result = self.c.scalar(stmt)
         # Don't forget to check backuped keys to decrypt data
@@ -122,7 +127,7 @@ class standardUser(user):
         Arguments:
             name -- The key to remove
         """
-        stmt = delete(DBschemas.UserData).where(DBschemas.UserData.name == base.PBKDF2(name, self.salt)
+        stmt = delete(DBschemas.UserData).where(DBschemas.UserData.name == name
             and DBschemas.UserData.Uid == self.id)
         self.c.execute(stmt)
 
@@ -145,7 +150,6 @@ class standardUser(user):
         self.c.commit()
         return None
 
-    @userExistRequired
     def login(self, pwd:str=None, mfaToken:str=None, fido:str=None):
         """login Log the user in
 
@@ -158,8 +162,10 @@ class standardUser(user):
             UserError: Password is not set
 
         Returns:
-            Session Key
+            Session Key, None if user is not saved
         """
+        if not self.saved:
+            return None
         stmt = select(DBschemas.UserTable.pwdAuthToken).where(DBschemas.UserTable.id == self.id).limit(1)
         try: authTag = self.c.scalar(stmt)[0]
         except: raise UserError("User must have a password set.")
@@ -175,11 +181,19 @@ class standardUser(user):
         self.c.add(token)
         self.c.commit()
         self.loggedin = True
+
+        self.__privKey = self.getData("userPrivateKey")
+        self.pubKey = self.getData("userPublicKey")
+        self.backupAESKeys = pickle.loads(self.getData("backupAESKeys"))
+        self.backupKeys = pickle.loads(self.getData("backupKeys"))
         return key
 
     @userExistRequired
     def logout(self):
-        """The method name says it all."""
+        base.zeromem(self.__key)
+        base.zeromem(self.__privKey)
+        _utils.cleanUpSessions(self.id)
+        return
 
     @userExistRequired
     def restoreSession(self, key):
