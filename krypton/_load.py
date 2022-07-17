@@ -111,7 +111,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         __tablename__ = "userData"
         id = Column(Integer, primary_key=True)
         Uid = Column(Integer)
-        name = Column(LargeBinary)
+        name = Column(Text)
         value = Column(LargeBinary)
 
     class KrConfig(Base): # pylint: disable=too-few-public-methods

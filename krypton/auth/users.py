@@ -261,6 +261,7 @@ class standardUser(user):
         self.c.flush()
         self.__key = factors.password.auth(tag, pwd)
         self.saved = True
+        self.loggedin = True
         self.setData("userPrivateKey", self.__privKey)
         self.setData("userPublicKey", self.pubKey)
         self.setData("backupKeys", pickle.dumps([]))
