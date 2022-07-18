@@ -9,7 +9,7 @@ model = users.standardUser(None)
 user = user.saveNewUser("Test_UserName", "Test_Password") # MFA support will be added soon
 ```
 
-To retreive the user:
+To retreive the user and set user data as key-value pairs:
 
 ```python
 model = users.standardUser(userName="Test_UserName")
