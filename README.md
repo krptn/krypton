@@ -1,6 +1,6 @@
 # Krypton
 
-For more extensive documentation please see [documentation](https://docs.krptn.dev/index.html).
+To see this documentation as a website, please see [documentation](https://docs.krptn.dev/index.html).
 
 ## What is this?
 
