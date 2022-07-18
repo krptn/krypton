@@ -14,12 +14,12 @@ To retreive the user:
 ```python
 model = users.standardUser(userName="Test_UserName")
 sessionKey = model.login(pwd="Test_Password") # See below what sessionKey is
-model.setData("test", "example")
+model.setData("test", "example") # test is the key and example is the value
 data = model.getData("test") # Gives b"example"
 model.deleteData("test")
 ```
 
-***Warning: only the stored values are encrypted. Keys are plaintext!!***
+***Warning: in setData only the stored values are encrypted. Keys are plaintext!! Avoid storing sensitive data in keys!***
 
 Session keys can be used to restore a session after the user object has been destroyed.
 For example, in a webserver, it would be passed in every request to fetch the user.
