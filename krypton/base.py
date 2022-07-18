@@ -17,10 +17,11 @@ __CryptoLib.fipsInit()
 #: Wrappers for __CryptoLib #
 # : Help linters automatically figure out function arguments, returns, etc..
 def restEncrypt(data:ByteString, key:bytes) -> bytes:
-    """restEncrypt Encrypt Data for at rest Storage
+    """Encrypt Data for at rest Storage
 
     Arguments:
         data -- Plaintext
+
         key -- 32-bit key
 
     Returns:
@@ -29,10 +30,11 @@ def restEncrypt(data:ByteString, key:bytes) -> bytes:
     return __CryptoLib.AESEncrypt(data, key, len(data))
 
 def restDecrypt(data:bytes, key:bytes) -> bytes:
-    """restDecrypt Decrypt Data from restEncrypt
+    """Decrypt Data from restEncrypt
 
     Arguments:
         data -- Ciphertext
+
         key -- 32-bit key
 
     Returns:
@@ -41,7 +43,7 @@ def restDecrypt(data:bytes, key:bytes) -> bytes:
     return __CryptoLib.AESDecrypt(data, key)
 
 def base64encode(data:ByteString) -> str:
-    """base64encode Base64 Encoding
+    """Base64 Encoding
 
     Arguments:
         data -- Text to encode
@@ -63,7 +65,7 @@ def base64decode(data:ByteString) -> ByteString:
     return __CryptoLib.base64decode(data, len(data))
 
 def createECCKey() -> tuple[str, str]:
-    """createECCKey create an ECC Key
+    """create an ECC Key
 
     Encoded in PEM format
 
@@ -73,11 +75,13 @@ def createECCKey() -> tuple[str, str]:
     return __CryptoLib.createECCKey()
 
 def ECDH(privKey:str, peerPubKey:str, salt:bytes, keylen:int=32) -> bytes:
-    """ECDH Elliptic Curve Diffie-Helman
+    """Elliptic Curve Diffie-Helman
 
     Arguments:
         privKey -- PEM Encoded private key
+
         peerPubKey -- PEM Encoded public key
+
         salt -- Salt used for KDF
 
     Keyword Arguments:
@@ -89,13 +93,15 @@ def ECDH(privKey:str, peerPubKey:str, salt:bytes, keylen:int=32) -> bytes:
     return __CryptoLib.ECDH(privKey, peerPubKey, salt, keylen)
 
 def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> bytes:
-    """getSharedKey Get users' shared key
+    """Get users' shared key
 
     Get a shared key for two users using ECDH.
 
     Arguments:
         privKey -- User's private EC Key (in PEM format)
+
         peerName -- Other User's user name
+
         salt -- Salt used for KDF
 
     Keyword Arguments:
@@ -109,7 +115,7 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> bytes:
     return __CryptoLib.ECDH(privKey, key, salt, keylen)
 
 def PBKDF2(text:ByteString, salt:ByteString, iterations:int=configs.defaultIterations, keylen:int=32) -> bytes:
-    """PBKDF2 PBKDF2 with SHA512
+    """PBKDF2 with SHA512
 
     Arguments:
         text -- Plaintext
@@ -117,6 +123,7 @@ def PBKDF2(text:ByteString, salt:ByteString, iterations:int=configs.defaultItera
 
     Keyword Arguments:
         iterations -- Iteration count (default: {configs.defaultIterations})
+
         keylen -- Len of key to return (default: {32})
 
     Returns:
@@ -125,7 +132,7 @@ def PBKDF2(text:ByteString, salt:ByteString, iterations:int=configs.defaultItera
     return __CryptoLib.PBKDF2(text, len(text), salt, iterations, len(salt), keylen)
 
 def zeromem(obj:ByteString)->int:
-    """zeromem Set the byte/string to \x00
+    """Set the byte/string to \x00
 
     WARNING! Improper use leads to severe memory corruption.
     Ensure you only use it with bytes and string objects.

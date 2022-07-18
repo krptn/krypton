@@ -8,6 +8,7 @@ def cleanUpSessions(userID = None):
     """cleanUpSessions Delete expired Session Keys
 
     Keyword Arguments:
+
         userID -- Delete all tokens from this ID even if not expired (default: {None})
     """
     #If userID is provided all sessions linked to it will be deleted (even if it is not expired).

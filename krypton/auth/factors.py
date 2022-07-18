@@ -21,11 +21,15 @@ class authFailed(Exception):
 
 class password:
     """
-    Note: no need to create an object just call the methods directly.
+    *Note:* no need to create an object just call the methods directly.
     Simple password authentication.
+
     1.) Hash the password with PBKDF2 and random salt.
+
     2.) Decrypt the value in the table arg.
+
     3.) Verify that the decryption was successfully authenticated.
+
     4.) Return the encryption key.
     """
     @staticmethod
@@ -49,6 +53,7 @@ class password:
 
         Arguments:
             authTag -- Tag
+
             pwd -- Password
 
         Returns:

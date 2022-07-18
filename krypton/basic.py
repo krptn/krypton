@@ -12,7 +12,7 @@ SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
 from .base import restEncrypt, restDecrypt, zeromem, PBKDF2
 
 class KeyManagementError(Exception):
-    """KeyManagementError Error in Key Management
+    """Error in Key Management System
 
     For exmaple, compliance issues
 
@@ -30,12 +30,15 @@ class KMS():
     They Key Management System
     """
     def _cipher(self, text:ByteString, pwd:ByteString, salt:bytes, iterations:int):
-        """_cipher Encrypt a string
+        """Encrypt a string
 
         Arguments:
             text -- Plaintext
+
             pwd -- Password
+
             salt -- Sakt for hashing
+
             iterations -- Iterations for hashing
 
         Returns:
@@ -48,12 +51,15 @@ class KMS():
         zeromem(key)
         return r
     def _decipher(self, ctext:ByteString, pwd:ByteString, salt:bytes, iterations:int):
-        """_decipher Decrypt a string
+        """Decrypt a string
 
         Arguments:
             ctext -- Ciphertext
+
             pwd -- Password
+
             salt -- Salt for Hashing
+
             iterations -- Iterations for hasing
 
         Returns:
@@ -72,19 +78,23 @@ class KMS():
         self._HSM = False
 
     def getKey(self, name:str, pwd:ByteString=None, force:bool=False) -> bytes:
-        """getKey Get a Key based on args
+        """Get a Key based on args
 
         Arguments:
             name -- Name of the key to get
 
         Keyword Arguments:
             pwd -- Password (default: {None})
+
             force -- Override Cryptoperiod Compliance errors (default: {False})
 
         Raises:
             ValueError: If the key does not exist
+
             KeyManagementError: If the key has expired - set force=True to override
+
             ValueError: If an unsupported cipher is used
+
             ValueError: Wrong passwords were provided or the key was tampered with
 
         Returns:
@@ -108,7 +118,7 @@ class KMS():
         return result
 
     def createNewKey(self, name:str, pwd:ByteString=None) -> str:
-        """createNewKey Create a new key and store it
+        """Create a new key and store it
 
         Arguments:
             name -- Name of the Key
@@ -151,7 +161,7 @@ class KMS():
         return k
 
     def removeKey(self, name:str, pwd:ByteString=None) -> None:
-        """removeKey Delete a Key
+        """Delete a Key
 
         Arguments:
             name -- Name of the Key
@@ -178,13 +188,14 @@ class Crypto(KMS):
         super().__init__(self.c)
 
     def secureCreate(self, data:ByteString, pwd:ByteString=None, _num:int=None):
-        """secureCreate Store Encrypted Data
+        """Store Encrypted Data
 
         Arguments:
             data -- Plaintext data
 
         Keyword Arguments:
             pwd -- Password To Decrypt (default: {None})
+
             _num -- Not good idea to set! Id to store in DB (default: {None})
 
         Returns:
@@ -208,10 +219,11 @@ class Crypto(KMS):
         return _num
 
     def secureRead(self,num:int, pwd:ByteString):
-        """secureRead Read data from secureCreate
+        """Read data from secureCreate
 
         Arguments:
             num -- Integer retuned from secureCreate
+
             pwd -- Password set in secureCreate
 
         Returns:
@@ -232,18 +244,20 @@ class Crypto(KMS):
         return text
 
     def secureUpdate(self, num:int, new:ByteString, pwd:ByteString):
-        """secureUpdate Update Entry Set by secureCreate
+        """Update Entry Set by secureCreate
 
         Arguments:
             num -- Integer id of entry
+
             new -- New data to set
+
             pwd -- Password
         """
         self.secureDelete(num, pwd)
         self.secureCreate(new, pwd, num)
 
     def secureDelete(self, num:int, pwd:ByteString=None) -> None:
-        """secureDelete Delete Data set by secureCreate
+        """Delete Data set by secureCreate
 
         Arguments:
             num -- Integer id of entry

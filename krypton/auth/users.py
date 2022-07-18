@@ -26,7 +26,7 @@ class UserError(Exception):
         return self.message
 
 def userExistRequired(func):
-    """userExistRequired User has to be saved in order to run
+    """User has to be saved in order to run
 
     Arguments:
         func -- function
@@ -39,7 +39,7 @@ def userExistRequired(func):
     """
     @wraps(func)
     def inner1(self, *args, **kwargs):
-        """inner1 Ensure user is saved
+        """Ensure user is saved
 
         Raises:
             UserError: If user is not saved
@@ -81,15 +81,16 @@ class standardUser(user):
 
     @userExistRequired
     def setData(self, name: str, value: any) -> None:
-        """setData  from key-value pair
+        """Store user data as a key-value pair
 
         Arguments:
             name -- key
+
             value -- value
         """
-        try: 
+        try:
             self.deleteData(name)
-        except: 
+        except:
             pass
         entry = DBschemas.UserData(
             Uid = self.id,
@@ -101,7 +102,7 @@ class standardUser(user):
 
     @userExistRequired
     def getData(self, name: str) -> any:
-        """getData get value set by setData
+        """Get value set by setData
 
         Arguments:
             name -- the key
@@ -123,7 +124,7 @@ class standardUser(user):
 
     @userExistRequired
     def deleteData(self, name:str) -> None:
-        """deleteData Delete key-value pair set by setData
+        """Delete key-value pair set by setData
 
         Arguments:
             name -- The key to remove
@@ -134,7 +135,7 @@ class standardUser(user):
 
     @userExistRequired
     def delete(self):
-        """delete Delete a user
+        """Delete a user
 
         Returns:
             None
@@ -152,11 +153,13 @@ class standardUser(user):
         return None
 
     def login(self, pwd:str=None, mfaToken:str=None, fido:str=None):
-        """login Log the user in
+        """Log the user in
 
         Keyword Arguments:
             pwd -- Password (default: {None})
+
             otp -- One-Time Password (default: {None})
+
             fido -- Fido Token (default: {None})
 
         Raises:
@@ -205,7 +208,7 @@ class standardUser(user):
 
     @userExistRequired
     def restoreSession(self, key):
-        """restoreSession Resume sessoin from key
+        """Resume sessoin from key
 
         Arguments:
             key -- Session Key
@@ -233,10 +236,11 @@ class standardUser(user):
         """The method name says it all."""
 
     def saveNewUser(self, name:str, pwd:str, fido:str=None):
-        """saveNewUser save a new user
+        """Save a new user
 
         Arguments:
             name -- User Name
+
             pwd -- Password
 
         Keyword Arguments:
@@ -281,10 +285,11 @@ class standardUser(user):
 
     @userExistRequired
     def decryptWithUserKey(self, data:ByteString, salt:bytes, sender=None) -> bytes:
-        """decryptWithUserKey Decrypt data with user's key
+        """Decrypt data with user's key
 
         Arguments:
             data -- Ciphertext
+
             salt -- Salt
 
         Keyword Arguments:
@@ -298,7 +303,7 @@ class standardUser(user):
 
     @userExistRequired
     def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]=None) -> list[tuple[str, bytes, bytes]]:
-        """encryptWithUserKey encrypt data with user's key
+        """Encrypt data with user's key
 
         Arguments:
             data -- Plaintext
@@ -318,7 +323,7 @@ class standardUser(user):
 
     @userExistRequired
     def generateNewKeys(self):
-        """generateNewKeys Regenerate encryption keys
+        """Regenerate encryption keys
         """
         keys = base.createECCKey()
         backups = self.getData("backupKeys")

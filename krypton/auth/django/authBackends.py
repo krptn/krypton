@@ -17,11 +17,13 @@ class kryptonBackend(BaseBackend):
             username:str,
             creds:dict,
         ):
-        """authenticate Authenicate User with Credentials
+        """Authenicate User with Credentials
 
         Arguments:
             request -- Django's HTTPRequest
+
             username -- Username
+
             creds -- Dictionary of credentials where password, mfaToken, fidoKey can be mapped.
 
         Returns:

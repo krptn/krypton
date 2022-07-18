@@ -8,10 +8,10 @@ from django.contrib.auth.models import (
 )
 
 class djangoUser(standardUser, AbstractBaseUser):
-    """djangoUser Wrapper for Krypton USer
+    """Django wrapper for Krypton USer
     """
     def __init__(self, userID: str) -> None:
-        """__init__ Init a new Django User
+        """Init a new Django User
 
         Arguments:
             userID -- User ID
@@ -21,13 +21,14 @@ class djangoUser(standardUser, AbstractBaseUser):
 
 class kryptonUserManager(BaseUserManager):
     def create_user(self, email, password=None, fidoToken=None):
-        """create_user Create a new Django User
+        """Create a new Django User
 
         Arguments:
             email -- Email of user
 
         Keyword Arguments:
             password -- Password (default: {None})
+
             fidoToken -- Fido Token (default: {None})
         """
         user = djangoUser(email)
