@@ -1,5 +1,7 @@
 # Krypton
 
+For more extensive documentation please see [documentation](https://docs.krptn.dev/index.html).
+
 ## What is this?
 
 **Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want there code to be used for such purposes.
