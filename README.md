@@ -44,6 +44,8 @@ See [User Auth](README-USER-AUTH.md). Please see [integrations](#Integration-wit
 - [Django](README-DJANGO.md)
 - [Flask](README-FLASK.md)
 
+[Integrations Page](README-INTEGRATIONS.md)
+
 ## Crypto Class
 
 [Crypto Class](README-CRYPTO.md)
