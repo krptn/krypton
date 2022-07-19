@@ -4,7 +4,7 @@ To see this documentation as a website, please see [documentation](https://docs.
 
 ## What is this?
 
-**Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want there code to be used for such purposes.
+**Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want their code to be used for such purposes.
 
 A user authentication and access management system based entirely on cryptographic primitives.
 
@@ -26,11 +26,11 @@ What we mean by that is:
 
 ```python
 from krypton import basic
-# Create a instance of Crypto - a class for encrypting and storing sensitive data.
+# Create an instance of Crypto - a class for encrypting and storing sensitive data.
 myCrypto = basic.Crypto()
 pwd = "Perhaps provided by the user"
 # It supports C.R.U.D. operations:
-id = myCrypto.secureCreate("Example data", pwd) #id is an intiger
+id = myCrypto.secureCreate("Example data", pwd) #id is an integer
 print("The data is:")
 print(myCrypto.secureRead(id, pwd)) # prints Example data
 ```
@@ -88,7 +88,7 @@ perl Configure --prefix="C:\Users\markb\source\repos\krypton\kr-openssl-install"
   enable-fips --debug
 ```
 
-To install the extension and produce debuging symbols use:
+To install the extension and produce debugging symbols use:
 
 ```shell
 pip install -e .
@@ -97,7 +97,7 @@ python setup.py build_ext --debug --inplace
 
 To rebuild __CryptoLib extension, only run the second command.
 
-To install the extension and not produce debuging symbols:
+To install the extension and not produce debugging symbols:
 
 ```shell
 pip install .

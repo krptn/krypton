@@ -22,14 +22,13 @@ The string that you need to pass to this extension should look like this:
 "mssql+pyodbc://user:password@host:port/dbname?driver=odbc driver e.g:ODBC+Driver+18+for+SQL+Server"
 ```
 
-If you are only doing development you may add the following to prevent installing an SSL certificate:
+If you are only doing development, you may add the following to prevent installing an SSL certificate:
 
 ```python
 &Encrypt=no
 ```
 
 To you windows authentication, please remove user:password from the string.
-
 
 ## MySQL
 
@@ -45,7 +44,7 @@ Please install [mysqlclient](https://pypi.org/project/mysqlclient/).
 "sqlite+pysqlite:///Path/example.db"
 ```
 
-## Postgresql
+## PostgreSQL
 
 Please install [psycopg2](https://pypi.org/project/psycopg2/).
 

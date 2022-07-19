@@ -6,7 +6,7 @@ Please configure your Django project to use the following Auth Backend:
 krypton.auth.django.authBackends.kryptonBackend
 ```
 
-Also note, that when you pass a request to authenticate in the backend, it will set auth cookies inside the request's session. Therefore, it is not necessary to use django's `login` function.
+Also note, that when you pass a request to authenticate in the backend, it will set auth cookies inside the request's session. Therefore, it is not necessary to use Django's `login` function.
 
 Please point the User Manager to be krypton.auth.django.users.kryptonUserManager or to a subclass of it
 
@@ -41,4 +41,4 @@ MIDDLEWARE = [
 ]
 ```
 
-In order to ensure a user is authenticated before visitng your site, you can add the loginRequired deocrator from krypton.auth.django.simple.loginRequired.
+In order to ensure a user is authenticated before visiting your site, you can add the loginRequired decorator from krypton.auth.django.simple.loginRequired.
