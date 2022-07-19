@@ -37,7 +37,7 @@ print(myCrypto.secureRead(id, pwd)) # prints Example data
 
 ## User Auth
 
-See [User Auth](README-USER-AUTH.md). Please see [integrations](#Integration-with-web-frameworks) to use user authentication with supported web frameworks.
+See [User Auth](README-USER-AUTH.md).
 
 ## Integration with web frameworks
 
