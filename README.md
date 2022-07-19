@@ -22,8 +22,6 @@ What we mean by that is:
 - Planned User Authentication with OAuth integration
 - Planned integration with popular web frameworks
 
-View aditional security mitigations: [Security Features](sec_feature_plan.md)
-
 ### Example usage of the Crypto Class
 
 ```python
