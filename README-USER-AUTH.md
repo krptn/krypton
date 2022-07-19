@@ -1,6 +1,6 @@
 # User Authentication
 
-**Note:** to use Authentication in a supported web framework please see [integrations](README.md#integration-with-web-frameworks)
+**Note:** to use Authentication in a supported web framework please see [integrations](README.md#integration-with-web-frameworks).
 
 Here is an example usage of creating a new user:
 
