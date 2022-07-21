@@ -33,7 +33,14 @@ jobs:
           python -m pip install -r requirements.txt
           mkdir kr-openssl-config
           mkdir kr-openssl-install
+      - name: Cache OSSL Build
+        id: cache-ossl
+        uses: actions/cache@v3
+        with:
+          path: kr-openssl-*
+          key: ubunut-ossl
       - name: Build OSSL
+        if: steps.cache-ossl.outputs.cache-hit != 'true'
         run: |
           cd openssl
           perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips

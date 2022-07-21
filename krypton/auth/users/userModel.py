@@ -104,7 +104,7 @@ class standardUser(AuthUser, MFAUser, user):
         self.c.execute(stmt)
 
     @userExistRequired
-    def decryptWithUserKey(self, data:ByteString, salt:bytes, sender=None) -> bytes:
+    def decryptWithUserKey(self, data:ByteString, salt:bytes=None, sender=None) -> bytes:
         """Decrypt data with user's key
 
         Arguments:
@@ -119,6 +119,8 @@ class standardUser(AuthUser, MFAUser, user):
             Plaintext
         """
         # Will also need to check the backup keys if decryption fails
+        if salt is None and sender is None:
+            return base.restDecrypt(data, self._key)
         key = base.getSharedKey(self._privKey, sender, salt)
 
     @userExistRequired
@@ -134,6 +136,8 @@ class standardUser(AuthUser, MFAUser, user):
         Returns:
             List of tuples of form (user name, ciphertext, salt), which needs to be provided so that user name's user can decrypt it.
         """
+        if otherUsers is None:
+            return base.restEncrypt(data, self._key)
         salts = [os.urandom(12) for name in otherUsers]
         AESKeys = [base.getSharedKey(self._privKey, name, salts[i])
             for i, name in enumerate(otherUsers)]
