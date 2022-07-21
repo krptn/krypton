@@ -22,7 +22,6 @@ jobs:
       - name: Install dependencies
         run: |
           cd ${{ github.workspace }}
-          cd ..
           python -m venv krenv
           mkdir ${{ github.workspace }}/krenv/Lib
           mkdir ${{ github.workspace }}/krenv/Lib/site-packages/
