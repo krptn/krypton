@@ -36,7 +36,7 @@ jobs:
         id: cache-ossl
         uses: actions/cache@v3
         with:
-          path: kr-openssl-*
+          path: ${{ github.workspace }}/kr-openssl-*
           key: ubunut-ossl
       - name: Build OSSL
         if: steps.cache-ossl.outputs.cache-hit != 'true'
