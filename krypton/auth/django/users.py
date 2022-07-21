@@ -2,7 +2,7 @@
 Django user objects and user managers.
 """
 
-from ..users import standardUser
+from ..users.userModel import standardUser
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )

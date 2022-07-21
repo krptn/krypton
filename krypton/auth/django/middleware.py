@@ -4,7 +4,7 @@ Django middleware to add user object as needed to the request.
 
 from django.http import HttpRequest
 from .users import djangoUser
-from ..users import UserError
+from ..users.userModel import UserError
 
 
 def kryptonLoginMiddleware(get_response):

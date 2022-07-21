@@ -5,7 +5,7 @@ from django.contrib.auth.backends import BaseBackend
 from django.http import HttpRequest
 from sqlalchemy import select
 from ... import DBschemas, base, Globalsalt, configs
-from ..users import ITER, LEN
+from ..users.userModel import ITER, LEN
 from . import users
 
 class kryptonBackend(BaseBackend):

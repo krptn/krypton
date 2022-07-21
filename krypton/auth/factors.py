@@ -34,7 +34,7 @@ class password:
     """
     @staticmethod
     def getAuth(pwd:str):
-        """getAuth generate authentication tag for alter use
+        """Generate authentication tag for alter use
 
         Arguments:
             pwd -- Password
@@ -47,9 +47,10 @@ class password:
         text = KCV + os.urandom(32)
         authTag = f"{base.base64encode(base.restEncrypt(text, key))}${base.base64encode(salt)}${configs.defaultIterations}"
         return authTag
+    
     @staticmethod
     def auth(authTag:str, pwd:str) -> bytes:
-        """auth Authenticate against a tag
+        """Authenticate against a tag
 
         Arguments:
             authTag -- Tag

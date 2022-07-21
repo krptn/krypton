@@ -1,9 +1,9 @@
 import unittest
-from krypton.auth import users
+from krypton.auth.users.userModel import standardUser
 
 class userAuth(unittest.TestCase):
     def setUp(self) -> None:
-        self.model = users.standardUser(None)
+        self.model = standardUser(None)
         self.model.saveNewUser("Test", "TEST")
         return super().setUp()
     def tearDown(self) -> None:
