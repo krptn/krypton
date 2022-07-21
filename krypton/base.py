@@ -54,7 +54,7 @@ def base64encode(data:ByteString) -> str:
     return __CryptoLib.base64encode(data, len(data))
 
 def base64decode(data:ByteString) -> ByteString:
-    """base64decode Decode base64
+    """Decode base64
 
     Arguments:
         data -- Base64 encoded string
