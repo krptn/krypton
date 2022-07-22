@@ -10,9 +10,6 @@ from ... import DBschemas, configs, Globalsalt
 from ... import base
 from .bases import userExistRequired, UserError, user
 
-ITER = 500000
-LEN = 32
-
 class AuthUser(user):
     """Auth Logic for User Models
     """
@@ -35,12 +32,13 @@ class AuthUser(user):
         if not self.saved:
             return None
         stmt = select(DBschemas.UserTable.pwdAuthToken).where(DBschemas.UserTable.id == self.id).limit(1)
-        try: authTag = self.c.scalar(stmt)
-        except: raise UserError("User must have a password set.")
+        authTag = self.c.scalar(stmt)
+        if authTag is None:
+            raise UserError("User must have a password set.")
         self._key = factors.password.auth(authTag, pwd)
         if self._key is False: raise UserError("User must have a password set.")
-        key = os.urandom(32)
-        self.sessionKey = base.restEncrypt(self._key, key)
+        restoreKey = os.urandom(32)
+        self.sessionKey = base.restEncrypt(self._key, restoreKey)
         token = DBschemas.SessionKeys(
             Uid = self.id,
             key = self.sessionKey,
@@ -48,14 +46,15 @@ class AuthUser(user):
             exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
         )
         self.c.add(token)
-        self.c.commit()
         self.loggedin = True
 
         self._privKey = self.getData("userPrivateKey")
         self.pubKey = self.getData("userPublicKey")
         self.backupAESKeys = pickle.loads(self.getData("backupAESKeys"))
         self.backupKeys = pickle.loads(self.getData("backupKeys"))
-        return key
+        self.c.flush()
+        self.c.commit()
+        return restoreKey
 
     @userExistRequired
     def logout(self):
@@ -69,7 +68,7 @@ class AuthUser(user):
         self.c.commit()
         self.loggedin = False
         return
-    
+
     @userExistRequired
     def delete(self):
         """Delete a user
@@ -78,20 +77,15 @@ class AuthUser(user):
             None
         """
         _utils.cleanUpSessions(self.id)
-        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id)
-        values = self.c.scalar(stmt)
-        self.c.delete(values)
-        stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.id)
-        values = self.c.scalar(stmt)
-        self.c.delete(values)
+        self.c.execute(delete(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id))
+        self.c.execute(delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.id))
         self.c.execute(delete(DBschemas.UserData).where(DBschemas.UserData.Uid == self.id))
         self.c.flush()
         self.c.commit()
         base.zeromem(self._key)
         base.zeromem(self._privKey)
         return None
-    
-    @userExistRequired
+
     def restoreSession(self, key):
         """Resume sessoin from key
 
@@ -101,9 +95,16 @@ class AuthUser(user):
         _utils.cleanUpSessions()
         self.sessionKey = key
         stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.Uid == self.id).limit(1)
-        row:DBschemas.SessionKeys = self.c.scalars(stmt)[0]
+        row:DBschemas.SessionKeys = self.c.scalar(stmt)
+        if row is None:
+            raise UserError("This session key has expired.")
         self._key = base.restDecrypt(row.key, key)
-    
+        self.loggedin = True
+        self._privKey = self.getData("userPrivateKey")
+        self.pubKey = self.getData("userPublicKey")
+        self.backupAESKeys = pickle.loads(self.getData("backupAESKeys"))
+        self.backupKeys = pickle.loads(self.getData("backupKeys"))
+
     def saveNewUser(self, name:str, pwd:str, fido:str=None):
         """Save a new user
 
@@ -135,7 +136,7 @@ class AuthUser(user):
         tag = factors.password.getAuth(pwd)
         userEntry = DBschemas.UserTable(
             id = self.id,
-            name = base.PBKDF2(name, Globalsalt, ITER, LEN),
+            name = name,
             pwdAuthToken = tag,
             salt = self.salt
         )

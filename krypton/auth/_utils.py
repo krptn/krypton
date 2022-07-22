@@ -15,13 +15,13 @@ def cleanUpSessions(userID = None):
 
     now = datetime.datetime.now()
     if userID is not None:
-        configs.SQLDefaultCryptoDBpath.execute(
+        configs.SQLDefaultUserDBpath.execute(
             delete(
                 DBschemas.SessionKeys
             ).where(
                 DBschemas.SessionKeys.Uid == userID
             ))
-    configs.SQLDefaultCryptoDBpath.execute(
+    configs.SQLDefaultUserDBpath.execute(
         delete(DBschemas.SessionKeys).where(DBschemas.SessionKeys.exp <= now))
     configs.SQLDefaultUserDBpath.flush()
     configs.SQLDefaultUserDBpath.commit()

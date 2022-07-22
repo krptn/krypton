@@ -15,9 +15,11 @@ class userAuth(unittest.TestCase):
         self.model.login(pwd="TEST")
     def testResetPWD(self):
         pass
-    def testEncrypt(self):
-        pass
-    def testDecrypt(self):
+    def testSingleUserEncrypt(self):
+        ctext = self.model.encryptWithUserKey("TEST")
+        test = self.model.decryptWithUserKey(ctext)
+        self.assertEqual(test, b"TEST")
+    def testCrossUserEncrypt(self):
         pass
     def testMFA(self):
         pass
@@ -28,6 +30,13 @@ class userAuth(unittest.TestCase):
         result = self.model.getData("test")
         self.model.deleteData("test")
         self.assertEqual(result, b"TEST_VALUE")
+    def testSessions(self):
+        self.model.logout()
+        key = self.model.login(pwd="TEST")
+        newMod = standardUser(userName="Test")
+        newMod.restoreSession(key)
+        self.assertTrue(newMod.loggedin)
+        newMod.logout()
 
 if __name__ == "__main__":
     unittest.main()

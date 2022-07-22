@@ -6,7 +6,6 @@ import os
 from .. import base
 from .. import configs
 
-KCV = b"kryptonAuth"
 KEY_LEN = 32
 
 class authFailed(Exception):
@@ -44,7 +43,7 @@ class password:
         """
         salt = os.urandom(12)
         key = base.PBKDF2(pwd, salt, keylen=KEY_LEN)
-        text = KCV + os.urandom(32)
+        text = os.urandom(12)
         authTag = f"{base.base64encode(base.restEncrypt(text, key))}${base.base64encode(salt)}${configs.defaultIterations}"
         return authTag
     
@@ -64,10 +63,7 @@ class password:
         ctext, salt, iter = base.base64decode(splited[0]), base.base64decode(splited[1]), int(splited[2])
         key = base.PBKDF2(pwd, salt, iter, KEY_LEN)
         text = base.restDecrypt(ctext, key) # This raises an error if authentication fails.
-        if text.startswith(KCV):
-            return key ## Success
-        else:
-            return False
+        return key ## Success
 
 class otp:
     """

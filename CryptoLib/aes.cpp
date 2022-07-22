@@ -4,7 +4,6 @@
 #include <openssl/crypto.h>
 #include <openssl/rand.h>
 #include <openssl/evp.h>
-#include <iostream>
 
 using namespace std;
 namespace py = pybind11;
@@ -16,12 +15,16 @@ const int AUTH_TAG_LEN = 16;
 const auto AES_ALGO = EVP_aes_256_gcm;
 
 py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
-	if (key.attr("__len__")().cast<int>() != AES_KEY_LEN){
+	if (key.attr("__len__")().cast<int>() != AES_KEY_LEN) {
 		throw std::invalid_argument("Key is of wrong size");
 	}
-	py::bytes ftext = py::bytes((char*)&msglenc, 1) + py::bytes(textc, msglenc);
-	int msglen = ftext.attr("__len__")().cast<int>();
-	char* text = pymbToBuffer(ftext);
+	int msglen = msglenc + 4;
+	char* text = new char[msglen];
+	memcpy(text + 4, textc, msglenc);
+	text[0] = '$';
+	text[1] = 'C';
+	text[2] = 'r';
+	text[3] = msglenc;
 	char* k = pymbToBuffer(key);
 	int rem = AUTH_TAG_LEN - (msglen % AUTH_TAG_LEN);
 	int flen = msglen + (long long)rem + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN;
@@ -88,12 +91,17 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 	int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
 	plaintext_len += len;
 	EVP_CIPHER_CTX_free(ctx);
-	OPENSSL_cleanse(k, 32);
+	OPENSSL_cleanse(k, AES_KEY_LEN);
 	if (!(ret >= 0)) {
 		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
-	int plainMsgLen = out.get()[0];
+	int plainMsgLen = out.get()[3];
+	if (out.get()[0] != '$' || out.get()[1] != 'C' || out.get()[2] != 'r') {
+		throw std::invalid_argument("Unable to decrypt ciphertext");
+	}
 	delete[] b;
 	delete[] k;
-	return py::bytes((char*)out.get() + 1, plainMsgLen);
+	py::bytes bytes = py::bytes((char*)out.get() + 4, plainMsgLen);
+	OPENSSL_cleanse(out.get(), msglen);
+	return bytes;
 }

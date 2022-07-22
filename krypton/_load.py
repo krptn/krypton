@@ -125,6 +125,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
 
 class ConfigTemp():
     """Configuration templates"""
+    KCV = b"kryptonAuth"
     defaultAlgorithm = "AES256GCM"
     defaultIterations = 500000
     defaultErrorPage = ""

@@ -1,6 +1,7 @@
 # User Authentication
 
 **Note:** to use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
+**Note:** username's are not encrypted - everything else is.
 
 Here is an example usage of creating a new user:
 
@@ -20,6 +21,8 @@ model.setData("test", "example") # test is the key and example is the value
 data = model.getData("test") # Gives b"example"
 model.deleteData("test")
 ```
+
+You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want to use your own database.
 
 ***Warning: in setData only the stored values are encrypted. Keys are plaintext!! Avoid storing sensitive data in keys!***
 

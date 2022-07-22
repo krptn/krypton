@@ -12,7 +12,7 @@ from ... import DBschemas, configs
 from ... import base
 from .userModelBaseAuth import AuthUser
 from .userModelMFAAuth import MFAUser
-from .bases import userExistRequired, user
+from .bases import UserError, userExistRequired, user
 
 ITER = 500000
 LEN = 32
@@ -21,14 +21,14 @@ class standardUser(AuthUser, MFAUser, user):
     """User Model for Krypton
     Please pass None to __init__ to create a new user, after that call saveNewUser with required args.
     """
-    _userName:str
+    userName:str
     _key:bytes
     salt:bytes
     sessionKey:bytes
     saved:bool
     loggedin:bool
-    backupKeys:list[str]
-    backupAESKeys:list[bytes]
+    backupKeys:list[str] = []
+    backupAESKeys:list[bytes] = []
     def __init__(self, userID:int=None, userName:str=None) -> None:
         super().__init__()
         self.loggedin = False
@@ -36,18 +36,17 @@ class standardUser(AuthUser, MFAUser, user):
         if userID is None and userName is not None:
             userID = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName)
             userID = configs.SQLDefaultUserDBpath.scalar(userID)
-        if userID is None:
+            if userID is None:
+                raise UserError("This user does not exist.")
+        if userID is None and userName is None:
             self.saved = False
             return
         self.id = userID
         stmt = select(DBschemas.UserTable.name).where(DBschemas.UserTable.id == userID).limit(1)
-        try: 
-            self._userName = self.c.scalar(stmt)[0]
-            self.saved = True
-        except:
+        self.userName = self.c.scalar(stmt)
+        self.saved = True
+        if self.userName is None:
             self.saved = False
-        self._privKey = self.getData("userPrivateKey")
-        self.pubKey = self.getData("userPublicKey")
 
     @userExistRequired
     def setData(self, name: str, value: any) -> None:
@@ -71,7 +70,7 @@ class standardUser(AuthUser, MFAUser, user):
         self.c.commit()
 
     @userExistRequired
-    def getData(self, name: str) -> any:
+    def getData(self, name: str) -> ByteString:
         """Get value set by setData
 
         Arguments:
@@ -89,7 +88,14 @@ class standardUser(AuthUser, MFAUser, user):
         # Don't forget to check backuped keys to decrypt data
         if result is None:
             raise AttributeError()
-        text = base.restDecrypt(result, self._key)
+        try: text = base.restDecrypt(result, self._key)
+        except ValueError: pass
+        for key in self.backupAESKeys:
+            flag = False
+            try: text = base.restDecrypt(result, self._key)
+            except ValueError: flag = True
+            if flag is not False:
+                break
         return text
 
     @userExistRequired
@@ -120,7 +126,15 @@ class standardUser(AuthUser, MFAUser, user):
         """
         # Will also need to check the backup keys if decryption fails
         if salt is None and sender is None:
-            return base.restDecrypt(data, self._key)
+            try: text = base.restDecrypt(data, self._key)
+            except ValueError: pass
+            for key in self.backupAESKeys:
+                flag = False
+                try: text = base.restDecrypt(data, key)
+                except ValueError: flag = True
+                if flag is not False:
+                    break
+            return text
         key = base.getSharedKey(self._privKey, sender, salt)
 
     @userExistRequired
@@ -134,10 +148,12 @@ class standardUser(AuthUser, MFAUser, user):
             otherUsers -- List of user names of people who can decrypt it  (default: {None})
 
         Returns:
-            List of tuples of form (user name, ciphertext, salt), which needs to be provided so that user name's user can decrypt it.
+            If otherUsers is None: ciphertext.
+            If otherUsers is not None: list of tuples of form (user name, ciphertext, salt), which needs to be provided so that user name's user can decrypt it.
         """
         if otherUsers is None:
-            return base.restEncrypt(data, self._key)
+            ctext =  base.restEncrypt(data, self._key)
+            return ctext
         salts = [os.urandom(12) for name in otherUsers]
         AESKeys = [base.getSharedKey(self._privKey, name, salts[i])
             for i, name in enumerate(otherUsers)]

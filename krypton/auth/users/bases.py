@@ -6,6 +6,8 @@ from functools import wraps
 from abc import ABCMeta, abstractmethod
 from typing import SupportsInt, ByteString
 
+from sqlalchemy.orm import Session
+
 class UserError(Exception):
     """
     Exception to be raised when an error occures in a user model.
@@ -40,13 +42,14 @@ def userExistRequired(func):
         """
         if self.saved and self.loggedin:
             return func(self, *args, **kwargs)
-        raise UserError("This user has not yet been saved or is not logged out.")
+        raise UserError("This user has not yet been saved or is logged out.")
     return inner1
 
 class user(metaclass=ABCMeta):
     """Base Class for User Models.
     You can check this to see whether a method is implemented in user models.
     """
+    c:Session
     @abstractmethod
     def delete(self):
         """Delete a user
