@@ -30,7 +30,7 @@ class AuthUser(user):
             Session Key, None if user is not saved
         """
         if not self.saved:
-            return None
+            raise UserError("User must be saved.")
         stmt = select(DBschemas.UserTable.pwdAuthToken).where(DBschemas.UserTable.id == self.id).limit(1)
         authTag = self.c.scalar(stmt)
         if authTag is None:

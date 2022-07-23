@@ -29,6 +29,7 @@ class standardUser(AuthUser, MFAUser, user):
     loggedin:bool
     backupKeys:list[str] = []
     backupAESKeys:list[bytes] = []
+    
     def __init__(self, userID:int=None, userName:str=None) -> None:
         super().__init__()
         self.loggedin = False
