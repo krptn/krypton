@@ -14,9 +14,6 @@ from .userModelBaseAuth import AuthUser
 from .userModelMFAAuth import MFAUser
 from .bases import UserError, userExistRequired, user
 
-ITER = 500000
-LEN = 32
-
 class standardUser(AuthUser, MFAUser, user):
     """User Model for Krypton
     Please pass None to __init__ to create a new user, after that call saveNewUser with required args.
