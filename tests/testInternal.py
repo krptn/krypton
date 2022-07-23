@@ -20,7 +20,12 @@ class userAuth(unittest.TestCase):
         test = self.model.decryptWithUserKey(ctext)
         self.assertEqual(test, b"TEST")
     def testCrossUserEncrypt(self):
-        pass
+        user2 = standardUser(None)
+        user2.saveNewUser("user2", "pwd")
+        test = user2.encryptWithUserKey("data", ["Test"])
+        result = self.model.decryptWithUserKey(test[0][1], test[0][2], "user2")
+        user2.delete()
+        self.assertEqual(result, b"data")
     def testMFA(self):
         pass
     def testOTP(self):

@@ -111,8 +111,8 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> bytes:
         Key as python bytes
     """
     stmt = select(DBschemas.PubKeyTable.key).where(DBschemas.PubKeyTable.name == peerName)
-    key = configs.SQLDefaultUserDBpath.scalar(stmt)
-    return __CryptoLib.ECDH(privKey, key, salt, keylen)
+    pubKey = configs.SQLDefaultUserDBpath.scalar(stmt)
+    return __CryptoLib.ECDH(privKey, pubKey, salt, keylen)
 
 def PBKDF2(text:ByteString, salt:ByteString, iterations:int=configs.defaultIterations, keylen:int=32) -> bytes:
     """PBKDF2 with SHA512

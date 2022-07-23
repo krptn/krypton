@@ -121,8 +121,8 @@ class AuthUser(user):
         stmt = select(func.max(DBschemas.UserTable.id))
         self.id = self.c.scalar(stmt) + 1
         keys = base.createECCKey()
-        self.pubKey = keys[0]
-        self._privKey = keys[1]
+        self._privKey = keys[0]
+        self.pubKey = keys[1]
         key = DBschemas.PubKeyTable(
             name = self.userName,
             key = self.pubKey

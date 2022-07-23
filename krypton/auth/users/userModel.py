@@ -134,6 +134,16 @@ class standardUser(AuthUser, MFAUser, user):
                     break
             return text
         key = base.getSharedKey(self._privKey, sender, salt)
+        try: text = base.restDecrypt(data, key)
+        except ValueError: pass
+        for key in self.backupKeys:
+            key = base.getSharedKey(key, sender, salt)
+            flag = False
+            try: text = base.restDecrypt(data, key)
+            except ValueError: flag = True
+            if flag is not False:
+                break
+        return text
 
     @userExistRequired
     def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]=None) -> list[tuple[str, bytes, bytes]]:
@@ -157,7 +167,7 @@ class standardUser(AuthUser, MFAUser, user):
             for i, name in enumerate(otherUsers)]
         results = [base.restEncrypt(data, key) for key in AESKeys]
         for i in AESKeys: base.zeromem(i)
-        return zip(otherUsers, results, salts)
+        return list(zip(otherUsers, results, salts))
 
     @userExistRequired
     def generateNewKeys(self):
