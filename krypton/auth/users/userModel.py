@@ -191,3 +191,15 @@ class standardUser(AuthUser, MFAUser, user):
         self.setData("userPrivateKey", self._privKey)
         self.setData("userPublicKey", self.pubKey)
         self.setData("accountKeysCreation", datetime.now().year)
+
+    @userExistRequired
+    def reload(self):
+        """Reload encryption keys. Warning: previous keys are not purged!
+        """
+        _privKey = self.getData("userPrivateKey")
+        pubKey = self.getData("userPublicKey")
+        self._privKey = _privKey.decode()
+        self.pubKey = pubKey.decode()
+        base.zeromem(_privKey)
+        self.backupAESKeys = pickle.loads(self.getData("backupAESKeys"))
+        self.backupKeys = pickle.loads(self.getData("backupKeys"))

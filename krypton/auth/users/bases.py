@@ -173,3 +173,8 @@ class user(metaclass=ABCMeta):
     @abstractmethod
     def resetPWD(self):
         """The method name says it all."""
+    
+    @abstractmethod
+    def reload(self):
+        """Reload encryption keys. Warning: previous keys are not purged!
+        """

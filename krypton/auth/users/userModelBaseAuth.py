@@ -48,13 +48,7 @@ class AuthUser(user):
         self.c.add(token)
         self.loggedin = True
 
-        _privKey = self.getData("userPrivateKey")
-        pubKey = self.getData("userPublicKey")
-        self._privKey = _privKey.decode()
-        self.pubKey = pubKey.decode()
-        base.zeromem(_privKey)
-        self.backupAESKeys = pickle.loads(self.getData("backupAESKeys"))
-        self.backupKeys = pickle.loads(self.getData("backupKeys"))
+        self.reload()
         self.c.flush()
         self.c.commit()
         return restoreKey
@@ -81,7 +75,7 @@ class AuthUser(user):
         """
         _utils.cleanUpSessions(self.id)
         self.c.execute(delete(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id))
-        self.c.execute(delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.id))
+        self.c.execute(delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.userName))
         self.c.execute(delete(DBschemas.UserData).where(DBschemas.UserData.Uid == self.id))
         self.c.flush()
         self.c.commit()
@@ -103,10 +97,7 @@ class AuthUser(user):
             raise UserError("This session key has expired.")
         self._key = base.restDecrypt(row.key, key)
         self.loggedin = True
-        self._privKey = self.getData("userPrivateKey")
-        self.pubKey = self.getData("userPublicKey")
-        self.backupAESKeys = pickle.loads(self.getData("backupAESKeys"))
-        self.backupKeys = pickle.loads(self.getData("backupKeys"))
+        self.reload()
 
     def saveNewUser(self, name:str, pwd:str, fido:str=None):
         """Save a new user
