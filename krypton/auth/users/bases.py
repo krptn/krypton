@@ -110,7 +110,7 @@ class user(metaclass=ABCMeta):
             ValueError: If user is already saved
         """
     @abstractmethod
-    def getData(self, name: str) -> any:
+    def getData(self, name: str) -> ByteString:
         """Get value set by setData
 
         Arguments:

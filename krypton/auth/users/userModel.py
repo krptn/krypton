@@ -30,7 +30,7 @@ class standardUser(AuthUser, MFAUser, user):
     backupKeys:list[str] = []
     backupAESKeys:list[bytes] = []
     
-    def __init__(self, userID:int=None, userName:str=None) -> None:
+    def __init__(self, userName:str=None, userID:int=None) -> None:
         super().__init__()
         self.loggedin = False
         self.c = configs.SQLDefaultUserDBpath

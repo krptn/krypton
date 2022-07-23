@@ -110,8 +110,8 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> bytes:
     Returns:
         Key as python bytes
     """
-    stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == peerName)
-    key = configs.SQLDefaultUserDBpath.scalar(stmt).key
+    stmt = select(DBschemas.PubKeyTable.key).where(DBschemas.PubKeyTable.name == peerName)
+    key = configs.SQLDefaultUserDBpath.scalar(stmt)
     return __CryptoLib.ECDH(privKey, key, salt, keylen)
 
 def PBKDF2(text:ByteString, salt:ByteString, iterations:int=configs.defaultIterations, keylen:int=32) -> bytes:

@@ -48,8 +48,11 @@ class AuthUser(user):
         self.c.add(token)
         self.loggedin = True
 
-        self._privKey = self.getData("userPrivateKey")
-        self.pubKey = self.getData("userPublicKey")
+        _privKey = self.getData("userPrivateKey")
+        pubKey = self.getData("userPublicKey")
+        self._privKey = _privKey.decode()
+        self.pubKey = pubKey.decode()
+        base.zeromem(_privKey)
         self.backupAESKeys = pickle.loads(self.getData("backupAESKeys"))
         self.backupKeys = pickle.loads(self.getData("backupKeys"))
         self.c.flush()
@@ -122,6 +125,7 @@ class AuthUser(user):
         if self.saved:
             raise ValueError("This user is already saved.")
 
+        self.userName = name
         self.salt = os.urandom(12)
         stmt = select(func.max(DBschemas.UserTable.id))
         self.id = self.c.scalar(stmt) + 1
@@ -129,7 +133,7 @@ class AuthUser(user):
         self.pubKey = keys[0]
         self._privKey = keys[1]
         key = DBschemas.PubKeyTable(
-            name = self.id,
+            name = self.userName,
             key = self.pubKey
         )
         self.c.add(key)
