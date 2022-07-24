@@ -1,6 +1,7 @@
 # User Authentication
 
 **Note:** to use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
+
 **Note:** username's are not encrypted - everything else is.
 
 Here is an example usage of creating a new user:
@@ -60,7 +61,7 @@ r = model.encryptWithUserKey("data", ["Test_UserName2"]) # Allow Test_UserName t
 model2.decryptWithUserKey(r[0][1], r[0][2], "Test_UserName") # Returns b"data"
 ```
 
-### Let us explain this
+### Explanation
 
 encryptWithUserKey needs to parameters: `data`, `otherUsers` (optional). `data` is the plaintext to encrypt and `otherUsers` is a list of usernames of users who can also decrypt the data.
 
