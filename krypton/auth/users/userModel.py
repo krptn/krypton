@@ -6,8 +6,9 @@ Note for developer's working on Krypton: this only contains user model cryptogra
 import datetime
 import os
 import pickle
+from turtle import back
 from typing import ByteString
-from sqlalchemy import delete, select
+from sqlalchemy import delete, select, update
 
 from krypton.auth import factors
 from ... import DBschemas, configs
@@ -26,11 +27,13 @@ class standardUser(AuthUser, MFAUser, user):
     sessionKey:bytes
     saved:bool
     loggedin:bool
-    backupKeys:list[str] = []
-    backupAESKeys:list[bytes] = []
-    
+    backupKeys:list[str] 
+    backupAESKeys:list[bytes]
+
     def __init__(self, userName:str=None, userID:int=None) -> None:
         super().__init__()
+        self.backupAESKeys = []
+        self.backupKeys = []
         self.loggedin = False
         self.c = configs.SQLDefaultUserDBpath
         if userID is None and userName is not None:
@@ -88,13 +91,17 @@ class standardUser(AuthUser, MFAUser, user):
         # Don't forget to check backuped keys to decrypt data
         if result is None:
             raise AttributeError()
-        try: text = base.restDecrypt(result, self._key)
-        except ValueError: pass
+        try:
+            text = base.restDecrypt(result, self._key)
+        except ValueError:
+            pass
         for key in self.backupAESKeys:
-            flag = False
-            try: text = base.restDecrypt(result, self._key)
-            except ValueError: flag = True
-            if flag is not False:
+            retry = False
+            try:
+                text = base.restDecrypt(result, key)
+            except ValueError:
+                retry = True
+            if not retry:
                 break
         return text
 
@@ -126,23 +133,31 @@ class standardUser(AuthUser, MFAUser, user):
         """
         # Will also need to check the backup keys if decryption fails
         if salt is None and sender is None:
-            try: text = base.restDecrypt(data, self._key)
-            except ValueError: pass
+            try:
+                text = base.restDecrypt(data, self._key)
+            except ValueError:
+                pass
             for key in self.backupAESKeys:
-                flag = False
-                try: text = base.restDecrypt(data, key)
-                except ValueError: flag = True
-                if flag is not False:
+                retry = False
+                try:
+                    text = base.restDecrypt(data, key)
+                except ValueError:
+                    retry = True
+                if not retry:
                     break
             return text
         key = base.getSharedKey(self._privKey, sender, salt)
-        try: text = base.restDecrypt(data, key)
-        except ValueError: pass
+        try:
+            text = base.restDecrypt(data, key)
+        except ValueError:
+            pass
         for key in self.backupKeys:
             key = base.getSharedKey(key, sender, salt)
             flag = False
-            try: text = base.restDecrypt(data, key)
-            except ValueError: flag = True
+            try:
+                text = base.restDecrypt(data, key)
+            except ValueError:
+                flag = True
             if flag is not False:
                 break
         return text
@@ -175,7 +190,7 @@ class standardUser(AuthUser, MFAUser, user):
     def shareSet(self, name:str, data:ByteString, otherUsers:list[str]) -> None:
         keys = self.encryptWithUserKey(data, otherUsers)
         ids = [self.c.scalar(select(DBschemas.UserTable.id)
-            .where(DBschemas.UserTable.name == user)) 
+            .where(DBschemas.UserTable.name == user))
             for user in otherUsers]
         for i, key in enumerate(keys):
             row = DBschemas.UserShareTable(
@@ -190,11 +205,11 @@ class standardUser(AuthUser, MFAUser, user):
 
     @userExistRequired
     def shareGet(self, name:str) -> bytes:
-        stmt = select(DBschemas.UserShareTable).where(DBschemas.UserShareTable.name == name 
+        stmt = select(DBschemas.UserShareTable).where(DBschemas.UserShareTable.name == name
             and DBschemas.UserShareTable.shareUid == self.id)
         row:DBschemas.UserShareTable = self.c.scalar(stmt)
         return self.decryptWithUserKey(row.value, row.salt, row.sender)
-    
+
     @userExistRequired
     def generateNewKeys(self, pwd:str):
         """Regenerate Encryption keys
@@ -202,38 +217,45 @@ class standardUser(AuthUser, MFAUser, user):
         Arguments:
             pwd -- Password
         """
-        keys = base.createECCKey()
-        backups = self.getData("_backupKeys")
-        backupList:list[bytes] = pickle.loads(backups)
-        backupList.append(self._privKey)
-        self.setData("_backupKeys", pickle.dumps(backupList))
-        for x in backups: base.zeromem(x)
-        base.zeromem(backups)
+        # Generate new Keys and add old ones to backup
         backups = self.getData("_backupAESKeys")
-        backupList:list[bytes] = pickle.loads(backups)
-        backupList.append(self._key)
-        self.setData("_backupAESKeys", pickle.dumps(backupList))
-        for x in backups: base.zeromem(x)
+        self.backupAESKeys:list[bytes] = pickle.loads(backups)
         base.zeromem(backups)
+        self.backupAESKeys.append(self._key)
+
         tag = factors.password.getAuth(pwd)
-        row = self.c.query(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).get(1)
-        row.pwdAuthToken = tag
+        stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
+            values(pwdAuthToken = tag)
+        self.c.execute(stmt)
         self.c.commit()
         self._key = factors.password.auth(tag, pwd)
+
+        backups = pickle.dumps(self.backupAESKeys)
+        self.setData("_backupAESKeys", backups)
+        base.zeromem(backups)
+
+        keys = base.createECCKey()
+        backups = self.getData("_backupKeys")
+        self.backupKeys:list[bytes] = pickle.loads(backups)
+        base.zeromem(backups)
+        self.backupKeys.append(self._privKey)
+        backups = pickle.dumps(self.backupKeys)
+        self.setData("_backupKeys", backups)
+        base.zeromem(backups)
         self._privKey = keys[0]
         self.pubKey = keys[1]
-        stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.id)
-        stmt = self.c.scalar(stmt)
-        self.c.delete(stmt)
-        key = DBschemas.PubKeyTable(
-            name = self.id,
-            key = self.pubKey
-        )
-        self.c.add(key)
-        self.c.flush()
         self.setData("_userPrivateKey", self._privKey)
         self.setData("_userPublicKey", self.pubKey)
-        self.setData("_accountKeysCreation", datetime.now().year)
+
+        stmt = update(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.id == self.id).\
+            values(key = self.pubKey)
+        self.c.execute(stmt)
+        self.c.commit()
+
+        self.setData("_userPrivateKey", self._privKey)
+        self.setData("_userPublicKey", self.pubKey)
+        self.setData("_accountKeysCreation", str(datetime.datetime.now().year))
+        self.reload()
 
     @userExistRequired
     def reload(self):

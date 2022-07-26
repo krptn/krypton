@@ -1,17 +1,18 @@
 """ This module contains auth functions for models
 """
-
-from abc import abstractmethod
+#pylint: disable=W0223
+#pylint: disable=no-member
 import datetime
 import os
 import pickle
 from sqlalchemy import delete, select, func
+from tomlkit import date
 from .. import factors, _utils
 from ... import DBschemas, configs, Globalsalt
 from ... import base
 from .bases import userExistRequired, UserError, user
 
-class AuthUser(user):
+class AuthUser(user): #pylint: disable=W0223
     """Auth Logic for User Models
     """
     def login(self, pwd:str=None, mfaToken:str=None, fido:str=None):
@@ -48,8 +49,10 @@ class AuthUser(user):
         )
         self.c.add(token)
         self.loggedin = True
-
         self.reload()
+        time = int(self.getData("_accountKeysCreation").decode())
+        if datetime.datetime.now().year - time >= 2:
+            self.generateNewKeys(pwd)
         self.c.flush()
         self.c.commit()
         return restoreKey
@@ -145,32 +148,7 @@ class AuthUser(user):
         self.setData("_userPublicKey", self.pubKey)
         self.setData("_backupKeys", pickle.dumps([]))
         self.setData("_backupAESKeys", pickle.dumps([]))
+        self.setData("_accountKeysCreation", str(datetime.datetime.now().year))
         self.c.flush()
         self.c.commit()
         self.login(pwd=pwd)
-
-    @userExistRequired
-    def enablePWDReset(self, Pkey):
-        salt = os.urandom(32)
-        key = base.PBKDF2(Pkey, salt, keylen=32)
-        skey = base.restEncrypt(self._key, key)
-        base.zeromem(key)
-        base.zeromem(Pkey)
-        self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
-        row = DBschemas.PWDReset(
-            Uid = self.id,
-            key = skey,
-            iter = configs.defaultIterations,
-            salt = salt
-        )
-        self.c.add(row)
-        self.c.commit()
-        return
-
-    @abstractmethod
-    def resetPWDFromLockout(self, key:str, newPWD:str):
-        row:DBschemas.PWDReset = self.c.scalar(select(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
-        krKey = base.PBKDF2(key, row.salt, row.iter, 32)
-        self._key = base.restDecrypt(row.key, krKey)
-        base.zeromem(krKey)
-        self.generateNewKeys(newPWD)

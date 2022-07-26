@@ -20,6 +20,8 @@ class djangoUser(standardUser, AbstractBaseUser):
         self.is_authenticated = self.loggedin
 
 class kryptonUserManager(BaseUserManager):
+    """Krypton User Manager for Django
+    """
     def create_user(self, email, password=None, fidoToken=None):
         """Create a new Django User
 

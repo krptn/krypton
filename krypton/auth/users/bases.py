@@ -174,7 +174,7 @@ class user(metaclass=ABCMeta):
             pwd -- Password
         """
     @abstractmethod
-    def resetPWDFromLockout(self, key, newPWD):
+    def resetPWD(self, key, newPWD):
         """Reset Password
 
         Arguments:
@@ -190,4 +190,11 @@ class user(metaclass=ABCMeta):
 
         Arguments:
             key -- The key needed to reset
+        """
+    @abstractmethod
+    def generateNewKeys(self, pwd:str):
+        """Regenerate Encryption keys
+
+        Arguments:
+            pwd -- Password
         """
