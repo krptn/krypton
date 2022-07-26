@@ -33,7 +33,7 @@ class password:
     """
     @staticmethod
     def getAuth(pwd:str):
-        """Generate authentication tag for alter use
+        """Generate authentication tag for later use
 
         Arguments:
             pwd -- Password

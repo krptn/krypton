@@ -1,6 +1,7 @@
 """ This module contains auth functions for models
 """
 
+from abc import abstractmethod
 import datetime
 import os
 import pickle
@@ -140,10 +141,36 @@ class AuthUser(user):
         self._key = factors.password.auth(tag, pwd)
         self.saved = True
         self.loggedin = True
-        self.setData("userPrivateKey", self._privKey)
-        self.setData("userPublicKey", self.pubKey)
-        self.setData("backupKeys", pickle.dumps([]))
-        self.setData("backupAESKeys", pickle.dumps([]))
+        self.setData("_userPrivateKey", self._privKey)
+        self.setData("_userPublicKey", self.pubKey)
+        self.setData("_backupKeys", pickle.dumps([]))
+        self.setData("_backupAESKeys", pickle.dumps([]))
         self.c.flush()
         self.c.commit()
         self.login(pwd=pwd)
+
+    @userExistRequired
+    def enablePWDReset(self, Pkey):
+        salt = os.urandom(32)
+        key = base.PBKDF2(Pkey, salt, keylen=32)
+        skey = base.restEncrypt(self._key, key)
+        base.zeromem(key)
+        base.zeromem(Pkey)
+        self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
+        row = DBschemas.PWDReset(
+            Uid = self.id,
+            key = skey,
+            iter = configs.defaultIterations,
+            salt = salt
+        )
+        self.c.add(row)
+        self.c.commit()
+        return
+
+    @abstractmethod
+    def resetPWDFromLockout(self, key:str, newPWD:str):
+        row:DBschemas.PWDReset = self.c.scalar(select(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
+        krKey = base.PBKDF2(key, row.salt, row.iter, 32)
+        self._key = base.restDecrypt(row.key, krKey)
+        base.zeromem(krKey)
+        self.generateNewKeys(newPWD)

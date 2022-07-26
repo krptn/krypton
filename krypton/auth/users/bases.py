@@ -167,14 +167,27 @@ class user(metaclass=ABCMeta):
             List of tuples of form (user name, ciphertext, salt), which needs to be provided so that user name's user can decrypt it.
         """
     @abstractmethod
-    def generateNewKeys(self, pwd):
-        """Regenerate encryption keys
+    def generateNewKeys(self, pwd:str):
+        """Regenerate Encryption keys
+
+        Arguments:
+            pwd -- Password
         """
     @abstractmethod
-    def resetPWD(self):
-        """The method name says it all."""
-    
+    def resetPWDFromLockout(self, key, newPWD):
+        """Reset Password
+
+        Arguments:
+            key -- Key as provided to enablePWDReset
+        """
     @abstractmethod
     def reload(self):
         """Reload encryption keys. Warning: previous keys are not purged!
+        """
+    @abstractmethod
+    def enablePWDReset(self, key):
+        """Enable Password Reset
+
+        Arguments:
+            key -- The key needed to reset
         """

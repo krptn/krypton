@@ -131,6 +131,20 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         value = Column(LargeBinary)
         shareUid = Column(Integer)
 
+    class PWDReset(Base): # pylint: disable=too-few-public-methods
+        """Database Schema
+        Uid: int,
+        key: bytes,
+        iter: int,
+        salt: bytes
+        """
+        __tablename__ = "pwdReset"
+        id = Column(Integer, primary_key=True)
+        Uid = Column(Integer)
+        key = Column(LargeBinary)
+        iter = Column(Integer)
+        salt = Column(LargeBinary)
+
     class KrConfig(Base): # pylint: disable=too-few-public-methods
         """Database Schema
         name: str

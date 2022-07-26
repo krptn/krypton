@@ -8,6 +8,8 @@ import os
 import pickle
 from typing import ByteString
 from sqlalchemy import delete, select
+
+from krypton.auth import factors
 from ... import DBschemas, configs
 from ... import base
 from .userModelBaseAuth import AuthUser
@@ -194,23 +196,30 @@ class standardUser(AuthUser, MFAUser, user):
         return self.decryptWithUserKey(row.value, row.salt, row.sender)
     
     @userExistRequired
-    def generateNewKeys(self):
-        """Regenerate encryption keys
+    def generateNewKeys(self, pwd:str):
+        """Regenerate Encryption keys
+
+        Arguments:
+            pwd -- Password
         """
         keys = base.createECCKey()
-        backups = self.getData("backupKeys")
+        backups = self.getData("_backupKeys")
         backupList:list[bytes] = pickle.loads(backups)
         backupList.append(self._privKey)
-        self.setData("backupKeys", pickle.dumps(backupList))
+        self.setData("_backupKeys", pickle.dumps(backupList))
         for x in backups: base.zeromem(x)
         base.zeromem(backups)
-        backups = self.getData("backupAESKeys")
+        backups = self.getData("_backupAESKeys")
         backupList:list[bytes] = pickle.loads(backups)
         backupList.append(self._key)
-        self.setData("backupAESKeys", pickle.dumps(backupList))
+        self.setData("_backupAESKeys", pickle.dumps(backupList))
         for x in backups: base.zeromem(x)
         base.zeromem(backups)
-        self._key = os.urandom(32)
+        tag = factors.password.getAuth(pwd)
+        row = self.c.query(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).get(1)
+        row.pwdAuthToken = tag
+        self.c.commit()
+        self._key = factors.password.auth(tag, pwd)
         self._privKey = keys[0]
         self.pubKey = keys[1]
         stmt = select(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.id)
@@ -222,18 +231,18 @@ class standardUser(AuthUser, MFAUser, user):
         )
         self.c.add(key)
         self.c.flush()
-        self.setData("userPrivateKey", self._privKey)
-        self.setData("userPublicKey", self.pubKey)
-        self.setData("accountKeysCreation", datetime.now().year)
+        self.setData("_userPrivateKey", self._privKey)
+        self.setData("_userPublicKey", self.pubKey)
+        self.setData("_accountKeysCreation", datetime.now().year)
 
     @userExistRequired
     def reload(self):
         """Reload encryption keys. Warning: previous keys are not purged!
         """
-        _privKey = self.getData("userPrivateKey")
-        pubKey = self.getData("userPublicKey")
+        _privKey = self.getData("_userPrivateKey")
+        pubKey = self.getData("_userPublicKey")
         self._privKey = _privKey.decode()
         self.pubKey = pubKey.decode()
         base.zeromem(_privKey)
-        self.backupAESKeys = pickle.loads(self.getData("backupAESKeys"))
-        self.backupKeys = pickle.loads(self.getData("backupKeys"))
+        self.backupAESKeys = pickle.loads(self.getData("_backupAESKeys"))
+        self.backupKeys = pickle.loads(self.getData("_backupKeys"))
