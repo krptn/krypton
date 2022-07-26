@@ -5,6 +5,7 @@ import os
 import sys
 import pathlib
 import ctypes
+from django.test import TestCase
 from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session
 
@@ -106,13 +107,29 @@ class DBschemas(): # pylint: disable=too-few-public-methods
     class UserData(Base): # pylint: disable=too-few-public-methods
         """Database Schema -- This is ugly.
         Uid: int
-        name: bytes
-        value: bytes"""
+        name: str
+        value: bytes
+        shared: int, default=0"""
         __tablename__ = "userData"
         id = Column(Integer, primary_key=True)
         Uid = Column(Integer)
         name = Column(Text)
         value = Column(LargeBinary)
+    
+    class UserShareTable(Base): # pylint: disable=too-few-public-methods
+        """Database Schema
+        sender: str
+        name: bytes
+        salt: bytes
+        value: bytes
+        shareUid: int"""
+        __tablename__ = "userShareData"
+        id = Column(Integer, primary_key=True)
+        sender = Column(Text)
+        name = Column(Text)
+        salt = Column(LargeBinary)
+        value = Column(LargeBinary)
+        shareUid = Column(Integer)
 
     class KrConfig(Base): # pylint: disable=too-few-public-methods
         """Database Schema
@@ -208,7 +225,7 @@ class ConfigTemp():
         Base.metadata.create_all(engine)
         error = False
 
-        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == 1)
+        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == 1) # Has to be one because of shared
         test = None
         try:
             test = c.scalar(stmt)

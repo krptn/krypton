@@ -170,6 +170,30 @@ class standardUser(AuthUser, MFAUser, user):
         return list(zip(otherUsers, results, salts))
 
     @userExistRequired
+    def shareSet(self, name:str, data:ByteString, otherUsers:list[str]) -> None:
+        keys = self.encryptWithUserKey(data, otherUsers)
+        ids = [self.c.scalar(select(DBschemas.UserTable.id)
+            .where(DBschemas.UserTable.name == user)) 
+            for user in otherUsers]
+        for i, key in enumerate(keys):
+            row = DBschemas.UserShareTable(
+                sender = self.userName,
+                name = name,
+                salt = key[2],
+                value = key[1],
+                shareUid = ids[i]
+            )
+            self.c.add(row)
+        self.c.commit()
+
+    @userExistRequired
+    def shareGet(self, name:str) -> bytes:
+        stmt = select(DBschemas.UserShareTable).where(DBschemas.UserShareTable.name == name 
+            and DBschemas.UserShareTable.shareUid == self.id)
+        row:DBschemas.UserShareTable = self.c.scalar(stmt)
+        return self.decryptWithUserKey(row.value, row.salt, row.sender)
+    
+    @userExistRequired
     def generateNewKeys(self):
         """Regenerate encryption keys
         """

@@ -2,7 +2,7 @@
 
 **Note:** to use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
 
-**Note:** username's are not encrypted - everything else is.
+**Note:** usernames are not encrypted.
 
 Here is an example usage of creating a new user:
 
@@ -23,7 +23,7 @@ data = model.getData("test") # Gives b"example"
 model.deleteData("test")
 ```
 
-You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want to use your own database: see [cross-user encryption](#cross-user-encryption). Also, cross-user encryption is has other uses so read it anyway!
+You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want to use your own database: see [cross-user encryption](#encryption). Also, cross-user encryption/sharing is has other uses so read it anyway: [sharing](#cross-user-sharingencryption)!
 
 ***Warning: in setData only the stored values are encrypted. Keys are plaintext!! Avoid storing sensitive data in keys!***
 
@@ -39,9 +39,33 @@ model.restoreSession(sessionKey)
 
 To set session expiry please see [Configuration](README-CONFIGS.md)
 
-## Cross-User Encryption
+## Cross-User Sharing/Encryption
 
-Using this method, you can grant access to some of the user's account's data to another user.
+Using these methods, you can grant access to some of the user's account's data to another user.
+
+While using these methods, all data remains encrypted using the user's credentials, no data is ever plaintext in a database. We use `Elliptic-curve Diffie–Hellman` to share a common encryption key between the users and encrypt the data with it. Each user has their own key, with the private key encrypted with the user's credentials.
+
+### Sharing
+
+```python
+from krypton.auth import users
+
+model = users.standardUser(None)
+model.saveNewUser("Test_UserName", "Test_Password")
+
+model2 = users.standardUser(None)
+model2.saveNewUser("Test_UserName2", "Test_Password")
+
+# Save value "data" with key "test" and allow access to user "Test_UserName"
+user2.shareSet("test", "data", ["Test_UserName"])
+value = model.shareGet("test") # returns b"data"
+```
+
+As you can see above, `shareSet` requires you to pass a unique name for the data (`"test"` in this case), the data (`"data"` in this case), and a list of usernames who can access it (`["Test_UserName"]` above).
+
+### Encryption
+
+When possible we it is prefered to use `shareSet` and `shareGet` but when required you can directly use only Krypton's encryption capabilities. E.g: if you want to use another database to store this data.
 
 ```python
 from krypton.auth import users
@@ -60,8 +84,6 @@ model.decryptWithUserKey(r) # Returns b"data"
 r = model.encryptWithUserKey("data", ["Test_UserName2"]) # Allow Test_UserName to decrypt the data
 model2.decryptWithUserKey(r[0][1], r[0][2], "Test_UserName") # Returns b"data"
 ```
-
-### Explanation
 
 encryptWithUserKey needs to parameters: `data`, `otherUsers` (optional). `data` is the plaintext to encrypt and `otherUsers` is a list of usernames of users who can also decrypt the data.
 

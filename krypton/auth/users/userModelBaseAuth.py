@@ -77,6 +77,7 @@ class AuthUser(user):
         self.c.execute(delete(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id))
         self.c.execute(delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.userName))
         self.c.execute(delete(DBschemas.UserData).where(DBschemas.UserData.Uid == self.id))
+        self.c.execute(delete(DBschemas.UserShareTable).where(DBschemas.UserShareTable.sender == self.userName))
         self.c.flush()
         self.c.commit()
         base.zeromem(self._key)
