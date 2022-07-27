@@ -23,6 +23,8 @@ data = model.getData("test") # Gives b"example"
 model.deleteData("test")
 ```
 
+**Note:** do make sure that the key in setData does not start with `_` - those are reserved for Krypton internals.
+
 You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want to use your own database: see [cross-user encryption](#encryption). Also, cross-user encryption/sharing is has other uses so read it anyway: [sharing](#cross-user-sharingencryption)!
 
 ***Warning: in setData only the stored values are encrypted. Keys are plaintext!! Avoid storing sensitive data in keys!***
@@ -60,6 +62,8 @@ model2.saveNewUser("Test_UserName2", "Test_Password")
 user2.shareSet("test", "data", ["Test_UserName"])
 value = model.shareGet("test") # returns b"data"
 ```
+
+**Note:** do make sure that the key in shareSet does not start with `_` - those are reserved for Krypton internals.
 
 As you can see above, `shareSet` requires you to pass a unique name for the data (`"test"` in this case), the data (`"data"` in this case), and a list of usernames who can access it (`["Test_UserName"]` above).
 
