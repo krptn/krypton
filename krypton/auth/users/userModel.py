@@ -8,7 +8,7 @@ import os
 import pickle
 from turtle import back
 from typing import ByteString
-from sqlalchemy import delete, select, update
+from sqlalchemy import and_, delete, select, update
 
 from krypton.auth import factors
 from ... import DBschemas, configs
@@ -85,10 +85,9 @@ class standardUser(AuthUser, MFAUser, user):
         Returns:
             The value
         """
-        stmt = select(DBschemas.UserData.value).where(DBschemas.UserData.name == name
-            and DBschemas.UserData.Uid == self.id)
+        stmt = select(DBschemas.UserData.value).where(and_(DBschemas.UserData.name == name,
+            DBschemas.UserData.Uid == self.id))
         result = self.c.scalar(stmt)
-        # Don't forget to check backuped keys to decrypt data
         if result is None:
             raise AttributeError()
         try:
@@ -112,8 +111,8 @@ class standardUser(AuthUser, MFAUser, user):
         Arguments:
             name -- The key to remove
         """
-        stmt = delete(DBschemas.UserData).where(DBschemas.UserData.name == name
-            and DBschemas.UserData.Uid == self.id)
+        stmt = delete(DBschemas.UserData).where(and_(DBschemas.UserData.name == name
+            , DBschemas.UserData.Uid == self.id))
         self.c.execute(stmt)
 
     @userExistRequired
@@ -146,20 +145,31 @@ class standardUser(AuthUser, MFAUser, user):
                 if not retry:
                     break
             return text
-        key = base.getSharedKey(self._privKey, sender, salt)
+        keys = base.getSharedKey(self._privKey, sender, salt)
         try:
-            text = base.restDecrypt(data, key)
+            for key in keys:
+                try:
+                    text = base.restDecrypt(data, key)
+                except ValueError:
+                    retry = True
+                base.zeromem(key)
+                if not retry:
+                    break
         except ValueError:
             pass
         for key in self.backupKeys:
-            key = base.getSharedKey(key, sender, salt)
-            flag = False
-            try:
-                text = base.restDecrypt(data, key)
-            except ValueError:
-                flag = True
-            if flag is not False:
-                break
+            keys = base.getSharedKey(key, sender, salt)
+            retry = False
+            for key in keys:
+                try:
+                    text = base.restDecrypt(data, key)
+                except ValueError:
+                    retry = True
+                base.zeromem(key)
+                if not retry:
+                    break
+            if not retry:
+                    break
         return text
 
     @userExistRequired
@@ -174,16 +184,19 @@ class standardUser(AuthUser, MFAUser, user):
 
         Returns:
             If otherUsers is None: ciphertext.
-            If otherUsers is not None: list of tuples of form (user name, ciphertext, salt), which needs to be provided so that user name's user can decrypt it.
+            If otherUsers is not None: list of tuples of form (user name, ciphertext, salt), which needs to be provided so that username's user can decrypt it.
         """
         if otherUsers is None:
             ctext =  base.restEncrypt(data, self._key)
             return ctext
         salts = [os.urandom(12) for name in otherUsers]
-        AESKeys = [base.getSharedKey(self._privKey, name, salts[i])
-            for i, name in enumerate(otherUsers)]
+        AESKeys = []
+        for i, name in enumerate(otherUsers):
+            temp = base.getSharedKey(self._privKey, name, salts[i])
+            [base.zeromem(x) for x in temp[1:]]
+            AESKeys.append(temp[0])
         results = [base.restEncrypt(data, key) for key in AESKeys]
-        for i in AESKeys: base.zeromem(i)
+        [base.zeromem(x) for x in AESKeys]
         return list(zip(otherUsers, results, salts))
 
     @userExistRequired
@@ -217,14 +230,14 @@ class standardUser(AuthUser, MFAUser, user):
         Arguments:
             pwd -- Password
         """
-        # Generate new Keys and add old ones to backup
+        # Generate new Keys and add old keys to backup
         backups = self.getData("_backupAESKeys")
         self.backupAESKeys:list[bytes] = pickle.loads(backups)
         base.zeromem(backups)
         self.backupAESKeys.append(self._key)
 
         tag = factors.password.getAuth(pwd)
-        stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
+        stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
             values(pwdAuthToken = tag)
         self.c.execute(stmt)
         self.c.commit()
@@ -247,13 +260,13 @@ class standardUser(AuthUser, MFAUser, user):
         self.setData("_userPrivateKey", self._privKey)
         self.setData("_userPublicKey", self.pubKey)
 
-        stmt = update(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.id == self.id).\
-            values(key = self.pubKey)
-        self.c.execute(stmt)
+        row = DBschemas.PubKeyTable(
+            name = self.userName,
+            key = self.pubKey
+        )
+        self.c.add(row)
         self.c.commit()
 
-        self.setData("_userPrivateKey", self._privKey)
-        self.setData("_userPublicKey", self.pubKey)
         self.setData("_accountKeysCreation", str(datetime.datetime.now().year))
         self.reload()
 
@@ -266,5 +279,9 @@ class standardUser(AuthUser, MFAUser, user):
         self._privKey = _privKey.decode()
         self.pubKey = pubKey.decode()
         base.zeromem(_privKey)
-        self.backupAESKeys = pickle.loads(self.getData("_backupAESKeys"))
-        self.backupKeys = pickle.loads(self.getData("_backupKeys"))
+        keys = self.getData("_backupAESKeys")
+        self.backupAESKeys = pickle.loads(keys)
+        base.zeromem(keys)
+        keys = self.getData("_backupKeys")
+        self.backupKeys = pickle.loads(keys)
+        base.zeromem(keys)

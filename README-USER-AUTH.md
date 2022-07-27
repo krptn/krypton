@@ -51,7 +51,7 @@ While using these methods, all data remains encrypted using the user's credentia
 from krypton.auth import users
 
 model = users.standardUser(None)
-model.saveNewUser("Test_UserName", "Test_Password")
+model.saveNewUser("Test_UserName", "Test_Password") # Note: if a user with the same username exists an ValueError will be raised.
 
 model2 = users.standardUser(None)
 model2.saveNewUser("Test_UserName2", "Test_Password")
@@ -92,3 +92,16 @@ encryptWithUserKey returns a list of tuples in the following format: `(username,
 When decrypting, call decryptUserKey, on the user object corresponding to `username`, passing `data` as the first argument and `salt` as the second argument. It will return the plaintext.
 
 Therefore, by using this method, you can grant access to some of the user's account's data to another user, simply by allowing that user to decrypt the user data.
+
+## Password Reset
+
+To enable password reset you need to provide an answer to a security question. The question istelf is irrelevant to Krypton therefore it is enough to provide the answer.
+
+```python
+model.enablePWDReset("value") # "value" is the answer to the question
+model.logout() # This is not needed but you can reset the password of a locked out user.
+model.resetPWD("value", "newPWD") # "value" is the answer to the question again and "newPWD" is the new password.
+model.logout() # Note: when you call resetPWD the model will automatically login.
+```
+
+## MFA

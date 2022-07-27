@@ -92,7 +92,7 @@ def ECDH(privKey:str, peerPubKey:str, salt:bytes, keylen:int=32) -> bytes:
     """
     return __CryptoLib.ECDH(privKey, peerPubKey, salt, keylen)
 
-def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> bytes:
+def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> list[bytes]:
     """Get users' shared key
 
     Get a shared key for two users using ECDH.
@@ -105,14 +105,14 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> bytes:
         salt -- Salt used for KDF
 
     Keyword Arguments:
-        keylen -- Len of kex to return (default: {32})
+        keylen -- Len of key to return (default: {32})
 
     Returns:
-        Key as python bytes
+        List of keys as python bytes
     """
     stmt = select(DBschemas.PubKeyTable.key).where(DBschemas.PubKeyTable.name == peerName)
-    pubKey = configs.SQLDefaultUserDBpath.scalar(stmt)
-    return __CryptoLib.ECDH(privKey, pubKey, salt, keylen)
+    pubKeys = configs.SQLDefaultUserDBpath.scalars(stmt)
+    return [__CryptoLib.ECDH(privKey, pubKey, salt, keylen) for pubKey in pubKeys]
 
 def PBKDF2(text:ByteString, salt:ByteString, iterations:int=configs.defaultIterations, keylen:int=32) -> bytes:
     """PBKDF2 with SHA512

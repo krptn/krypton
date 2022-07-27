@@ -21,6 +21,7 @@ class userAuth(unittest.TestCase):
         self.model.setData("Before", "B")
         self.model.logout()
         self.model.resetPWD("value", "newPWD")
+        self.model.logout()
         self.model.login(pwd="newPWD")
         self.model.setData("test", "VALUE")
         a = self.model.getData("test")
@@ -30,6 +31,16 @@ class userAuth(unittest.TestCase):
         self.assertEqual(a, b"VALUE")
         self.assertEqual(text, b"text")
         self.assertEqual(b"B", dataText)
+
+    def testKeyGenCrossUser(self):
+        user2 = standardUser(None)
+        user2.saveNewUser("user2", "pwd")
+        test = user2.encryptWithUserKey("data", ["Test"])
+        user2.generateNewKeys("pwd")
+        self.model.generateNewKeys("TEST")
+        result = self.model.decryptWithUserKey(test[0][1], test[0][2], "user2")
+        user2.delete()
+        self.assertEqual(result, b"data")
 
     def testSingleUserEncrypt(self):
         ctext = self.model.encryptWithUserKey("TEST")

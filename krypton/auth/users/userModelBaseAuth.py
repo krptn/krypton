@@ -6,9 +6,8 @@ import datetime
 import os
 import pickle
 from sqlalchemy import delete, select, func
-from tomlkit import date
 from .. import factors, _utils
-from ... import DBschemas, configs, Globalsalt
+from ... import DBschemas, configs
 from ... import base
 from .bases import userExistRequired, UserError, user
 
@@ -49,10 +48,10 @@ class AuthUser(user): #pylint: disable=W0223
         )
         self.c.add(token)
         self.loggedin = True
-        self.reload()
         time = int(self.getData("_accountKeysCreation").decode())
-        if datetime.datetime.now().year - time >= 2:
+        if (datetime.datetime.now().year - time) >= 2:
             self.generateNewKeys(pwd)
+        self.reload()
         self.c.flush()
         self.c.commit()
         return restoreKey
@@ -82,6 +81,7 @@ class AuthUser(user): #pylint: disable=W0223
         self.c.execute(delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.userName))
         self.c.execute(delete(DBschemas.UserData).where(DBschemas.UserData.Uid == self.id))
         self.c.execute(delete(DBschemas.UserShareTable).where(DBschemas.UserShareTable.sender == self.userName))
+        self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
         self.c.flush()
         self.c.commit()
         base.zeromem(self._key)
@@ -120,7 +120,9 @@ class AuthUser(user): #pylint: disable=W0223
         """
         if self.saved:
             raise ValueError("This user is already saved.")
-
+        s = self.c.scalar(select(DBschemas.UserTable).where(DBschemas.UserTable.name == name))
+        if s is not None:
+            raise ValueError("This user is already exists.")
         self.userName = name
         self.salt = os.urandom(12)
         stmt = select(func.max(DBschemas.UserTable.id))
