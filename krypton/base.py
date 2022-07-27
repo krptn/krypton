@@ -4,6 +4,7 @@ Loads __CryptoLib and contains wrappers.
 
 import ctypes
 import sys
+import base64
 from typing import ByteString
 from sqlalchemy import select
 import __CryptoLib
@@ -145,3 +146,33 @@ def zeromem(obj:ByteString)->int:
         Result from memset.
     """
     return ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
+
+def verifyTOTP(secret:bytes, code:str) -> bool:
+    """Verify a 6-digit TOTP
+
+    Arguments:
+        secret -- The shared secret
+        code -- The code to verify
+
+    Returns:
+        True is success false otherwise
+    """
+    return __CryptoLib.totpVerify(secret, code)
+
+def createTOTPString(secret:bytes, user:str) -> str:
+    """Create a TOTP String that can be scanned by Auth Apps
+
+    Arguments:
+        secret -- The shared secret
+
+    Returns:
+        The String to be converted to QR code
+    """
+    code = base64.b32encode(secret)
+    enc = code.decode()
+    text = enc.strip("=")
+    string = f"otpauth://totp/{configs.APP_NAME}:{user}?secret={text}&issuer=KryptonAuth&algorithm=SHA1&digits=6&period=30"
+    zeromem(code)
+    zeromem(enc)
+    zeromem(text)
+    return string

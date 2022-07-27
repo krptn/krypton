@@ -13,7 +13,9 @@ krypton.configs.defaultIterations = 600000 # Number of iterations for PBKDF2
 
 krypton.configs.defaultCryptoperiod = 2 # Approx. number of years for the cryptoperiod of a key
 
-krypton.defaultSessionPeriod = 15 # Number of minutes before a user Session is destroyed.
+krypton.configs.defaultSessionPeriod = 15 # Number of minutes before a user Session is destroyed.
+
+krypton.configs.APP_NAME = # the name of the app to generate MFA codes for
 ```
 
 For the following settings please see [Databases](README-DATABASES.md)

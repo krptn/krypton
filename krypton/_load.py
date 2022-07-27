@@ -5,7 +5,6 @@ import os
 import sys
 import pathlib
 import ctypes
-from django.test import TestCase
 from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session
 
@@ -21,16 +20,17 @@ RELATIVE_OSSL_MOD = ("kr-openssl-install/lib/ossl-modules" if sys.platform == "w
 OPENSSL_MODULES = os.path.join(SITE_PACKAGE, RELATIVE_OSSL_MOD)
 USER_DIR = pathlib.Path.home()
 
+os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
+os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
+os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
+os.environ["OPENSSL"] = OPENSSL_BIN
+
 if sys.platform == "win32":
     os.add_dll_directory(OPENSSL_BIN)
     os.add_dll_directory(OPENSSL_MODULES)
 else:
     ctypes.CDLL(os.path.join(LINUX_OSSL_LIB, "libcrypto.so.3")) # Alone, it will never find these
     ctypes.CDLL(os.path.join(LINUX_OSSL_LIB, "libssl.so.3"))
-os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
-os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
-os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
-os.environ["OPENSSL"] = OPENSSL_BIN
 
 Base = declarative_base()
 
@@ -158,6 +158,7 @@ class ConfigTemp():
     """Configuration templates"""
     KCV = b"kryptonAuth"
     defaultAlgorithm = "AES256GCM"
+    APP_NAME = "KryptonApp"
     defaultIterations = 500000
     defaultErrorPage = ""
     defaultCryptoperiod = 2

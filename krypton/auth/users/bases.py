@@ -58,7 +58,7 @@ class user(metaclass=ABCMeta):
             None
         """
     @abstractmethod
-    def login(self, pwd:str, mfaToken:SupportsInt=None):
+    def login(self, pwd:str=None, mfaToken:str=None, fido:str=None):
         """Log the user in
 
         Keyword Arguments:
@@ -75,7 +75,7 @@ class user(metaclass=ABCMeta):
             Session Key, None if user is not saved
         """
     @abstractmethod
-    def restoreSession(self):
+    def restoreSession(self, key:bytes):
         """Resume sessoin from key
 
         Arguments:
@@ -92,10 +92,7 @@ class user(metaclass=ABCMeta):
     def disableMFA(self):
         """The method name says it all."""
     @abstractmethod
-    def createOTP(self):
-        """The method name says it all."""
-    @abstractmethod
-    def saveNewUser(self):
+    def saveNewUser(self, name:str, pwd:str):
         """Save a new user
 
         Arguments:
@@ -174,7 +171,7 @@ class user(metaclass=ABCMeta):
             pwd -- Password
         """
     @abstractmethod
-    def resetPWD(self, key, newPWD):
+    def resetPWD(self, key:str, newPWD:str):
         """Reset Password
 
         Arguments:
@@ -185,7 +182,7 @@ class user(metaclass=ABCMeta):
         """Reload encryption keys. Warning: previous keys are not purged!
         """
     @abstractmethod
-    def enablePWDReset(self, key):
+    def enablePWDReset(self, key:str):
         """Enable Password Reset
 
         Arguments:

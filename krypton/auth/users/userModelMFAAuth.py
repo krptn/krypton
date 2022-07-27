@@ -40,7 +40,3 @@ class MFAUser(user):
     @userExistRequired
     def disableMFA(self):
         """The method name says it all."""
-
-    @userExistRequired
-    def createOTP(self):
-        """The method name says it all."""
