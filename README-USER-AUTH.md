@@ -110,3 +110,14 @@ model.logout() # Note: when you call resetPWD the model will automatically login
 
 ## MFA
 
+To enable:
+
+```python
+secret, qr = model.enableMFA() # Secret is a shared secret and qr is a string, that when converted to QR code can be scanned by authenticator apps. If QR Codes are not supported by the app, you can tell the user enter secret instead.
+```
+
+When logging in:
+
+```python
+model.login(pwd="pwd", mfaToken="123456")
+```

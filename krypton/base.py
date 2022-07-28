@@ -163,16 +163,14 @@ def createTOTPString(secret:bytes, user:str) -> str:
     """Create a TOTP String that can be scanned by Auth Apps
 
     Arguments:
-        secret -- The shared secret
+        secret -- The base32 encoded shared secret
 
     Returns:
         The String to be converted to QR code
     """
-    code = base64.b32encode(secret)
-    enc = code.decode()
-    text = enc.strip("=")
-    string = f"otpauth://totp/{configs.APP_NAME}:{user}?secret={text}&issuer=KryptonAuth&algorithm=SHA1&digits=6&period=30"
-    zeromem(code)
-    zeromem(enc)
-    zeromem(text)
+    s = base64.b32encode(secret)
+    secret = s.decode()
+    string = f"otpauth://totp/{configs.APP_NAME}:{user}?secret={secret}&issuer=KryptonAuth&algorithm=SHA1&digits=6&period=30"
+    zeromem(s)
+    zeromem(secret)
     return string

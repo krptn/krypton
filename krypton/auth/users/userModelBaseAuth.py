@@ -11,16 +11,16 @@ from ... import DBschemas, configs
 from ... import base
 from .bases import userExistRequired, UserError, user
 
-class AuthUser(user): #pylint: disable=W0223
+class AuthUser(user):
     """Auth Logic for User Models
     """
-    def login(self, pwd:str=None, mfaToken:str=None, fido:str=None):
+    def login(self, pwd:str=None, mfaToken:str="", fido:str=None):
         """Log the user in
 
         Keyword Arguments:
             pwd -- Password (default: {None})
 
-            otp -- One-Time Password (default: {None})
+            otp -- One-Time Password (default: {""})
 
             fido -- Fido Token (default: {None})
 
@@ -37,7 +37,14 @@ class AuthUser(user): #pylint: disable=W0223
         if authTag is None:
             raise UserError("User must have a password set.")
         self._key = factors.password.auth(authTag, pwd)
-        if self._key is False: raise UserError("User must have a password set.")
+        if self._key is False: raise UserError("Wrong password")
+        stmt = select(DBschemas.UserTable.mfa).where(DBschemas.UserTable.id == self.id).limit(1)
+        mfa = self.c.scalar(stmt)
+        if mfa != b"*":
+            mfa = base.restDecrypt(mfa, self._key)
+            if not base.verifyTOTP(mfa, mfaToken):
+                base.zeromem(self._key)
+                raise UserError("Wrong MFA Token")
         restoreKey = os.urandom(32)
         self.sessionKey = base.restEncrypt(self._key, restoreKey)
         token = DBschemas.SessionKeys(
