@@ -113,6 +113,6 @@ jobs:
         with:
           name: AutoBuild
           path: ${{ github.workspace }}/dist
-      - name: Release
+      - name: Upload Release
         run: |
           gh release upload ${{ github.event.release.name }} dist/*
