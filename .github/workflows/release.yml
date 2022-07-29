@@ -123,4 +123,4 @@ jobs:
           path: ${{ github.workspace }}/dist
       - name: Upload Release
         run: |
-          gh release upload ${{ github.event.release.name }} dist/*
+          gh release upload ${{ github.event.release.tag_name }} dist/*
