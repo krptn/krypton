@@ -54,7 +54,7 @@ jobs:
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:
-          name: AutoBuild
+          name: AutoBuild-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
   
   buildWin:
@@ -103,7 +103,7 @@ jobs:
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:
-          name: AutoBuild
+          name: AutoBuild-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
 
   releaseBins:
