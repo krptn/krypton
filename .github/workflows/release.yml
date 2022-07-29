@@ -8,6 +8,10 @@ env:
 
 jobs:
   buildLinux:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -17,7 +21,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: ${{ matrix.python-version }}
           architecture: 'x64'
           cache: 'pip'
       - name: Install dependencies
@@ -54,6 +58,10 @@ jobs:
           path: ${{ github.workspace }}/dist
   
   buildWin:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ['3.8', '3.9', '3.10']
     runs-on: windows-latest
     steps:
       - name: Checkout Repo
@@ -63,7 +71,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: ${{ matrix.python-version }}
           architecture: 'x64'
           cache: 'pip'
       - name: Install VS Tools
