@@ -35,7 +35,7 @@ bool verifyTOTP(py::bytes secret, py::str value) {
 		| (md[offset+3] & 0xff);
     bin_code = bin_code % (int)pow(10, 6);
     char correctCode[7];
-    snprintf((char*)&correctCode, 7,"%d", value);
+    snprintf((char*)&correctCode, 7,"%d", bin_code);
     int compR = compHash(&code, code, 6);
     delete[] code;
     delete[] md;
