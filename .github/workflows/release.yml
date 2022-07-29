@@ -1,7 +1,7 @@
 name: Build For Release
 on:
   release:
-    types: [created]
+    types: [created, published]
   
 env:
   GH_TOKEN: ${{ secrets.App }}
