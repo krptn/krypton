@@ -1,7 +1,7 @@
 name: Release Binaries
 on:
   release:
-    types: [created, edited]
+    types: [created]
   
 env:
   GH_TOKEN: ${{ secrets.App }}
