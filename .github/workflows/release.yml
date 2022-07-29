@@ -109,4 +109,4 @@ jobs:
           path: ${{ github.workspace }}/dist
       - name: Release
         run: |
-          gh release run ${{ github.ref }} dist/*
+          gh release upload ${{ github.ref }} dist/*

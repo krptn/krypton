@@ -148,6 +148,7 @@ class standardUser(AuthUser, MFAUser, user):
         keys = base.getSharedKey(self._privKey, sender, salt)
         try:
             for key in keys:
+                retry =False
                 try:
                     text = base.restDecrypt(data, key)
                 except ValueError:
