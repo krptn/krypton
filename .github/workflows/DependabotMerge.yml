@@ -7,7 +7,6 @@ env:
   GH_TOKEN: ${{ secrets.App }}
 jobs:
   merge:
-    if: ${{ github.actor == 'dependabot[bot]' }}
     runs-on: ubuntu-latest
     steps:
       - name: Enable auto-merge for Dependabot PRs
