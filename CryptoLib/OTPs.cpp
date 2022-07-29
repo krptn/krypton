@@ -3,7 +3,6 @@
 #include <openssl/evp.h>
 #include <openssl/hmac.h>
 #include <openssl/obj_mac.h>
-#include <string>
 #include <cmath>
 
 using namespace std;
@@ -21,10 +20,10 @@ bool verifyTOTP(py::bytes secret, py::str value) {
     long int counter = floor(time(NULL)/30);
     int strCounterLen = floor(log(counter)/ log(10)) + 1;
     unsigned char* strCounter = new unsigned char[strCounterLen + 1];
-    _itoa(counter, (char*)strCounter, 10);
+    snprintf((char*)&strCounter, strCounterLen + 1,"%d", counter);
     unsigned char* md = new unsigned char[20];
     unsigned int len;
-    unsigned char* result = HMAC(EVP_sha1(), key, keylen, strCounter, strCounterLen, md, &len);
+    HMAC(EVP_sha1(), key, keylen, strCounter, strCounterLen, md, &len);
     OPENSSL_cleanse(key, keylen);
     delete[] key;
     delete[] strCounter;
@@ -36,7 +35,7 @@ bool verifyTOTP(py::bytes secret, py::str value) {
 		| (md[offset+3] & 0xff);
     bin_code = bin_code % (int)pow(10, 6);
     char correctCode[7];
-    _itoa(bin_code, (char*)&correctCode, 10);
+    snprintf((char*)&correctCode, 7,"%d", value);
     int compR = compHash(&code, code, 6);
     delete[] code;
     delete[] md;
