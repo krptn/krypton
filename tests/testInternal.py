@@ -49,15 +49,15 @@ class userAuth(unittest.TestCase):
 
     def testCrossUserEncrypt(self):
         user2 = standardUser(None)
-        user2.saveNewUser("user2", "pwd")
+        user2.saveNewUser("user3", "pwd")
         test = user2.encryptWithUserKey("data", ["Test"])
-        result = self.model.decryptWithUserKey(test[0][1], test[0][2], "user2")
+        result = self.model.decryptWithUserKey(test[0][1], test[0][2], "user3")
         user2.delete()
         self.assertEqual(result, b"data")
 
     def testShare(self):
         user2 = standardUser(None)
-        user2.saveNewUser("user2", "pwd")
+        user2.saveNewUser("user4", "pwd")
         user2.shareSet("test", "TesT", ["Test"])
         value = self.model.shareGet("test")
         user2.delete()
