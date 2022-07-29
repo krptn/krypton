@@ -15,7 +15,6 @@ jobs:
       - uses: microsoft/DevSkim-Action@v1
         with:
           output-filename: devskim-results.sarif
-          output-directory: security
   Pylint:
     runs-on: ubuntu-latest
     steps:
