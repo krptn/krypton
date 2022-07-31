@@ -8,9 +8,26 @@ import sys
 
 DEBUG = sys.argv.count("--debug") >= 1
 
-description = ""
-with open("README.md","r") as file:
-  description=file.read()
+description = """
+# Krypton
+
+To see documentation as a website, please see [documentation](https://docs.krptn.dev/index.html).
+
+[Link to Github Repo](https://github.com/krptn/krypton)
+
+## What is this?
+
+**Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want their code to be used for such purposes.
+
+A user authentication and access management system based entirely on cryptographic primitives.
+
+What we mean by that is:
+
+- All Data is encrypted, obviously (any data can be request by the developer to be secured - not just user data)
+- Only the appropriate users' credentials can unlock the cryptosystem
+"""
+
+
 extra_args = []
 if DEBUG and sys.platform != "win32":
   extra_args += ["-g"]
