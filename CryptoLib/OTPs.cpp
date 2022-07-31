@@ -67,12 +67,12 @@ py::str genOTP() {
 		| (secret[offset+1] & 0xff) << 16
 		| (secret[offset+2] & 0xff) << 8
 		| (secret[offset+3] & 0xff);
-    bin_code = bin_code % (int)pow(10, 6);
-    char correctCode[7];
-    snprintf((char*)&correctCode, 7,"%06d", bin_code);
+    bin_code = bin_code % (int)pow(10, 8);
+    char correctCode[9];
+    snprintf((char*)&correctCode, 9,"%08d", bin_code);
     bin_code = 0;
     OPENSSL_cleanse(&secret, 20);
-    py::str pyCode = py::str(correctCode, 6);
-    OPENSSL_cleanse(&correctCode, 7);
+    py::str pyCode = py::str(correctCode, 8);
+    OPENSSL_cleanse(&correctCode, 9);
     return pyCode;
 }
