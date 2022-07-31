@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: AutoBuild-${{ github.event.release.tag_name }}
-          path: ${{ github.workspace }}/dist
+          path: ${{ github.workspace }}/dist/*.whl
   
   buildWin:
     strategy:
@@ -104,7 +104,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: AutoBuild-${{ github.event.release.tag_name }}
-          path: ${{ github.workspace }}/dist
+          path: ${{ github.workspace }}/dist/*.whl
 
   releaseBins:
     runs-on: ubuntu-latest
