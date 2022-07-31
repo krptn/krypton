@@ -17,10 +17,10 @@ class userAuth(unittest.TestCase):
         self.model.login(pwd="TEST")
 
     def testResetPWD(self):
-        self.model.enablePWDReset("value")
+        keys = self.model.enablePWDReset()
         self.model.setData("Before", "B")
         self.model.logout()
-        self.model.resetPWD("value", "newPWD")
+        self.model.resetPWD(keys[0], "newPWD")
         self.model.logout()
         self.model.login(pwd="newPWD")
         self.model.setData("test", "VALUE")

@@ -37,3 +37,4 @@ int setPrivKey(EVP_PKEY **pkey, char* key, int len);
 
 // OTPs
 bool verifyTOTP(py::bytes secret, py::str value);
+py::str genOTP();

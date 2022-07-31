@@ -102,10 +102,17 @@ Therefore, by using this method, you can grant access to some of the user's acco
 To enable password reset you need to provide an answer to a security question. The question istelf is irrelevant to Krypton therefore it is enough to provide the answer.
 
 ```python
-model.enablePWDReset("value") # "value" is the answer to the question
+keys = model.enablePWDReset() # keys is a list of OTPs that can be used to unlock the user account
 model.logout() # This is not needed but you can reset the password of a locked out user.
-model.resetPWD("value", "newPWD") # "value" is the answer to the question again and "newPWD" is the new password.
-model.logout() # Note: when you call resetPWD the model will automatically login.
+model.resetPWD(keys[0], "newPWD") # Note: you cannot use keys[0] again - use keys[1] next.
+model.logout() # Note: when you call resetPWD the model will automatically login, you may want to logout
+```
+
+If the OTPs get compromised you can revoke them and generate new ones:
+
+```python
+model.disablePWDReset() # Revoke
+keys = model.enablePWDReset() # Generate. This also revokes all codes but already did so previously.
 ```
 
 ## MFA
@@ -113,7 +120,7 @@ model.logout() # Note: when you call resetPWD the model will automatically login
 To enable:
 
 ```python
-secret, qr = model.enableMFA() # Secret is a shared secret and qr is a string, that when converted to QR code can be scanned by authenticator apps. If QR Codes are not supported by the app, you can tell the user enter secret instead.
+secret, qr = model.enableMFA() # Secret is a shared secret and qr is a string, that when converted to QR code can be scanned by authenticator apps. If QR Codes are not supported by the app, you can tell the user enter secret instead. You MUST discard these once the user enabled MFA.
 ```
 
 When logging in:

@@ -170,7 +170,17 @@ def createTOTPString(secret:bytes, user:str) -> str:
     """
     s = base64.b32encode(secret)
     secret = s.decode()
-    string = f"otpauth://totp/{configs.APP_NAME}:{user}?secret={secret}&issuer=KryptonAuth&algorithm=SHA1&digits=6&period=30"
+    stripped = secret.strip("=")
+    string = f"otpauth://totp/{configs.APP_NAME}:{user}?secret={stripped}&issuer=KryptonAuth&algorithm=SHA1&digits=6&period=30"
     zeromem(s)
     zeromem(secret)
+    zeromem(stripped)
     return string
+
+def genOTP() -> str:
+    """Generate an 6-digit OTP/PIN.
+
+    Returns:
+        The OTP/PIN as python string
+    """
+    return __CryptoLib.genOTP()
