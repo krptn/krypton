@@ -11,7 +11,7 @@ from .bases import userExistRequired, user
 class MFAUser(user):
     @userExistRequired
     def enablePWDReset(self) -> list[str]:
-        Pkeys = [base.genOTP() for i in range(20)]
+        Pkeys = [base.genOTP() for i in range(10)]
         self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
         for Pkey in Pkeys:
             salt = os.urandom(32)
@@ -62,8 +62,8 @@ class MFAUser(user):
         self.c.execute(stmt)
         base32Secret = base64.b32encode(secret)
         base.zeromem(secret)
-        secret = base32Secret.decode()
-        base.zeromem(base32Secret)
+        secret = base32Secret
+        self.c.commit()
         return secret, base.createTOTPString(secret, self.userName)
 
     @userExistRequired
