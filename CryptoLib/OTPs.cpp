@@ -7,6 +7,8 @@
 #include <cmath>
 #include <iostream>
 #include <algorithm>
+#include <thread>
+#include <chrono>
 
 using namespace std;
 
@@ -56,6 +58,7 @@ bool verifyTOTP(py::bytes secret, py::str value) {
     if (compR == 0) {
         return true;
     }
+    std::this_thread::sleep_for(std::chrono::seconds(5));
     return false;
 }
 
