@@ -2,6 +2,8 @@
 
 **Note:** to use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
 
+It is prefered to use integrations as using this API directly does not protect from brute force attacks. When you integrate with webframeworks, if an IP has too many requests it gets blocked. If you use this make sure to also use rate limiting!
+
 **Note:** usernames are not encrypted.
 
 Here is an example usage of creating a new user:
