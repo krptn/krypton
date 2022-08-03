@@ -23,7 +23,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: 'x64'
-          cache: 'pip'
       - name: Install dependencies
         run: |
           cd ${{ github.workspace }}
@@ -73,7 +72,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: 'x64'
-          cache: 'pip'
       - name: Install VS Tools
         uses: ilammy/msvc-dev-cmd@v1
       - name: NASM and Perl
