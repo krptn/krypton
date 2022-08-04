@@ -6,6 +6,8 @@
 
 **Note:** usernames are not encrypted.
 
+**Note:** user classes are not thread-safe. Please create a new one to use in each thread!
+
 Here is an example usage of creating a new user:
 
 ```python

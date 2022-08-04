@@ -5,7 +5,7 @@ from datetime import datetime
 import os
 from typing import ByteString
 from sqlalchemy import select, func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, scoped_session
 from . import configs, base, DBschemas
 SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
@@ -72,7 +72,7 @@ class KMS():
         zeromem(key)
         return r
 
-    def __init__(self, keyDB:Session=SQLDefaultKeyDBpath)->None:
+    def __init__(self, keyDB:Session=scoped_session(SQLDefaultKeyDBpath))->None:
         """The title says it all"""
         self.c:Session = keyDB
         self._HSM = False
@@ -175,14 +175,17 @@ class KMS():
         self.c.delete(key)
         self.c.commit()
         return
+    
+    def __del__(self):
+        self.c.close()
 
 class Crypto(KMS):
     '''
     Crypto Class (see Documentation)
     '''
-    def __init__(self, keyDB:Session=SQLDefaultCryptoDBpath):
+    def __init__(self, keyDB:Session=scoped_session(SQLDefaultCryptoDBpath)):
         """The title says it all"""
-        self.c:Session = keyDB
+        self.c:scoped_session = keyDB
         stmt = select(func.max(DBschemas.CryptoTable.id))
         self.num = self.c.scalar(stmt)
         super().__init__(self.c)

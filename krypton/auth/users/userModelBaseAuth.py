@@ -83,7 +83,7 @@ class AuthUser(user):
         Returns:
             None
         """
-        _utils.cleanUpSessions(self.id)
+        _utils.cleanUpSessions(self.c, self.id)
         self.c.execute(delete(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id))
         self.c.execute(delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.userName))
         self.c.execute(delete(DBschemas.UserData).where(DBschemas.UserData.Uid == self.id))
@@ -101,7 +101,7 @@ class AuthUser(user):
         Arguments:
             key -- Session Key
         """
-        _utils.cleanUpSessions()
+        _utils.cleanUpSessions(session=self.c)
         self.sessionKey = key
         stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.Uid == self.id).limit(1)
         row:DBschemas.SessionKeys = self.c.scalar(stmt)

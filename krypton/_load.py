@@ -6,7 +6,7 @@ import sys
 import pathlib
 import ctypes
 from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select
-from sqlalchemy.orm import declarative_base, Session
+from sqlalchemy.orm import declarative_base, Session, sessionmaker
 
 SITE_PACKAGE = pathlib.Path(__file__).parent.parent.as_posix()
 
@@ -165,9 +165,9 @@ class ConfigTemp():
     defaultErrorPage = ""
     defaultCryptoperiod = 2
     defaultSessionPeriod = 15 # Minutes
-    _cryptoDB:Session = None
-    _altKeyDB:Session = None
-    _userDB:Session = None
+    _cryptoDB:sessionmaker = None
+    _altKeyDB:sessionmaker = None
+    _userDB:sessionmaker = None
     @property
     def SQLDefaultCryptoDBpath(self) -> Session:
         """
@@ -201,8 +201,10 @@ class ConfigTemp():
             )
             c.add(stmt)
         c.autoflush = True
+        c.flush()
         c.commit()
-        self._cryptoDB = c
+        c.close()
+        self._cryptoDB = sessionmaker(engine, autoflush=True)
 
     @property
     def SQLDefaultKeyDBpath(self) -> Session:
@@ -222,7 +224,9 @@ class ConfigTemp():
         Base.metadata.create_all(conn)
         c.autoflush = True
         c.commit()
-        self._altKeyDB = c
+        c.flush()
+        c.close()
+        self._altKeyDB = sessionmaker(conn, autoflush=True)
 
     @property
     def SQLDefaultUserDBpath(self) -> Session:
@@ -256,8 +260,10 @@ class ConfigTemp():
             )
             c.add(stmt)
         c.autoflush = True
+        c.flush()
         c.commit()
-        self._userDB = c
+        c.close()
+        self._userDB = sessionmaker(engine, autoflush=True)
 
 configs = ConfigTemp()
 
@@ -289,13 +295,3 @@ activate = 1
 with open(OPENSSL_CONFIG_FILE, "w") as file:
     file.write(OSSL_CONF)
 
-stmt = select(DBschemas.KrConfig.value).where(DBschemas.KrConfig.name == "SALT")
-Globalsalt = configs.SQLDefaultCryptoDBpath.scalar(stmt)
-if Globalsalt is None:
-    Globalsalt = os.urandom(12)
-    entry = DBschemas.KrConfig(
-        name = "SALT",
-        value = Globalsalt
-    )
-    configs.SQLDefaultCryptoDBpath.add(entry)
-configs.SQLDefaultCryptoDBpath.commit()

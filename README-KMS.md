@@ -1,5 +1,7 @@
 # Key Management System
 
+**Note:** `KMS` is not thread-safe. Please create a new one to use in each thread!
+
 This module uses a custom Key Management System for AES-256 keys.
 
 You need to identify the key with a Name and a Password.

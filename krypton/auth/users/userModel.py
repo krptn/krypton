@@ -6,9 +6,9 @@ Note for developer's working on Krypton: this only contains user model cryptogra
 import datetime
 import os
 import pickle
-from turtle import back
 from typing import ByteString
 from sqlalchemy import and_, delete, select, update
+from sqlalchemy.orm import scoped_session
 
 from krypton.auth import factors
 from ... import DBschemas, configs
@@ -35,10 +35,10 @@ class standardUser(AuthUser, MFAUser, user):
         self.backupAESKeys = []
         self.backupKeys = []
         self.loggedin = False
-        self.c = configs.SQLDefaultUserDBpath
+        self.c = scoped_session(configs.SQLDefaultUserDBpath)
         if userID is None and userName is not None:
             userID = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName)
-            userID = configs.SQLDefaultUserDBpath.scalar(userID)
+            userID = self.c.scalar(userID)
             if userID is None:
                 raise UserError("This user does not exist.")
         if userID is None and userName is None:
@@ -293,3 +293,4 @@ class standardUser(AuthUser, MFAUser, user):
             base.zeromem(self._privKey)
             base.zeromem(self.backupAESKeys)
             base.zeromem(self.backupKeys)
+            self.c.close()

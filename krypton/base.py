@@ -7,6 +7,7 @@ import sys
 import base64
 from typing import ByteString
 from sqlalchemy import select
+from sqlalchemy.orm import scoped_session
 import __CryptoLib
 from . import configs, DBschemas
 
@@ -112,8 +113,11 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> list[b
         List of keys as python bytes
     """
     stmt = select(DBschemas.PubKeyTable.key).where(DBschemas.PubKeyTable.name == peerName)
-    pubKeys = configs.SQLDefaultUserDBpath.scalars(stmt)
-    return [__CryptoLib.ECDH(privKey, pubKey, salt, keylen) for pubKey in pubKeys]
+    session = scoped_session(configs.SQLDefaultUserDBpath)
+    pubKeys = session.scalars(stmt)
+    results = [__CryptoLib.ECDH(privKey, pubKey, salt, keylen) for pubKey in pubKeys]
+    session.close()
+    return results
 
 def PBKDF2(text:ByteString, salt:ByteString, iterations:int=configs.defaultIterations, keylen:int=32) -> bytes:
     """PBKDF2 with SHA512

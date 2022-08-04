@@ -4,7 +4,7 @@ You can check this to see the declarations for functions.
 
 from functools import wraps
 from abc import ABCMeta, abstractmethod
-from typing import SupportsInt, ByteString
+from typing import ByteString
 
 from sqlalchemy.orm import Session
 
