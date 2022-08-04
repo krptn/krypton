@@ -286,3 +286,10 @@ class standardUser(AuthUser, MFAUser, user):
         keys = self.getData("_backupKeys")
         self.backupKeys = pickle.loads(keys)
         base.zeromem(keys)
+
+    def __del__(self):
+        if self.loggedin:
+            base.zeromem(self._key)
+            base.zeromem(self._privKey)
+            base.zeromem(self.backupAESKeys)
+            base.zeromem(self.backupKeys)
