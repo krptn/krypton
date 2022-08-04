@@ -43,7 +43,7 @@ def kryptonLoginMiddleware(get_response):
             Uid = request.session["_KryptonUserID"]
         except KeyError:
             return skipAuth(request)
-        user = djangoUser(Uid)
+        user = djangoUser(userID = Uid)
         try:
             user.restoreSession(token)
         except UserError:

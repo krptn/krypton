@@ -41,4 +41,4 @@ MIDDLEWARE = [
 ]
 ```
 
-In order to ensure a user is authenticated before visiting your site, you can add the loginRequired decorator from krypton.auth.django.simple.loginRequired.
+In order to ensure a user is authenticated before visiting your site, you can add the normal django login_required decorator.

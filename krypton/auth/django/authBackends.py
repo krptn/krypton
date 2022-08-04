@@ -3,9 +3,6 @@ Authentication Backends for Django.
 """
 from django.contrib.auth.backends import BaseBackend
 from django.http import HttpRequest
-from sqlalchemy import select
-from ... import DBschemas, base, Globalsalt, configs
-from ..users.userModel import ITER, LEN
 from . import users
 
 class kryptonBackend(BaseBackend):
@@ -29,15 +26,10 @@ class kryptonBackend(BaseBackend):
         Returns:
             User Model or None is authentication fails
         """
-        stmt = select(DBschemas.UserTable.id).where(
-            DBschemas.UserTable.name == base.PBKDF2(username, Globalsalt, ITER, LEN)
-            ).limit(1)
-        UId = configs.SQLDefaultUserDBpath.scalar(stmt)
-        if UId is None:
-            return None
-        user = users.djangoUser(UId)
         try:
-            token = user.login(pwd=creds["password"], mfaToken=creds["mfaToken"], fido=creds["fidoKey"])
+            user = users.djangoUser(username)
+            token = user.login(password=creds["password"], mfaToken=creds["mfaToken"], fido=creds["fido"])
+            UId = user.id
         except:
             return None
         request.session["_KryptonSessionToken"] = token

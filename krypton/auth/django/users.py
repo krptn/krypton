@@ -10,13 +10,14 @@ from django.contrib.auth.models import (
 class djangoUser(standardUser, AbstractBaseUser):
     """Django wrapper for Krypton USer
     """
-    def __init__(self, userID: str) -> None:
+    is_authenticated:bool
+    def __init__(self: standardUser, userName: str = None, userID: int = None) -> None:
         """Init a new Django User
 
         Arguments:
             userID -- User ID
         """
-        standardUser.__init__(self, userID)
+        standardUser.__init__(self, userName, userID)
         self.is_authenticated = self.loggedin
 
 class kryptonUserManager(BaseUserManager):
