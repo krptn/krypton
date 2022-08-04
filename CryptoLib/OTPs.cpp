@@ -24,23 +24,18 @@ bool verifyTOTP(py::bytes secret, py::str value) {
     char* code = pyStrToBuffer(value);
     time_t unixTime = floor(time(NULL));
     unixTime = mktime(gmtime(&unixTime));
-    long int counter = unixTime/30;
-    int strCounterLen = 8;
-    unsigned char strCounter[8];
-    //snprintf((char*)strCounter, strCounterLen + 1,"%d", counter);
+    int intCounter = unixTime/30;
+    char counter[8];
     int c = 0;
     while (counter != 0) {
-        strCounter[c] = counter;
-        counter >>= 8;
-        c++; // The language used :D
+        counter[c++] = intCounter & 0xFF;
+        intCounter >>= 8;
     }
-    //reverse(strCounter, strCounter+8);
+
     unsigned char md[20];
-    unsigned int len;
-    HMAC(EVP_sha1(), key, keylen, (unsigned char*)&strCounter, 8, (unsigned char*)&md, &len);
+    HMAC(EVP_sha1(), key, keylen, (const unsigned char*)&counter, 8, (unsigned char*)&md, NULL);
     OPENSSL_cleanse(key, keylen);
-    delete[] key;
-    int offset = md[19] & 0xf;
+    int offset = md[19] & 0x0f;
     int bin_code = (md[offset] & 0x7f) << 24
 		| (md[offset+1] & 0xff) << 16
 		| (md[offset+2] & 0xff) << 8
@@ -49,6 +44,7 @@ bool verifyTOTP(py::bytes secret, py::str value) {
     char correctCode[7];
     snprintf((char*)&correctCode, 7,"%06d", bin_code);
     int compR = compHash(&code, code, 6);
+    delete[] key;
     delete[] code;
     if (compR == 0) {
         return true;

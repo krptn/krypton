@@ -104,7 +104,7 @@ setup(name='krypton',
     "../kr-openssl-install/lib64/libssl.so"]},
   packages=['krypton'],
   python_requires=">3.8",
-  install_requires=["SQLAlchemy"],
+  install_requires=["SQLAlchemy", "pywarp"],
   extras_require={
         "MSSQL": ["pyodbc"],
         "MySQL": ["mysqlclient"],
