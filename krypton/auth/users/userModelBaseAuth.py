@@ -111,7 +111,7 @@ class AuthUser(user):
         self.loggedin = True
         self.reload()
 
-    def saveNewUser(self, name:str, pwd:str, fido:str=None):
+    def saveNewUser(self, name:str, pwd:str, fido:str=None) -> bytes:
         """Save a new user
 
         Arguments:
@@ -160,4 +160,4 @@ class AuthUser(user):
         self.setData("_accountKeysCreation", str(datetime.datetime.now().year))
         self.c.flush()
         self.c.commit()
-        self.login(pwd=pwd)
+        return self.login(pwd=pwd)

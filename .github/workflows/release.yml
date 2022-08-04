@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ['3.9', '3.10']
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -60,7 +60,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ['3.8', '3.9', '3.10']
+        python-version: ['3.9', '3.10']
     runs-on: windows-latest
     steps:
       - name: Checkout Repo

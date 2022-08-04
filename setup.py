@@ -51,8 +51,7 @@ def finishInstall():
   pysec_data = pathlib.Path(pathlib.Path.home(), ".krypton-data/")
   if not pysec_data.exists():
     os.mkdir(pysec_data.as_posix())
-  os.system('{openssl} fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}'
-    .format(openssl=openssl, openssl_fips_module=openssl_fips_module, openssl_fips_conf=openssl_fips_conf))
+  os.system(f'{openssl} fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}')
 
 class completeInstall(install):
   def run(self):
@@ -109,7 +108,9 @@ setup(name='krypton',
   extras_require={
         "MSSQL": ["pyodbc"],
         "MySQL": ["mysqlclient"],
-        "PostgreSQL": ["psycopg2"]
+        "PostgreSQL": ["psycopg2"],
+        "Django": ["django"],
+        "Flask": ["flask"]
   },
   include_package_data=True,
   cmdclass={
