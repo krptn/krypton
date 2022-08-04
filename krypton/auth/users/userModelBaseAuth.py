@@ -61,7 +61,9 @@ class AuthUser(user):
         self.reload()
         self.c.flush()
         self.c.commit()
-        return restoreKey
+        encoded = base.base64encode(restoreKey)
+        base.zeromem(restoreKey)
+        return encoded
 
     @userExistRequired
     def logout(self):
@@ -102,12 +104,13 @@ class AuthUser(user):
             key -- Session Key
         """
         _utils.cleanUpSessions(session=self.c)
-        self.sessionKey = key
+        decodedKey = base.base64decode(key)
+        self.sessionKey = decodedKey
         stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.Uid == self.id).limit(1)
         row:DBschemas.SessionKeys = self.c.scalar(stmt)
         if row is None:
             raise UserError("This session key has expired.")
-        self._key = base.restDecrypt(row.key, key)
+        self._key = base.restDecrypt(row.key, self.sessionKey)
         self.loggedin = True
         self.reload()
 
