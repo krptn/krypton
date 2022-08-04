@@ -42,7 +42,7 @@ class AuthUser(user):
         mfa = self.c.scalar(stmt)
         if mfa != b"*":
             mfa = base.restDecrypt(mfa, self._key)
-            if not base.verifyTOTP(mfa, mfaToken):
+            if not factors.totp.verifyTOTP(mfa, mfaToken):
                 base.zeromem(self._key)
                 raise UserError("Wrong MFA Token")
         restoreKey = os.urandom(32)

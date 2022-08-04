@@ -5,6 +5,8 @@
 import base64
 import os
 from sqlalchemy import select, delete, update
+
+from krypton.auth import factors
 from ... import DBschemas, configs, base
 from .bases import userExistRequired, user
 
@@ -56,15 +58,14 @@ class MFAUser(user):
 
     @userExistRequired
     def enableMFA(self):
-        secret = os.urandom(20)
+        secret, base32Secret, string = factors.totp.createTOTP(self.userName)
         stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
             values(mfa = base.restEncrypt(secret, self._key))
         self.c.execute(stmt)
-        base32Secret = base64.b32encode(secret)
-        base.zeromem(secret)
-        secret = base32Secret
+        self.c.flush()
         self.c.commit()
-        return secret, base.createTOTPString(secret, self.userName)
+        base.zeromem(secret)
+        return base32Secret, string
 
     @userExistRequired
     def disableMFA(self):

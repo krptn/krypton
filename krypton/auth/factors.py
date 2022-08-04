@@ -2,6 +2,7 @@
 Different Auth Factors available inside krypton.
 """
 import os
+import base64
 
 from .. import base
 from .. import configs
@@ -65,10 +66,39 @@ class password:
         text = base.restDecrypt(ctext, key) # This raises an error if authentication fails.
         return key ## Success
 
-class otp:
+class totp:
     """
-    Simple OTP authentication
+    Simple TOTP authentication
     """
+
+    @staticmethod
+    def createTOTP(userName:str):
+        """Create parameters for TOTP Generate
+
+        Arguments:
+            userName -- The username
+
+        Returns:
+            shared secret, base32 encoded shared secret, totp uri
+        """
+        secret = os.urandom(20)
+        base32Secret = base64.b32encode(secret)
+        return secret, base32Secret, base.createTOTPString(secret, userName)
+    
+    @staticmethod
+    def verifyTOTP(secret:bytes, otp:str) -> bool:
+        """Verify TOTP
+
+        Arguments:
+            secret -- The Shared secret
+            otp -- The OTP
+
+        Returns:
+            True if success False otherwise
+        """
+        if not base.verifyTOTP(secret, otp):
+            return False
+        return True
 
 class recoveryCode:
     """
