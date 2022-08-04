@@ -1,4 +1,5 @@
 import unittest
+from krypton.auth.users.bases import UserError
 from krypton.auth.users.userModel import standardUser
 
 class userAuth(unittest.TestCase):
@@ -79,6 +80,18 @@ class userAuth(unittest.TestCase):
         newMod.restoreSession(key)
         self.assertTrue(newMod.loggedin)
         newMod.logout()
+    
+    def testLogout(self):
+        self.model.logout()
+        key = self.model.login(pwd="TEST")
+        self.model.logout()
+        newMod = standardUser(userName="Test")
+        try:
+            newMod.restoreSession(key)
+        except UserError:
+            self.assertTrue(True)
+        else:
+            self.assertTrue(False)
 
 if __name__ == "__main__":
     unittest.main()
