@@ -132,3 +132,9 @@ When logging in:
 ```python
 model.login(pwd="pwd", mfaToken="123456")
 ```
+
+## Sign out of all sessions
+
+```python
+model.revokeSessions()
+```

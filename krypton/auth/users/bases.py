@@ -195,3 +195,10 @@ class user(metaclass=ABCMeta):
         Arguments:
             pwd -- Password
         """
+    @abstractmethod
+    def revokeSessions(self):
+        """Revoke all Sessions for this User
+
+        Raises:
+            UserError: If the user does not exist
+        """

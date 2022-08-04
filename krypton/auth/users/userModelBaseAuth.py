@@ -161,3 +161,13 @@ class AuthUser(user):
         self.c.flush()
         self.c.commit()
         return self.login(pwd=pwd)
+
+    def revokeSessions(self):
+        """Revoke all Sessions for this User
+
+        Raises:
+            UserError: If the user does not exist
+        """
+        if not self.saved:
+            raise UserError("This user does not exist.")
+        _utils.cleanUpSessions(self.c, self.id)

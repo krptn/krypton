@@ -1,4 +1,4 @@
-# Django Integration
+# Django Integration - Not implemented yet
 
 Please configure your Django project to use the following Auth Backend:
 
