@@ -28,12 +28,15 @@ krypton.configs.SQLDefaultKeyDBpath =  # for DB used by Key Management System (y
 krypton.configs.SQLDefaultUserDBpath = # for DB used by User Authentication System
 ```
 
-## FIDO Auth
+## FIDO Auth & MFA
 
-These configuration options must be set for FIDO (passwordless Auth) to work.
+These configuration options must be set for FIDO (passwordless Auth), and TOTP (time-based one-time passwords) to work.
 
 ```python
+## For both TOTP and FIDO
 krypton.configs.APP_NAME = "ExampleApp" # name of your app
+
+## The below are only needed for FIDO
 krypton.configs.HOST_NAME = "example.com" # hostname, as seen by the user's browser
-krypton.configs.ORIGIN = "https://exampel.com" # again, as seen by the user's browser
+krypton.configs.ORIGIN = "https://example.com/" # again, as seen by the user's browser
 ```

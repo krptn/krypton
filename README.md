@@ -43,9 +43,11 @@ print(myCrypto.secureRead(id, pwd)) # prints Example data
 
 See [User Auth](README-USER-AUTH.md).
 
+To use FIDO with user auth, please see [Krypton's FIDO Documentation](README-FIDO.md) (but please read [user auth](README-USER-AUTH.md) first).
+
 ## Integration with web frameworks
 
-- [Django](README-DJANGO.md)
+- [Django](README-DJANGO.md) - Not implemented yet.
 - [Flask](README-FLASK.md)
 
 [Integrations Page](README-INTEGRATIONS.md)

@@ -2,7 +2,7 @@
 
 **Note:** to use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
 
-**Please note:** that this not protect you against brute force attacks - make sure to enable rate limiting on your host.
+**Please note:** this not protect you against brute force attacks - make sure to enable rate limiting on your host.
 
 **Note:** usernames are not encrypted.
 
@@ -29,7 +29,7 @@ model.deleteData("test")
 
 **Note:** do make sure that the key in setData does not start with `_` - those are reserved for Krypton internals.
 
-You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want to use your own database: see [cross-user encryption](#encryption). Also, cross-user encryption/sharing is has other uses so read it anyway: [sharing](#cross-user-sharingencryption)!
+You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want other users to decryp it see [cross-user encryption](#encryption) and [sharing](#cross-user-sharingencryption)!
 
 ***Warning: in setData only the stored values are encrypted. Keys are plaintext!! Avoid storing sensitive data in keys!***
 
@@ -44,6 +44,32 @@ model.restoreSession(sessionKey)
 ```
 
 To set session expiry please see [Configuration](README-CONFIGS.md)
+
+## Sign out of all sessions
+
+```python
+model.revokeSessions()
+```
+
+## MFA
+
+### TOTP
+
+To enable:
+
+```python
+secret, qr = model.enableMFA() # Secret is a shared secret and qr is a string, that when converted to QR code can be scanned by authenticator apps. If QR Codes are not supported by the app, you can tell the user enter secret instead. You MUST discard these once the user enabled MFA.
+```
+
+When logging in:
+
+```python
+model.login(pwd="pwd", mfaToken="123456")
+```
+
+### FIDO Passwordless
+
+See [FIDO Docs](README-FIDO.md).
 
 ## Cross-User Sharing/Encryption
 
@@ -117,30 +143,4 @@ If the OTPs get compromised you can revoke them and generate new ones:
 ```python
 model.disablePWDReset() # Revoke
 keys = model.enablePWDReset() # Generate. This also revokes all codes but already did so previously.
-```
-
-## MFA
-
-### TOTP
-
-To enable:
-
-```python
-secret, qr = model.enableMFA() # Secret is a shared secret and qr is a string, that when converted to QR code can be scanned by authenticator apps. If QR Codes are not supported by the app, you can tell the user enter secret instead. You MUST discard these once the user enabled MFA.
-```
-
-When logging in:
-
-```python
-model.login(pwd="pwd", mfaToken="123456")
-```
-
-### FIDO Passwordless
-
-See [FIDO Docs](README-FIDO.md).
-
-## Sign out of all sessions
-
-```python
-model.revokeSessions()
 ```
