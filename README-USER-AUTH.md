@@ -29,7 +29,7 @@ model.deleteData("test")
 
 **Note:** do make sure that the key in setData does not start with `_` - those are reserved for Krypton internals.
 
-You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want other users to decrypt it [cross-user data sharing](##data-sharing--encryption).
+You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want other users to decrypt it [cross-user data sharing](#data-sharing).
 
 ***Warning: in setData only the stored values are encrypted. Keys are plaintext!! Avoid storing sensitive data in keys!***
 
@@ -74,7 +74,7 @@ model.login(pwd="pwd", mfaToken="123456")
 
 See [FIDO Docs](README-FIDO.md).
 
-## Data Sharing & Encryption
+## Data Sharing
 
 Using these methods, you can grant access to some of the user's account's data to another user.
 
