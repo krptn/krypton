@@ -61,7 +61,7 @@ class password:
         text = os.urandom(12)
         authTag = f"{base.base64encode(base.restEncrypt(text, key))}${base.base64encode(salt)}${configs.defaultIterations}"
         return authTag
-    
+
     @staticmethod
     def auth(authTag:str, pwd:str) -> bytes:
         """Authenticate against a tag
@@ -97,7 +97,7 @@ class totp:
         secret = os.urandom(20)
         base32Secret = base64.b32encode(secret)
         return secret, base32Secret, base.createTOTPString(secret, userName)
-    
+
     @staticmethod
     def verifyTOTP(secret:bytes, otp:str) -> bool:
         """Verify TOTP
@@ -136,7 +136,7 @@ class fido:
         )
         options = options_to_json(simple_registration_options)
         return options, simple_registration_options.challenge
-    
+
     @staticmethod
     def register_verification(credentials, challenge):
         """Complete registration
