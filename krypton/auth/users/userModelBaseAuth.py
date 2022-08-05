@@ -15,7 +15,7 @@ from .bases import userExistRequired, UserError, user
 class AuthUser(user):
     """Auth Logic for User Models
     """
-    def login(self, pwd:str=None, mfaToken:str="", fido:str=None):
+    def login(self, pwd:str=None, mfaToken:str=""):
         """Log the user in
 
         Keyword Arguments:
@@ -104,13 +104,15 @@ class AuthUser(user):
         Arguments:
             key -- Session Key
         """
+        if key is None:
+            raise UserError("Session does not exist or is expired.")
         _utils.cleanUpSessions(session=self.c)
         decodedKey = base.base64decode(key)
         self.sessionKey = decodedKey
         stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.Uid == self.id).limit(1)
         row:DBschemas.SessionKeys = self.c.scalar(stmt)
         if row is None:
-            raise UserError("This session key has expired.")
+            raise UserError("Session does not exist or is expired.")
         self._key = base.restDecrypt(row.key, self.sessionKey)
         self.loggedin = True
         self.reload()

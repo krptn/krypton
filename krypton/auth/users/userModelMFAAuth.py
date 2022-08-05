@@ -13,6 +13,11 @@ from .bases import userExistRequired, user
 class MFAUser(user):
     @userExistRequired
     def enablePWDReset(self) -> list[str]:
+        """Enable PWD Reset
+
+        Returns:
+            The recovery codes that unlock the account
+        """
         PKeys = [base.genOTP() for i in range(10)]
         self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
         for PKey in PKeys:
@@ -32,6 +37,15 @@ class MFAUser(user):
         return PKeys
 
     def resetPWD(self, key:str, newPWD:str):
+        """Reset a PWD using a recovery code
+
+        Arguments:
+            key -- The recovery code
+            newPWD -- The new PWD
+
+        Raises:
+            ValueError: if the reset fails
+        """
         rows = self.c.execute(select(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id)).scalars().all()
         reset = False
         for row in rows:
@@ -50,14 +64,21 @@ class MFAUser(user):
         if not reset:
             raise ValueError("Password reset failure")
         self.c.commit()
-    
+
     @userExistRequired
     def disablePWDReset(self):
+        """Disbale PWD and revoke all codes
+        """
         self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
         self.c.commit()
 
     @userExistRequired
     def enableMFA(self):
+        """Enable TOTP MFA
+
+        Returns:
+            base32 encoded shared secret, QR code string
+        """
         secret, base32Secret, string = factors.totp.createTOTP(self.userName)
         stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
             values(mfa = base.restEncrypt(secret, self._key))
@@ -69,7 +90,31 @@ class MFAUser(user):
 
     @userExistRequired
     def disableMFA(self):
-        """The method name says it all."""
+        """Disable TOTP based MFA
+        """
         stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
             values(mfa = b"*")
         self.c.execute(stmt)
+        self.c.commit()
+
+    @userExistRequired
+    def beginFIDOSetup(self):
+        """Being FIDO Registration
+        """
+        options, challenge = factors.fido.register(self.id, self.userName)
+        self.setData("_tempFIDORegisterChallenge", challenge)
+        return options
+
+    @userExistRequired
+    def completeFIDOSetup(self, response):
+        """Finish FIDO Setup
+
+        Arguments:
+            repsonse -- The response from the client
+        """
+        challenge = self.getData("_tempFIDORegisterChallenge")
+        self.deleteData("_tempFIDORegisterChallenge")
+        credID, credKey = factors.fido.register_verification(response, challenge)
+        self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
+            update(fidoPub=credKey, fidoID=credID))
+        self.c.commit()
