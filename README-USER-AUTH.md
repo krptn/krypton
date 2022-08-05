@@ -29,7 +29,7 @@ model.deleteData("test")
 
 **Note:** do make sure that the key in setData does not start with `_` - those are reserved for Krypton internals.
 
-You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want other users to decryp it see [cross-user encryption](#encryption) and [sharing](#cross-user-sharingencryption)!
+You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want other users to decrypt it [cross-user data sharing](#data-sharing--encryption).
 
 ***Warning: in setData only the stored values are encrypted. Keys are plaintext!! Avoid storing sensitive data in keys!***
 
@@ -58,7 +58,10 @@ model.revokeSessions()
 To enable:
 
 ```python
-secret, qr = model.enableMFA() # Secret is a shared secret and qr is a string, that when converted to QR code can be scanned by authenticator apps. If QR Codes are not supported by the app, you can tell the user enter secret instead. You MUST discard these once the user enabled MFA.
+secret, qr = model.enableMFA() 
+# Secret is a shared secret and qr is a string, that when converted to QR code can be scanned by authenticator apps. 
+# If QR Codes are not supported by the app, you can tell the user enter secret instead. 
+# You MUST discard these once the user enabled MFA.
 ```
 
 When logging in:
@@ -71,7 +74,7 @@ model.login(pwd="pwd", mfaToken="123456")
 
 See [FIDO Docs](README-FIDO.md).
 
-## Cross-User Sharing/Encryption
+## Data Sharing & Encryption
 
 Using these methods, you can grant access to some of the user's account's data to another user.
 
