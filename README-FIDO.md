@@ -14,8 +14,8 @@ The above code generates options for FIDO. Please send these to the client's bro
 
 ```html
 <!---
-    Some of this code was taken from Google's WebAuthn Glitch Tutorial: https://glitch.com/edit/#!/webauthn-codelab-start?path=README.md%3A1%3A0
-    This code was changed to work with Krypton's Auth Backends. These include changing auth URLs, and base64 decoding.
+    This code was taken from Google's WebAuthn Glitch Tutorial: https://glitch.com/edit/#!/webauthn-codelab-start?path=README.md%3A1%3A0
+    This code was changed to work with Krypton's Auth Backends. These include changing auth URLs, loading JSON data.
 
     Here is the original copyright notice:
 
