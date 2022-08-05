@@ -18,10 +18,11 @@ What we mean by that is:
 ## Features
 
 - Secure Storage of Data
-- Easy API
 - User Authentication
-- Integration with popular web frameworks
 - FIPS Validated Cryptography (via OPENSSL3)
+- Secure memory wiping
+- FIDO Passwordless
+- Integration with popular web frameworks
 
 ### Example usage of the Crypto Class
 
@@ -72,15 +73,11 @@ krypton.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
 krypton.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
 ```
 
-To see what these strings should contain please see [Databases](README-DATABASES.md)
+To see what these settings strings should contain please see [Databases](README-DATABASES.md)
 
 ## Settings
 
 [Configurations](README-CONFIGS.md)
-
-## Optional: store keys in HSM
-
-After integrations with web frameworks
 
 ## Build/Setup the extension for development
 
