@@ -29,7 +29,7 @@ model.deleteData("test")
 
 **Note:** do make sure that the key in setData does not start with `_` - those are reserved for Krypton internals.
 
-You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want other users to decrypt it [cross-user data sharing](#data-sharing).
+You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want other users to read it please read the [sharing](#data-sharing) section of this document.
 
 ***Warning: in setData only the stored values are encrypted. Keys are plaintext!! Avoid storing sensitive data in keys!***
 
