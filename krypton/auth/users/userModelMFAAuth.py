@@ -1,8 +1,8 @@
 """ Extended auth logic
 """
-#pylint: disable=W0223
 #pylint: disable=no-member
-import base64
+#pylint: disable=attribute-defined-outside-init
+#pylint: disable=abstract-method
 import os
 from sqlalchemy import select, delete, update
 
@@ -13,11 +13,11 @@ from .bases import userExistRequired, user
 class MFAUser(user):
     @userExistRequired
     def enablePWDReset(self) -> list[str]:
-        Pkeys = [base.genOTP() for i in range(10)]
+        PKeys = [base.genOTP() for i in range(10)]
         self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
-        for Pkey in Pkeys:
+        for PKey in PKeys:
             salt = os.urandom(32)
-            key = base.PBKDF2(Pkey, salt, keylen=32)
+            key = base.PBKDF2(PKey, salt, keylen=32)
             skey = base.restEncrypt(self._key, key)
             base.zeromem(key)
             row = DBschemas.PWDReset(
@@ -29,7 +29,7 @@ class MFAUser(user):
             self.c.add(row)
             self.c.flush()
         self.c.commit()
-        return Pkeys
+        return PKeys
 
     def resetPWD(self, key:str, newPWD:str):
         rows = self.c.execute(select(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id)).scalars().all()

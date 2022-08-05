@@ -14,7 +14,7 @@ from .base import restEncrypt, restDecrypt, zeromem, PBKDF2
 class KeyManagementError(Exception):
     """Error in Key Management System
 
-    For exmaple, compliance issues
+    For example, compliance issues
 
     Arguments:
         Exception -- Inherits base Exception class
@@ -33,16 +33,16 @@ class KMS():
         """Encrypt a string
 
         Arguments:
-            text -- Plaintext
+            text -- Plain text
 
             pwd -- Password
 
-            salt -- Sakt for hashing
+            salt -- Salt for hashing
 
             iterations -- Iterations for hashing
 
         Returns:
-            Ciphertext
+            Cipher text
         """
         if self._HSM:
             return None
@@ -54,13 +54,13 @@ class KMS():
         """Decrypt a string
 
         Arguments:
-            ctext -- Ciphertext
+            ctext -- Cipher text
 
             pwd -- Password
 
             salt -- Salt for Hashing
 
-            iterations -- Iterations for hasing
+            iterations -- Iterations for hashing
 
         Returns:
             Plaintext
@@ -78,7 +78,7 @@ class KMS():
         self._HSM = False
 
     def getKey(self, name:str, pwd:ByteString=None, force:bool=False) -> bytes:
-        """Get a Key based on args
+        """Get a Key
 
         Arguments:
             name -- Name of the key to get
@@ -225,7 +225,7 @@ class Crypto(KMS):
         """Read data from secureCreate
 
         Arguments:
-            num -- Integer retuned from secureCreate
+            num -- Integer returned from secureCreate
 
             pwd -- Password set in secureCreate
 

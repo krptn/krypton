@@ -17,17 +17,17 @@ Adrr = id
 __CryptoLib.fipsInit()
 
 #: Wrappers for __CryptoLib #
-# : Help linters automatically figure out function arguments, returns, etc..
+# : Help static analyzers automatically figure out function arguments, returns, etc..
 def restEncrypt(data:ByteString, key:bytes) -> bytes:
     """Encrypt Data for at rest Storage
 
     Arguments:
-        data -- Plaintext
+        data -- Plain text
 
         key -- 32-bit key
 
     Returns:
-        Ciphertext
+        Cipher text
     """
     return __CryptoLib.AESEncrypt(data, key, len(data))
 
@@ -35,12 +35,12 @@ def restDecrypt(data:bytes, key:bytes) -> bytes:
     """Decrypt Data from restEncrypt
 
     Arguments:
-        data -- Ciphertext
+        data -- Cipher text
 
         key -- 32-bit key
 
     Returns:
-        Plaintext
+        Plain text
     """
     return __CryptoLib.AESDecrypt(data, key)
 
@@ -67,24 +67,24 @@ def base64decode(data:ByteString) -> ByteString:
     return __CryptoLib.base64decode(data, len(data))
 
 def createECCKey() -> tuple[str, str]:
-    """create an ECC Key
+    """create an Eliptic Curve Key
 
-    Encoded in PEM format
+    Encoded in P.E.M. format
 
     Returns:
         Returns a tuple like (privateKey:str, publicKey:str)
     """
     return __CryptoLib.createECCKey()
 
-def ECDH(privKey:str, peerPubKey:str, salt:bytes, keylen:int=32) -> bytes:
+def ECDH(privKey:str, peerPubKey:str, salt:bytes, keylen:int=32) -> bytes: # pylint: diable=wrong-spelling-in-docstring
     """Elliptic Curve Diffie-Helman
 
     Arguments:
-        privKey -- PEM Encoded private key
+        privKey -- P.E.M. Encoded private key
 
-        peerPubKey -- PEM Encoded public key
+        peerPubKey -- P.E.M. Encoded public key
 
-        salt -- Salt used for KDF
+        salt -- Salt used for Key Derivation Function
 
     Keyword Arguments:
         keylen -- Len of the key (default: {32})
@@ -100,7 +100,7 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> list[b
     Get a shared key for two users using ECDH.
 
     Arguments:
-        privKey -- User's private EC Key (in PEM format)
+        privKey -- User's private EC Key (in P.E.M. format)
 
         peerName -- Other User's user name
 
@@ -123,7 +123,7 @@ def PBKDF2(text:ByteString, salt:ByteString, iterations:int=configs.defaultItera
     """PBKDF2 with SHA512
 
     Arguments:
-        text -- Plaintext
+        text -- Plain text
         salt -- Salt
 
     Keyword Arguments:

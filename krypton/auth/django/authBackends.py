@@ -14,7 +14,7 @@ class kryptonBackend(BaseBackend):
             username:str,
             creds:dict,
         ):
-        """Authenicate User with Credentials
+        """Authenticate User with Credentials
 
         Arguments:
             request -- Django's HTTPRequest

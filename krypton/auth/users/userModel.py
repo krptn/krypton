@@ -3,6 +3,9 @@ Provides User Models
 Note for developer's working on Krypton: this only contains user model cryptography.
 """
 
+#pylint: disable=no-member
+#pylint: disable=attribute-defined-outside-init
+
 import datetime
 import os
 import pickle

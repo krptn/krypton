@@ -143,7 +143,7 @@ class fido:
 
         Arguments:
             credentials -- The user's fido credentials, recieved from the browser
-            challenge -- The expected challange
+            challenge -- The expected challenge
 
         Raises:
             AuthError: registration failure
@@ -187,7 +187,7 @@ class fido:
 
     @staticmethod
     def authenticate_verify(challenge:bytes, credential_public_key, credentials):
-        """Finallise Authentication
+        """Complete Authentication
 
         Arguments:
             challenge -- The expected challange from authenticate

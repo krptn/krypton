@@ -17,7 +17,6 @@ def kryptonLoginMiddleware(get_response):
     Returns:
         Response
     """
-    # One-time configuration and initialization.
     def skipAuth(request:HttpRequest):
         """Skip Login
 

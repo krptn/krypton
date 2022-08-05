@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 
 class UserError(Exception):
     """
-    Exception to be raised when an error occures in a user model.
+    Exception to be raised when an error occurs in a user model.
     """
     def __init__(self, *args: object) -> None:
         self.message = args[0]
@@ -76,7 +76,7 @@ class user(metaclass=ABCMeta):
         """
     @abstractmethod
     def restoreSession(self, key:bytes):
-        """Resume sessoin from key
+        """Resume session from key
 
         Arguments:
             key -- Session Key
@@ -182,7 +182,7 @@ class user(metaclass=ABCMeta):
         """Reload encryption keys. Warning: previous keys are not purged!
         """
     @abstractmethod
-    def enablePWDReset(self, key:str):
+    def enablePWDReset(self):
         """Enable Password Reset
 
         Arguments:

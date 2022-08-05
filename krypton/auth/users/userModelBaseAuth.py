@@ -1,7 +1,8 @@
 """ This module contains auth functions for models
 """
-#pylint: disable=W0223
 #pylint: disable=no-member
+#pylint: disable=attribute-defined-outside-init
+#pylint: disable=abstract-method
 import datetime
 import os
 import pickle
