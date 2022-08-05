@@ -161,6 +161,8 @@ class ConfigTemp():
     KCV = b"kryptonAuth"
     defaultAlgorithm = "AES256GCM"
     APP_NAME = "KryptonApp"
+    HOST_NAME = "127.0.0.1"
+    ORIGIN = "http://127.0.0.1/"
     defaultIterations = 500000
     defaultErrorPage = ""
     defaultCryptoperiod = 2

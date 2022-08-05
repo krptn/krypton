@@ -121,6 +121,8 @@ keys = model.enablePWDReset() # Generate. This also revokes all codes but alread
 
 ## MFA
 
+### TOTP
+
 To enable:
 
 ```python
@@ -132,6 +134,10 @@ When logging in:
 ```python
 model.login(pwd="pwd", mfaToken="123456")
 ```
+
+### FIDO Passwordless
+
+See [FIDO Docs](README-FIDO.md).
 
 ## Sign out of all sessions
 

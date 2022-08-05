@@ -3,13 +3,27 @@ Different Auth Factors available inside krypton.
 """
 import os
 import base64
-
+from webauthn import (
+    generate_registration_options,
+    verify_registration_response,
+    options_to_json,
+    base64url_to_bytes,
+    generate_authentication_options,
+    verify_authentication_response,
+)
+from webauthn.helpers.structs import (
+    AuthenticatorAttachment,
+    PublicKeyCredentialDescriptor,
+    RegistrationCredential,
+    UserVerificationRequirement,
+    AuthenticationCredential,
+)
 from .. import base
 from .. import configs
 
 KEY_LEN = 32
 
-class authFailed(Exception):
+class AuthFailed(Exception):
     """
     Exception to be raised when an error occures in a user model.
     """
@@ -70,7 +84,6 @@ class totp:
     """
     Simple TOTP authentication
     """
-
     @staticmethod
     def createTOTP(userName:str):
         """Create parameters for TOTP Generate
@@ -104,3 +117,96 @@ class fido:
     """
     FIDO authentication support.
     """
+    @staticmethod
+    def register(userID:int, userName:str):
+        """Start FIDO auth registration process
+
+        Arguments:
+            userID -- User's ID
+            userName -- The User's username
+
+        Returns:
+            registration options and registration challenge
+        """
+        simple_registration_options = generate_registration_options(
+            rp_id=configs.HOST_NAME,
+            rp_name=configs.APP_NAME,
+            user_id=str(userID),
+            user_name=userName,
+        )
+        options = options_to_json(simple_registration_options)
+        return options, simple_registration_options.challenge
+    
+    @staticmethod
+    def register_verification(credentials, challenge):
+        """Complete registration
+
+        Arguments:
+            credentials -- The user's fido credentials, recieved from the browser
+            challenge -- The expected challange
+
+        Raises:
+            AuthError: registration failure
+
+        Returns:
+            credential id and credential public key
+        """
+        registration_creds = RegistrationCredential.parse_raw(credentials)
+        registration_verification = verify_registration_response(
+            credential=registration_creds,
+            expected_challenge=challenge,
+            expected_origin=configs.ORIGIN,
+            expected_rp_id=configs.HOST_NAME,
+            require_user_verification=True,
+        )
+        success = registration_verification.credential_id == base64url_to_bytes(
+            registration_creds.id
+        )
+        if success:
+            return registration_verification.credential_id, registration_verification.credential_public_key
+        raise AuthFailed('Cannot create registration for FIDO')
+
+    @staticmethod
+    def authenticate(cred_id):
+        """Begin user authentication
+
+        Arguments:
+            cred_id -- The user's credential's id
+
+        Returns:
+            verification options, expected challange
+        """
+        authentication_options = generate_authentication_options(
+            rp_id=configs.HOST_NAME,
+            timeout=60000,
+            user_verification=UserVerificationRequirement.PREFERRED,
+            allow_credentials=[PublicKeyCredentialDescriptor(id=cred_id)],
+        )
+        options = options_to_json(authentication_options)
+        return options, authentication_options.challenge
+
+    @staticmethod
+    def authenticate_verify(challenge:bytes, credential_public_key, credentials):
+        """Finallise Authentication
+
+        Arguments:
+            challenge -- The expected challange from authenticate
+            credential_public_key -- The user's public key
+            credentials -- The credentials provided by the user
+
+        Returns:
+            True on success, False otherwise
+        """
+        authentication_verification = verify_authentication_response(
+            credential=AuthenticationCredential.parse_raw(credentials),
+            expected_challenge=base64url_to_bytes(challenge),
+            expected_rp_id=configs.HOST_NAME,
+            expected_origin=configs.ORIGIN,
+            credential_public_key=base64url_to_bytes(credential_public_key),
+            credential_current_sign_count=0,
+        )
+        success = authentication_verification.new_sign_count > 0
+
+        if success:
+            return True
+        return False
