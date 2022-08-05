@@ -189,13 +189,6 @@ class user(metaclass=ABCMeta):
             key -- The key needed to reset
         """
     @abstractmethod
-    def generateNewKeys(self, pwd:str):
-        """Regenerate Encryption keys
-
-        Arguments:
-            pwd -- Password
-        """
-    @abstractmethod
     def revokeSessions(self):
         """Revoke all Sessions for this User
 

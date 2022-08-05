@@ -23,6 +23,7 @@ class standardUser(AuthUser, MFAUser, user):
     """
     userName:str
     _key:bytes
+    _privKey:bytes
     salt:bytes
     sessionKey:bytes
     saved:bool

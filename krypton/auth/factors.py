@@ -12,7 +12,7 @@ from webauthn import (
     verify_authentication_response,
 )
 from webauthn.helpers.structs import (
-    AuthenticatorAttachment,
+    #AuthenticatorAttachment,
     PublicKeyCredentialDescriptor,
     RegistrationCredential,
     UserVerificationRequirement,
@@ -77,7 +77,7 @@ class password:
         splited = authTag.split("$")
         ctext, salt, iter = base.base64decode(splited[0]), base.base64decode(splited[1]), int(splited[2])
         key = base.PBKDF2(pwd, salt, iter, KEY_LEN)
-        text = base.restDecrypt(ctext, key) # This raises an error if authentication fails.
+        base.restDecrypt(ctext, key) # This raises an error if authentication fails.
         return key ## Success
 
 class totp:
