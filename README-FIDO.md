@@ -73,6 +73,8 @@ The above code generates options for FIDO. Please send these to the client's bro
 </script>
 ```
 
+Please see [Google's tutorial](https://developers.google.com/codelabs/webauthn-reauth#0) for more detail on the above code.
+
 Inside inside `fidoFinishReg/` (or whatever you rename it to):
 
 ```python
