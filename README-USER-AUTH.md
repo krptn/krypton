@@ -8,6 +8,8 @@
 
 **Note:** user classes are not thread-safe. Please create a new one to use in each thread!
 
+**Final Note:** Krypton does not verify the security of the password (e.g: complexness), please do this yourself!
+
 Here is an example usage of creating a new user:
 
 ```python

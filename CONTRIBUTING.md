@@ -2,11 +2,12 @@
 
 ## Scope of the Project
 
-This project is an IAM. Anything else is out of this scope. It is not (even though it can be used as) a Database solution, cryptographic toolkit, etc...
+The scope of this project is an IAM, which ensures proper encryption of any data.
 
 ## Conventions
 
 Naming conventions:
+
 - We use camelCase conevention for attributes, variables, and function names.
 - PascalCase for class names.
 - UPPER_CASE for constants
