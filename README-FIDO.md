@@ -14,10 +14,12 @@ We can only have one additional FIDO credentials registered. To revoke the curre
 model.removeFIDO()
 ```
 
+The reason why we can only have one FIDO credentials is to ensure that security is maximized. This prevents the attacker from registering another FIDO credential (that the legitimate user is unaware of), that he/she can use to access the account.
+
 In adition, you may wish to remove from the browser, but it is fine to skip this:
 
 ```javascript
-localStorage.removeItem('credId');
+localStorage.removeItem('KryptonFIDOcredId');
 ```
 
 ## Register
@@ -52,7 +54,7 @@ The above code generates options for FIDO. Please send these to the client's bro
 <script src="https://cdn.jsdelivr.net/gh/herrjemand/Base64URL-ArrayBuffer@latest/lib/base64url-arraybuffer.js"></script>
 <script>
     async function register() {
-        const response = await fetch("/fidoReg", {});
+        const response = await fetch('/fidoReg', {});
         const options = await response.json();
 
         options.user.id = base64url.decode(options.user.id);
@@ -83,7 +85,7 @@ The above code generates options for FIDO. Please send these to the client's bro
                 attestationObject,
             };
         }
-        localStorage.setItem(`KryptonFIDOcredId`, credential.id);
+        localStorage.setItem('KryptonFIDOcredId', credential.id);
         return await fetch('/fidoFinishReg', credential);
     }
 </script>
@@ -109,7 +111,7 @@ options = model.getFIDOOptions()
 These will need to be transmited to the browser, and the result (returned from the browser) of the authentication should be passed to `login` function:
 
 ```python
-model.login(pwd="MyPWD", fido=fidoResponse) # fidoResponse, is the stringified JSON from the browser.
+model.login(pwd='MyPWD', fido=fidoResponse) # fidoResponse, is the stringified JSON from the browser.
 ```
 
 On failure, a UserError will be raised and `model.FIDORequired` will be set to `True`.
@@ -141,14 +143,14 @@ To obtain authentication result in the browser:
 <script src="https://cdn.jsdelivr.net/gh/herrjemand/Base64URL-ArrayBuffer@latest/lib/base64url-arraybuffer.js"></script>
 <script>
     async function doFido() {
-        const email = document.getElementsByName("email")[0].value; // Replace with your password form
-        const pwd = document.getElementsByName("password")[0].value; // Replace with your password form
+        const email = document.getElementsByName('email')[0].value; // Replace with your password form
+        const pwd = document.getElementsByName('password')[0].value; // Replace with your password form
         const query = {}
         query.email = email;
 
         // To the below request, please return the response from model.getFIDOOptions()
         // Don't forget to replace your endpoint
-        const repsonse = await fetch("/getFidoLogin", // Replace endpoint with yours 
+        const repsonse = await fetch('/getFidoLogin', // Replace endpoint with yours 
             {cache: 'no-cache',
             method: 'POST',
             headers: {'Content-Type': 'application/json'},

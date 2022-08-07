@@ -55,6 +55,8 @@ model.revokeSessions()
 
 ## MFA
 
+To avoid getting locked out, you may want to read `Password Reset` section of this document.
+
 ### TOTP
 
 To enable:
@@ -134,7 +136,7 @@ Therefore, by using this method, you can grant access to some of the user's acco
 
 ## Password Reset
 
-To enable password reset you need to provide an answer to a security question. The question istelf is irrelevant to Krypton therefore it is enough to provide the answer.
+To enable password reset you need to obtain recovery codes, that you can use to unlock the account.
 
 ```python
 keys = model.enablePWDReset() # keys is a list of OTPs that can be used to unlock the user account
@@ -147,5 +149,5 @@ If the OTPs get compromised you can revoke them and generate new ones:
 
 ```python
 model.disablePWDReset() # Revoke
-keys = model.enablePWDReset() # Generate. This also revokes all codes but already did so previously.
+keys = model.enablePWDReset() # Generate. This also revokes all codes but we already did so previously.
 ```
