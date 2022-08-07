@@ -6,7 +6,7 @@
 
 **Note:** usernames are not encrypted.
 
-**Note:** user classes are not thread-safe. Please create a new one to use in each thread!
+**Note:** user classes are not thread-safe. Please create a new object to use in each thread!
 
 **Final Note:** Krypton does not verify the security of the password (e.g: complexness), please do this yourself!
 
