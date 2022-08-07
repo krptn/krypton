@@ -3,6 +3,7 @@
 #pylint: disable=no-member
 #pylint: disable=attribute-defined-outside-init
 #pylint: disable=abstract-method
+import json
 import os
 from sqlalchemy import select, delete, update
 
@@ -116,5 +117,29 @@ class MFAUser(user):
         self.deleteData("_tempFIDORegisterChallenge")
         credID, credKey = factors.fido.register_verification(response, challenge)
         self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
-            update(fidoPub=credKey, fidoID=credID))
+            values(fidoPub=credKey, fidoID=credID))
         self.c.commit()
+    
+    @userExistRequired
+    def removeFIDO(self):
+        """Remove the FIDO Auth from Server
+        """
+        self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
+            values(fidoPub=b"*", fidoID=b"*"))
+        self.c.commit()
+
+    def getFIDOOptions(self):
+        """Obtain FIDO options before Auth
+
+        Returns:
+            Fido Options as string, { "error": "No keys availble" } if FIDO is not setup
+        """
+        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
+        authTag:DBschemas.UserTable = self.c.scalar(stmt)
+        if authTag.fidoID == b"*":
+            return '{ "error": "No keys availble" }'
+        options, challenge = factors.fido.authenticate(authTag.fidoID)
+        self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
+            values(fidoChallenge = challenge))
+        self.c.commit()
+        return options

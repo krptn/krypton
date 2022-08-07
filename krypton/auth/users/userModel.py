@@ -39,6 +39,7 @@ class standardUser(AuthUser, MFAUser, user):
         self.backupAESKeys = []
         self.backupKeys = []
         self.loggedin = False
+        self.FIDORequired = False
         self.c = scoped_session(configs.SQLDefaultUserDBpath)
         if userID is None and userName is not None:
             userID = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName)

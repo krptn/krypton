@@ -1,11 +1,13 @@
 import unittest
+import uuid
 from krypton.auth.users.bases import UserError
 from krypton.auth.users.userModel import standardUser
 
 class userAuth(unittest.TestCase):
     def setUp(self) -> None:
         self.model = standardUser(None)
-        self.model.saveNewUser("Test", "TEST")
+        self.userName = "Test"+str(uuid.uuid4())
+        self.model.saveNewUser(self.userName, "TEST")
         return super().setUp()
 
     def tearDown(self) -> None:
@@ -35,11 +37,12 @@ class userAuth(unittest.TestCase):
 
     def testKeyGenCrossUser(self):
         user2 = standardUser(None)
-        user2.saveNewUser("user2", "pwd")
-        test = user2.encryptWithUserKey("data", ["Test"])
+        user2Name = "user3"+str(uuid.uuid4())
+        user2.saveNewUser(user2Name, "pwd")
+        test = user2.encryptWithUserKey("data", [self.userName])
         user2.generateNewKeys("pwd")
         self.model.generateNewKeys("TEST")
-        result = self.model.decryptWithUserKey(test[0][1], test[0][2], "user2")
+        result = self.model.decryptWithUserKey(test[0][1], test[0][2], user2Name)
         user2.delete()
         self.assertEqual(result, b"data")
 
@@ -50,22 +53,20 @@ class userAuth(unittest.TestCase):
 
     def testCrossUserEncrypt(self):
         user2 = standardUser(None)
-        user2.saveNewUser("user3", "pwd")
-        test = user2.encryptWithUserKey("data", ["Test"])
-        result = self.model.decryptWithUserKey(test[0][1], test[0][2], "user3")
+        user2Name = "user3"+str(uuid.uuid4())
+        user2.saveNewUser(user2Name, "pwd")
+        test = user2.encryptWithUserKey("data", [self.userName])
+        result = self.model.decryptWithUserKey(test[0][1], test[0][2], user2Name)
         user2.delete()
         self.assertEqual(result, b"data")
 
     def testShare(self):
         user2 = standardUser(None)
-        user2.saveNewUser("user4", "pwd")
-        user2.shareSet("test", "TesT", ["Test"])
+        user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
+        user2.shareSet("test", "TesT", [self.userName])
         value = self.model.shareGet("test")
         user2.delete()
         self.assertEqual(value, b"TesT")
-
-    def testMFA(self):
-        pass
 
     def testDB(self):
         self.model.setData("test", b"TEST_VALUE")
@@ -76,16 +77,15 @@ class userAuth(unittest.TestCase):
     def testSessions(self):
         self.model.logout()
         key = self.model.login(pwd="TEST")
-        newMod = standardUser(userName="Test")
+        newMod = standardUser(userName=self.userName)
         newMod.restoreSession(key)
         self.assertTrue(newMod.loggedin)
-        newMod.logout()
     
     def testLogout(self):
         self.model.logout()
         key = self.model.login(pwd="TEST")
         self.model.logout()
-        newMod = standardUser(userName="Test")
+        newMod = standardUser(userName=self.userName)
         try:
             newMod.restoreSession(key)
         except UserError:

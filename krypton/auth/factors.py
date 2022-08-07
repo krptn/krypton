@@ -199,10 +199,10 @@ class fido:
         """
         authentication_verification = verify_authentication_response(
             credential=AuthenticationCredential.parse_raw(credentials),
-            expected_challenge=base64url_to_bytes(challenge),
+            expected_challenge=challenge,
             expected_rp_id=configs.HOST_NAME,
             expected_origin=configs.ORIGIN,
-            credential_public_key=base64url_to_bytes(credential_public_key),
+            credential_public_key=credential_public_key,
             credential_current_sign_count=0,
         )
         success = authentication_verification.new_sign_count > 0

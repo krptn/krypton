@@ -15,21 +15,6 @@ from .bases import userExistRequired, UserError, user
 class AuthUser(user):
     """Auth Logic for User Models
     """
-    def getFIDOOptions(self):
-        """Obtain FIDO options before Auth
-
-        Returns:
-            Fido Options as string
-        """
-        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
-        authTag:DBschemas.UserTable = self.c.scalar(stmt)
-        if authTag.fidoID == b"*":
-            return None
-        options, challenge = factors.fido.authenticate(authTag.fidoID)
-        self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
-            values(fidoChallenge = challenge))
-        return options
-
     def login(self, pwd:str=None, mfaToken:str="", fido:str=None):
         """Log the user in
 
@@ -51,12 +36,16 @@ class AuthUser(user):
         stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
         authTag:DBschemas.UserTable = self.c.scalar(stmt)
         if authTag.fidoID != b"*":
+            if fido is None:
+                self.FIDORequired = True
+                raise UserError("Failed to verify FIDO credentials.") 
             r = factors.fido.authenticate_verify(authTag.fidoChallenge, authTag.fidoPub, fido)
             if r is False:
+                self.FIDORequired = True
                 raise UserError("Failed to verify FIDO credentials.")
         if authTag.pwdAuthToken is None:
             raise UserError("User must have a password set.")
-        self._key = factors.password.auth(authTag, pwd)
+        self._key = factors.password.auth(authTag.pwdAuthToken, pwd)
         if self._key is False: raise UserError("Wrong password")
         if authTag.mfa != b"*":
             mfa = base.restDecrypt(authTag.mfa, self._key)
@@ -81,7 +70,7 @@ class AuthUser(user):
         self.c.commit()
         encoded = base.base64encode(restoreKey)
         base.zeromem(restoreKey)
-        return 
+        return encoded
 
     @userExistRequired
     def logout(self):
@@ -126,11 +115,20 @@ class AuthUser(user):
         _utils.cleanUpSessions(session=self.c)
         decodedKey = base.base64decode(key)
         self.sessionKey = decodedKey
-        stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.Uid == self.id).limit(1)
-        row:DBschemas.SessionKeys = self.c.scalar(stmt)
-        if row is None:
+        stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.Uid == self.id)
+        rows:list[DBschemas.SessionKeys] = self.c.scalars(stmt)
+        success = False
+        for row in rows:
+            if row is None:
+                raise UserError("Session does not exist or is expired.")
+            try:
+                self._key = base.restDecrypt(row.key, self.sessionKey)
+            except ValueError:
+                pass
+            else:
+                success = True
+        if not success:
             raise UserError("Session does not exist or is expired.")
-        self._key = base.restDecrypt(row.key, self.sessionKey)
         self.loggedin = True
         self.reload()
 

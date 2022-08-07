@@ -1,7 +1,6 @@
 """
 Loads up databases and sets configuration needed by OPENSSL FIPS module.
 """
-from email.policy import default
 import os
 import sys
 import pathlib
@@ -108,7 +107,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         __tablename__ = "sessions"
         id = Column(Integer, primary_key=True)
         Uid = Column(Integer)
-        key = Column(Text)
+        key = Column(LargeBinary)
         exp = Column(DateTime)
         iss = Column(DateTime)
 
@@ -164,7 +163,6 @@ class DBschemas(): # pylint: disable=too-few-public-methods
 
 class ConfigTemp():
     """Configuration templates"""
-    KCV = b"kryptonAuth"
     defaultAlgorithm = "AES256GCM"
     APP_NAME = "KryptonApp"
     HOST_NAME = ""
