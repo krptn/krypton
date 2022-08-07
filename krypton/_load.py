@@ -96,6 +96,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         mfa = Column(LargeBinary, default=b"*")
         fidoPub = Column(LargeBinary, default=b"*")
         fidoID = Column(LargeBinary, default=b"*")
+        fidoChallenge = Column(LargeBinary, default=b"*")
 
     class SessionKeys(Base): # pylint: disable=too-few-public-methods
         """Database Schema

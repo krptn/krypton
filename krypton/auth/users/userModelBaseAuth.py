@@ -6,7 +6,7 @@
 import datetime
 import os
 import pickle
-from sqlalchemy import delete, select, func
+from sqlalchemy import delete, select, func, update
 from .. import factors, _utils
 from ... import DBschemas, configs
 from ... import base
@@ -15,7 +15,22 @@ from .bases import userExistRequired, UserError, user
 class AuthUser(user):
     """Auth Logic for User Models
     """
-    def login(self, pwd:str=None, mfaToken:str=""):
+    def getFIDOOptions(self):
+        """Obtain FIDO options before Auth
+
+        Returns:
+            Fido Options as string
+        """
+        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
+        authTag:DBschemas.UserTable = self.c.scalar(stmt)
+        if authTag.fidoID == b"*":
+            return None
+        options, challenge = factors.fido.authenticate(authTag.fidoID)
+        self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
+            values(fidoChallenge = challenge))
+        return options
+
+    def login(self, pwd:str=None, mfaToken:str="", fido:str=None):
         """Log the user in
 
         Keyword Arguments:
@@ -23,26 +38,28 @@ class AuthUser(user):
 
             otp -- One-Time Password (default: {""})
 
-            fido -- Fido Token (default: {None})
+            fido -- Fido Credentials (default: {None})
 
         Raises:
-            UserError: Password is not set
+            UserError: Password is not set or wrong password is provided.
 
         Returns:
-            Session Key, None if user is not saved
+            Session Key
         """
         if not self.saved:
             raise UserError("User must be saved.")
-        stmt = select(DBschemas.UserTable.pwdAuthToken).where(DBschemas.UserTable.id == self.id).limit(1)
-        authTag = self.c.scalar(stmt)
-        if authTag is None:
+        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
+        authTag:DBschemas.UserTable = self.c.scalar(stmt)
+        if authTag.fidoID != b"*":
+            r = factors.fido.authenticate_verify(authTag.fidoChallenge, authTag.fidoPub, fido)
+            if r is False:
+                raise UserError("Failed to verify FIDO credentials.")
+        if authTag.pwdAuthToken is None:
             raise UserError("User must have a password set.")
         self._key = factors.password.auth(authTag, pwd)
         if self._key is False: raise UserError("Wrong password")
-        stmt = select(DBschemas.UserTable.mfa).where(DBschemas.UserTable.id == self.id).limit(1)
-        mfa = self.c.scalar(stmt)
-        if mfa != b"*":
-            mfa = base.restDecrypt(mfa, self._key)
+        if authTag.mfa != b"*":
+            mfa = base.restDecrypt(authTag.mfa, self._key)
             if not factors.totp.verifyTOTP(mfa, mfaToken):
                 base.zeromem(self._key)
                 raise UserError("Wrong MFA Token")
@@ -64,7 +81,7 @@ class AuthUser(user):
         self.c.commit()
         encoded = base.base64encode(restoreKey)
         base.zeromem(restoreKey)
-        return encoded
+        return 
 
     @userExistRequired
     def logout(self):

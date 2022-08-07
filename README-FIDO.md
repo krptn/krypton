@@ -75,7 +75,7 @@ The above code generates options for FIDO. Please send these to the client's bro
 </script>
 ```
 
-Please see [Google's tutorial](https://developers.google.com/codelabs/webauthn-reauth#0) for more detail on the above code.
+Please see [Google's tutorial](https://developers.google.com/codelabs/webauthn-reauth) for more detail on the above code.
 
 Inside inside `fidoFinishReg/` (or whatever you rename it to):
 
@@ -85,3 +85,20 @@ current_user.completeFIDOSetup(json.dumps(request.get_json()["credentials"])) # 
 ```
 
 ## Login
+
+Before all we need to obtain our FIDO options:
+
+```python
+options = model.getFIDOOptions()
+```
+
+These will need to be transmited to the browser, and the result (returned from the browser) of the authentication should be passed to `login` function:
+
+```python
+model.login(pwd="MyPWD", fido=fidoResponse)
+```
+
+To obtain authentication result in the browser:
+
+```html
+```
