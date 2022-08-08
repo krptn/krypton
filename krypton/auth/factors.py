@@ -206,7 +206,4 @@ class fido:
             credential_current_sign_count=0,
         )
         success = authentication_verification.new_sign_count > 0
-
-        if success:
-            return True
-        return False
+        return success
