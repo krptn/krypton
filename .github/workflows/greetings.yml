@@ -1,0 +1,16 @@
+name: Greetings
+
+on: [pull_request_target, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.App }}
+        issue-message: "Welcome to Krypton! We are glad to see you. Your issue will shortly be viewed by a human."
+        pr-message: "Welcome to Krypton! We are glad to see you. Your pull request will shortly be viewed by a human"
