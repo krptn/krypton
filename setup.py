@@ -11,13 +11,11 @@ DEBUG = sys.argv.count("--debug") >= 1
 description = """
 # Krypton
 
-To see documentation as a website, please see [documentation](https://docs.krptn.dev/index.html).
+To see documentation as a website, please see [the documentation website](https://docs.krptn.dev/index.html).
 
-[Link to Github Repo](https://github.com/krptn/krypton)
+You can also look at our [Github Repo](https://github.com/krptn/krypton).
 
 ## What is this?
-
-**Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want their code to be used for such purposes.
 
 A user authentication and access management system based entirely on cryptographic primitives.
 
@@ -104,7 +102,7 @@ setup(name='krypton',
     "../kr-openssl-install/lib64/libssl.so"]},
   packages=['krypton'],
   python_requires=">3.8",
-  install_requires=["SQLAlchemy", "pywarp"],
+  install_requires=["SQLAlchemy", "webauthn"],
   extras_require={
         "MSSQL": ["pyodbc"],
         "MySQL": ["mysqlclient"],
