@@ -157,6 +157,7 @@ class KMS():
             year = year
         )
         self.c.add(key)
+        self.c.flush()
         self.c.commit()
         return k
 
@@ -173,6 +174,7 @@ class KMS():
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
         key:DBschemas.KeysTable = self.c.scalar(stmt)
         self.c.delete(key)
+        self.c.flush()
         self.c.commit()
         return
     
@@ -218,6 +220,7 @@ class Crypto(KMS):
         )
         self.c.add(keyOb)
         zeromem(key)
+        self.c.flush()
         self.c.commit()
         return _num
 
@@ -272,4 +275,5 @@ class Crypto(KMS):
         stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id == num)
         key:DBschemas.CryptoTable = self.c.scalar(stmt)
         self.c.delete(key)
+        self.c.flush()
         self.removeKey(str(num), pwd)

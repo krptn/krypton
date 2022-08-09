@@ -61,6 +61,7 @@ class AuthUser(user):
             exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
         )
         self.c.add(token)
+        self.c.flush()
         self.loggedin = True
         time = int(self.getData("_accountKeysCreation").decode())
         if (datetime.datetime.now().year - time) >= 2:
@@ -163,6 +164,7 @@ class AuthUser(user):
             key = self.pubKey
         )
         self.c.add(key)
+        self.c.flush()
         tag = factors.password.getAuth(pwd)
         userEntry = DBschemas.UserTable(
             id = self.id,
@@ -171,6 +173,7 @@ class AuthUser(user):
             salt = self.salt
         )
         self.c.add(userEntry)
+        self.c.flush()
         self._key = factors.password.auth(tag, pwd)
         self.saved = True
         self.loggedin = True
