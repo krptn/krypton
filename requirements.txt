@@ -1,13 +1,8 @@
 build==0.8.0
-colorama==0.4.5
-packaging==21.3
 pep517==0.13.0
 pybind11==2.10.0
-pyparsing==3.0.9
-tomli==2.0.1
 SQLAlchemy==1.4.40
-greenlet==1.1.2
-Django==4.1
 webauthn==1.6.0
-pydantic==1.9.1
 pyenchant==3.2.2
+Flask==2.2.1
+Django==4.0.6
