@@ -13,7 +13,7 @@ A user authentication and access management system based entirely on cryptograph
 What we mean by that is:
 
 - All Data is encrypted (any data can be request by the developer to be secured)
-- Only the appropriate users' credentials can unlock the cryptosystem
+- Only the appropriate users' credentials can unlock the cryptosystem (this protects you from server-side attacks)
 
 ## Features
 
