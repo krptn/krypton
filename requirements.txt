@@ -4,5 +4,5 @@ pybind11==2.10.0
 SQLAlchemy==1.4.40
 webauthn==1.6.0
 pyenchant==3.2.2
-Flask==2.2.1
-Django==4.0.7
+Flask==2.2.2
+Django==4.1
