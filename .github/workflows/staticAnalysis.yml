@@ -5,6 +5,8 @@ on:
   pull_request:
    types: [opened, reopened]
 
+permissions:
+  contents: read
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
 # Source repository: https://github.com/actions/dependency-review-action
@@ -16,6 +18,8 @@ jobs:
         uses: actions/checkout@v3
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v2
+        with:
+          allow-licenses: MIT, Apache-2.0
 
   Pylint:
     runs-on: ubuntu-latest
