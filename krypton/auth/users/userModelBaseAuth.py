@@ -115,7 +115,6 @@ class AuthUser(user):
             raise UserError("Session does not exist or is expired.")
         _utils.cleanUpSessions(session=self.c)
         decodedKey = base.base64decode(key)
-        self.sessionKey = decodedKey
         stmt = select(DBschemas.SessionKeys).where(DBschemas.SessionKeys.Uid == self.id)
         rows:list[DBschemas.SessionKeys] = self.c.scalars(stmt)
         success = False
@@ -123,7 +122,8 @@ class AuthUser(user):
             if row is None:
                 raise UserError("Session does not exist or is expired.")
             try:
-                self._key = base.restDecrypt(row.key, self.sessionKey)
+                self._key = base.restDecrypt(row.key, decodedKey)
+                self.sessionKey = row.key
             except ValueError:
                 pass
             else:
