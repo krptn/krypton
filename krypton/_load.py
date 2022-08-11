@@ -2,6 +2,7 @@
 Loads up databases and sets configuration needed by OPENSSL FIPS module.
 """
 import os
+from re import T
 import sys
 import pathlib
 import ctypes
@@ -61,7 +62,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         year: int"""
         __tablename__ = "keys"
         id = Column(Integer, primary_key=True)
-        name = Column(Text)
+        name = Column(Text, index=True)
         key = Column(LargeBinary)
         salt = Column(LargeBinary)
         cipher = Column(Text)
@@ -75,7 +76,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         key: str"""
         __tablename__ = "pubKeys"
         id = Column(Integer, primary_key=True)
-        name = Column(Text)
+        name = Column(Text, index=True)
         key = Column(Text)
 
     class UserTable(Base): # pylint: disable=too-few-public-methods
@@ -89,7 +90,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         fidoID: bytes"""
         __tablename__ = "users"
         id = Column(Integer, primary_key=True)
-        name = Column(Text)
+        name = Column(Text, index=True)
         pwdAuthToken = Column(Text)
         salt = Column(LargeBinary)
         mfa = Column(LargeBinary, default=b"*")
@@ -106,9 +107,9 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         iss: DateTime"""
         __tablename__ = "sessions"
         id = Column(Integer, primary_key=True)
-        Uid = Column(Integer)
+        Uid = Column(Integer, index=True)
         key = Column(LargeBinary)
-        exp = Column(DateTime)
+        exp = Column(DateTime, index=True)
         iss = Column(DateTime)
 
     class UserData(Base): # pylint: disable=too-few-public-methods
@@ -119,8 +120,8 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         shared: int, default=0"""
         __tablename__ = "userData"
         id = Column(Integer, primary_key=True)
-        Uid = Column(Integer)
-        name = Column(Text)
+        Uid = Column(Integer, index=True)
+        name = Column(Text, index=True)
         value = Column(LargeBinary)
     
     class UserShareTable(Base): # pylint: disable=too-few-public-methods
@@ -132,11 +133,11 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         shareUid: int"""
         __tablename__ = "userShareData"
         id = Column(Integer, primary_key=True)
-        sender = Column(Text)
-        name = Column(Text)
+        sender = Column(Text, index=True)
+        name = Column(Text, index=True)
         salt = Column(LargeBinary)
         value = Column(LargeBinary)
-        shareUid = Column(Integer)
+        shareUid = Column(Integer, index=True)
 
     class PWDReset(Base): # pylint: disable=too-few-public-methods
         """Database Schema
@@ -147,19 +148,10 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         """
         __tablename__ = "pwdReset"
         id = Column(Integer, primary_key=True)
-        Uid = Column(Integer)
+        Uid = Column(Integer, index=True)
         key = Column(LargeBinary)
         iter = Column(Integer)
         salt = Column(LargeBinary)
-
-    class KrConfig(Base): # pylint: disable=too-few-public-methods
-        """Database Schema
-        name: str
-        value: bytes"""
-        __tablename__ = "krconfig"
-        id = Column(Integer, primary_key=True)
-        name = Column(Text)
-        value = Column(Text)
 
 class ConfigTemp():
     """Configuration templates"""
