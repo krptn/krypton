@@ -43,7 +43,7 @@ print(myCrypto.secureRead(id, pwd)) # prints Example data
 
 See [User Auth](README-USER-AUTH.md).
 
-To use FIDO with user auth, please see [Krypton's FIDO Documentation](README-FIDO.md) (but please read [user auth](README-USER-AUTH.md) first).
+To use FIDO with user auth, please see [Krypton's FIDO Documentation](README-FIDO.md) (but please read📖 [user auth](README-USER-AUTH.md) first).
 
 ## Integration with web frameworks
 
@@ -77,7 +77,7 @@ krypton.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
 krypton.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
 ```
 
-To see what these settings strings should contain please see [Databases](README-DATABASES.md)
+To see what these settings strings should contain please see [Databases](README-DATABASES.md).
 
 ## Settings
 
