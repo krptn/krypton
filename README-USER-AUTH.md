@@ -2,7 +2,7 @@
 
 > :ledger: To use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md). <br>
 > :warning: This does not protect you against brute force attacks - make sure to enable rate limiting on your server. <br>
-> :warning: Krypton does not verify the security of the password (e.g: complexness), please do this yourself!
+> :warning: Krypton does not verify the security of the password (e.g: complexness), please do this yourself! <br>
 > :warning: Uernames are not encrypted. <br>
 > :warning: User classes are not thread-safe. Please create a new object to use in each thread! <br>
 
