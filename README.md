@@ -77,7 +77,7 @@ To see what these settings strings should contain please see [Databases](https:/
 
 ## Settings
 
-[Configurations](README-CONFIGS.md)
+[Configurations](https://docs.krptn.dev/README-CONFIGS.html)
 
 ## Build/Setup the extension for development
 
