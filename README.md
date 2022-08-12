@@ -19,12 +19,12 @@ What we mean by that is:
 
 - Secure Storage of Data
 - User Authentication
-- FIPS Validated Cryptography (via OPENSSL3)*
+- FIPS Validated Cryptography (via OPENSSL3)[^*]
 - Secure memory wiping
-- FIDO Passwordless*
+- FIDO Passwordless[^*]
 - Integration with popular web frameworks
 
-\* FIDO (passwordless) does not use FIPS validated resolvers
+[^*]: FIDO (passwordless) does not use FIPS validated resolvers
 
 ### Example usage of the Crypto Class
 
