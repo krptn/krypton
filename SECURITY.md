@@ -6,7 +6,7 @@ Only the most recent version is supported; however, we are still interested in l
 
 ## Reporting a Vulnerability
 
-Email security vulnerabilities to `security@krptn.dev` with the subject `"Security Report"` and the title/name of the vulnerability.
+Email security vulnerabilities to [`security@krptn.dev`](mailto:security@krptn.dev) with the subject `"Security Report"` and the title/name of the vulnerability.
 
 Please make sure the following information is clearly stated: what is it; severity of the vulnerability; what does it affect; how to exploit it; any recommendations on how to fix it; anything else you would like to say.
 
