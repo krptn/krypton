@@ -21,9 +21,9 @@ bool verifyTOTP(py::bytes secret, py::str value) {
     char* key = pymbToBuffer(secret);
     char* code = pyStrToBuffer(value);
     int intCounter = floor(time(NULL)/30);
-    unsigned char* md = new unsigned char[20];
+    char md[20];
     unsigned int mdLen = 20;
-    HMAC(EVP_sha1(), key, keylen, (const unsigned char*)&intCounter, sizeof(intCounter), md, &mdLen);
+    HMAC(EVP_sha1(), key, keylen, (const unsigned char*)&intCounter, sizeof(intCounter), (unsigned char*)&md, &mdLen);
     OPENSSL_cleanse(key, keylen);
     int offset = md[19] & 0x0f;
     int bin_code = (md[offset] & 0x7f) << 24
@@ -34,7 +34,6 @@ bool verifyTOTP(py::bytes secret, py::str value) {
     char correctCode[7];
     snprintf((char*)&correctCode, 7,"%06d", bin_code);
     int compR = compHash(&correctCode, code, 6);
-    delete[] md;
     delete[] key;
     delete[] code;
     if (compR == 0) {
