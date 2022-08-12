@@ -74,6 +74,8 @@ When logging in:
 model.login(pwd="pwd", mfaToken="123456")
 ```
 
+*Note:* on a failed login attempt, we will impose a 5 second delay to slow down brute force attacks. This is not present for password based auth so please do impose rate limiting protection on your server.
+
 ### FIDO Passwordless
 
 See [FIDO Docs](README-FIDO.md).
