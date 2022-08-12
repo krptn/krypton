@@ -8,23 +8,7 @@ import sys
 
 DEBUG = sys.argv.count("--debug") >= 1
 
-description = """
-# Krypton
-
-To see documentation as a website, please see [the documentation website](https://docs.krptn.dev/index.html).
-
-You can also look at our [Github Repo](https://github.com/krptn/krypton).
-
-## What is this?
-
-A user authentication and access management system based entirely on cryptographic primitives.
-
-What we mean by that is:
-
-- All Data is encrypted, obviously (any data can be request by the developer to be secured - not just user data)
-- Only the appropriate users' credentials can unlock the cryptosystem
-"""
-
+description = open("README.md", "r").read()
 
 extra_args = []
 if DEBUG and sys.platform != "win32":
