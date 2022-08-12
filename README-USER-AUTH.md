@@ -80,6 +80,7 @@ model.login(pwd="pwd", mfaToken="123456")
 
 See [FIDO Docs](README-FIDO.md).
 
+(data-sharing)=
 ## Data Sharing
 
 Using these methods, you can grant access to some of the user's account's data to another user.
