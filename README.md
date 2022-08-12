@@ -41,25 +41,25 @@ print(myCrypto.secureRead(id, pwd)) # prints Example data
 
 ## User Auth
 
-See [User Auth](README-USER-AUTH.md).
+See [User Auth](https://docs.krptn.dev/README-USER-AUTH.html).
 
-To use FIDO with user auth, please see [Krypton's FIDO Documentation](README-FIDO.md) (but please read📖 [user auth](README-USER-AUTH.md) first).
+To use FIDO with user auth, please see [Krypton's FIDO Documentation](https://docs.krptn.dev/README-FIDO.html) (but please read📖 [user auth](https://docs.krptn.dev/README-USER-AUTH.html) first).
 
 ## Integration with web frameworks
 
-- [Django](README-DJANGO.md) - Not implemented yet.
-- [Flask](README-FLASK.md)
+- [Django](https://docs.krptn.dev/README-DJANGO.html) - Not implemented yet.
+- [Flask](https://docs.krptn.dev/README-FLASK.html)
 
-[Integrations Page](README-INTEGRATIONS.md)
+[Integrations Page](https://docs.krptn.dev/README-INTEGRATIONS.html)
 
 ## Crypto Class
 
-[Crypto Class](README-CRYPTO.md)
+[Crypto Class](https://docs.krptn.dev/README-CRYPTO.html)
 
 ## Key Management System
 
 This module uses a custom Key Management System for AES-256 Keys.
-See [KMS](README-KMS.md) for more information.
+See [KMS](https://docs.krptn.dev/README-KMS.html) for more information.
 
 **Note:** we have considered using HSM as key management systems. However, we have decided that we will not implement HSMs because it would not be possible to withhold that cryptographic systems are only unlocked with correct credentials: this is because a HSM would happily provide the key to Krypton irrespective of whether the user of the web app has provided credentials.
 
@@ -77,7 +77,7 @@ krypton.configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///Path/example.db"
 krypton.configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///Path/key.db"
 ```
 
-To see what these settings strings should contain please see [Databases](README-DATABASES.md).
+To see what these settings strings should contain please see [Databases](https://docs.krptn.dev/README-DATABASES.html).
 
 ## Settings
 
