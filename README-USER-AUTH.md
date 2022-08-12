@@ -1,14 +1,14 @@
 # User Authentication
 
-:::{note}
-To use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
-:::
+**Note:** to use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
 
-> :warning: This does not protect you against brute force attacks - make sure to enable rate limiting on your server. <br>
-> :warning: Krypton does not verify the security of the password (e.g: complexness), please do this yourself! <br>
-> :warning: Uernames are not encrypted. <br>
-> :warning: User classes are not thread-safe. Please create a new object to use in each thread! <br>
+**Please note:** this not protect you against brute force attacks - make sure to enable rate limiting on your host.
 
+**Note:** usernames are not encrypted.
+
+**Note:** user classes are not thread-safe. Please create a new object to use in each thread!
+
+**Final Note:** Krypton does not verify the security of the password (e.g: complexness), please do this yourself!
 
 Here is an example usage of creating a new user:
 
