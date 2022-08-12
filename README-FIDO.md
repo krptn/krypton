@@ -1,6 +1,6 @@
 # FIDO Passwordless
 
-*In order for this section to make sense, please read [User Auth](README-USER-AUTH.md) first.*
+*⚠ In order for this section to make sense, please read [User Auth](README-USER-AUTH.md) first.*
 
 To see this implemented in action, you can have a look at our [Flask example](https://github.com/krptn/flaskExample).
 
