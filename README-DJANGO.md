@@ -1,6 +1,6 @@
 # Django Integration
 
-***⚠ Note: this is feature is not implemented yet! Please use [User Auth](README-USER-AUTH.md) directly when using Krypton with Django.***
+***🛑 Note: this is feature is not implemented yet! Please use [User Auth](README-USER-AUTH.md) directly when using Krypton with Django.***
 
 Please configure your Django project to use the following Auth Backend:
 
