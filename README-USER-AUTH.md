@@ -1,6 +1,9 @@
 # User Authentication
 
-> :ledger: To use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md). <br>
+:::{note}
+To use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
+:::
+
 > :warning: This does not protect you against brute force attacks - make sure to enable rate limiting on your server. <br>
 > :warning: Krypton does not verify the security of the password (e.g: complexness), please do this yourself! <br>
 > :warning: Uernames are not encrypted. <br>
