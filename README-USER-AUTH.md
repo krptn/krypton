@@ -1,14 +1,14 @@
 # User Authentication
 
-**Note:** to use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
+**⚠ Note:** to use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
 
-**Please note:** this not protect you against brute force attacks - make sure to enable rate limiting on your host.
+**⚠ Note:** this not protect you against brute force attacks - make sure to enable rate limiting on your host.
 
-**Note:** usernames are not encrypted.
+**⚠ Note:** usernames are not encrypted.
 
-**Note:** user classes are not thread-safe. Please create a new object to use in each thread!
+**⚠ Note:** user classes are not thread-safe. Please create a new object to use in each thread!
 
-**Final Note:** Krypton does not verify the security of the password (e.g: complexness), please do this yourself!
+**⚠ Note:** Krypton does not verify the security of the password (e.g: complexness), please do this yourself!
 
 Here is an example usage of creating a new user:
 
@@ -29,11 +29,11 @@ data = model.getData("test") # Gives b"example"
 model.deleteData("test")
 ```
 
-**Note:** do make sure that the key in setData does not start with `_` - those are reserved for Krypton internals.
+**⚠ Note:** do make sure that the key in setData does not start with `_` - those are reserved for Krypton internals.
 
 You can also use model.encryptWithUserKey and model.decryptWithUserKey if you want other users to read it please read the [Data Sharing](#data-sharing) section of this document.
 
-***Warning: in setData only the stored values are encrypted. Keys are plaintext!! Avoid storing sensitive data in keys!***
+***⚠ Warning: in setData only the stored values are encrypted. Keys are plaintext!! Avoid storing sensitive data in keys!***
 
 Session keys can be used to restore a session after the user object has been destroyed.
 For example, in a webserver, it would be passed in every request to fetch the user.
