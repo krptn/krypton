@@ -1,14 +1,16 @@
 # User Authentication
 
-**Note:** to use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
+> [!NOTE]
+> To use Authentication in a supported web framework please see [integrations](README-INTEGRATIONS.md).
 
-**Please note:** this not protect you against brute force attacks - make sure to enable rate limiting on your host.
+> [!WARNING]
+> This does not protect you against brute force attacks - make sure to enable rate limiting on your server.
+> Krypton does not verify the security of the password (e.g: complexness), please do this yourself!
 
-**Note:** usernames are not encrypted.
+> [!CAUTION]
+> Uernames are not encrypted.
+> User classes are not thread-safe. Please create a new object to use in each thread!
 
-**Note:** user classes are not thread-safe. Please create a new object to use in each thread!
-
-**Final Note:** Krypton does not verify the security of the password (e.g: complexness), please do this yourself!
 
 Here is an example usage of creating a new user:
 
@@ -80,7 +82,6 @@ model.login(pwd="pwd", mfaToken="123456")
 
 See [FIDO Docs](README-FIDO.md).
 
-(data-sharing)=
 ## Data Sharing
 
 Using these methods, you can grant access to some of the user's account's data to another user.
