@@ -48,8 +48,6 @@ To use FIDO with user auth, please see [Krypton's FIDO Documentation](https://do
 - [Django](https://docs.krptn.dev/README-DJANGO.html) - Not implemented yet.
 - [Flask](https://docs.krptn.dev/README-FLASK.html)
 
-[Integrations Page](https://docs.krptn.dev/README-INTEGRATIONS.html)
-
 ## Crypto Class
 
 [Crypto Class](https://docs.krptn.dev/README-CRYPTO.html)
