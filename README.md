@@ -1,8 +1,6 @@
 # Krypton
 
-To see documentation as a website, please see [documentation](https://docs.krptn.dev/index.html).
-
-See our [Github Repo](https://github.com/krptn/krypton).
+Please see our [documentation](https://docs.krptn.dev/index.html).
 
 ## What is this?
 
