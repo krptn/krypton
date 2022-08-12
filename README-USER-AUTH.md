@@ -16,7 +16,7 @@ Here is an example usage of creating a new user:
 from krypton.auth import users
 
 model = users.standardUser(None)
-model.saveNewUser("Test_UserName", "Test_Password") # MFA support will be added soon
+model.saveNewUser("Test_UserName", "Test_Password") # MFA support is described below
 ```
 
 To retreive the user and set user data as key-value pairs:
