@@ -92,7 +92,6 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         id = Column(Integer, primary_key=True)
         name = Column(Text, index=True)
         pwdAuthToken = Column(Text)
-        salt = Column(LargeBinary)
         mfa = Column(LargeBinary, default=b"*")
         fidoPub = Column(LargeBinary, default=b"*")
         fidoID = Column(LargeBinary, default=b"*")

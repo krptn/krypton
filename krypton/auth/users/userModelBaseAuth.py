@@ -153,7 +153,6 @@ class AuthUser(user):
         if s is not None:
             raise ValueError("This user is already exists.")
         self.userName = name
-        self.salt = os.urandom(12)
         stmt = select(func.max(DBschemas.UserTable.id))
         self.id = self.c.scalar(stmt) + 1
         keys = base.createECCKey()
@@ -169,8 +168,7 @@ class AuthUser(user):
         userEntry = DBschemas.UserTable(
             id = self.id,
             name = name,
-            pwdAuthToken = tag,
-            salt = self.salt
+            pwdAuthToken = tag
         )
         self.c.add(userEntry)
         self.c.flush()
