@@ -6,7 +6,7 @@ Please see our [documentation](https://docs.krptn.dev/index.html).
 
 **Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want their code to be used for such purposes.
 
-A user authentication and access management system based entirely on cryptographic primitives.
+A user authentication and access management system based entirely on cryptographic primitives. It is available as a python extension module.
 
 What we mean by that is:
 
