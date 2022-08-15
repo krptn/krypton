@@ -2,7 +2,6 @@
 Loads up databases and sets configuration needed by OPENSSL FIPS module.
 """
 import os
-from re import T
 import sys
 import pathlib
 import ctypes
