@@ -20,9 +20,9 @@ bool verifyTOTP(py::bytes secret, py::str value) {
     }
     char* key = pymbToBuffer(secret);
     char* code = pyStrToBuffer(value);
-    int intCounter = floor(time(NULL)/30);
+    unsigned long long intCounter = floor(time(NULL)/30);
     char md[20];
-    unsigned int mdLen = 20;
+    unsigned int mdLen;
     HMAC(EVP_sha1(), key, keylen, (const unsigned char*)&intCounter, sizeof(intCounter), (unsigned char*)&md, &mdLen);
     OPENSSL_cleanse(key, keylen);
     int offset = md[19] & 0x0f;
