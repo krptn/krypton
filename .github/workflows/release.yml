@@ -96,8 +96,8 @@ jobs:
       - name: Build Extension
         run: |
           cd ${{ github.workspace }}
-          py -m pip install --upgrade build
-          py -m build
+          py -${{ matrix.python-version }} -m pip install --upgrade build
+          py -${{ matrix.python-version }} -m build
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:
