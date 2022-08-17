@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: AutoBuild-Linux-${{ github.event.release.tag_name }}-${{ matrix.python-version }}
-          path: ${{ github.workspace }}/dist/*.whl
+          path: ${{ github.workspace }}/dist/*.*
   
   buildWin:
     strategy:
@@ -102,7 +102,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: AutoBuild-Windows-${{ github.event.release.tag_name }}-${{ matrix.python-version }}
-          path: ${{ github.workspace }}/dist/*.whl
+          path: ${{ github.workspace }}/dist/*.*
 
   releaseBins:
     strategy:
