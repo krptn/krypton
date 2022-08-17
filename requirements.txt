@@ -24,6 +24,6 @@ SQLAlchemy==1.4.40
 sqlparse==0.4.2
 tomli==2.0.1
 typing_extensions==4.3.0
-tzdata==2022.1
+tzdata==2022.2
 webauthn==1.6.0
 Werkzeug==2.2.2
