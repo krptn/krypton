@@ -20,7 +20,13 @@ bool verifyTOTP(py::bytes secret, py::str value) {
     }
     char* key = pymbToBuffer(secret);
     char* code = pyStrToBuffer(value);
-    unsigned long long intCounter = floor(time(NULL)/30);
+    unsigned long long intCounter = time(NULL)/30;
+    unsigned long long endianness = 0xdeadbeef;
+    if ((*(const uint8_t *)&endianness) == 0xef) {
+      intCounter = ((intCounter & 0x00000000ffffffff) << 32) | ((intCounter & 0xffffffff00000000) >> 32);
+      intCounter = ((intCounter & 0x0000ffff0000ffff) << 16) | ((intCounter & 0xffff0000ffff0000) >> 16);
+      intCounter = ((intCounter & 0x00ff00ff00ff00ff) <<  8) | ((intCounter & 0xff00ff00ff00ff00) >>  8);
+    };
     char md[20];
     unsigned int mdLen;
     HMAC(EVP_sha1(), key, keylen, (const unsigned char*)&intCounter, sizeof(intCounter), (unsigned char*)&md, &mdLen);
