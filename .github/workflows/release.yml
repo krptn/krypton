@@ -179,6 +179,7 @@ jobs:
 #          path: ${{ github.workspace }}/dist
       - name: Upload Build Results to GH Release
         run: |
+          sudo rm -r dist/*.tar.gz
           gh release upload ${{ github.event.release.tag_name }} dist/*.whl
       - name: Publish distribution 📦 to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
