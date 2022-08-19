@@ -11,6 +11,7 @@ env:
 jobs:
   buildLinux:
     runs-on: ubuntu-latest
+    container: quay.io/pypa/manylinux2014_x86_64
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -22,17 +23,13 @@ jobs:
         run: |
           cd ${{ github.workspace }}
           python -m venv krenv
-          mkdir ${{ github.workspace }}/krenv/Lib
-          mkdir ${{ github.workspace }}/krenv/Lib/site-packages/
           source krenv/bin/activate
-          sudo chmod -R a+rwx ${{ github.workspace }}
-          cd ${{ github.workspace }}
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -r requirements.txt
-          mkdir kr-openssl-config
-          mkdir kr-openssl-install
       - name: Build OSSL
         run: |
+          mkdir kr-openssl-config
+          mkdir kr-openssl-install
           cd openssl
           perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
           make -j3
@@ -72,10 +69,10 @@ jobs:
           cd ${{ github.workspace }}
           py -m pip install --upgrade pip setuptools wheel
           py -m pip install -r requirements.txt
-          mkdir kr-openssl-config
-          mkdir kr-openssl-install
       - name: Build OSSL
         run: |
+          mkdir kr-openssl-config
+          mkdir kr-openssl-install
           cd openssl
           perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
           set CL=/MP
@@ -110,8 +107,6 @@ jobs:
           cd ${{ github.workspace }}
           python -m venv krenv
           source krenv/bin/activate
-          sudo chmod -R a+rwx ${{ github.workspace }}
-          cd ${{ github.workspace }}
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -r requirements.txt
           mkdir kr-openssl-config
