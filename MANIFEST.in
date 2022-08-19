@@ -8,5 +8,6 @@ global-include *.so
 global-include *.a
 global-include *.so.3
 global-include *.md
+global-exclude libssl.*
 graft kr-openssl-config
 graft CryptoLib
