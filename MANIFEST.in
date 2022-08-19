@@ -10,6 +10,12 @@ include kr-openssl-install/lib64/libssl.so.3
 include kr-openssl-install/lib64/libssl.so
 include kr-openssl-install/lib64/libcrypto.a
 include kr-openssl-install/lib64/ossl-modules/fips.so
+include kr-openssl-install/lib/libcrypto.so
+include kr-openssl-install/lib/libcrypto.so.3
+include kr-openssl-install/lib/libssl.so.3
+include kr-openssl-install/lib/libssl.so
+include kr-openssl-install/lib/libcrypto.a
+include kr-openssl-install/lib/ossl-modules/fips.so
 include *.md
 graft kr-openssl-config
 graft CryptoLib
