@@ -5,13 +5,11 @@ on:
 
 env:
   GH_TOKEN: ${{ secrets.App }}
+  CIBW_ARCHS: native
+  CIBW_BUILD: cp39-* cp310-*
 
 jobs:
   buildLinux:
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.9", "3.10"]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -21,7 +19,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.10'
           architecture: "x64"
       - name: Install dependencies
         run: |
@@ -48,8 +46,8 @@ jobs:
           cd ${{ github.workspace }}
           sudo chmod -R a+rwx ${{ github.workspace }}
           source krenv/bin/activate
-          python -m pip install --upgrade build
-          python -m build --no-isolation
+          python -m pip install cibuildwheel
+          python -m cibuildwheel --output-dir dist
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:
@@ -57,10 +55,6 @@ jobs:
           path: ${{ github.workspace }}/dist/*.*
 
   buildWin:
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.9", "3.10"]
     runs-on: windows-latest
     steps:
       - name: Checkout Repo
@@ -70,7 +64,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.10"
           architecture: "x64"
       - name: Install VS Tools
         uses: ilammy/msvc-dev-cmd@v1
@@ -96,8 +90,8 @@ jobs:
       - name: Build Extension
         run: |
           cd ${{ github.workspace }}
-          py -${{ matrix.python-version }} -m pip install --upgrade build
-          py -${{ matrix.python-version }} -m build
+          python -m pip install cibuildwheel
+          python -m cibuildwheel --output-dir dist
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:
@@ -106,10 +100,6 @@ jobs:
 
   buildMac:
     if: ${{ github.actor == 'dependabot[bot]' }} # Do not run this workflow ever
-    strategy:
-      fail-fast: true
-      matrix:
-        python-version: ["3.9", "3.10"]
     runs-on: macos-latest
     steps:
       - name: Checkout Repo
@@ -119,7 +109,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.10"
           architecture: "x64"
       - name: Install dependencies
         run: |
@@ -144,8 +134,8 @@ jobs:
           cd ${{ github.workspace }}
           sudo chmod -R a+rwx ${{ github.workspace }}
           source krenv/bin/activate
-          python -m pip install --upgrade build
-          python -m build
+          python -m pip install cibuildwheel
+          python -m cibuildwheel --output-dir dist
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:
