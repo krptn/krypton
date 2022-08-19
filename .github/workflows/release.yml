@@ -18,9 +18,6 @@ jobs:
           submodules: "true"
       - name: Setup Python
         uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-          architecture: "x64"
       - name: Install dependencies
         run: |
           cd ${{ github.workspace }}
@@ -63,9 +60,6 @@ jobs:
           submodules: "true"
       - name: Setup Python
         uses: actions/setup-python@v4
-        with:
-          python-version: "3.10"
-          architecture: "x64"
       - name: Install VS Tools
         uses: ilammy/msvc-dev-cmd@v1
       - name: NASM and Perl
