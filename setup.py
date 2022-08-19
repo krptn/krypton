@@ -40,7 +40,9 @@ class completeInstall(install):
     temp = os.getcwd()
     install.run(self)
     try: os.chdir(os.path.join(self.install_base, "site-packages/"))
-    except FileNotFoundError: os.chdir(os.path.join(self.install_base, "Lib/site-packages/"))
+    except FileNotFoundError: 
+      try: os.chdir(os.path.join(self.install_base, "Lib/site-packages/"))
+      except FileNotFoundError: return
     finishInstall()
     os.chdir(temp)
 
