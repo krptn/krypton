@@ -103,6 +103,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd ${{ github.workspace }}
+          pip install venv
           python -m venv krenv
           source krenv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
