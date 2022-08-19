@@ -2,6 +2,10 @@
 
 Please see our [documentation](https://docs.krptn.dev/index.html).
 
+```shell
+pip install krptn
+```
+
 ## What is this?
 
 **Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want their code to be used for such purposes.

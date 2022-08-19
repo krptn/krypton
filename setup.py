@@ -52,15 +52,18 @@ class completeDevelop(develop):
     finishInstall()
     os.chdir(temp)
 
-setup(name='krypton',
+setup(name='krptn',
   version='1.0',
-  description='krypton',
+  description='A user authentication and access management system based entirely on cryptographic primitives.',
   long_description=description,
   long_description_content_type="text/markdown",
-  author='Krypton',
-  url='https://github.com/krptn/krypton',
+  author='Krypton Project',
+  author_email='contact@krptn.dev',
   project_urls={
     'Bug Tracker': "https://github.com/krptn/krypton/issues",
+    'Homepage': "https://www.krptn.dev/",
+    'Documentation': "https://docs.krptn.dev/",
+    'GitHub': "https://github.com/krptn/krypton/"
   },
   classifiers=[
       'License :: OSI Approved :: Apache Software License',
@@ -97,7 +100,7 @@ setup(name='krypton',
   include_package_data=True,
   cmdclass={
     'install': completeInstall,
-    'develop':completeDevelop
+    'develop': completeDevelop
   },
   ext_modules=[Pybind11Extension('__CryptoLib',
     ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp", 
