@@ -22,9 +22,6 @@ jobs:
         uses: actions/setup-python@v4
       - name: Install dependencies
         run: |
-          pip install venv
-          python -m venv krenv
-          source krenv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -r requirements.txt
       - name: Build OSSL
@@ -38,7 +35,6 @@ jobs:
           cd ..
       - name: Build Extension
         run: |
-          source krenv/bin/activate
           python -m pip install cibuildwheel
           python -m cibuildwheel --output-dir dist
       - name: Upload Build Result
