@@ -7,14 +7,13 @@ env:
   GH_TOKEN: ${{ secrets.App }}
   CIBW_ARCHS: native
   CIBW_BUILD: cp39-* cp310-*
+  REPO: /__w/krypton/krypton
 
 jobs:
   buildLinux:
     runs-on: ubuntu-latest
     container: quay.io/pypa/manylinux2014_x86_64
     steps:
-      - name: Set Dir
-        run: cd ${{ github.workspace }}
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
@@ -32,7 +31,7 @@ jobs:
           mkdir kr-openssl-config
           mkdir kr-openssl-install
           cd openssl
-          perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
+          perl Configure --prefix=${{ env.REPO }}/kr-openssl-install --openssldir=${{ env.REPO }}/kr-openssl-config enable-fips
           make -j3
           make -j3 install
           cd ..
@@ -45,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: AutoBuild-Linux-${{ github.event.release.tag_name }}
-          path: ${{ github.workspace }}/dist/*.*
+          path: ${{ env.REPO }}/dist/*.*
 
   buildWin:
     runs-on: windows-latest
