@@ -18,7 +18,7 @@ if not DEBUG and sys.platform != "win32":
 if not DEBUG and sys.platform == "win32":
   extra_args += ["/O2"]
 
-link_libararies = ["crypto", "ssl"]
+link_libararies = ["crypto"]
 macros = []
 runtime_libs = ["kr-openssl-install/lib64", "kr-openssl-install/lib"]
 if sys.platform == "win32":
@@ -84,17 +84,16 @@ setup(name='krptn',
     "../kr-openssl-config/fipsmodule.cnf",
     "../kr-openssl-install/bin/openssl",
     "../kr-openssl-install/lib64/libcrypto.so",
-    "../kr-openssl-install/lib64/libcrypto.a",
-    "../kr-openssl-install/lib64/ossl-modules/fips.so",
     "../kr-openssl-install/lib64/libcrypto.so.3",
-    "../kr-openssl-install/lib64/libssl.so.3",
-    "../kr-openssl-install/lib64/libssl.so",
+    "../kr-openssl-install/lib64/ossl-modules/fips.so",
+#    "../kr-openssl-install/lib64/libssl.so.3",
+#    "../kr-openssl-install/lib64/libssl.so",
     "../kr-openssl-install/lib/libcrypto.so",
-    "../kr-openssl-install/lib/libcrypto.a",
-    "../kr-openssl-install/lib/ossl-modules/fips.so",
     "../kr-openssl-install/lib/libcrypto.so.3",
-    "../kr-openssl-install/lib/libssl.so.3",
-    "../kr-openssl-install/lib/libssl.so"]},
+    "../kr-openssl-install/lib/ossl-modules/fips.so",
+#    "../kr-openssl-install/lib/libssl.so.3",
+#    "../kr-openssl-install/lib/libssl.so"
+  ]},
   packages=['krypton'],
   python_requires=">3.8",
   install_requires=["SQLAlchemy", "webauthn"],
