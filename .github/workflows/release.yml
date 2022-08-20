@@ -7,7 +7,6 @@ env:
   GH_TOKEN: ${{ secrets.App }}
   CIBW_ARCHS: native
   CIBW_BUILD: cp39-* cp310-*
-  REPO: /__w/krypton/krypton
 
 jobs:
   buildLinux:
@@ -31,11 +30,12 @@ jobs:
           python3 -m cibuildwheel --output-dir dist
         env:
           CIBW_BEFORE_ALL: |
+            yum install perl-IPC-Cmd
             yum install make
             mkdir kr-openssl-config
             mkdir kr-openssl-install
             cd openssl
-            perl Configure --prefix=${{ env.REPO }}/kr-openssl-install --openssldir=${{ env.REPO }}/kr-openssl-config enable-fips
+            perl Configure --prefix=$PWD/kr-openssl-install --openssldir=$PWD/kr-openssl-config enable-fips
             make -j3
             make -j3 install
             cd ..
@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: AutoBuild-Linux-${{ github.event.release.tag_name }}
-          path: ${{ env.REPO }}/dist/*.*
+          path: ${{ github.workspace }}/dist/*.*
 
   buildWin:
     runs-on: windows-latest
