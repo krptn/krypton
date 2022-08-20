@@ -14,7 +14,7 @@ Naming conventions:
 - Variables starting in _ or __ are not to be accessed directly by the users - they are internals.
 - In databases, names starting in _ or __ should only store data required by Krypton - no user data, they are internals.
 
-## Build/Setup the extension for development
+## Build/Setup the extension for development, Build from source
 
 *Note:* currently only 64-bit environments have been tested.
 
