@@ -8,6 +8,7 @@ env:
   GH_TOKEN: ${{ secrets.App }}
   CIBW_ARCHS: native
   CIBW_BUILD: cp39-* cp310-*
+  CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
 
 jobs:
   buildLinux:
