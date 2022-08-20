@@ -4,14 +4,18 @@ on:
   release:
     types: [created]
 
-env:
-  CIBW_ARCHS: native
-  CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
-
 jobs:
   buildLinux:
+    env:
+      CIBW_ARCHS: auto
+      CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
     runs-on: ubuntu-latest
     steps:
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: all
       - name: Checkout Repo
         uses: actions/checkout@v3
         with:
@@ -46,6 +50,8 @@ jobs:
           path: ${{ github.workspace }}/dist/*.*
 
   buildWin:
+    env:
+      CIBW_ARCHS: native
     runs-on: windows-latest
     steps:
       - name: Checkout Repo
@@ -89,6 +95,9 @@ jobs:
 
   buildMac:
     if: ${{ github.actor == 'dependabot[bot]' }}
+    env:
+      CIBW_ARCHS: auto64
+      CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
     runs-on: macos-latest
     steps:
       - name: Checkout Repo
