@@ -30,8 +30,8 @@ jobs:
           python3 -m cibuildwheel --output-dir dist
         env:
           CIBW_BEFORE_ALL: |
-            yum install perl-IPC-Cmd
-            yum install make
+            yum install -y perl-IPC-Cmd
+            yum install -y make
             mkdir kr-openssl-config
             mkdir kr-openssl-install
             cd openssl
