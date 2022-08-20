@@ -2,6 +2,8 @@
 
 Please see our [documentation](https://docs.krptn.dev/index.html).
 
+**Quick Install:**
+
 ```shell
 pip install krptn
 ```
