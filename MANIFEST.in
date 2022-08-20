@@ -8,6 +8,7 @@ global-include libcrypto.so
 global-include libcrypto.a
 global-include libcrypto.so.3
 global-include libssl.so.3
+global-include libssl.so
 global-include fips.so
 global-include fips.so.3
 graft kr-openssl-config
