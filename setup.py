@@ -77,7 +77,8 @@ setup(name='krptn',
       'Framework :: Django',
       'Framework :: Flask'
   ],
-  package_data={"":["../kr-openssl-install/bin/libcrypto-3-x64.dll",
+  package_data={"":[
+    "../kr-openssl-install/bin/libcrypto-3-x64.dll",
     "../kr-openssl-install/lib/ossl-modules/fips.dll",
     "../kr-openssl-install/bin/openssl.exe",
     "../kr-openssl-config/openssl.cnf",
