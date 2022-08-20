@@ -89,7 +89,7 @@ jobs:
           path: ${{ github.workspace }}/dist/*.*
 
   buildMac:
-    if: ${{ github.actor == 'dependabot[bot]' }} # Do not run this workflow ever
+    if: ${{ github.actor == 'dependabot[bot]' }}
     runs-on: macos-latest
     steps:
       - name: Checkout Repo
@@ -99,35 +99,30 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
-          architecture: "x64"
+          python-version: '3.10' 
       - name: Install dependencies
         run: |
-          cd ${{ github.workspace }}
-          python -m venv krenv
-          source krenv/bin/activate
           python -m pip install --upgrade pip setuptools wheel
-          python -m pip install -r requirements.txt
-          mkdir kr-openssl-config
-          mkdir kr-openssl-install
-      - name: Build OSSL
-        run: |
-          cd openssl
-          perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
-          make -j4
-          make -j4 install
-          cd ..
       - name: Build Extension
         run: |
-          cd ${{ github.workspace }}
-          sudo chmod -R a+rwx ${{ github.workspace }}
-          source krenv/bin/activate
-          python -m pip install cibuildwheel
-          python -m cibuildwheel --output-dir dist
+          python3 -m pip install cibuildwheel
+          python3 -m cibuildwheel --output-dir dist
+        env:
+          CIBW_BEFORE_ALL: |
+            cd /project
+            yum install -y perl-IPC-Cmd
+            yum install -y make
+            mkdir kr-openssl-config
+            mkdir kr-openssl-install
+            cd openssl
+            perl Configure --prefix=/project/kr-openssl-install --openssldir=/project/kr-openssl-config enable-fips
+            make -j3
+            make -j3 install
+            cd ..
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:
-          name: AutoBuild-Mac-${{ github.event.release.tag_name }}
+          name: AutoBuild-MacOS-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
 
   releaseBins:
