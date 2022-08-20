@@ -62,10 +62,10 @@ setup(name='krptn',
   author='Krypton Project',
   author_email='contact@krptn.dev',
   project_urls={
-    'Bug Tracker': "https://github.com/krptn/krypton/issues",
     'Homepage': "https://www.krptn.dev/",
     'Documentation': "https://docs.krptn.dev/",
-    'GitHub': "https://github.com/krptn/krypton/"
+    'GitHub': "https://github.com/krptn/krypton/",
+    'Bug Tracker': "https://github.com/krptn/krypton/issues",
   },
   classifiers=[
       'License :: OSI Approved :: Apache Software License',
