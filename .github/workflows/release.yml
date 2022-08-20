@@ -5,7 +5,6 @@ on:
     types: [created]
 
 env:
-  GH_TOKEN: ${{ secrets.App }}
   CIBW_ARCHS: native
   CIBW_BUILD: cp39-* cp310-*
   CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
@@ -41,10 +40,6 @@ jobs:
             make -j3
             make -j3 install
             cd ..
-            export PATH=$PATH:/project/kr-openssl-install/bin:/project/kr-openssl-install/lib64
-            export LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
-            export OPENSSL_MODULES=/project/kr-openssl-install/lib64/ossl-modules
-            export OPENSSL=/project/kr-openssl-install/bin
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:
@@ -136,6 +131,8 @@ jobs:
           path: ${{ github.workspace }}/dist/*.*
 
   releaseBins:
+    env:
+      GH_TOKEN: ${{ secrets.App }}
     runs-on: ubuntu-latest
     needs: [buildLinux, buildWin]
     steps:
