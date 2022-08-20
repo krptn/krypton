@@ -12,7 +12,6 @@ env:
 jobs:
   buildLinux:
     runs-on: ubuntu-latest
-    container: quay.io/pypa/manylinux2014_x86_64
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -24,21 +23,22 @@ jobs:
           python-version: '3.10' 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip setuptools wheel
-          python3 -m pip install -r requirements.txt
-      - name: Build OSSL
-        run: |
-          mkdir kr-openssl-config
-          mkdir kr-openssl-install
-          cd openssl
-          perl Configure --prefix=${{ env.REPO }}/kr-openssl-install --openssldir=${{ env.REPO }}/kr-openssl-config enable-fips
-          make -j3
-          make -j3 install
-          cd ..
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -r requirements.txt
       - name: Build Extension
         run: |
           python3 -m pip install cibuildwheel
           python3 -m cibuildwheel --output-dir dist
+        env:
+          CIBW_BEFORE_ALL: |
+            yum install make
+            mkdir kr-openssl-config
+            mkdir kr-openssl-install
+            cd openssl
+            perl Configure --prefix=${{ env.REPO }}/kr-openssl-install --openssldir=${{ env.REPO }}/kr-openssl-config enable-fips
+            make -j3
+            make -j3 install
+            cd ..
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:
