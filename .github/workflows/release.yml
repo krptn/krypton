@@ -41,10 +41,10 @@ jobs:
             make -j3
             make -j3 install
             cd ..
-            PATH=$PATH:/project/kr-openssl-install/bin:/project/kr-openssl-install/lib64
-            LD_LIBRARY_PATH=LD_LIBRARY_PATH:/project/kr-openssl-install/bin:/project/kr-openssl-install/lib64
-            export PATH
-            export LD_LIBRARY_PATH
+            export PATH=$PATH:/project/kr-openssl-install/bin:/project/kr-openssl-install/lib64
+            export LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
+            export OPENSSL_MODULES=/project/kr-openssl-install/lib64/ossl-modules
+            export OPENSSL=/project/kr-openssl-install/bin
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:

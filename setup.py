@@ -6,6 +6,8 @@ from pybind11.setup_helpers import Pybind11Extension
 import os
 import sys
 
+folder = pathlib.Path(__file__).parent.as_posix()
+
 DEBUG = sys.argv.count("--debug") >= 1
 
 description = open("README.md", "r").read()
@@ -20,7 +22,9 @@ if not DEBUG and sys.platform == "win32":
 
 link_libararies = ["crypto"]
 macros = []
-runtime_libs = ["kr-openssl-install/lib64", "kr-openssl-install/lib"]
+runtime_libs = [os.path.join(folder, "kr-openssl-install/lib64"), os.path.join(folder, "kr-openssl-install/lib")]
+# Runtime libs should be corrected by auditwheel to point to correct location
+
 if sys.platform == "win32":
   link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
   macros += [("WIN", None)]
