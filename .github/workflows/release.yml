@@ -35,7 +35,7 @@ jobs:
             mkdir kr-openssl-config
             mkdir kr-openssl-install
             cd openssl
-            perl Configure --prefix=$PWD/kr-openssl-install --openssldir=$PWD/kr-openssl-config enable-fips
+            perl Configure --prefix=/project/kr-openssl-install --openssldir=/project/kr-openssl-config enable-fips
             make -j3
             make -j3 install
             cd ..
