@@ -87,7 +87,7 @@ To see what these settings strings should contain please see [Databases](https:/
 
 [Configurations](https://docs.krptn.dev/README-CONFIGS.html)
 
-## Build/Setup the extension for development
+## Setup the extension for development, build from source
 
 *Note:* currently only 64-bit environments have been tested.
 
