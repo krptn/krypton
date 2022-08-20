@@ -117,15 +117,12 @@ jobs:
           python3 -m cibuildwheel --output-dir dist
         env:
           CIBW_BEFORE_ALL: |
-            cd /project
-            yum install -y perl-IPC-Cmd
-            yum install -y make
             mkdir kr-openssl-config
             mkdir kr-openssl-install
             cd openssl
-            perl Configure --prefix=/project/kr-openssl-install --openssldir=/project/kr-openssl-config enable-fips
-            make -j3
-            make -j3 install
+            perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
+            make -j4
+            make -j4 install
             cd ..
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
