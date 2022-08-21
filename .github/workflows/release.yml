@@ -94,10 +94,9 @@ jobs:
           path: ${{ github.workspace }}/dist/*.*
 
   buildMac:
-    if: ${{ github.actor == 'dependabot[bot]' }}
     env:
       CIBW_ARCHS: auto64
-      CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
+      CIBW_ENVIRONMENT: LD_LIBRARY_PATH=${{ github.workspace }}/kr-openssl-install/lib64
     runs-on: macos-latest
     steps:
       - name: Checkout Repo
