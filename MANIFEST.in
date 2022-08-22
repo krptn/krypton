@@ -5,11 +5,14 @@ global-include fips.dll
 global-include openssl.exe
 include kr-openssl-install/bin/openssl
 global-include libcrypto.so
+global-include libcrypto.dylib
 global-include libcrypto.a
 global-include libcrypto.so.3
 global-include libssl.so.3
+global-include libssl.dylib
 global-include libssl.so
 global-include fips.so
+global-include fips.dylib
 graft kr-openssl-config
 graft CryptoLib
 graft openssl

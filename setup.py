@@ -101,6 +101,8 @@ setup(name='krptn',
     "../kr-openssl-install/lib/ossl-modules/fips.so",
 #    "../kr-openssl-install/lib/libssl.so.3",
 #    "../kr-openssl-install/lib/libssl.so"
+    "../kr-openssl-install/lib/libcrypto.dylib",
+    "../kr-openssl-install/lib/ossl-modules/fips.dylib"
   ]},
   packages=['krypton'],
   python_requires=">3.8",
