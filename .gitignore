@@ -7,6 +7,8 @@ __pycache__/
 *.so
 .pyd
 
+.DS_Store
+
 #VS
 .vs/
 .vscode/
