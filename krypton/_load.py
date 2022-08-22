@@ -15,6 +15,7 @@ OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG, "openssl.cnf")
 OPENSSL_BIN = os.path.join(SITE_PACKAGE, "kr-openssl-install/bin")
 OPENSSL_EXE = os.path.join(OPENSSL_BIN, "openssl.exe" if sys.platform == "win32" else "openssl")
 LINUX_OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib64")
+MAC_OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib")
 RELATIVE_OSSL_MOD = ("kr-openssl-install/lib64/ossl-modules" if sys.platform == "linux"
     else "kr-openssl-install/lib/ossl-modules")
 OPENSSL_MODULES = os.path.join(SITE_PACKAGE, RELATIVE_OSSL_MOD)
@@ -31,7 +32,7 @@ if sys.platform == "win32":
 elif sys.platform == "linux":
     ctypes.CDLL(os.path.join(LINUX_OSSL_LIB, "libcrypto.so.3")) # Alone, it will never find these
 elif sys.platform == "darwin":
-    ctypes.CDLL(os.path.join(LINUX_OSSL_LIB, "libcrypto.dylib")) # Alone, it will never find these
+    ctypes.CDLL(os.path.join(MAC_OSSL_LIB, "libcrypto.dylib")) # Alone, it will never find these
 
 Base = declarative_base()
 
