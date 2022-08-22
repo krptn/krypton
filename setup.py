@@ -30,6 +30,9 @@ if sys.platform == "win32":
   macros += [("WIN", None)]
   runtime_libs = []
 
+if sys.platform == "darwin":
+  extra_args.append("-std=c++11")
+
 def finishInstall():
   openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so" 
   openssl_fips_conf = "kr-openssl-config/fipsmodule.cnf"
