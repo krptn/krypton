@@ -14,7 +14,6 @@ What we mean by that is:
 
 from ._load import *
 from . import basic
-import __main__
 
 version = "1"
 
