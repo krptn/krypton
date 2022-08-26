@@ -8,6 +8,8 @@ Please see our [documentation](https://docs.krptn.dev/index.html).
 pip install krptn
 ```
 
+Note: we don't have pre-built extensions for all platforms. Please see the [installation section](https://docs.krptn.dev/README.html#installation) in our documentation for more info.
+
 ## What is this?
 
 **Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want their code to be used for such purposes.
