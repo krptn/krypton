@@ -7,7 +7,7 @@ on:
 jobs:
   buildLinux:
     env:
-      CIBW_ARCHS: auto
+      CIBW_ARCHS: native
       CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
     runs-on: ubuntu-latest
     steps:
@@ -50,7 +50,6 @@ jobs:
           path: ${{ github.workspace }}/dist/*.*
 
   buildWin:
-    if: false
     env:
       CIBW_ARCHS: native
     runs-on: windows-latest
@@ -130,7 +129,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.App }}
     runs-on: ubuntu-latest
-    needs: [buildLinux, buildWin]
+    needs: [buildLinux, buildWin, buildMac]
     steps:
       - name: Create Dir for Build
         run: |
@@ -154,8 +153,8 @@ jobs:
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+          password: ${{ secrets.PYPI_API_TOKEN }}
+#          repository_url: https://test.pypi.org/legacy/
       - name: Upload Build Results to GH Release
         run: |
           gh release upload ${{ github.event.release.tag_name }} dist/*.whl
