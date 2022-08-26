@@ -3,7 +3,6 @@
 #pylint: disable=no-member
 #pylint: disable=attribute-defined-outside-init
 #pylint: disable=abstract-method
-import json
 import os
 from sqlalchemy import select, delete, update
 

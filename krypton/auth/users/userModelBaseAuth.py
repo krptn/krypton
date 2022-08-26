@@ -84,14 +84,10 @@ class AuthUser(user):
         self.c.flush()
         self.c.commit()
         self.loggedin = False
-        return
 
     @userExistRequired
     def delete(self):
         """Delete a user
-
-        Returns:
-            None
         """
         _utils.cleanUpSessions(self.c, self.id)
         self.c.execute(delete(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id))
@@ -103,7 +99,6 @@ class AuthUser(user):
         self.c.commit()
         base.zeromem(self._key)
         base.zeromem(self._privKey)
-        return None
 
     def restoreSession(self, key):
         """Resume sessoin from key
@@ -133,16 +128,13 @@ class AuthUser(user):
         self.loggedin = True
         self.reload()
 
-    def saveNewUser(self, name:str, pwd:str, fido:str=None) -> bytes:
+    def saveNewUser(self, name:str, pwd:str) -> bytes:
         """Save a new user
 
         Arguments:
             name -- User Name
 
             pwd -- Password
-
-        Keyword Arguments:
-            fido -- Fido Token (default: {None})
 
         Raises:
             ValueError: If user is already saved

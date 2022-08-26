@@ -31,7 +31,7 @@ class standardUser(AuthUser, MFAUser, user):
     sessionKey:bytes
     saved:bool
     loggedin:bool
-    backupKeys:list[str] 
+    backupKeys:list[str]
     backupAESKeys:list[bytes]
 
     def __init__(self, userName:str=None, userID:int=None) -> None:
@@ -177,7 +177,7 @@ class standardUser(AuthUser, MFAUser, user):
                 if not retry:
                     break
             if not retry:
-                    break
+                break
         return text
 
     @userExistRequired
@@ -209,6 +209,15 @@ class standardUser(AuthUser, MFAUser, user):
 
     @userExistRequired
     def shareSet(self, name:str, data:ByteString, otherUsers:list[str]) -> None:
+        """Set data readable by others
+
+        Arguments:
+            name -- The "name" of the data
+
+            data -- The data
+
+            otherUsers -- List of usernames who should read it
+        """
         keys = self.encryptWithUserKey(data, otherUsers)
         ids = [self.c.scalar(select(DBschemas.UserTable.id)
             .where(DBschemas.UserTable.name == user))
@@ -227,6 +236,14 @@ class standardUser(AuthUser, MFAUser, user):
 
     @userExistRequired
     def shareGet(self, name:str) -> bytes:
+        """Get data set by shareSet
+
+        Arguments:
+            name -- The "name of the data"
+
+        Returns:
+            Decrypted data
+        """
         stmt = select(DBschemas.UserShareTable).where(DBschemas.UserShareTable.name == name
             and DBschemas.UserShareTable.shareUid == self.id)
         row:DBschemas.UserShareTable = self.c.scalar(stmt)

@@ -80,7 +80,7 @@ class userAuth(unittest.TestCase):
         newMod = standardUser(userName=self.userName)
         newMod.restoreSession(key)
         self.assertTrue(newMod.loggedin)
-    
+
     def testLogout(self):
         self.model.logout()
         key = self.model.login(pwd="TEST")

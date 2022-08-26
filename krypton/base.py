@@ -1,13 +1,16 @@
 """
 Loads __CryptoLib and contains wrappers.
 """
+#pylint: disable=import-error
+# disbaled pylint because __CryptoLib is not built in CI/CD tests
+
 
 import ctypes
 import sys
 import base64
 from typing import ByteString
 from sqlalchemy import select
-from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import scoped_session, Session
 import __CryptoLib
 from . import configs, DBschemas
 
@@ -113,7 +116,7 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> list[b
         List of keys as python bytes
     """
     stmt = select(DBschemas.PubKeyTable.key).where(DBschemas.PubKeyTable.name == peerName)
-    session = scoped_session(configs.SQLDefaultUserDBpath)
+    session:Session = scoped_session(configs.SQLDefaultUserDBpath)
     pubKeys = session.scalars(stmt)
     results = [__CryptoLib.ECDH(privKey, pubKey, salt, keylen) for pubKey in pubKeys]
     session.close()

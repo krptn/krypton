@@ -136,7 +136,7 @@ class user(metaclass=ABCMeta):
             name -- The key to remove
         """
     @abstractmethod
-    def decryptWithUserKey(self, data:ByteString, sender:str, salt:bytes) -> bytes:
+    def decryptWithUserKey(self, data:ByteString, salt:bytes=None, sender=None) -> bytes:
         """Decrypt data with user's key
 
         Arguments:
