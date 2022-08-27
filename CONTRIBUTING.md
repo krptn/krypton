@@ -18,8 +18,11 @@ Naming conventions:
 
 *Note:* currently only 64-bit environments have been tested.
 
-After cloning the repo, please build and install openssl3. Please install openssl in the /kr-openssl-install and place configs in /kr-openssl-config directory (where /kr-openssl-install and /kr-openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /kr-openssl-install directory), --openssldir=DIR (replace DIR with your /kr-openssl-config directory) and enable-fips option.
-To create debug binaries, you need to pass the --debug option also.
+After cloning the repo, please build and install openssl3:
+
+- Install openssl in the kr-openssl-install/ and place configurations in kr-openssl-config/ directories. 
+  - Therefore, in the configure script, you need `--prefix` and `--openssldir` set.
+- As Krypton uses FIPS, please set `enable-fips` also.
 
 For example (Windows example):
 
@@ -27,6 +30,13 @@ For example (Windows example):
 perl Configure --prefix="C:\Users\markb\source\repos\krypton\kr-openssl-install" \
   --openssldir="C:\Users\markb\source\repos\krypton\kr-openssl-config" \
   enable-fips --debug
+```
+
+You need to both build and install openssl:
+
+```shell
+make
+make install
 ```
 
 To install the extension and produce debugging symbols use:
