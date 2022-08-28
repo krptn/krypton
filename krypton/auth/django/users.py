@@ -2,15 +2,18 @@
 Django user objects and user managers.
 """
 
-from ..users.userModel import standardUser
+from ..users.userModel import standardUser, user
+
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
 
-class djangoUser(standardUser, AbstractBaseUser):
-    """Django wrapper for Krypton USer
+class djangoUser(standardUser):
+    """Django wrapper for Krypton User
     """
-    is_authenticated:bool
+    @property
+    def is_authenticated(self) -> bool:
+        return self.loggedin
     def __init__(self: standardUser, userName: str = None, userID: int = None) -> None:
         """Init a new Django User
 

@@ -10,10 +10,9 @@ What we mean by that is:
 - Only the appropriate users' credentials can unlock the cryptosystem
 """
 
-# pylint: diable=wrong-spelling-in-docstring
-
 from ._load import *
 from . import basic
+from . import auth
 
 version = "1"
 
