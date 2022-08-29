@@ -1,6 +1,6 @@
 asgiref==3.5.2
 asn1crypto==1.5.1
-astroid==2.12.4
+astroid==2.12.5
 build==0.8.0
 cbor2==5.4.3
 cffi==1.15.1
