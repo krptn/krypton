@@ -38,7 +38,7 @@ class kryptonBackend(BaseBackend):
 
     def get_user(self, user_id: int):
         """Gets a user from an id"""
-        user = users.djangoUser(user_id)
+        user = users.djangoUser(userID = user_id)
         if user.saved:
             return user
         return None

@@ -2,7 +2,7 @@
 Django user objects and user managers.
 """
 
-from ..users.userModel import standardUser, user
+from ..users.userModel import standardUser
 
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
@@ -21,7 +21,6 @@ class djangoUser(standardUser):
             userID -- User ID
         """
         standardUser.__init__(self, userName, userID)
-        self.is_authenticated = self.loggedin
 
 class kryptonUserManager(BaseUserManager):
     """Krypton User Manager for Django
@@ -37,8 +36,8 @@ class kryptonUserManager(BaseUserManager):
 
             fidoToken -- Fido Token (default: {None})
         """
-        user = djangoUser(email)
-        user.saveNewUser(pwd=password, fido=fidoToken)
+        user = djangoUser(None)
+        user.saveNewUser(email, password)
 
     def create_superuser(self, email, password=None, fidoToken=None):
         """Create a new Django SuperUser"""
