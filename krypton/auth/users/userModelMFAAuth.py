@@ -59,12 +59,13 @@ class MFAUser(user):
             self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.id == row.id))
             self.c.flush()
             self.generateNewKeys(newPWD)
-            self.login(newPWD)
+            token = self.login(newPWD)
             reset = True
             break
         if not reset:
             raise ValueError("Password reset failure")
         self.c.commit()
+        return token
 
     @userExistRequired
     def disablePWDReset(self):
