@@ -1,6 +1,8 @@
 """
 Loads up databases and sets configuration needed by OPENSSL FIPS module.
 """
+# pylint: disable=cyclic-import
+
 import os
 import sys
 import pathlib

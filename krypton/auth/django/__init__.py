@@ -1,4 +1,6 @@
 """
 Django API
 """
-from . import authBackends
+# pylint: disable=cyclic-import
+from . import users
+from . import middleware

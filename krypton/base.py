@@ -79,7 +79,7 @@ def createECCKey() -> tuple[str, str]:
     """
     return __CryptoLib.createECCKey()
 
-def ECDH(privKey:str, peerPubKey:str, salt:bytes, keylen:int=32) -> bytes: # pylint: diable=wrong-spelling-in-docstring
+def ECDH(privKey:str, peerPubKey:str, salt:bytes, keylen:int=32) -> bytes:
     """Elliptic Curve Diffie-Helman
 
     Arguments:
@@ -115,6 +115,7 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> list[b
     Returns:
         List of keys as python bytes
     """
+    # pylint: disable=no-member
     stmt = select(DBschemas.PubKeyTable.key).where(DBschemas.PubKeyTable.name == peerName)
     session:Session = scoped_session(configs.SQLDefaultUserDBpath)
     pubKeys = session.scalars(stmt)

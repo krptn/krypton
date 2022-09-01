@@ -26,8 +26,7 @@ def kryptonLoginMiddleware(get_response):
         Returns:
             HttpResponse
         """
-        response = get_response(request)
-        return response
+        return get_response(request)
     def KrLoginMiddleWare(request:HttpRequest):
         """Middleware
 
@@ -38,18 +37,10 @@ def kryptonLoginMiddleware(get_response):
             HttpResponse
         """
         try:
-            token = request.session["_KryptonSessionToken"]
-            Uid = request.session["_KryptonUserID"]
-        except KeyError:
-            return skipAuth(request)
-        user = djangoUser(userID = Uid)
-        try:
-            user.restoreSession(token)
-        except UserError:
-            return skipAuth(request)
+            user = djangoUser(userID = request.session["_KryptonUserID"])
+            user.restoreSession(request.session["_KryptonSessionToken"])
+        except UserError: return skipAuth(request)
+        except KeyError: return skipAuth(request)
         request.user = user
-        response = get_response(request)
-        # Code to be executed for each request/response after
-        # the view is called.
-        return response
+        return get_response(request)
     return KrLoginMiddleWare

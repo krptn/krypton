@@ -194,6 +194,7 @@ class standardUser(AuthUser, MFAUser, user):
             If otherUsers is None: ciphertext.
             If otherUsers is not None: list of tuples of form (user name, ciphertext, salt), which needs to be provided so that username's user can decrypt it.
         """
+        # pylint: disable=expression-not-assigned
         if otherUsers is None:
             ctext =  base.restEncrypt(data, self._key)
             return ctext
