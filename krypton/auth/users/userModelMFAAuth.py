@@ -11,6 +11,8 @@ from ... import DBschemas, configs, base
 from .bases import userExistRequired, user
 
 class MFAUser(user):
+    """MFA for Krypton Users
+    """
     @userExistRequired
     def enablePWDReset(self) -> list[str]:
         """Enable PWD Reset
@@ -18,6 +20,7 @@ class MFAUser(user):
         Returns:
             The recovery codes that unlock the account
         """
+        # pylint: disable=invalid-name
         PKeys = [base.genOTP() for i in range(10)]
         self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
         for PKey in PKeys:
