@@ -18,9 +18,9 @@ Naming conventions:
 
 *Note:* currently only 64-bit environments have been tested.
 
-After cloning the repo, please build and install openssl3:
+After cloning the repo, please build and install OpenSSL 3 (included as a git submodule):
 
-- Install openssl in the kr-openssl-install/ and place configurations in kr-openssl-config/ directories. 
+- Install openssl in the `kr-openssl-install/` and place configurations in `kr-openssl-config/` directories.
   - Therefore, in the configure script, you need `--prefix` and `--openssldir` set.
 - As Krypton uses FIPS, please set `enable-fips` also.
 
@@ -32,7 +32,7 @@ perl Configure --prefix="C:\Users\markb\source\repos\krypton\kr-openssl-install"
   enable-fips --debug
 ```
 
-You need to both build and install openssl:
+You need to both build and install OpenSSL:
 
 ```shell
 make
