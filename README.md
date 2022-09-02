@@ -27,7 +27,7 @@ This gives you [Zero Knowledge security](https://www.krptn.dev/news/zero-knowled
 
 - Secure Storage of Data
 - User Authentication
-- FIPS Validated Cryptography (via OPENSSL3)*
+- FIPS Validated Cryptography (via OpenSSL 3)*
 - Secure memory wiping
 - FIDO Passwordless*
 - Integration with popular web frameworks
@@ -88,38 +88,3 @@ To see what these settings strings should contain please see [Databases](https:/
 ## Settings
 
 [Configurations](https://docs.krptn.dev/README-CONFIGS.html)
-
-## Setup the extension for development, build from source
-
-*Note:* currently only 64-bit environments have been tested.
-
-After cloning the repo, please build and install openssl3. Please install openssl in the /kr-openssl-install and place configs in /kr-openssl-config directory (where /kr-openssl-install and /kr-openssl-config is in the root folder of this repo). Hence, when using perl Configure please pass --prefix=DIR (replace dir with your /kr-openssl-install directory), --openssldir=DIR (replace DIR with your /kr-openssl-config directory) and enable-fips option.
-To create debug binaries, you need to pass the --debug option also.
-
-For example (Windows example):
-
-```shell
-perl Configure --prefix="C:\Users\markb\source\repos\krypton\kr-openssl-install" \
-  --openssldir="C:\Users\markb\source\repos\krypton\kr-openssl-config" \
-  enable-fips --debug
-```
-
-To install the extension and produce debugging symbols use:
-
-```shell
-pip install -e .
-python setup.py build_ext --debug --inplace
-```
-
-To rebuild __CryptoLib extension, only run the second command.
-
-To install the extension and not produce debugging symbols:
-
-```shell
-pip install .
-```
-
-## Planned
-
-- APIs for other languages
-- Premium features
