@@ -17,16 +17,6 @@ def kryptonLoginMiddleware(get_response):
     Returns:
         Response
     """
-    def skipAuth(request:HttpRequest):
-        """Skip Login
-
-        Arguments:
-            request -- HttpRequest
-
-        Returns:
-            HttpResponse
-        """
-        return get_response(request)
     def KrLoginMiddleWare(request:HttpRequest):
         """Middleware
 
@@ -39,8 +29,8 @@ def kryptonLoginMiddleware(get_response):
         try:
             user = djangoUser(userID = request.COOKIES["_KryptonUserID"])
             user.restoreSession(request.COOKIES["_KryptonSessionToken"])
-        except UserError: return skipAuth(request)
-        except KeyError: return skipAuth(request)
+        except UserError: return get_response(request)
+        except KeyError: return get_response(request)
         request.user = user
         return get_response(request)
     return KrLoginMiddleWare
