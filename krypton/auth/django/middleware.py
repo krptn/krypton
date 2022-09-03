@@ -37,8 +37,8 @@ def kryptonLoginMiddleware(get_response):
             HttpResponse
         """
         try:
-            user = djangoUser(userID = request.session["_KryptonUserID"])
-            user.restoreSession(request.session["_KryptonSessionToken"])
+            user = djangoUser(userID = request.COOKIES["_KryptonUserID"])
+            user.restoreSession(request.COOKIES["_KryptonSessionToken"])
         except UserError: return skipAuth(request)
         except KeyError: return skipAuth(request)
         request.user = user
