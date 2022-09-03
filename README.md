@@ -51,7 +51,7 @@ print(myCrypto.secureRead(id, pwd)) # prints Example data
 
 See [User Auth](https://docs.krptn.dev/README-USER-AUTH.html).
 
-To use FIDO with user auth, please see [Krypton's FIDO Documentation](https://docs.krptn.dev/README-FIDO.html) (but please read📖 [user auth](https://docs.krptn.dev/README-USER-AUTH.html) first).
+To use FIDO with User Auth, please see [Krptn's FIDO Documentation](https://docs.krptn.dev/README-FIDO.html).
 
 ## Integration with web frameworks
 
