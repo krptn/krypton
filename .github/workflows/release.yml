@@ -148,7 +148,7 @@ jobs:
       - name: Download Built MacOS Extension
         uses: actions/download-artifact@v3
         with:
-          name: AutoBuild-Mac-${{ github.event.release.tag_name }}
+          name: AutoBuild-MacOS-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
       - name: Publish distribution 📦 to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
