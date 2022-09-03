@@ -1,4 +1,4 @@
-# Krypton
+# Krptn
 
 Please see our [documentation](https://docs.krptn.dev/index.html).
 

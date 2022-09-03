@@ -66,7 +66,7 @@ setup(name='krptn',
   description='A user authentication and access management system based entirely on cryptographic primitives.',
   long_description=description,
   long_description_content_type="text/markdown",
-  author='Krypton Project',
+  author='Krptn Project',
   author_email='contact@krptn.dev',
   project_urls={
     'Homepage': "https://www.krptn.dev/",
