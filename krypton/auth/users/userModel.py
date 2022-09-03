@@ -41,20 +41,22 @@ class standardUser(AuthUser, MFAUser, user):
         self.loggedin = False
         self.FIDORequired = False
         self.c = scoped_session(configs.SQLDefaultUserDBpath)
-        if userID is None and userName is not None:
-            userID = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName)
-            userID = self.c.scalar(userID)
-            if userID is None:
-                raise UserError("This user does not exist.")
         if userID is None and userName is None:
             self.saved = False
             return
-        self.id = userID
-        stmt = select(DBschemas.UserTable.name).where(DBschemas.UserTable.id == userID).limit(1)
-        self.userName = self.c.scalar(stmt)
+        elif userName is not None:
+            stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName)
+            self.id = self.c.scalar(stmt)
+            self.userName = userName
+            if self.id is None:
+                raise UserError("This user does not exist.")
+        else: # that is userID is not None
+            stmt = select(DBschemas.UserTable.name).where(DBschemas.UserTable.id == userID).limit(1)
+            self.userName = self.c.scalar(stmt)
+            self.id = userID
+            if self.userName is None:
+                raise UserError("This user does not exist.")
         self.saved = True
-        if self.userName is None:
-            self.saved = False
 
     @userExistRequired
     def setData(self, name: str, value: any) -> None:
