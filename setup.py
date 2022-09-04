@@ -1,5 +1,5 @@
 import pathlib
-from setuptools import setup
+from setuptools import setup, find_packages
 from setuptools.command.install import install
 from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
@@ -104,7 +104,7 @@ setup(name='krptn',
     "../kr-openssl-install/lib/libcrypto.dylib",
     "../kr-openssl-install/lib/ossl-modules/fips.dylib"
   ]},
-  packages=['krypton'],
+  packages=find_packages(),
   python_requires=">3.8",
   install_requires=["SQLAlchemy", "webauthn"],
   extras_require={

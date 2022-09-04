@@ -13,7 +13,7 @@ from typing import ByteString
 from sqlalchemy import and_, delete, select, update
 from sqlalchemy.orm import scoped_session
 
-from krypton.auth import factors
+from .. import factors
 from ... import DBschemas, configs
 from ... import base
 from .userModelBaseAuth import AuthUser

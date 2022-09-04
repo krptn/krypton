@@ -6,7 +6,7 @@
 import os
 from sqlalchemy import select, delete, update
 
-from krypton.auth import factors
+from .. import factors
 from ... import DBschemas, configs, base
 from .bases import userExistRequired, user
 

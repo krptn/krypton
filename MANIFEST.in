@@ -15,5 +15,4 @@ global-include fips.so
 global-include fips.dylib
 graft kr-openssl-config
 graft CryptoLib
-graft openssl
 include README.md
