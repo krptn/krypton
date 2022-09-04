@@ -78,7 +78,7 @@ jobs:
             mkdir kr-openssl-config
             mkdir kr-openssl-install
             cd openssl
-            perl Configure linux-aarch64 --cross-compile-prefix=/project/kr-openssl-install --openssldir=/project/kr-openssl-config enable-fips
+            perl Configure linux-aarch64 --prefix=/project/kr-openssl-install --openssldir=/project/kr-openssl-config enable-fips
             make -j3
             make -j3 install
             cd ..
@@ -188,7 +188,7 @@ jobs:
         env:
           CIBW_BEFORE_ALL: |
             cd openssl
-            perl Configure darwin-arm64 --cross-compile-prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
+            perl Configure darwin64-arm64 --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
             make -j4
             make -j4 install
             cd ..
