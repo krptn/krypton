@@ -1,15 +1,25 @@
-name: Live Test
+name: Live Test and CodeQL CPP
 on:
   workflow_dispatch:
   pull_request:
    types: [opened, reopened]
+  schedule:
+    - cron: '29 4 * * 5'
 jobs:
-  test:
+  TestAnlayze:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           submodules: 'true'
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: 'cpp'
       - name: Pre-run Tasks
         run: |
           sudo apt install libsqlite3-dev
@@ -57,4 +67,5 @@ jobs:
           source krenv/bin/activate
           sudo chmod -R a+rwx ${{ github.workspace }}
           python -m unittest discover -s tests -p "*test*.py" --verbose
-  
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
