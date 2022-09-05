@@ -62,7 +62,7 @@ class completeDevelop(develop):
     os.chdir(temp)
 
 setup(name='krptn',
-  version='0.1.1',
+  version='0.1.2',
   description='A user authentication and access management system based entirely on cryptographic primitives.',
   long_description=description,
   long_description_content_type="text/markdown",
