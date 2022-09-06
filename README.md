@@ -14,9 +14,9 @@ Note: we don't have pre-built extensions for all platforms. Please see the [inst
 
 **Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want their code to be used for such purposes.
 
-A user authentication and access management system based entirely on cryptographic primitives. It is available as a python extension module.
+A user authentication and access management system (IAM) with [Zero Knowledge security](/news/zero-knowledge/). It is available as a python extension module.
 
-What we mean by that is:
+How we achieve this?
 
 - All Data is encrypted (any data can be request by the developer to be secured)
 - Only the appropriate users' credentials can unlock the cryptosystem (this protects you from server-side attacks)
