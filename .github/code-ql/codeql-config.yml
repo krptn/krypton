@@ -1,0 +1,4 @@
+name: "Krypton CodeQL Config"
+
+paths-ignore:
+  - openssl/

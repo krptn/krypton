@@ -20,6 +20,7 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: 'cpp'
+          config-file: ./.github/code-ql/codeql-config.yml
       - name: Pre-run Tasks
         run: |
           sudo apt install libsqlite3-dev
