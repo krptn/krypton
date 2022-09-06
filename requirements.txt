@@ -1,6 +1,6 @@
 asgiref==3.5.2
 asn1crypto==1.5.1
-astroid==2.12.5
+astroid==2.12.6
 build==0.8.0
 cbor2==5.4.3
 cffi==1.15.1
@@ -22,7 +22,7 @@ pep517==0.13.0
 platformdirs==2.5.2
 pybind11==2.10.0
 pycparser==2.21
-pydantic==1.10.1
+pydantic==1.10.2
 pyenchant==3.2.2
 pylint==2.15.0
 pyOpenSSL==22.0.0
