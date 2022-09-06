@@ -1,6 +1,7 @@
 graft kr-openssl-install/include
 global-include libcrypto.lib
 global-include libcrypto-3-x64.dll
+global-include libcrypto-3.dll
 global-include fips.dll
 global-include openssl.exe
 include kr-openssl-install/bin/openssl

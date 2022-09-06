@@ -16,7 +16,7 @@ Naming conventions:
 
 ## Build/Setup the extension for development, Build from source
 
-*Note:* currently only 64-bit environments have been tested.
+*Note:* apart from x86 on Windows, only 64-bit environments are supported.
 
 After cloning the repo, please build and install OpenSSL 3 (included as a git submodule):
 
