@@ -268,6 +268,10 @@ class ConfigTemp():
 
 configs = ConfigTemp()
 
+kr_data = pathlib.Path(pathlib.Path.home(), ".krypton-data/")
+if not kr_data.exists():
+    os.mkdir(kr_data.as_posix())
+
 configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krypton-data/crypto.db")
 configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krypton-data/altKMS.db")
 configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krypton-data/users.db")
