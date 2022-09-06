@@ -68,5 +68,7 @@ jobs:
           source krenv/bin/activate
           sudo chmod -R a+rwx ${{ github.workspace }}
           python -m unittest discover -s tests -p "*test*.py" --verbose
+      - name: Compile extension
+        run: python setup.py build_ext --inplace
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
