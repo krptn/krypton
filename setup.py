@@ -79,7 +79,7 @@ setup(name='krptn',
       'Topic :: Security',
       'Topic :: Security :: Cryptography',
       'Framework :: Django',
-      'Framework :: Flask'
+      'Framework :: Flask',
   ],
   package_data={"":[
     "../kr-openssl-install/bin/libcrypto-3-x64.dll",
@@ -97,7 +97,7 @@ setup(name='krptn',
     "../kr-openssl-install/lib/ossl-modules/fips.dylib",
   ]},
   packages=find_packages(),
-  python_requires=">3.8",
+  python_requires=">3.9",
   install_requires=["SQLAlchemy", "webauthn"],
   extras_require={
         "MSSQL": ["pyodbc"],
