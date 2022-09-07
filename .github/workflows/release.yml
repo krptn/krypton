@@ -4,6 +4,9 @@ on:
   release:
     types: [created]
 
+env:
+  CIBW_SKIP: pp*
+
 jobs:
   buildLinux:
     env:
