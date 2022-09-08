@@ -60,7 +60,7 @@ class completeDevelop(develop):
 
 setup(name='krptn',
   version='0.1.4',
-  description='A user authentication and access management system based entirely on cryptographic primitives.',
+  description='Zero Knowledge security for Python',
   long_description=description,
   long_description_content_type="text/markdown",
   author='Krptn Project',
