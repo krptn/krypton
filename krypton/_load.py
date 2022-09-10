@@ -116,7 +116,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         iss = Column(DateTime)
 
     class UserData(Base): # pylint: disable=too-few-public-methods
-        """Database Schema -- This is ugly.
+        """Database Schema
         Uid: int
         name: str
         value: bytes
