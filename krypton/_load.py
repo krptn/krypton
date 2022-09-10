@@ -1,5 +1,5 @@
 """
-Loads up databases and sets configuration needed by OPENSSL FIPS module.
+Load up databases, and set configuration needed by OPENSSL FIPS module.
 """
 # pylint: disable=cyclic-import
 # pylint: disable=invalid-name
@@ -163,7 +163,6 @@ class ConfigTemp():
     HOST_NAME = ""
     ORIGIN = ""
     defaultIterations = 500000
-    defaultErrorPage = ""
     defaultCryptoperiod = 2
     defaultSessionPeriod = 15 # Minutes
     _cryptoDB:sessionmaker = None
@@ -172,15 +171,13 @@ class ConfigTemp():
     @property
     def SQLDefaultCryptoDBpath(self) -> Session:
         """
-            Connection to the default database used to store Encrypted Data.
-            Either set a string for sqlite3 database or Connection object for other databases.
+            Connection to the default database used with Crypto Class
         """
         return self._cryptoDB
     @SQLDefaultCryptoDBpath.setter
     def SQLDefaultCryptoDBpath(self, path:str) -> None:
         """
-            Connection to the default database used to store Encrypted Data.
-            Either set a string for sqlite3 database or Connection object for other databases.
+            Connection to the default database used with Crypto Class
         """
         engine = create_engine(path, echo=False, future=True)
         c = Session(engine)
@@ -210,15 +207,13 @@ class ConfigTemp():
     @property
     def SQLDefaultKeyDBpath(self) -> Session:
         """
-            Connection to the default database used to store Keys.
-            Either set a string for sqlite3 database or Connection object for other databases.
+            Connection to the default database used by the KMS
         """
         return self._altKeyDB
     @SQLDefaultKeyDBpath.setter
     def SQLDefaultKeyDBpath(self, path:str):
         """
-            Connection to the default database used to store Encrypted Data.
-            Either set a string for sqlite3 database or Connection object for other databases.
+            Connection to the default database used by the KMS
         """
         conn = create_engine(path, echo=False, future=True)
         c = Session(conn)
@@ -233,14 +228,12 @@ class ConfigTemp():
     def SQLDefaultUserDBpath(self) -> Session:
         """
             Connection to the default database used to store User Data.
-            Either set a string for sqlite3 database or Connection object for other databases.
         """
         return self._userDB
     @SQLDefaultUserDBpath.setter
     def SQLDefaultUserDBpath(self, path:str):
         """
-            Connection to the default database used to store Encrypted Data.
-            Either set a string for sqlite3 database or Connection object for other databases.
+            Connection to the default database used to store User Data.
         """
         engine = create_engine(path, echo=False, future=True)
         c = Session(engine)
