@@ -40,7 +40,7 @@ bool fipsInit()
 char* pymbToBuffer(py::bytes a) {
 	py::iterator it = a.begin();
 	int b = a.attr("__len__")().cast<int>();
-	char* buf = new char[b];
+	char* buf = new char[b+1];
 	int i = 0;
 	while (it != py::iterator::sentinel()){
 		buf[i] = (char)((*it).cast<int>());
