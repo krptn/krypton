@@ -90,6 +90,8 @@ class standardUser(AuthUser, MFAUser, user):
         Raises:
             AttributeError: if a value is not set
 
+            ValueError: if decryption fails
+
         Returns:
             The value
         """
@@ -136,6 +138,9 @@ class standardUser(AuthUser, MFAUser, user):
 
         Keyword Arguments:
             sender -- If applicable sender's user name (default: {None})
+
+        Raises:
+            ValueError: if decryption fails
 
         Returns:
             Plaintext
@@ -245,6 +250,9 @@ class standardUser(AuthUser, MFAUser, user):
 
         Arguments:
             name -- The "name of the data"
+
+        Raises:
+            ValueError: if decryption fails
 
         Returns:
             Decrypted data
