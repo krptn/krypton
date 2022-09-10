@@ -110,7 +110,8 @@ class standardUser(AuthUser, MFAUser, user):
                 retry = True
             if not retry:
                 break
-        return text
+        try: return text
+        except NameError: raise ValueError("Unable to decrypt the cipertext")
 
     @userExistRequired
     def deleteData(self, name:str) -> None:
@@ -180,7 +181,8 @@ class standardUser(AuthUser, MFAUser, user):
                     break
             if not retry:
                 break
-        return text
+        try: return text
+        except NameError: raise ValueError("Unable to decrypt the cipertext")
 
     @userExistRequired
     def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]=None) -> list[tuple[str, bytes, bytes]]:
