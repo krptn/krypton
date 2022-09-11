@@ -15,6 +15,7 @@ macros = []
 link_libararies = []
 runtime_libs = []
 extra_args = []
+library_dirs = []
 
 if DEBUG and sys.platform != "win32":
   extra_args += ["-g"]
@@ -26,13 +27,16 @@ if not DEBUG and sys.platform == "win32":
 if sys.platform == "linux":
   link_libararies += ["crypto"]
   macros += []
+  library_dirs += ["kr-openssl-install/lib64"]
   runtime_libs += [os.path.join(folder, "kr-openssl-install/lib64")]
 elif sys.platform == "win32":
   link_libararies += ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
+  library_dirs += ["kr-openssl-install/lib"]
   macros += [("WIN", None)]
   runtime_libs += []
 elif sys.platform == "darwin":
   link_libararies += ["crypto"]
+  library_dirs += ["kr-openssl-install/lib"]
   macros += []
   runtime_libs += [os.path.join(folder, "kr-openssl-install/lib")]
   extra_args.append("-std=c++11")
@@ -119,7 +123,7 @@ setup(name='krptn',
     ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp", 
       "CryptoLib/hashes.cpp", "CryptoLib/bases.cpp", "CryptoLib/OTPs.cpp"],
     include_dirs=["kr-openssl-install/include", "CryptoLib"],
-    library_dirs=["kr-openssl-install/lib", "kr-openssl-install/lib64"],
+    library_dirs=library_dirs,
     libraries=link_libararies,
     runtime_library_dirs=runtime_libs,
     extra_compile_args=extra_args,
