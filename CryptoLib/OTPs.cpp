@@ -45,7 +45,9 @@ bool verifyTOTP(py::bytes secret, py::str value) {
     if (compR == 0) {
         return true;
     }
+    py::gil_scoped_release release; // Don't hold the entire interpreter because of this
     std::this_thread::sleep_for(std::chrono::seconds(5));
+    py::gil_scoped_acquire acquire;
     return false;
 }
 
