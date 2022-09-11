@@ -19,8 +19,8 @@ char* base64(char* data, int length) {
 py::bytes py_decode64(const char* input, int length) {
 	const auto pl = (length/4)*3;
 	unsigned char* output = new unsigned char[pl+1];
-	int out = EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length);
-	if (out == -1) handleErrors();
+	if (EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length) == -1)
+		handleErrors();
 	py::bytes result = py::bytes((const char*)output, pl).attr("rstrip")(py::bytes("\x00", 1));
 	return result;
 }
