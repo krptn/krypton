@@ -7,12 +7,15 @@ import os
 import sys
 
 folder = pathlib.Path(__file__).parent.as_posix()
+description = open("README.md", "r").read()
 
 DEBUG = sys.argv.count("--debug") >= 1
 
-description = open("README.md", "r").read()
-
+macros = []
+link_libararies = []
+runtime_libs = []
 extra_args = []
+
 if DEBUG and sys.platform != "win32":
   extra_args += ["-g"]
 if not DEBUG and sys.platform != "win32":
@@ -20,17 +23,16 @@ if not DEBUG and sys.platform != "win32":
 if not DEBUG and sys.platform == "win32":
   extra_args += ["/O2"]
 
-link_libararies = ["crypto"]
-macros = []
-runtime_libs = [os.path.join(folder, "kr-openssl-install/lib64"), os.path.join(folder, "kr-openssl-install/lib")]
-# Runtime libs should be corrected by auditwheel to point to correct location
-
-if sys.platform == "win32":
-  link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
+if sys.platform == "linux":
+  link_libararies += ["crypto"]
+  macros += []
+  runtime_libs += [os.path.join(folder, "kr-openssl-install/lib64")]
+elif sys.platform == "win32":
+  link_libararies += ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
   macros += [("WIN", None)]
-  runtime_libs = []
-
-if sys.platform == "darwin":
+  runtime_libs += []
+elif sys.platform == "darwin":
+  runtime_libs += [os.path.join(folder, "kr-openssl-install/lib")]
   extra_args.append("-std=c++11")
 
 def finishInstall():
