@@ -32,6 +32,8 @@ elif sys.platform == "win32":
   macros += [("WIN", None)]
   runtime_libs += []
 elif sys.platform == "darwin":
+  link_libararies += ["crypto"]
+  macros += []
   runtime_libs += [os.path.join(folder, "kr-openssl-install/lib")]
   extra_args.append("-std=c++11")
 
