@@ -41,7 +41,7 @@ py::bytes pyHKDF(char* secret, int len, char* salt, int saltLen, int keylen) {
 	EVP_KDF *kdf;
 	EVP_KDF_CTX *kctx;
 	unsigned char* out = new unsigned char[keylen];
-	OSSL_PARAM params[5], *p = params;
+	OSSL_PARAM params[4], *p = params;
 
 	kdf = EVP_KDF_fetch(NULL, "HKDF", NULL);
 	kctx = EVP_KDF_CTX_new(kdf);
@@ -49,7 +49,6 @@ py::bytes pyHKDF(char* secret, int len, char* salt, int saltLen, int keylen) {
 
 	*p++ = OSSL_PARAM_construct_utf8_string("digest", (char*)"SHA512", 6);
 	*p++ = OSSL_PARAM_construct_octet_string("key", secret, len);
-	//*p++ = OSSL_PARAM_construct_octet_string("info", (void*)"", 0);
 	*p++ = OSSL_PARAM_construct_octet_string("key", salt, saltLen);
 	*p = OSSL_PARAM_construct_end();
 	if (EVP_KDF_derive(kctx, out, keylen, params) <= 0) {

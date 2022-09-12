@@ -64,7 +64,7 @@ class completeDevelop(develop):
     os.chdir(temp)
 
 setup(name='krptn',
-  version='0.1.6',
+  version='0.1.7',
   description='Zero Knowledge security for Python',
   long_description=description,
   long_description_content_type="text/markdown",
