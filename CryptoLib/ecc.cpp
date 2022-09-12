@@ -6,8 +6,9 @@
 #include <openssl/decoder.h>
 #include <openssl/evp.h>
 #include <pybind11/pybind11.h>
-#include <iostream>
 using namespace std;
+
+#include <iostream>
 
 namespace py = pybind11;
 
