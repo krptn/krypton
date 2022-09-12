@@ -128,7 +128,7 @@ py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen) {
 	char* pubk = pyStrToBuffer(pubKey);
 	int pubkLen = privKey.attr("__len__")().cast<int>();
 	setPubKey(&peerkey, pubk, pubkLen);
-	
+	printf("r", 1);
 	ctx = EVP_PKEY_CTX_new(pkey, NULL);
 	if(!ctx) handleErrors();
 	if(1 != EVP_PKEY_derive_init(ctx)) handleErrors();
