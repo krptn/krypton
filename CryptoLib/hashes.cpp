@@ -3,6 +3,7 @@
 #include <openssl/evp.h>
 #include <openssl/kdf.h>
 #include <openssl/rand.h>
+#include <iostream>
 #include <pybind11/pybind11.h>
 
 using namespace std;
@@ -52,6 +53,7 @@ py::bytes pyHKDF(char* secret, int len, char* salt, int saltLen, int keylen) {
 	*p++ = OSSL_PARAM_construct_octet_string("info", (void*)"", 0);
 	*p++ = OSSL_PARAM_construct_octet_string("key", salt, saltLen);
 	*p = OSSL_PARAM_construct_end();
+	cout << "Test" << endl;
 	if (EVP_KDF_derive(kctx, out, keylen, params) <= 0) {
 		handleErrors();
 	}
