@@ -8,8 +8,6 @@
 #include <pybind11/pybind11.h>
 using namespace std;
 
-#include <iostream>
-
 namespace py = pybind11;
 
 int ECC_DEFAULT_CURVE = NID_X9_62_prime256v1;
@@ -85,6 +83,7 @@ int setPrivKey(EVP_PKEY **pkey, char* key, int len) {
 	OSSL_DECODER_CTX_free(ctx);
 	return 1;
 }
+
 py::tuple createECCKey() {
 	char* pubResult;
 	char* privResult;
@@ -123,7 +122,6 @@ py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen) {
 	EVP_PKEY_CTX *ctx;
 	size_t secretLen;
 	int saltLen = salt.attr("__len__")().cast<int>();
-	cout << "Salt to buff" << endl;
 	char* C_salt = pymbToBuffer(salt);
 	char* privk = pyStrToBuffer(privKey);
 	int privkLen = privKey.attr("__len__")().cast<int>();
