@@ -20,6 +20,8 @@ library_dirs = []
 
 if DEBUG and sys.platform != "win32":
   extra_args += ["-g", "-O0"]
+if not DEBUG and sys.platform != "win32":
+  extra_args += ["-O0"]
 if not DEBUG and sys.platform == "win32":
   extra_args += ["/O2"]
 
