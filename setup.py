@@ -33,10 +33,10 @@ elif sys.platform == "darwin":
   library_dirs += ["kr-openssl-install/lib"]
   macros += []
   runtime_libs += [os.path.join(folder, "kr-openssl-install/lib")]
-  extra_args += ["-std=c++17", "-O0"]
+  extra_args += ["-std=c++17", "-O0"] # Weaken optimizationas as they trigger segementation faults
 
 if sys.platform == "darwin" and not DEBUG:
-  extra_args += ["-O1"] # Weaken optimizations as they will trigger a segmentation fault
+  extra_args += ["-O1"] # Add some optimization
 
 def finishInstall():
   openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so"
