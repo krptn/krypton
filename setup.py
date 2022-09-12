@@ -42,7 +42,7 @@ elif sys.platform == "darwin":
   extra_args.append("-std=c++20")
 
 def finishInstall():
-  openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so" 
+  openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so"
   openssl_fips_conf = "kr-openssl-config/fipsmodule.cnf"
   openssl = '"kr-openssl-install\\bin\\openssl"' if sys.platform == "win32" else './kr-openssl-install/bin/openssl'
   os.system(f'{openssl} fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}')
@@ -52,7 +52,7 @@ class completeInstall(install):
     temp = os.getcwd()
     install.run(self)
     try: os.chdir(os.path.join(self.install_base, "site-packages/"))
-    except FileNotFoundError: 
+    except FileNotFoundError:
       try: os.chdir(os.path.join(self.install_base, "Lib/site-packages/"))
       except FileNotFoundError: return
     finishInstall()
@@ -120,7 +120,7 @@ setup(name='krptn',
     'develop': completeDevelop
   },
   ext_modules=[Pybind11Extension('__CryptoLib',
-    ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp", 
+    ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp",
       "CryptoLib/hashes.cpp", "CryptoLib/bases.cpp", "CryptoLib/OTPs.cpp"],
     include_dirs=["kr-openssl-install/include", "CryptoLib"],
     library_dirs=library_dirs,
