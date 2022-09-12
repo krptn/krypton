@@ -1,5 +1,6 @@
 #include "CryptoLib.h"
 
+#include <iostream>
 #include <openssl/ec.h>
 #include <openssl/obj_mac.h>
 #include <openssl/encoder.h>
