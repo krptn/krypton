@@ -18,13 +18,6 @@ runtime_libs = []
 extra_args = []
 library_dirs = []
 
-if DEBUG and sys.platform != "win32":
-  extra_args += ["-g", "-O0"]
-if not DEBUG and sys.platform != "win32":
-  extra_args += ["-O0"]
-if not DEBUG and sys.platform == "win32":
-  extra_args += ["/O2"]
-
 if sys.platform == "linux":
   link_libararies += ["crypto"]
   macros += []
@@ -40,7 +33,10 @@ elif sys.platform == "darwin":
   library_dirs += ["kr-openssl-install/lib"]
   macros += []
   runtime_libs += [os.path.join(folder, "kr-openssl-install/lib")]
-  extra_args.append("-std=c++17")
+  extra_args += ["-std=c++17", "-O0"]
+
+if sys.platform == "darwin" and not DEBUG:
+  extra_args[1] = "-01"
 
 def finishInstall():
   openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so"
