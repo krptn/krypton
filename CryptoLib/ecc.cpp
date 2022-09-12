@@ -14,7 +14,7 @@ namespace py = pybind11;
 int ECC_DEFAULT_CURVE = NID_X9_62_prime256v1;
 const char* KEY_ENCODE_FORMAT = "PEM";
 
-int getPubKey(EVP_PKEY *pkey, char* out) {
+size_t getPubKey(EVP_PKEY *pkey, char* out) {
 	OSSL_ENCODER_CTX *ctx;
 	unsigned char* data = NULL;
 	size_t datalen;
@@ -33,10 +33,7 @@ int getPubKey(EVP_PKEY *pkey, char* out) {
 	return datalen;
 }
 
-// https://www.openssl.org/docs/man3.0/man3/EVP_PKEY_fromdata.html
-// https://www.openssl.org/docs/man3.0/man3/OSSL_ENCODER_to_bio.html
-// https://www.openssl.org/docs/man3.0/man3/OSSL_ENCODER_CTX_new_for_pkey.html#Output-types
-int getPrivKey(EVP_PKEY *pkey, char* out) {
+size_t getPrivKey(EVP_PKEY *pkey, char* out) {
 	OSSL_ENCODER_CTX *ctx;
 	unsigned char* data = NULL;
 	size_t datalen;
@@ -56,16 +53,14 @@ int getPrivKey(EVP_PKEY *pkey, char* out) {
 	return datalen;
 }
 
-// https://www.openssl.org/docs/man3.0/man3/OSSL_DECODER_CTX_new_for_pkey.html
 int setPubKey(EVP_PKEY **pkey, char* key, int len) {
 	OSSL_DECODER_CTX *ctx;
-	const unsigned char* pubKey = (const unsigned char*)key;
 	ctx = OSSL_DECODER_CTX_new_for_pkey(pkey, KEY_ENCODE_FORMAT, NULL, "EC", EVP_PKEY_PUBLIC_KEY, NULL, NULL);
 	if (ctx == NULL)
 		handleErrors();
 	if (OSSL_DECODER_CTX_get_num_decoders(ctx) == 0)
 		handleErrors();
-	if (!OSSL_DECODER_from_data(ctx, &pubKey, (size_t*)&len))
+	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len))
 		handleErrors();
 	OSSL_DECODER_CTX_free(ctx);
 	return 1;
@@ -73,13 +68,12 @@ int setPubKey(EVP_PKEY **pkey, char* key, int len) {
 
 int setPrivKey(EVP_PKEY **pkey, char* key, int len) {
 	OSSL_DECODER_CTX *ctx;
-	const unsigned char* privKey = (const unsigned char*)key;
 	ctx = OSSL_DECODER_CTX_new_for_pkey(pkey, KEY_ENCODE_FORMAT, NULL, "EC", EVP_PKEY_KEYPAIR, NULL, NULL);
 	if (ctx == NULL)
 		handleErrors();
 	if (OSSL_DECODER_CTX_get_num_decoders(ctx) == 0)
 		handleErrors();
-	if (!OSSL_DECODER_from_data(ctx, &privKey, (size_t*)&len))
+	if (!OSSL_DECODER_from_data(ctx, (const unsigned char**)&key, (size_t*)&len))
 		handleErrors();
 	OSSL_DECODER_CTX_free(ctx);
 	return 1;

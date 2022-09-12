@@ -30,8 +30,8 @@ py::bytes pyHKDF(char* secret, int len, char* salt, int saltLen, int keylen);
 // ECC
 py::tuple createECCKey();
 py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen);
-int getPubKey(EVP_PKEY *pkey, char* out);
-int getPrivKey(EVP_PKEY *pkey, char* out);
+size_t getPubKey(EVP_PKEY *pkey, char* out);
+size_t getPrivKey(EVP_PKEY *pkey, char* out);
 int setPubKey(EVP_PKEY **pkey, char* key, int len);
 int setPrivKey(EVP_PKEY **pkey, char* key, int len);
 
