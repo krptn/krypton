@@ -1,11 +1,11 @@
 #include "CryptoLib.h"
 
-#include <iostream>
 #include <openssl/ec.h>
 #include <openssl/obj_mac.h>
 #include <openssl/encoder.h>
 #include <openssl/decoder.h>
 #include <openssl/evp.h>
+#include <iostream>
 #include <pybind11/pybind11.h>
 using namespace std;
 
