@@ -136,8 +136,8 @@ py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen) {
 	EVP_PKEY_free(pkey);
 	py::bytes key = pyHKDF((char*)secret, (int)secretLen, C_salt, saltLen, keylen);
 	OPENSSL_cleanse(secret, secretLen);
-	delete[] secret;
 	OPENSSL_cleanse(privk, privkLen);
+	delete[] secret;
 	delete[] privk;
 	delete[] pubk;
 	delete[] C_salt;
