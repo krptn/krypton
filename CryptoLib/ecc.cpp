@@ -5,10 +5,9 @@
 #include <openssl/encoder.h>
 #include <openssl/decoder.h>
 #include <openssl/evp.h>
+#include <iostream>
 #include <pybind11/pybind11.h>
 using namespace std;
-
-#include <iostream>
 
 namespace py = pybind11;
 
@@ -124,12 +123,15 @@ py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen) {
 	EVP_PKEY_CTX *ctx;
 	size_t secretLen;
 	int saltLen = salt.attr("__len__")().cast<int>();
+	cout << "Salt is moving to a c-buffer" << endl;
 	char* C_salt = pymbToBuffer(salt);
+	cout << "So is the private key" << endl;
 	char* privk = pyStrToBuffer(privKey);
 	int privkLen = privKey.attr("__len__")().cast<int>();
 	setPrivKey(&pkey, privk, privkLen);
 	char* pubk = pyStrToBuffer(pubKey);
 	int pubkLen = privKey.attr("__len__")().cast<int>();
+	cout << "Set the public key in Pkey" << endl;
 	setPubKey(&peerkey, pubk, pubkLen);
 	ctx = EVP_PKEY_CTX_new(pkey, NULL);
 	if(!ctx) handleErrors();
@@ -141,6 +143,7 @@ py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen) {
 	EVP_PKEY_CTX_free(ctx);
 	EVP_PKEY_free(peerkey);
 	EVP_PKEY_free(pkey);
+	cout << "pyHKDF" << endl;
 	py::bytes key = pyHKDF((char*)secret, (int)secretLen, C_salt, saltLen, keylen);
 	OPENSSL_cleanse(secret, secretLen);
 	delete[] secret;
