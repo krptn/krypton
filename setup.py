@@ -30,6 +30,7 @@ elif sys.platform == "win32":
   runtime_libs += []
 elif sys.platform == "darwin":
   os.environ["CC"] = "gcc"
+  os.environ["CXX"] = "g++"
   link_libararies += ["crypto"]
   library_dirs += ["kr-openssl-install/lib"]
   macros += []
