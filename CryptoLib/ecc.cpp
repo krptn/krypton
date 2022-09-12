@@ -8,6 +8,8 @@
 #include <pybind11/pybind11.h>
 using namespace std;
 
+#include <iostream>
+
 namespace py = pybind11;
 
 int ECC_DEFAULT_CURVE = NID_X9_62_prime256v1;
@@ -121,6 +123,7 @@ py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen) {
 	EVP_PKEY_CTX *ctx;
 	size_t secretLen;
 	int saltLen = salt.attr("__len__")().cast<int>();
+	cout << "Salt to buff" << endl;
 	char* C_salt = pymbToBuffer(salt);
 	char* privk = pyStrToBuffer(privKey);
 	int privkLen = privKey.attr("__len__")().cast<int>();
@@ -128,7 +131,6 @@ py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen) {
 	char* pubk = pyStrToBuffer(pubKey);
 	int pubkLen = privKey.attr("__len__")().cast<int>();
 	setPubKey(&peerkey, pubk, pubkLen);
-	printf("r", 1);
 	ctx = EVP_PKEY_CTX_new(pkey, NULL);
 	if(!ctx) handleErrors();
 	if(1 != EVP_PKEY_derive_init(ctx)) handleErrors();
