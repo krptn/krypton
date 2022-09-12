@@ -114,7 +114,7 @@ py::bytes ECDH(py::str privKey, py::str pubKey, py::bytes salt, int keylen) {
 	EVP_PKEY* pkey = NULL;
 	EVP_PKEY* peerkey = NULL;
 	EVP_PKEY_CTX *ctx;
-	size_t secretLen = NULL;
+	size_t secretLen;
 	int saltLen = salt.attr("__len__")().cast<int>();
 	char* C_salt = pymbToBuffer(salt);
 	char* privk = pyStrToBuffer(privKey);
