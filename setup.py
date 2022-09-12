@@ -36,7 +36,7 @@ elif sys.platform == "darwin":
   extra_args += ["-std=c++17", "-O0"]
 
 if sys.platform == "darwin" and not DEBUG:
-  extra_args[1] = "-01"
+  extra_args[1] = "-0"
 
 def finishInstall():
   openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so"
