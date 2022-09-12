@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 from setuptools.command.install import install
 from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
+from glob import glob
 import os
 import sys
 
@@ -120,8 +121,7 @@ setup(name='krptn',
     'develop': completeDevelop
   },
   ext_modules=[Pybind11Extension('__CryptoLib',
-    ["CryptoLib/CryptoLib.cpp", "CryptoLib/aes.cpp", "CryptoLib/ecc.cpp",
-      "CryptoLib/hashes.cpp", "CryptoLib/bases.cpp", "CryptoLib/OTPs.cpp"],
+    glob("CryptoLib/*.cpp"),
     include_dirs=["kr-openssl-install/include", "CryptoLib"],
     library_dirs=library_dirs,
     libraries=link_libararies,

@@ -4,7 +4,7 @@
 using namespace std;
 namespace py = pybind11;
 
-char* base64(char* data, int length) {
+char* encode64(char* data, int length) {
 	int pl;
 	if (length%3 == 0) {
 		pl = length*4;
@@ -16,7 +16,7 @@ char* base64(char* data, int length) {
 	return output;
 }
 
-py::bytes py_decode64(const char* input, int length) {
+py::bytes decode64(char* input, int length) {
 	const auto pl = (length/4)*3;
 	unsigned char* output = new unsigned char[pl+1];
 	if (EVP_DecodeBlock(output, reinterpret_cast<const unsigned char *>(input), length) == -1)
