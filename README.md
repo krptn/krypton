@@ -1,6 +1,6 @@
 # Krptn
 
-Please see our [documentation](https://docs.krptn.dev/index.html).
+Please see our [documentation](https://docs.krptn.dev/index.html) and our [homepage](https://www.krptn.dev/).
 
 **Quick Install:**
 
