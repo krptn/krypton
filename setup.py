@@ -61,7 +61,7 @@ class completeDevelop(develop):
     os.chdir(temp)
 
 setup(name='krptn',
-  version='0.1.9',
+  version='0.1.10',
   description='Zero Knowledge security for Python',
   long_description=description,
   long_description_content_type="text/markdown",
@@ -100,7 +100,7 @@ setup(name='krptn',
   ]},
   packages=find_packages(),
   python_requires=">3.9",
-  install_requires=["SQLAlchemy==1.4.41", "webauthn==1.6.0", "Django==4.1.1"],
+  install_requires=["SQLAlchemy>=1.4.0", "webauthn==1.6.0", "Django>=4.1.0"],
   extras_require={
         "MSSQL": ["pyodbc"],
         "MySQL": ["mysqlclient"],
