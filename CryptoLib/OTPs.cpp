@@ -52,19 +52,13 @@ bool verifyTOTP(py::bytes secret, py::str value) {
 }
 
 py::str genOTP() {
-    unsigned char secret[20];
-    RAND_bytes((unsigned char*)&secret, 20);
-    int offset = secret[19] & 0xf;
-    int bin_code = (secret[offset] & 0x7f) << 24
-		| (secret[offset+1] & 0xff) << 16
-		| (secret[offset+2] & 0xff) << 8
-		| (secret[offset+3] & 0xff);
-    bin_code = bin_code % (int)pow(10, 12);
-    char correctCode[13];
-    snprintf((char*)&correctCode, 13,"%08d", bin_code);
+    unsigned long long bin_code;
+    RAND_bytes((unsigned char*)&bin_code, sizeof(bin_code));
+    bin_code = bin_code % (int)pow(10, 10);
+    char correctCode[11];
+    snprintf((char*)&correctCode, 11,"%010lu", bin_code);
     bin_code = 0;
-    OPENSSL_cleanse(&secret, 20);
-    py::str pyCode = py::str(correctCode, 12);
-    OPENSSL_cleanse(&correctCode, 13);
+    py::str pyCode = py::str(correctCode, 10);
+    OPENSSL_cleanse(&correctCode, 11);
     return pyCode;
 }
