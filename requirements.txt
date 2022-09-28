@@ -30,7 +30,7 @@ pyparsing==3.0.9
 SQLAlchemy==1.4.41
 sqlparse==0.4.3
 tomli==2.0.1
-tomlkit==0.11.4
+tomlkit==0.11.5
 typing_extensions==4.3.0
 tzdata==2022.4
 webauthn==1.6.0
