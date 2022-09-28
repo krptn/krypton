@@ -56,9 +56,16 @@ py::str genOTP() {
     RAND_bytes((unsigned char*)&bin_code, sizeof(bin_code));
     bin_code = bin_code % (int)pow(10, 10);
     char correctCode[11];
-    snprintf((char*)&correctCode, 11,"%010lu", bin_code);
+    snprintf((char*)&correctCode, 11,"%010llu", bin_code);
     bin_code = 0;
     py::str pyCode = py::str(correctCode, 10);
     OPENSSL_cleanse(&correctCode, 11);
     return pyCode;
+}
+
+bool sleepOutOfGIL(int seconds) {
+  py::gil_scoped_release release;
+  std::this_thread::sleep_for(std::chrono::seconds(seconds));
+  py::gil_scoped_acquire acquire;
+  return true;
 }

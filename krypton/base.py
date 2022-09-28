@@ -192,3 +192,14 @@ def genOTP() -> str:
         The OTP/PIN as python string
     """
     return __CryptoLib.genOTP()
+
+def sleepOutOfGIL(seconds:int=5) -> bool:
+    """Sleep for seconds while releasing the GIL.
+
+    Keyword Arguments:
+        seconds -- Number of seconds to slepp for (default: {5})
+
+    Returns:
+        True
+    """
+    return __CryptoLib.sleepOutOfGIL(seconds)

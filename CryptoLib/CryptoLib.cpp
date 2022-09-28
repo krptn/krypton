@@ -84,4 +84,5 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("base64decode", &decode64, "Base 64 decode data with length.", py::arg("data"), py::arg("length"));
 	m.def("totpVerify", &verifyTOTP, "Verify TOTP with params", py::arg("secret"), py::arg("code"));
 	m.def("genOTP", &genOTP, "Create a random PIN/OTP");
+	m.def("sleepOutOfGIL", &sleepOutOfGIL, "Sleep for specified seconds while releasing the GIL.", py::arg("seconds")=5);
 }
