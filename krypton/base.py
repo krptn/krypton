@@ -186,7 +186,7 @@ def createTOTPString(secret:bytes, user:str) -> str:
     return string
 
 def genOTP() -> str:
-    """Generate an 6-digit OTP/PIN.
+    """Generate an 12-digit OTP/PIN.
 
     Returns:
         The OTP/PIN as python string
