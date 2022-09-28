@@ -25,13 +25,13 @@ class MFAUser(user):
         self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
         for PKey in PKeys:
             salt = os.urandom(32)
-            key = base.PBKDF2(PKey, salt, keylen=32)
+            key = base.PBKDF2(PKey, salt, configs.defaultPasswordResetIterations, 32)
             skey = base.restEncrypt(self._key, key)
             base.zeromem(key)
             row = DBschemas.PWDReset(
                 Uid = self.id,
                 key = skey,
-                iter = configs.defaultIterations,
+                iter = configs.defaultPasswordResetIterations,
                 salt = salt
             )
             self.c.add(row)

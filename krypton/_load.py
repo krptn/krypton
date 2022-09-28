@@ -163,6 +163,7 @@ class ConfigTemp():
     HOST_NAME = ""
     ORIGIN = ""
     defaultIterations = 500000
+    defaultPasswordResetIterations = 900000
     defaultCryptoperiod = 2
     defaultSessionPeriod = 15 # Minutes
     _cryptoDB:sessionmaker = None
