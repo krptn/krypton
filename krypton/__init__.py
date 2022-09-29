@@ -14,8 +14,6 @@ from ._load import *
 from . import basic
 from . import auth
 
-version = '1'
-
 __all__ = ['basic', 'auth']
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__',
     '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__',
