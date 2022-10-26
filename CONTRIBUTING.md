@@ -18,7 +18,7 @@ Naming conventions:
 
 *Note:* apart from x86 on Windows, only 64-bit environments are supported.
 
-After cloning the repo (and checking out your version using git tags), please build and install OpenSSL 3, wihch included as a git submodule:
+After cloning the repo (and checking out your version using git tags), please build and install OpenSSL 3, which is included as a git submodule:
 
 - Install openssl in the `kr-openssl-install/` and place configurations in `kr-openssl-config/` directories.
   - Therefore, in the configure script, you need `--prefix` and `--openssldir` set.
