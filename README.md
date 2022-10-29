@@ -18,7 +18,7 @@ A user authentication and access management system (IAM) with [Zero Knowledge se
 
 How we achieve this?
 
-- All Data is encrypted (any data can be request by the developer to be secured)
+- All data is encrypted (any data can be requested by the developer to be secured)
 - Only the appropriate users' credentials can unlock the cryptosystem (this protects you from server-side attacks)
 
 This gives you [Zero Knowledge security](https://www.krptn.dev/news/zero-knowledge/) (one of the most secure available) without ever needing to even notice it! It protects you from server side attacks.
@@ -67,7 +67,7 @@ To use FIDO with User Auth, please see [Krptn's FIDO Documentation](https://docs
 This module uses a custom Key Management System for AES-256 Keys.
 See [KMS](https://docs.krptn.dev/README-KMS.html) for more information.
 
-**Note:** we have considered using HSM as key management systems. However, we have decided that we will not implement HSMs because it would not be possible to withhold that cryptographic systems are only unlocked with correct credentials: this is because a HSM would happily provide the key to Krypton irrespective of whether the user of the web app has provided credentials.
+**Note:** we have considered using HSM as key management systems. We, however, have decided that we will not integrate HSMs because it would be difficult to maintain Zero Knowledge security.
 
 Of course, all data is securely encrypted even if it is not via a HSM!
 
