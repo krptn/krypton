@@ -13,13 +13,13 @@ Please make sure the following information is clearly stated:
 - What components are affected?
 - How to exploit it?
 - Minimal reproducible example
-- Recomendations on fixes, if any
+- Recommendations on fixes, if any
 
 ## GPG
 
 Depending on the severity of the vulnerability, you might want to encrypt it with GPG/PGP before sending it.
 
-Our key is uploaded to `pgp.mit.edu`, `keys.openpgp.org` and should be available on `keys.gnupg.net` (please use whichever is best available to you), with a key id of `7126492594E7DCA0`. It is also copy-pasted into the bottom of this file.
+Our key is uploaded to `pgp.mit.edu`, `keys.openpgp.org` and should be available on `keys.gnupg.net` (please use whichever you prefer), with a key id of `7126492594E7DCA0`. It is also copy-pasted into the bottom of this file.
 
 (Please substitute "server" with your preferred server from the above mentioned)
 
