@@ -58,7 +58,7 @@ class user(metaclass=ABCMeta):
             None
         """
     @abstractmethod
-    def login(self, pwd:str=None, mfaToken:str=None, fido:str=None):
+    def login(self, pwd:str, mfaToken:str=None, fido:str=None):
         """Log the user in
 
         Keyword Arguments:

@@ -6,7 +6,7 @@
 import datetime
 import os
 import pickle
-from sqlalchemy import delete, select, func, update
+from sqlalchemy import delete, select, func
 from .. import factors, _utils
 from ... import DBschemas, configs
 from ... import base
@@ -15,11 +15,11 @@ from .bases import userExistRequired, UserError, user
 class AuthUser(user):
     """Auth Logic for User Models
     """
-    def login(self, pwd:str=None, mfaToken:str="", fido:str=None):
+    def login(self, pwd:str, mfaToken:str="", fido:str=None):
         """Log the user in
 
         Keyword Arguments:
-            pwd -- Password (default: {None})
+            pwd -- Password
 
             otp -- One-Time Password (default: {""})
 
@@ -36,13 +36,9 @@ class AuthUser(user):
         stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
         authTag:DBschemas.UserTable = self.c.scalar(stmt)
         if authTag.fidoID != b"*":
-            if fido is None:
+            if fido is None or factors.fido.authenticate_verify(authTag.fidoChallenge, authTag.fidoPub, fido) is False:
                 self.FIDORequired = True
                 raise UserError("Failed to verify FIDO credentials.") 
-            r = factors.fido.authenticate_verify(authTag.fidoChallenge, authTag.fidoPub, fido)
-            if r is False:
-                self.FIDORequired = True
-                raise UserError("Failed to verify FIDO credentials.")
         if authTag.pwdAuthToken is None:
             raise UserError("User must have a password set.")
         self._key = factors.password.auth(authTag.pwdAuthToken, pwd)

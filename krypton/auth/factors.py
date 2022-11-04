@@ -12,7 +12,6 @@ from webauthn import (
     verify_authentication_response,
 )
 from webauthn.helpers.structs import (
-    #AuthenticatorAttachment,
     PublicKeyCredentialDescriptor,
     RegistrationCredential,
     UserVerificationRequirement,
@@ -164,7 +163,7 @@ class fido:
         )
         if success:
             return registration_verification.credential_id, registration_verification.credential_public_key
-        raise AuthFailed('Cannot create registration for FIDO')
+        raise AuthFailed("Cannot create registration for FIDO")
 
     @staticmethod
     def authenticate(cred_id):

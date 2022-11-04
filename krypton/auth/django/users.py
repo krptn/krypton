@@ -9,4 +9,9 @@ class djangoUser(standardUser):
     """
     @property
     def is_authenticated(self) -> bool:
+        """Returns the user's authentication state
+
+        Returns:
+            True is authenticated, False otherwise
+        """
         return self.loggedin

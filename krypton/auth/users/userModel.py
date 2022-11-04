@@ -44,7 +44,7 @@ class standardUser(AuthUser, MFAUser, user):
         if userID is None and userName is None:
             self.saved = False
             return
-        elif userName is not None:
+        if userName is not None:
             stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName)
             self.id = self.c.scalar(stmt)
             self.userName = userName
@@ -113,7 +113,8 @@ class standardUser(AuthUser, MFAUser, user):
             if not retry:
                 break
         try: return text
-        except NameError: raise ValueError("Unable to decrypt the cipertext")
+        except NameError as exc:
+            raise ValueError("Unable to decrypt the cipertext") from exc
 
     @userExistRequired
     def deleteData(self, name:str) -> None:
@@ -171,8 +172,7 @@ class standardUser(AuthUser, MFAUser, user):
                 base.zeromem(key)
                 if not retry:
                     break
-        except ValueError:
-            pass
+        except ValueError: pass
         for key in self.backupKeys:
             keys = base.getSharedKey(key, sender, salt)
             retry = False
@@ -187,7 +187,8 @@ class standardUser(AuthUser, MFAUser, user):
             if not retry:
                 break
         try: return text
-        except NameError: raise ValueError("Unable to decrypt the cipertext")
+        except NameError as exc:
+            raise ValueError("Unable to decrypt the cipertext") from exc
 
     @userExistRequired
     def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]=None) -> list[tuple[str, bytes, bytes]]:

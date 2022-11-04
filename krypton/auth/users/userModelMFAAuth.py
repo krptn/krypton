@@ -4,7 +4,6 @@
 #pylint: disable=attribute-defined-outside-init
 #pylint: disable=abstract-method
 import os
-import time
 from sqlalchemy import select, delete, update
 
 from .. import factors
