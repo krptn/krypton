@@ -87,7 +87,7 @@ class AuthUser(user):
         """
         _utils.cleanUpSessions(self.c, self.id)
         self.c.execute(delete(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id))
-        self.c.execute(delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.name == self.userName))
+        self.c.execute(delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.Uid == self.id))
         self.c.execute(delete(DBschemas.UserData).where(DBschemas.UserData.Uid == self.id))
         self.c.execute(delete(DBschemas.UserShareTable).where(DBschemas.UserShareTable.sender == self.userName))
         self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
@@ -147,7 +147,7 @@ class AuthUser(user):
         self._privKey = keys[0]
         self.pubKey = keys[1]
         key = DBschemas.PubKeyTable(
-            name = self.userName,
+            Uid = self.id,
             key = self.pubKey
         )
         self.c.add(key)

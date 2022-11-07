@@ -75,12 +75,10 @@ class DBschemas(): # pylint: disable=too-few-public-methods
 
     class PubKeyTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema
-        id: int
-        name: str
+        Uid: int
         key: str"""
         __tablename__ = "pubKeys"
-        id = Column(Integer, primary_key=True)
-        name = Column(Text, index=True)
+        Uid = Column(Integer, index=True, primary_key=True)
         key = Column(Text)
 
     class UserTable(Base): # pylint: disable=too-few-public-methods
@@ -129,14 +127,14 @@ class DBschemas(): # pylint: disable=too-few-public-methods
     
     class UserShareTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema
-        sender: str
+        sender: int
         name: bytes
         salt: bytes
         value: bytes
         shareUid: int"""
         __tablename__ = "userShareData"
         id = Column(Integer, primary_key=True)
-        sender = Column(Text, index=True)
+        sender = Column(Integer, index=True)
         name = Column(Text, index=True)
         salt = Column(LargeBinary)
         value = Column(LargeBinary)

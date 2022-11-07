@@ -97,7 +97,7 @@ def ECDH(privKey:str, peerPubKey:str, salt:bytes, keylen:int=32) -> bytes:
     """
     return __CryptoLib.ECDH(privKey, peerPubKey, salt, keylen)
 
-def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> list[bytes]:
+def getSharedKey(privKey:str, peerID:int, salt:bytes, keylen:int=32) -> list[bytes]:
     """Get users' shared key
 
     Get a shared key for two users using ECDH.
@@ -116,7 +116,7 @@ def getSharedKey(privKey:str, peerName:str, salt:bytes, keylen:int=32) -> list[b
         List of keys as python bytes
     """
     # pylint: disable=no-member
-    stmt = select(DBschemas.PubKeyTable.key).where(DBschemas.PubKeyTable.name == peerName)
+    stmt = select(DBschemas.PubKeyTable.key).where(DBschemas.PubKeyTable.Uid == peerID)
     session:Session = scoped_session(configs.SQLDefaultUserDBpath)
     pubKeys = session.scalars(stmt)
     results = [__CryptoLib.ECDH(privKey, pubKey, salt, keylen) for pubKey in pubKeys]

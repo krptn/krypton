@@ -123,8 +123,8 @@ class standardUser(AuthUser, MFAUser, user):
         Arguments:
             name -- The key to remove
         """
-        stmt = delete(DBschemas.UserData).where(and_(DBschemas.UserData.name == name
-            , DBschemas.UserData.Uid == self.id))
+        stmt = delete(DBschemas.UserData).where(and_(DBschemas.UserData.name == name,
+            DBschemas.UserData.Uid == self.id))
         self.c.flush()
         self.c.execute(stmt)
 
@@ -161,10 +161,15 @@ class standardUser(AuthUser, MFAUser, user):
                 if not retry:
                     break
             return text
-        keys = base.getSharedKey(self._privKey, sender, salt)
+        if not isinstance(sender, int):
+            stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == sender)
+            Uid = self.c.scalar(stmt)
+        else:
+            Uid = sender
+        keys = base.getSharedKey(self._privKey, Uid, salt)
         try:
             for key in keys:
-                retry =False
+                retry = False
                 try:
                     text = base.restDecrypt(data, key)
                 except ValueError:
@@ -174,7 +179,7 @@ class standardUser(AuthUser, MFAUser, user):
                     break
         except ValueError: pass
         for key in self.backupKeys:
-            keys = base.getSharedKey(key, sender, salt)
+            keys = base.getSharedKey(key, Uid, salt)
             retry = False
             for key in keys:
                 try:
@@ -191,7 +196,7 @@ class standardUser(AuthUser, MFAUser, user):
             raise ValueError("Unable to decrypt the cipertext") from exc
 
     @userExistRequired
-    def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]=None) -> list[tuple[str, bytes, bytes]]:
+    def encryptWithUserKey(self, data:ByteString, otherUsers:list[int]=None) -> list[tuple[str, bytes, bytes]]:
         """Encrypt data with user's key
 
         Arguments:
@@ -208,10 +213,16 @@ class standardUser(AuthUser, MFAUser, user):
         if otherUsers is None:
             ctext =  base.restEncrypt(data, self._key)
             return ctext
-        salts = [os.urandom(12) for name in otherUsers]
+        salts = [os.urandom(12) for i in otherUsers]
         AESKeys = []
-        for i, name in enumerate(otherUsers):
-            temp = base.getSharedKey(self._privKey, name, salts[i])
+        otherUsers = [
+            self.c.scalar(
+                select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == name)
+            ) 
+            for name in otherUsers
+        ]
+        for i, Uid in enumerate(otherUsers):
+            temp = base.getSharedKey(self._privKey, Uid, salts[i])
             [base.zeromem(x) for x in temp[1:]]
             AESKeys.append(temp[0])
         results = [base.restEncrypt(data, key) for key in AESKeys]
@@ -235,7 +246,7 @@ class standardUser(AuthUser, MFAUser, user):
             for user in otherUsers]
         for i, key in enumerate(keys):
             row = DBschemas.UserShareTable(
-                sender = self.userName,
+                sender = self.id,
                 name = name,
                 salt = key[2],
                 value = key[1],
@@ -300,12 +311,9 @@ class standardUser(AuthUser, MFAUser, user):
         self.pubKey = keys[1]
         self.setData("_userPrivateKey", self._privKey)
         self.setData("_userPublicKey", self.pubKey)
-
-        row = DBschemas.PubKeyTable(
-            name = self.userName,
-            key = self.pubKey
-        )
-        self.c.add(row)
+        stmt = update(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.Uid == self.id)\
+            .values(key=self.pubKey)
+        self.c.execute(stmt)
         self.c.flush()
         self.c.commit()
 
