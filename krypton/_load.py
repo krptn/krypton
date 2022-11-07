@@ -78,7 +78,8 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         Uid: int
         key: str"""
         __tablename__ = "pubKeys"
-        Uid = Column(Integer, index=True, primary_key=True)
+        id = Column(Integer, primary_key=True)
+        Uid = Column(Integer, index=True)
         key = Column(Text)
 
     class UserTable(Base): # pylint: disable=too-few-public-methods

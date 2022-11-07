@@ -311,9 +311,11 @@ class standardUser(AuthUser, MFAUser, user):
         self.pubKey = keys[1]
         self.setData("_userPrivateKey", self._privKey)
         self.setData("_userPublicKey", self.pubKey)
-        stmt = update(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.Uid == self.id)\
-            .values(key=self.pubKey)
-        self.c.execute(stmt)
+        row = DBschemas.PubKeyTable(
+            Uid = self.id,
+            key = self.pubKey
+        )
+        self.c.add(row)
         self.c.flush()
         self.c.commit()
 
