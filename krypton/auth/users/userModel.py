@@ -178,8 +178,8 @@ class standardUser(AuthUser, MFAUser, user):
                 if not retry:
                     break
         except ValueError: pass
-        for key in self.backupKeys:
-            keys = base.getSharedKey(key, Uid, salt)
+        for privKey in self.backupKeys:
+            keys = base.getSharedKey(privKey, Uid, salt)
             retry = False
             for key in keys:
                 try:

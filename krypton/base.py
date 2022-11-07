@@ -105,7 +105,7 @@ def getSharedKey(privKey:str, peerID:int, salt:bytes, keylen:int=32) -> list[byt
     Arguments:
         privKey -- User's private EC Key (in P.E.M. format)
 
-        peerName -- Other User's user name
+        peerID -- Other User's ID
 
         salt -- Salt used for KDF
 
