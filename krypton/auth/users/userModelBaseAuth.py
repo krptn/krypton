@@ -6,7 +6,7 @@
 import datetime
 import os
 import pickle
-from sqlalchemy import delete, select, func
+from sqlalchemy import delete, select, func, update
 from .. import factors, _utils
 from ... import DBschemas, configs
 from ... import base
@@ -181,3 +181,10 @@ class AuthUser(user):
         if not self.saved:
             raise UserError("This user does not exist.")
         _utils.cleanUpSessions(self.c, self.id)
+
+    @userExistRequired
+    def changeUserName(self, newUserName:str):
+        stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
+            values(name = newUserName)
+        self.c.execute(stmt)
+        self.userName = newUserName
