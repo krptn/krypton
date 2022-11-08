@@ -3,11 +3,12 @@ import uuid
 from krypton.auth.users.bases import UserError
 from krypton.auth.users.userModel import standardUser
 
-class userAuth(unittest.TestCase):
+class UserAuth(unittest.TestCase):
     def setUp(self) -> None:
         self.model = standardUser(None)
         self.userName = "Test"+str(uuid.uuid4())
-        self.model.saveNewUser(self.userName, "TEST")
+        self.model.saveNewUser(str(uuid.uuid4()), "TEST")
+        self.model.changeUserName(self.userName)
         return super().setUp()
 
     def tearDown(self) -> None:

@@ -1,7 +1,5 @@
 import unittest
 from krypton.basic import Crypto, KMS
-from krypton import base
-import os
 
 TEST_PWD = "Example"
 TEST_TEXT = "Example"

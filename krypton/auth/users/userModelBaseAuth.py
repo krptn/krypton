@@ -38,7 +38,7 @@ class AuthUser(user):
         if authTag.fidoID != b"*":
             if fido is None or factors.fido.authenticate_verify(authTag.fidoChallenge, authTag.fidoPub, fido) is False:
                 self.FIDORequired = True
-                raise UserError("Failed to verify FIDO credentials.") 
+                raise UserError("Failed to verify FIDO credentials.")
         if authTag.pwdAuthToken is None:
             raise UserError("User must have a password set.")
         self._key = factors.password.auth(authTag.pwdAuthToken, pwd)
@@ -187,4 +187,6 @@ class AuthUser(user):
         stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
             values(name = newUserName)
         self.c.execute(stmt)
+        self.c.flush()
+        self.c.commit()
         self.userName = newUserName
