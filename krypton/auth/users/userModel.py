@@ -125,8 +125,9 @@ class standardUser(AuthUser, MFAUser, user):
         """
         stmt = delete(DBschemas.UserData).where(and_(DBschemas.UserData.name == name,
             DBschemas.UserData.Uid == self.id))
-        self.c.flush()
         self.c.execute(stmt)
+        self.c.flush()
+        self.c.commit()
 
     @userExistRequired
     def decryptWithUserKey(self, data:ByteString, salt:bytes=None, sender=None) -> bytes:
