@@ -14,6 +14,8 @@ We all love Django and other web frameworks! However, their primary focus is cre
 
 Wouldn't it be nice if encryption would also be handled by the IAM? Perhaps it could be handled in a zero knowledge model, such that, without the user entering credentials, not even the database administrator can read it?! This is exactly what we do! Please see our [documentation](https://docs.krptn.dev/index.html), [homepage](https://www.krptn.dev/) or continue here, on our GitHub, for more information!
 
+To prove that such is possible, we have a [Flask](https://github.com/krptn/flaskExample) and [Django](https://github.com/krptn/djangoExample) example on GitHub.
+
 ## What is this?
 
 **Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want their code to be used for such purposes.
