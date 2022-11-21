@@ -146,6 +146,7 @@ def zeromem(obj:ByteString)->int:
     WARNING! Improper use leads to severe memory corruption.
     Ensure you only use it with bytes and string objects.
     IT HAS NO ERROR OR TYPE CHECKS!
+    Also, on PyPy this function does nothing to avoid corruption.
 
     Arguments:
         obj -- Object to do this on (bytes and str are supported!)
@@ -153,7 +154,8 @@ def zeromem(obj:ByteString)->int:
     Returns:
         Result from memset.
     """
-    return ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
+    if "PyPy" not in sys.version:
+        return ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
 
 def verifyTOTP(secret:bytes, code:str) -> bool:
     """Verify a 6-digit TOTP

@@ -34,7 +34,7 @@ This gives you [Zero Knowledge security](https://www.krptn.dev/news/zero-knowled
 - Secure Storage of Data
 - User Authentication
 - FIPS Validated Cryptography (via OpenSSL 3)*
-- Secure memory wiping
+- Secure memory wiping (except on PyPy)
 - FIDO Passwordless*
 - Integration with popular web frameworks
 
