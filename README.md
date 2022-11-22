@@ -1,3 +1,5 @@
+![Apache-2.0]](https://img.shields.io/pypi/l/Krptn)
+
 # Krptn
 
 **Quick Install:**
