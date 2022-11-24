@@ -98,3 +98,5 @@ To see what these settings strings should contain please see [Databases](https:/
 ## Settings
 
 [Configurations](https://docs.krptn.dev/README-CONFIGS.html)
+
+We would love to learn how you use our project! Our email is [contact@krptn.dev](mailto:contact@krptn.dev), and we would appreciate if you could drop us a note about your interactions with Krptn.
