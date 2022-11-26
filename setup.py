@@ -4,6 +4,7 @@ from setuptools.command.install import install
 from setuptools.command.develop import develop
 from pybind11.setup_helpers import Pybind11Extension
 from glob import glob
+import subprocess
 import os
 import sys
 
@@ -38,8 +39,8 @@ elif sys.platform == "darwin":
 def finishInstall():
   openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so"
   openssl_fips_conf = "kr-openssl-config/fipsmodule.cnf"
-  openssl = '"kr-openssl-install\\bin\\openssl"' if sys.platform == "win32" else './kr-openssl-install/bin/openssl'
-  os.system(f'{openssl} fipsinstall -out {openssl_fips_conf} -module {openssl_fips_module}')
+  openssl = 'kr-openssl-install/bin/openssl'
+  subprocess.call([openssl, 'fipsinstall', '-out', openssl_fips_conf, 'module', openssl_fips_module])
 
 class completeInstall(install):
   def run(self):
@@ -61,7 +62,7 @@ class completeDevelop(develop):
     os.chdir(temp)
 
 setup(name='krptn',
-  version='0.1.11',
+  version='0.1.12',
   description='Zero Knowledge security for Python',
   long_description=description,
   long_description_content_type="text/markdown",
