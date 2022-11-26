@@ -8,6 +8,7 @@ import os
 import sys
 import pathlib
 import ctypes
+import subprocess
 from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
 
@@ -28,6 +29,11 @@ os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 os.environ["OPENSSL"] = OPENSSL_BIN
+
+openssl_fips_module = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so")
+openssl_fips_conf = os.path.join(SITE_PACKAGE, "kr-openssl-config/fipsmodule.cnf")
+openssl = os.path.join(SITE_PACKAGE, 'kr-openssl-install/bin/openssl')
+subprocess.call([openssl, 'fipsinstall', '-out', openssl_fips_conf, '-module', openssl_fips_module])
 
 if sys.platform == "win32":
     os.add_dll_directory(OPENSSL_BIN)
