@@ -36,19 +36,38 @@ elif sys.platform == "darwin":
   runtime_libs += [os.path.join(folder, "kr-openssl-install/lib")]
   extra_args += ["-std=c++17", "-O0"] # Disable optimizationas as they trigger segementation faults
 
+SITE_PACKAGE = pathlib.Path(__file__).parent.as_posix()
+
 def finishInstall():
+  global SITE_PACKAGE
+  OPENSSL_CONFIG = os.path.join(SITE_PACKAGE, "kr-openssl-config")
+  OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG, "openssl.cnf")
+  OPENSSL_BIN = os.path.join(SITE_PACKAGE, "kr-openssl-install/bin")
+  RELATIVE_OSSL_MOD = ("kr-openssl-install/lib64/ossl-modules" if sys.platform == "linux"
+      else "kr-openssl-install/lib/ossl-modules")
+  OPENSSL_MODULES = os.path.join(SITE_PACKAGE, RELATIVE_OSSL_MOD)
+
+  os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
+  os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
+  os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
+  os.environ["OPENSSL"] = OPENSSL_BIN
   openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so"
   openssl_fips_conf = "kr-openssl-config/fipsmodule.cnf"
   openssl = 'kr-openssl-install/bin/openssl'
   subprocess.call([openssl, 'fipsinstall', '-out', openssl_fips_conf, 'module', openssl_fips_module])
 
 class completeInstall(install):
+  global SITE_PACKAGE
   def run(self):
     temp = os.getcwd()
     install.run(self)
-    try: os.chdir(os.path.join(self.install_base, "site-packages/"))
+    try:
+      os.chdir(os.path.join(self.install_base, "site-packages/"))
+      SITE_PACKAGE = os.path.join(self.install_base, "site-packages/")
     except FileNotFoundError:
-      try: os.chdir(os.path.join(self.install_base, "Lib/site-packages/"))
+      try:
+        os.chdir(os.path.join(self.install_base, "Lib/site-packages/"))
+        SITE_PACKAGE = os.path.join(self.install_base, "Lib/site-packages/")
       except FileNotFoundError: return
     finishInstall()
     os.chdir(temp)
