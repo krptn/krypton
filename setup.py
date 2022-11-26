@@ -53,7 +53,7 @@ def finishInstall():
   os.environ["OPENSSL"] = OPENSSL_BIN
   openssl_fips_module = "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so"
   openssl_fips_conf = "kr-openssl-config/fipsmodule.cnf"
-  openssl = 'kr-openssl-install/bin/openssl'
+  openssl = 'kr-openssl-install\\bin\\openssl' if sys.platform == "win32" else './kr-openssl-install/bin/openssl'
   subprocess.call([openssl, 'fipsinstall', '-out', openssl_fips_conf, 'module', openssl_fips_module])
 
 class completeInstall(install):
