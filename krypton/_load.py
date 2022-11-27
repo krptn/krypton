@@ -30,7 +30,7 @@ os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 os.environ["OPENSSL"] = OPENSSL_EXE
 
-OPENSSL_FIPS_MODULE = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib/ossl-modules/fips.dll" if sys.platform == "win32" else "kr-openssl-install/lib64/ossl-modules/fips.so")
+OPENSSL_FIPS_MODULE = os.path.join(OPENSSL_MODULES, "fips.dll" if sys.platform == "win32" else ("fips.so" if sys.platform == "linux" else "fips.dylib"))
 OPENSSL_FIPS_CONF = os.path.join(SITE_PACKAGE, "kr-openssl-config/fipsmodule.cnf")
 if sys.platform == "linux":
     subprocess.call(['ldconfig', LINUX_OSSL_LIB])
