@@ -32,11 +32,9 @@ jobs:
           cache: 'pip'
       - name: Install dependencies
         run: |
-          cd ${{ github.workspace }}
           python -m venv krenv
           source krenv/bin/activate
           sudo chmod -R a+rwx ${{ github.workspace }}
-          cd ${{ github.workspace }}
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -r requirements.txt
           mkdir kr-openssl-config
@@ -47,15 +45,13 @@ jobs:
           perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
           make -j3 
           make -j3 install
-          cd ..
+          cd ${{ github.workspace }}
       - name: Install extension
         run: |
-          cd ${{ github.workspace }}
           source krenv/bin/activate
           pip install .
       - name: Run Test
         run: |
-          cd ${{ github.workspace }}
           source krenv/bin/activate
           sudo chmod -R a+rwx ${{ github.workspace }}
           python -m unittest discover -s tests -p "*test*.py" --verbose
