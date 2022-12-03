@@ -49,7 +49,7 @@ jobs:
       - name: Install extension
         run: |
           source krenv/bin/activate
-          pip install .
+          pip install -e .
       - name: Run Test
         run: |
           source krenv/bin/activate
