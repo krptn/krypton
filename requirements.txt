@@ -2,11 +2,11 @@ asgiref==3.5.2
 asn1crypto==1.5.1
 astroid==2.12.13
 build==0.9.0
-cbor2==5.4.3
+cbor2==5.4.5
 cffi==1.15.1
 click==8.1.3
 colorama==0.4.6
-cryptography==38.0.3
+cryptography==38.0.4
 dill==0.3.6
 Django==4.1.3
 Flask==2.2.2
@@ -24,7 +24,7 @@ pybind11==2.10.1
 pycparser==2.21
 pydantic==1.10.2
 pyenchant==3.2.2
-pylint==2.15.6
+pylint==2.15.7
 pyOpenSSL==22.1.0
 pyparsing==3.0.9
 SQLAlchemy==1.4.44
@@ -32,7 +32,7 @@ sqlparse==0.4.3
 tomli==2.0.1
 tomlkit==0.11.6
 typing_extensions==4.4.0
-tzdata==2022.6
+tzdata==2022.7
 webauthn==1.6.0
 Werkzeug==2.2.2
 wrapt==1.14.1
