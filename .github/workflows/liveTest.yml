@@ -32,8 +32,6 @@ jobs:
           cache: 'pip'
       - name: Install dependencies
         run: |
-          python -m venv krenv
-          source krenv/bin/activate
           sudo chmod -R a+rwx ${{ github.workspace }}
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -r requirements.txt
@@ -48,11 +46,9 @@ jobs:
           cd ${{ github.workspace }}
       - name: Install extension
         run: |
-          source krenv/bin/activate
           pip install -e .
       - name: Run Test
         run: |
-          source krenv/bin/activate
           sudo chmod -R a+rwx ${{ github.workspace }}
           python -m unittest discover -s tests -p "*test*.py" --verbose
       - name: Install AutoBuild depends
