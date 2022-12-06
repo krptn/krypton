@@ -54,9 +54,9 @@ from krypton import basic
 myCrypto = basic.Crypto()
 pwd = "Perhaps provided by the user"
 # It supports C.R.U.D. operations:
-id = myCrypto.secureCreate("Example data", pwd) #id is an integer
+dataId = myCrypto.secureCreate("Example data", pwd) #id is an integer
 print("The data is:")
-print(myCrypto.secureRead(id, pwd)) # prints Example data
+print(myCrypto.secureRead(dataId, pwd)) # prints Example data
 ```
 
 ## User Auth

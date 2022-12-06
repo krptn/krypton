@@ -50,7 +50,11 @@ jobs:
       - name: Run Test
         run: |
           sudo chmod -R a+rwx ${{ github.workspace }}
+          cat ${{ github.workspace }}/kr-openssl-config/openssl.conf
+          cat ${{ github.workspace }}/kr-openssl-config/fipsmodule.conf
           python -m unittest discover -s tests -p "*test*.py" --verbose
+          cat ${{ github.workspace }}/kr-openssl-config/openssl.conf
+          cat ${{ github.workspace }}/kr-openssl-config/fipsmodule.conf
       - name: Install AutoBuild depends
         run: python -m pip install pybind11
       - name: Autobuild
