@@ -10,6 +10,8 @@ pip install krptn
 
 Note: we don't have pre-built extensions for all platforms. Please see the [installation section](https://docs.krptn.dev/README.html#installation) in our documentation for more info.
 
+If after reading this, you like our project, please consider staring!
+
 ## What problem do we solve?
 
 We all love Django and other web frameworks! However, their primary focus is creating websites - not securing them. One example is Django's built-in authentication system. While it hashes the password, it does not encrypt user data for you. Encryption is left to the developer...
