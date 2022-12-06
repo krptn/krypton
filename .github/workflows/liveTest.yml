@@ -48,13 +48,19 @@ jobs:
         run: |
           pip install -e .
       - name: Run Test
+        id: test
         run: |
           sudo chmod -R a+rwx ${{ github.workspace }}
           cat ${{ github.workspace }}/kr-openssl-config/openssl.conf
           cat ${{ github.workspace }}/kr-openssl-config/fipsmodule.conf
           python -m unittest discover -s tests -p "*test*.py" --verbose
+      - name: Get Failure Information
+        if: always() && (steps.test.outcome == 'failure' || steps.allJobs.outcome == 'failure')
+        run: |
           cat ${{ github.workspace }}/kr-openssl-config/openssl.conf
           cat ${{ github.workspace }}/kr-openssl-config/fipsmodule.conf
+          echo "from krypton._load import SITE_PACKAGE; print(SITE_PACKAGE)" >> test.py  
+          python test.py
       - name: Install AutoBuild depends
         run: python -m pip install pybind11
       - name: Autobuild
