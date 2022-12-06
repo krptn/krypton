@@ -25,13 +25,21 @@ RELATIVE_OSSL_MOD = ("kr-openssl-install/lib64/ossl-modules" if sys.platform == 
 OPENSSL_MODULES = os.path.join(SITE_PACKAGE, RELATIVE_OSSL_MOD)
 USER_DIR = pathlib.Path.home()
 
+try:
+    if os.environ["KRCI"] == "yes":
+        print("OPENSSL_MODULES", OPENSSL_MODULES)
+        print("OPENSSL_CONG", OPENSSL_CONFIG_FILE)
+        print("OPENSSL_CONF_INCLUDE", OPENSSL_CONFIG)
+        print("OPENSSL", OPENSSL_EXE)
+except KeyError:
+    pass
 os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 os.environ["OPENSSL"] = OPENSSL_EXE
 
 OPENSSL_FIPS_MODULE = os.path.join(OPENSSL_MODULES, "fips.dll" if sys.platform == "win32" else ("fips.so" if sys.platform == "linux" else "fips.dylib"))
-OPENSSL_FIPS_CONF = os.path.join(SITE_PACKAGE, "kr-openssl-config/fipsmodule.cnf")
+OPENSSL_FIPS_CONF = os.path.join(OPENSSL_CONFIG, "fipsmodule.cnf")
 if sys.platform == "linux":
     subprocess.call(['ldconfig', LINUX_OSSL_LIB])
 subprocess.call([OPENSSL_EXE, 'fipsinstall', '-out', OPENSSL_FIPS_CONF, '-module', OPENSSL_FIPS_MODULE])
