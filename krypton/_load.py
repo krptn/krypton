@@ -1,5 +1,5 @@
 """
-Load up databases, and set configuration needed by OPENSSL FIPS module.
+Load up databases, and configure OSSL FIPS module.
 """
 # pylint: disable=cyclic-import
 # pylint: disable=invalid-name
@@ -13,6 +13,7 @@ from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBina
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
 
 SITE_PACKAGE = pathlib.Path(__file__).parent.parent.as_posix()
+USER_DIR = pathlib.Path.home()
 
 OPENSSL_CONFIG = os.path.join(SITE_PACKAGE, "kr-openssl-config")
 OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG, "openssl.cnf")
@@ -23,35 +24,52 @@ MAC_OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib")
 RELATIVE_OSSL_MOD = ("kr-openssl-install/lib64/ossl-modules" if sys.platform == "linux"
     else "kr-openssl-install/lib/ossl-modules")
 OPENSSL_MODULES = os.path.join(SITE_PACKAGE, RELATIVE_OSSL_MOD)
-USER_DIR = pathlib.Path.home()
 
-try:
-    if os.environ["CI"] == "true" or os.environ["CI"] == True:
-        print("OS.ENVIRON[\"CI\"]", os.environ["CI"])
-        print("OPENSSL_MODULES", OPENSSL_MODULES)
-        print("OPENSSL_CONG", OPENSSL_CONFIG_FILE)
-        print("OPENSSL_CONF_INCLUDE", OPENSSL_CONFIG)
-        print("OPENSSL", OPENSSL_EXE)
-except KeyError:
-    pass
+OSSL_CONF = """
+config_diagnostics = 1
+openssl_conf = openssl_init
+
+.include fipsmodule.cnf
+
+[openssl_init]
+providers = provider_sect
+
+[provider_sect]
+fips = fips_sect
+base = base_sect
+
+[base_sect]
+activate = 1
+"""
+
+with open(OPENSSL_CONFIG_FILE, "w") as file:
+    file.write(OSSL_CONF)
+
+KR_DATA = pathlib.Path(pathlib.Path.home(), ".krptn-data/")
+if not KR_DATA.exists():
+    os.mkdir(KR_DATA.as_posix())
+
 os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
 os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
 os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 os.environ["OPENSSL"] = OPENSSL_EXE
 
-OPENSSL_FIPS_MODULE = os.path.join(OPENSSL_MODULES, "fips.dll" if sys.platform == "win32" else ("fips.so" if sys.platform == "linux" else "fips.dylib"))
+OPENSSL_FIPS_MODULE = os.path.join(OPENSSL_MODULES, "fips.dll" if sys.platform == "win32" \
+    else ("fips.so" if sys.platform == "linux" else "fips.dylib"))
 OPENSSL_FIPS_CONF = os.path.join(OPENSSL_CONFIG, "fipsmodule.cnf")
 if sys.platform == "linux":
     subprocess.call(['ldconfig', LINUX_OSSL_LIB])
-subprocess.call([OPENSSL_EXE, 'fipsinstall', '-out', OPENSSL_FIPS_CONF, '-module', OPENSSL_FIPS_MODULE])
+subprocess.call([OPENSSL_EXE, 'fipsinstall', '-out', OPENSSL_FIPS_CONF,
+    '-module', OPENSSL_FIPS_MODULE])
 
+# Alone, it will never find these
 if sys.platform == "win32":
     os.add_dll_directory(OPENSSL_BIN)
     os.add_dll_directory(OPENSSL_MODULES)
 elif sys.platform == "linux":
-    ctypes.CDLL(os.path.join(LINUX_OSSL_LIB, "libcrypto.so.3")) # Alone, it will never find these
+    ctypes.CDLL(os.path.join(LINUX_OSSL_LIB, "libcrypto.so.3"))
 elif sys.platform == "darwin":
-    ctypes.CDLL(os.path.join(MAC_OSSL_LIB, "libcrypto.dylib")) # Alone, it will never find these
+    ctypes.CDLL(os.path.join(MAC_OSSL_LIB, "libcrypto.dylib"))
 
 Base = declarative_base()
 
@@ -199,7 +217,8 @@ class ConfigTemp():
         c = Session(engine)
         Base.metadata.create_all(engine)
         error = False
-        stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id == 1)
+        stmt = select(DBschemas.CryptoTable)\
+            .where(DBschemas.CryptoTable.id == 1)
         test = None
         try:
             test = c.scalar(stmt)
@@ -256,7 +275,8 @@ class ConfigTemp():
         Base.metadata.create_all(engine)
         error = False
 
-        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == 1) # Has to be one because of shared
+        stmt = select(DBschemas.UserTable)\
+            .where(DBschemas.UserTable.id == 1) # Has to be one because of shared
         test = None
         try:
             test = c.scalar(stmt)
@@ -277,35 +297,6 @@ class ConfigTemp():
 
 configs = ConfigTemp()
 
-kr_data = pathlib.Path(pathlib.Path.home(), ".krptn-data/")
-if not kr_data.exists():
-    os.mkdir(kr_data.as_posix())
-
 configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/crypto.db")
 configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/altKMS.db")
 configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/users.db")
-
-#configs.SQLDefaultUserDBpath = "mssql+pyodbc://localhost/userDB?driver=ODBC+Driver+18+for+SQL+Server&Encrypt=no"
-#configs.SQLDefaultCryptoDBpath = "postgresql+psycopg2://example:example@localhost:5432/example"
-#configs.SQLDefaultCryptoDBpath = "mysql+mysqldb://test:test@localhost:3306/cryptodb"
-
-OSSL_CONF = """
-config_diagnostics = 1
-openssl_conf = openssl_init
-
-.include fipsmodule.cnf
-
-[openssl_init]
-providers = provider_sect
-
-[provider_sect]
-fips = fips_sect
-base = base_sect
-
-[base_sect]
-activate = 1
-"""
-
-with open(OPENSSL_CONFIG_FILE, "w") as file:
-    file.write(OSSL_CONF)
-
