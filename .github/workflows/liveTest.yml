@@ -54,8 +54,6 @@ jobs:
           python -m unittest discover -s tests -p "*test*.py" --verbose
       - name: Get Failure Information
         if: always() && (steps.test.outcome == 'failure' || steps.allJobs.outcome == 'failure')
-        env:
-          KRCI: 'yes'
         run: |
           cat ${{ github.workspace }}/kr-openssl-config/openssl.cnf
           cat ${{ github.workspace }}/kr-openssl-config/fipsmodule.cnf

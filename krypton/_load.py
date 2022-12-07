@@ -26,7 +26,8 @@ OPENSSL_MODULES = os.path.join(SITE_PACKAGE, RELATIVE_OSSL_MOD)
 USER_DIR = pathlib.Path.home()
 
 try:
-    if os.environ["KRCI"] == "yes":
+    if os.environ["CI"] == "true" or os.environ["CI"] == True:
+        print("OS.ENVIRON[\"CI\"]", os.environ["CI"])
         print("OPENSSL_MODULES", OPENSSL_MODULES)
         print("OPENSSL_CONG", OPENSSL_CONFIG_FILE)
         print("OPENSSL_CONF_INCLUDE", OPENSSL_CONFIG)
