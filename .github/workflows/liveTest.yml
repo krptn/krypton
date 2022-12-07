@@ -5,6 +5,7 @@ on:
    types: [opened, reopened]
   schedule:
     - cron: '29 4 * * 5'
+
 jobs:
   TestAnalysis:
     permissions:
@@ -21,27 +22,30 @@ jobs:
         with:
           languages: 'cpp'
           config-file: ./.github/code-ql/codeql-config.yml
-      - name: Pre-run Tasks
-        run: |
-          sudo apt install libsqlite3-dev
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
           architecture: 'x64'
           cache: 'pip'
-      - name: Install dependencies
+      - name: Pre-run Tasks
         run: |
-          sudo chmod -R a+rwx ${{ github.workspace }}
+          sudo apt install libsqlite3-dev
           python -m pip install --upgrade pip setuptools wheel
-          python -m pip install -r requirements.txt
           mkdir kr-openssl-config
           mkdir kr-openssl-install
+      - name: Cache OSSL Build
+        id: cache-ossl
+        uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/kr-openssl-*
+          key: ubuntu-ossl-build
       - name: Build OSSL
+        if: steps.cache-ossl.outputs.cache-hit != 'true'
         run: |
           cd openssl
           perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
-          make -j3 
+          make -j3
           make -j3 install
           cd ${{ github.workspace }}
       - name: Install extension
@@ -52,13 +56,6 @@ jobs:
         run: |
           sudo chmod -R a+rwx ${{ github.workspace }}
           python -m unittest discover -s tests -p "*test*.py" --verbose
-      - name: Get Failure Information
-        if: always() && (steps.test.outcome == 'failure' || steps.allJobs.outcome == 'failure')
-        run: |
-          cat ${{ github.workspace }}/kr-openssl-config/openssl.cnf
-          cat ${{ github.workspace }}/kr-openssl-config/fipsmodule.cnf
-          echo "from krypton._load import SITE_PACKAGE; print(SITE_PACKAGE)" >> test.py  
-          python test.py
       - name: Install AutoBuild depends
         run: python -m pip install pybind11
       - name: Autobuild
