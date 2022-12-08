@@ -51,7 +51,7 @@ jobs:
           ./kr-openssl-install/bin/openssl fipsinstall -out ${{ github.workspace }}/kr-openssl-config/fipsmodule.cnf -module ${{ github.workspace }}/kr-openssl-install/lib64/ossl-modules/fips.so
       - name: Install extension
         run: |
-          pip install -e .
+          pip install .
       - name: Run Test
         id: test
         run: |
