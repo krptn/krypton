@@ -32,7 +32,7 @@ OSSL_CONF = f"""
 config_diagnostics = 1
 openssl_conf = openssl_init
 
-.include ./fipsmodule.cnf
+.include fipsmodule.cnf
 
 [openssl_init]
 providers = provider_sect

@@ -14,20 +14,22 @@ bool init = false;
 
 OSSL_PROVIDER *fips;
 OSSL_PROVIDER *base;
+OSSL_LIB_CTX *fips_libctx;
 
-bool fipsInit()
-{
+bool fipsInit(char* osslConfig) {
 	if (init) {
 		return true;
 	}
-	fips = OSSL_PROVIDER_load(NULL, "fips");
+	fips_libctx = OSSL_LIB_CTX_new();
+	OSSL_LIB_CTX_load_config(fips_libctx, osslConfig);
+	fips = OSSL_PROVIDER_load(fips_libctx, "fips");
 	if (fips == NULL) {
 		ERR_print_errors_fp(stderr);
 		throw std::runtime_error("Failed to load fips provider.");
 		return false;
 	}
 	EVP_set_default_properties(NULL, "fips=yes");
-	base = OSSL_PROVIDER_load(NULL, "base");
+	base = OSSL_PROVIDER_load(fips_libctx, "base");
     if (base == NULL) {
 		ERR_print_errors_fp(stderr);
 		throw std::runtime_error("Failed to load base provider.");
@@ -76,7 +78,7 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("PBKDF2", &pyPBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("textLen"), py::arg("salt"), 
 		py::arg("iter"), py::arg("saltLen"), py::arg("keylen"));
 	m.def("HKDF", &pyHKDF, py::arg("secret"), py::arg("len"), py::arg("salt"), py::arg("saltLen"), py::arg("keyLen"));
-	m.def("fipsInit", &fipsInit,"Initialises OpenSSL 3 FIPS module.");
+	m.def("fipsInit", &fipsInit,"Initialises OpenSSL 3 FIPS module.", py::arg("osslConfig"));
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("ECDH", &ECDH, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"),
 		py::arg("salt"), py::arg("keylen"));

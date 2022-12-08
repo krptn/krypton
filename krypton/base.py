@@ -12,12 +12,12 @@ from typing import ByteString
 from sqlalchemy import select
 from sqlalchemy.orm import scoped_session, Session
 import __CryptoLib
-from . import configs, DBschemas
+from . import configs, DBschemas, OPENSSL_CONFIG_FILE
 
 Adrr = id
 
 #: Load FIPS Validated resolver
-__CryptoLib.fipsInit()
+__CryptoLib.fipsInit(OPENSSL_CONFIG_FILE)
 
 #: Wrappers for __CryptoLib #
 # : Help static analyzers automatically figure out function arguments, returns, etc..
