@@ -78,7 +78,7 @@ PYBIND11_MODULE(__CryptoLib, m) {
 	m.def("PBKDF2", &pyPBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("textLen"), py::arg("salt"), 
 		py::arg("iter"), py::arg("saltLen"), py::arg("keylen"));
 	m.def("HKDF", &pyHKDF, py::arg("secret"), py::arg("len"), py::arg("salt"), py::arg("saltLen"), py::arg("keyLen"));
-	m.def("fipsInit", &fipsInit,"Initialises OpenSSL 3 FIPS module.", py::arg("osslConfig"));
+	m.def("fipsInit", &fipsInit,"Initialises OpenSSL 3 FIPS module. Repeated calls do nothing.", py::arg("osslConfig"));
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("ECDH", &ECDH, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"),
 		py::arg("salt"), py::arg("keylen"));
