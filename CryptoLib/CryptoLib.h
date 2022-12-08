@@ -16,6 +16,8 @@ py::bytes decode64(char* input, int length);
 void handleErrors();
 char* pymbToBuffer(py::bytes a);
 char* pyStrToBuffer(py::str a);
+OSSL_PROVIDER *fips;
+OSSL_PROVIDER *base;
 
 // AES
 py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc);

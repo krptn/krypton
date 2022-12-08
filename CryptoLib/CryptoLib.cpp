@@ -12,24 +12,19 @@ namespace py = pybind11;
 
 bool init = false;
 
-OSSL_PROVIDER *fips;
-OSSL_PROVIDER *base;
-OSSL_LIB_CTX *fips_libctx;
-
 bool fipsInit(char* osslConfig) {
 	if (init) {
 		return true;
 	}
-	fips_libctx = OSSL_LIB_CTX_new();
-	OSSL_LIB_CTX_load_config(fips_libctx, osslConfig);
-	fips = OSSL_PROVIDER_load(fips_libctx, "fips");
+	OSSL_LIB_CTX_load_config(NULL, osslConfig);
+	fips = OSSL_PROVIDER_load(NULL, "fips");
 	if (fips == NULL) {
 		ERR_print_errors_fp(stderr);
 		throw std::runtime_error("Failed to load fips provider.");
 		return false;
 	}
 	EVP_set_default_properties(NULL, "fips=yes");
-	base = OSSL_PROVIDER_load(fips_libctx, "base");
+	base = OSSL_PROVIDER_load(NULL, "base");
     if (base == NULL) {
 		ERR_print_errors_fp(stderr);
 		throw std::runtime_error("Failed to load base provider.");
