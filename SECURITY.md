@@ -15,6 +15,12 @@ Please make sure the following information is clearly stated:
 - Minimal reproducible example
 - Recommendations on fixes, if any
 
+## Vulnerability Publishing
+
+Any published vulnerabilities will be available under the Security tab of affected GitHub repositories. To view them, click on the tab and select advisories under the reporting section.
+
+Important vulnerabilities will also appear under our news on our [homepage](https://www.krptn.dev/news/).
+
 ## GPG
 
 Depending on the severity of the vulnerability, you might want to encrypt it with GPG/PGP before sending it.
