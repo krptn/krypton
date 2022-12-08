@@ -12,12 +12,27 @@ namespace py = pybind11;
 
 bool init = false;
 
+OSSL_PROVIDER *fips;
+OSSL_PROVIDER *base;
+
 bool fipsInit()
 {
 	if (init) {
 		return true;
 	}
+	fips = OSSL_PROVIDER_load(NULL, "fips");
+	if (fips == NULL) {
+		ERR_print_errors_fp(stderr);
+		throw std::runtime_error("Failed to load fips provider.");
+		return false;
+	}
 	EVP_set_default_properties(NULL, "fips=yes");
+	base = OSSL_PROVIDER_load(NULL, "base");
+    if (base == NULL) {
+		ERR_print_errors_fp(stderr);
+		throw std::runtime_error("Failed to load base provider.");
+		return false;
+    }
 	init = true;
 	return true;
 }
