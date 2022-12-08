@@ -10,6 +10,9 @@
 using namespace std;
 namespace py = pybind11;
 
+OSSL_PROVIDER *fips;
+OSSL_PROVIDER *base;
+
 bool init = false;
 
 bool fipsInit(char* osslConfig) {
