@@ -53,7 +53,7 @@ elif sys.platform == "darwin":
   extra_args += ["-std=c++17", "-O0"] # Disable optimizationas as they trigger segementation faults
 
 setup(name='krptn',
-  version='0.1.15',
+  version='0.1.16',
   description='Zero Knowledge security for Python',
   long_description=description,
   long_description_content_type="text/markdown",
