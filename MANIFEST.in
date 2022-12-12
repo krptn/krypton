@@ -18,3 +18,4 @@ global-include fips.dylib
 graft kr-openssl-config
 graft CryptoLib
 include README.md
+include MSVCP140.dll

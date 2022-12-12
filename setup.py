@@ -16,6 +16,24 @@ runtime_libs = []
 extra_args = []
 library_dirs = []
 
+package_data = [
+  "../kr-openssl-install/bin/libcrypto-3-x64.dll",
+  "../kr-openssl-install/bin/libssl-3-x64.dll",
+  "../kr-openssl-install/bin/libcrypto-3.dll",
+  "../kr-openssl-install/bin/libssl-3.dll",
+  "../kr-openssl-install/lib/ossl-modules/fips.dll",
+  "../kr-openssl-install/bin/openssl.exe",
+  "../kr-openssl-config/openssl.cnf",
+  "../kr-openssl-config/fipsmodule.cnf",
+  "../kr-openssl-install/bin/openssl",
+  "../kr-openssl-install/lib64/libcrypto.so.3",
+  "../kr-openssl-install/lib64/libssl.so.3",
+  "../kr-openssl-install/lib64/ossl-modules/fips.so",
+  "../kr-openssl-install/lib/libcrypto.dylib",
+  "../kr-openssl-install/lib/libssl.dylib",
+  "../kr-openssl-install/lib/ossl-modules/fips.dylib",
+]
+
 if sys.platform == "linux":
   link_libararies += ["crypto"]
   macros += []
@@ -26,6 +44,7 @@ elif sys.platform == "win32":
   library_dirs += ["kr-openssl-install/lib"]
   macros += [("WIN", None)]
   runtime_libs += []
+  package_data += ["MSVCP140.dll"]
 elif sys.platform == "darwin":
   link_libararies += ["crypto"]
   library_dirs += ["kr-openssl-install/lib"]
@@ -56,23 +75,7 @@ setup(name='krptn',
       'Framework :: Django',
       'Framework :: Flask',
   ],
-  package_data={"":[
-    "../kr-openssl-install/bin/libcrypto-3-x64.dll",
-    "../kr-openssl-install/bin/libssl-3-x64.dll",
-    "../kr-openssl-install/bin/libcrypto-3.dll",
-    "../kr-openssl-install/bin/libssl-3.dll",
-    "../kr-openssl-install/lib/ossl-modules/fips.dll",
-    "../kr-openssl-install/bin/openssl.exe",
-    "../kr-openssl-config/openssl.cnf",
-    "../kr-openssl-config/fipsmodule.cnf",
-    "../kr-openssl-install/bin/openssl",
-    "../kr-openssl-install/lib64/libcrypto.so.3",
-    "../kr-openssl-install/lib64/libssl.so.3",
-    "../kr-openssl-install/lib64/ossl-modules/fips.so",
-    "../kr-openssl-install/lib/libcrypto.dylib",
-    "../kr-openssl-install/lib/libssl.dylib",
-    "../kr-openssl-install/lib/ossl-modules/fips.dylib",
-  ]},
+  package_data={"": package_data},
   packages=find_packages(),
   python_requires=">3.9",
   install_requires=["SQLAlchemy>=1.4.0", "webauthn==1.6.0", "Django>=4.1.0"],
