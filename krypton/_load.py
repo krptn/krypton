@@ -41,6 +41,7 @@ try:
     os.remove(OPENSSL_CONFIG_FILE)
 except FileNotFoundError:
     pass
+
 if sys.platform == "linux":
     subprocess.call(['/sbin/ldconfig', LINUX_OSSL_LIB])
 subprocess.call([OPENSSL_EXE, 'fipsinstall', '-out', OPENSSL_FIPS_CONF,
@@ -68,6 +69,7 @@ with open(OPENSSL_CONFIG_FILE, "w") as file:
 
 # Alone, it will never find these
 if sys.platform == "win32":
+    os.add_dll_directory(SITE_PACKAGE)
     os.add_dll_directory(OPENSSL_BIN)
     os.add_dll_directory(OPENSSL_MODULES)
 elif sys.platform == "linux":
