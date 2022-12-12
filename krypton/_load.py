@@ -58,7 +58,7 @@ os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
 os.environ["OPENSSL"] = OPENSSL_EXE
 
 if sys.platform == "linux":
-    subprocess.call(['ldconfig', LINUX_OSSL_LIB])
+    subprocess.call(['/sbin/ldconfig', LINUX_OSSL_LIB])
 subprocess.call([OPENSSL_EXE, 'fipsinstall', '-out', OPENSSL_FIPS_CONF,
     '-module', OPENSSL_FIPS_MODULE])
 
