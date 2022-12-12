@@ -3,6 +3,7 @@ from setuptools import setup, find_packages
 from pybind11.setup_helpers import Pybind11Extension
 from glob import glob
 import os
+import shutil
 import sys
 
 folder = pathlib.Path(__file__).parent.as_posix()
@@ -45,6 +46,10 @@ elif sys.platform == "win32":
   macros += [("WIN", None)]
   runtime_libs += []
   package_data += ["MSVCP140.dll"]
+  try:
+    shutil.copy("C:/Windows/System32/MSVCP140.dll", folder)
+  except FileNotFoundError:
+    pass
 elif sys.platform == "darwin":
   link_libararies += ["crypto"]
   library_dirs += ["kr-openssl-install/lib"]
