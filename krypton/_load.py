@@ -28,11 +28,29 @@ OPENSSL_FIPS_MODULE = os.path.join(OPENSSL_MODULES, "fips.dll" if sys.platform =
     else ("fips.so" if sys.platform == "linux" else "fips.dylib"))
 OPENSSL_FIPS_CONF = os.path.join(OPENSSL_CONFIG, "fipsmodule.cnf")
 
+KR_DATA = pathlib.Path(pathlib.Path.home(), ".krptn-data/")
+if not KR_DATA.exists():
+    os.mkdir(KR_DATA.as_posix())
+
+os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
+os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
+os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
+os.environ["OPENSSL"] = OPENSSL_EXE
+
+try:
+    os.remove(OPENSSL_CONFIG_FILE)
+except FileNotFoundError:
+    pass
+if sys.platform == "linux":
+    subprocess.call(['/sbin/ldconfig', LINUX_OSSL_LIB])
+subprocess.call([OPENSSL_EXE, 'fipsinstall', '-out', OPENSSL_FIPS_CONF,
+    '-module', OPENSSL_FIPS_MODULE])
+
 OSSL_CONF = f"""
 config_diagnostics = 1
 openssl_conf = openssl_init
 
-.include ./fipsmodule.cnf
+.include fipsmodule.cnf
 
 [openssl_init]
 providers = provider_sect
@@ -47,20 +65,6 @@ activate = 1
 
 with open(OPENSSL_CONFIG_FILE, "w") as file:
     file.write(OSSL_CONF)
-
-KR_DATA = pathlib.Path(pathlib.Path.home(), ".krptn-data/")
-if not KR_DATA.exists():
-    os.mkdir(KR_DATA.as_posix())
-
-os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
-os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
-os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
-os.environ["OPENSSL"] = OPENSSL_EXE
-
-if sys.platform == "linux":
-    subprocess.call(['/sbin/ldconfig', LINUX_OSSL_LIB])
-subprocess.call([OPENSSL_EXE, 'fipsinstall', '-out', OPENSSL_FIPS_CONF,
-    '-module', OPENSSL_FIPS_MODULE])
 
 # Alone, it will never find these
 if sys.platform == "win32":
