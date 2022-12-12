@@ -16,7 +16,7 @@ try:
     import __CryptoLib
 except ImportError as err:
     if sys.platform == "win32" and not os.path.isfile("C:/Windows/System32/MSVCP140.dll"):
-        raise RuntimeError("This module requires Microsoft Visual C/C++ runtime. Please download v14.0 from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist.")
+        raise RuntimeError("This module requires Microsoft Visual C/C++ runtime. Please download it from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist.")
     else:
         raise err
 from . import configs, DBschemas, OPENSSL_CONFIG_FILE
