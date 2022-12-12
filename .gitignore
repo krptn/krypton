@@ -5,7 +5,11 @@ __pycache__/
 
 # C extensions
 *.so
-.pyd
+*.pyd
+*.dll
+*.dylib
+*.lib
+*.a
 
 .DS_Store
 
