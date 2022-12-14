@@ -6,8 +6,8 @@
 #include <openssl/decoder.h>
 #include <openssl/evp.h>
 #include <pybind11/pybind11.h>
-using namespace std;
 
+using namespace std;
 namespace py = pybind11;
 
 int ECC_DEFAULT_CURVE = NID_X9_62_prime256v1;

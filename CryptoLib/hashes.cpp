@@ -25,12 +25,10 @@ int compHash(const void* a, const void* b, const size_t size)
 py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int keylen) {
 	py::gil_scoped_release release;
 	char* key = new char[keylen];
-	int a;
-	a = PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt, saltLen, iter, EVP_sha512(), keylen, (unsigned char*)key);
-	OPENSSL_cleanse(text, len);
-	if (a != 1) {
+	if (!PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt,
+		saltLen, iter, EVP_sha512(), keylen, (unsigned char*)key))
 		throw std::invalid_argument("Unable to hash data.");
-	}
+	OPENSSL_cleanse(text, len);
 	py::gil_scoped_acquire acquire;
 	py::bytes final = py::bytes(key, keylen);
 	delete[] key;
@@ -51,9 +49,8 @@ py::bytes pyHKDF(char* secret, int len, char* salt, int saltLen, int keylen) {
 	*p++ = OSSL_PARAM_construct_octet_string("key", secret, len);
 	*p++ = OSSL_PARAM_construct_octet_string("key", salt, saltLen);
 	*p = OSSL_PARAM_construct_end();
-	if (EVP_KDF_derive(kctx, out, keylen, params) <= 0) {
+	if (EVP_KDF_derive(kctx, out, keylen, params) <= 0)
 		handleErrors();
-	}
 	EVP_KDF_CTX_free(kctx);
 	py::bytes result = py::bytes((char*)out, keylen);
 	delete[] out;
