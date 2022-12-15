@@ -21,7 +21,7 @@ py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	char* text = new char[msglen];
 	memcpy(text + 4, textc, msglenc);
 	text[0] = '$';
-	text[1] = 'C';
+	text[1] = 'K';
 	text[2] = 'r';
 	text[3] = msglenc;
 	char* k = pymbToBuffer(key);
@@ -96,7 +96,7 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
 	int plainMsgLen = out.get()[3];
-	if (out.get()[0] != '$' || out.get()[1] != 'C' || out.get()[2] != 'r') {
+	if (out.get()[0] != '$' || out.get()[1] != 'K' || out.get()[2] != 'r') {
 		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
 	delete[] b;
