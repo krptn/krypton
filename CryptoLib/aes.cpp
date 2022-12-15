@@ -29,7 +29,8 @@ py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	int flen = msglen + (long long)rem + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN;
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[flen]);
 	unsigned char* iv = out.get() + flen - (long long)IV_SALT_LEN;
-	RAND_bytes(iv, IV_SALT_LEN);
+	if (!(RAND_bytes(iv, IV_SALT_LEN) == 1))
+		handleErrors();
 	unsigned char* tag = out.get() + flen - (long long)IV_SALT_LEN - (long long)AUTH_TAG_LEN;
 
 	EVP_CIPHER_CTX* ctx;
