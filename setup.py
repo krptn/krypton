@@ -77,7 +77,7 @@ setup(name='krptn',
   package_data={"": package_data},
   packages=find_packages(),
   python_requires=">3.9",
-  install_requires=["SQLAlchemy>=1.4.0", "webauthn==1.6.0", "Django>=4.1.0"],
+  install_requires=["SQLAlchemy>=1.4.0", "webauthn>=1.6.0", "Django>=4.1.0"],
   extras_require={
         "MSSQL": ["pyodbc"],
         "MySQL": ["mysqlclient"],
