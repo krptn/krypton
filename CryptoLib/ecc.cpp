@@ -16,7 +16,7 @@ const char* KEY_ENCODE_FORMAT = "PEM";
 size_t getPubKey(EVP_PKEY *pkey, char* out) {
 	OSSL_ENCODER_CTX *ctx;
 	unsigned char* data = NULL;
-	size_t datalen = NULL;
+	size_t datalen;
 	ctx = OSSL_ENCODER_CTX_new_for_pkey(pkey, EVP_PKEY_PUBLIC_KEY, KEY_ENCODE_FORMAT, NULL, NULL);
 	if (ctx == NULL)
 		handleErrors();
@@ -35,7 +35,7 @@ size_t getPubKey(EVP_PKEY *pkey, char* out) {
 size_t getPrivKey(EVP_PKEY *pkey, char* out) {
 	OSSL_ENCODER_CTX *ctx;
 	unsigned char* data = NULL;
-	size_t datalen = NULL;
+	size_t datalen;
 	ctx = OSSL_ENCODER_CTX_new_for_pkey(pkey, EVP_PKEY_KEYPAIR, KEY_ENCODE_FORMAT, NULL, NULL);
 	if (ctx == NULL)
 		handleErrors();
