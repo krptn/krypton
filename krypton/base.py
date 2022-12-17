@@ -16,7 +16,7 @@ try:
     import __CryptoLib
 except ImportError as err:
     if sys.platform == "win32" and not os.path.isfile("C:/Windows/System32/MSVCP140.dll"):
-        raise RuntimeError("This module requires Microsoft Visual C/C++ runtime. Please download it from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist.")
+        raise RuntimeError("This module requires Microsoft Visual C/C++ runtime. Please download it from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist.") from err
     else:
         raise err
 from . import configs, DBschemas, OPENSSL_CONFIG_FILE
@@ -27,7 +27,7 @@ Adrr = id
 __CryptoLib.fipsInit(OPENSSL_CONFIG_FILE)
 
 #: Wrappers for __CryptoLib #
-# : Help static analyzers automatically figure out function arguments, returns, etc..
+#: Help static analyzers automatically figure out function arguments, returns, etc..
 def restEncrypt(data:ByteString, key:bytes) -> bytes:
     """Encrypt Data for at rest Storage
 
@@ -123,9 +123,11 @@ def getSharedKey(privKey:str, peerID:int, salt:bytes, keylen:int=32) -> list[byt
         List of keys as python bytes
     """
     # pylint: disable=no-member
-    stmt = select(DBschemas.PubKeyTable.key).where(DBschemas.PubKeyTable.Uid == peerID)
     session:Session = scoped_session(configs.SQLDefaultUserDBpath)
-    pubKeys = session.scalars(stmt)
+    pubKeys = session.scalars(
+        select(DBschemas.PubKeyTable.key)
+        .where(DBschemas.PubKeyTable.Uid == peerID)
+        .order_by(DBschemas.PubKeyTable.id.desc()))
     results = [__CryptoLib.ECDH(privKey, pubKey, salt, keylen) for pubKey in pubKeys]
     session.close()
     return results

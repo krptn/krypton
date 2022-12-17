@@ -208,6 +208,7 @@ class standardUser(AuthUser, MFAUser, user):
 
         Returns:
             If otherUsers is None: ciphertext.
+
             If otherUsers is not None: list of tuples of form (user name, ciphertext, salt), which needs to be provided so that username's user can decrypt it.
         """
         # pylint: disable=expression-not-assigned
@@ -270,8 +271,8 @@ class standardUser(AuthUser, MFAUser, user):
         Returns:
             Decrypted data
         """
-        stmt = select(DBschemas.UserShareTable).where(DBschemas.UserShareTable.name == name
-            and DBschemas.UserShareTable.shareUid == self.id)
+        stmt = select(DBschemas.UserShareTable).where(and_(DBschemas.UserShareTable.name == name,
+            DBschemas.UserShareTable.shareUid == self.id))
         row:DBschemas.UserShareTable = self.c.scalar(stmt)
         return self.decryptWithUserKey(row.value, row.salt, row.sender)
 

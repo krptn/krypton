@@ -64,8 +64,9 @@ class UserAuth(unittest.TestCase):
     def testShare(self):
         user2 = standardUser(None)
         user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
-        user2.shareSet("test", "TesT", [self.userName])
-        value = self.model.shareGet("test")
+        testName = "test"+str(uuid.uuid4())
+        user2.shareSet(testName, "TesT", [self.userName])
+        value = self.model.shareGet(testName)
         user2.delete()
         self.assertEqual(value, b"TesT")
 
