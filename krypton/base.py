@@ -164,6 +164,7 @@ def zeromem(obj:ByteString)->int:
     """
     if "PyPy" not in sys.version:
         return ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
+    return None
 
 def verifyTOTP(secret:bytes, code:str) -> bool:
     """Verify a 6-digit TOTP

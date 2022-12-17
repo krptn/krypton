@@ -112,7 +112,8 @@ class standardUser(AuthUser, MFAUser, user):
                 retry = True
             if not retry:
                 break
-        try: return text
+        try:
+            return text
         except NameError as exc:
             raise ValueError("Unable to decrypt the cipertext") from exc
 
@@ -197,7 +198,9 @@ class standardUser(AuthUser, MFAUser, user):
             raise ValueError("Unable to decrypt the cipertext") from exc
 
     @userExistRequired
-    def encryptWithUserKey(self, data:ByteString, otherUsers:list[int]=None) -> list[tuple[str, bytes, bytes]]:
+    def encryptWithUserKey(self,
+        data:ByteString,
+        otherUsers:list[int]=None) -> list[tuple[str, bytes, bytes]]:
         """Encrypt data with user's key
 
         Arguments:
@@ -220,7 +223,7 @@ class standardUser(AuthUser, MFAUser, user):
         otherUsers = [
             self.c.scalar(
                 select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == name)
-            ) 
+            )
             for name in otherUsers
         ]
         for i, Uid in enumerate(otherUsers):
@@ -275,7 +278,7 @@ class standardUser(AuthUser, MFAUser, user):
             DBschemas.UserShareTable.shareUid == self.id))
         row:DBschemas.UserShareTable = self.c.scalar(stmt)
         return self.decryptWithUserKey(row.value, row.salt, row.sender)
-    
+
     @userExistRequired
     def shareDelete(self, name:str) -> None:
         self.c.execute(delete(DBschemas.UserShareTable).where(and_(DBschemas.UserShareTable.name == name,
