@@ -29,7 +29,7 @@ __CryptoLib.fipsInit(OPENSSL_CONFIG_FILE)
 #: Wrappers for __CryptoLib #
 #: Help static analyzers automatically figure out function arguments, returns, etc..
 def restEncrypt(data:ByteString, key:bytes) -> bytes:
-    """Encrypt Data for at rest Storage
+    """Encrypt Data for at rest storage
 
     Arguments:
         data -- Plain text
