@@ -44,6 +44,7 @@ class MFAUser(user):
 
         Arguments:
             key -- The recovery code
+
             newPWD -- The new PWD
 
         Raises:
