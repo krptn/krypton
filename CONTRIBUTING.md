@@ -14,10 +14,6 @@ Naming conventions:
 - Variables starting in _ or __ are not to be accessed directly by the users - they are internals.
 - In databases, names starting in _ or __ should only store data required by Krypton - no user data, they are internals.
 
-## Important Warnings
-
-Our base64 encoding and decoding is unique. This means that data base64 encoded here may not be decodable elsewhere. **Additionally, decoding is suspectable to buffer overflow (but it cannot be exploited for remote code execution, it can only trigger errors).** Hence, do not ever base64 decode using `base.base64decode` from an untrusted source. For that use python's base64 decoding module.
-
 ## Build/Setup the extension for development, Build from source
 
 *Note:* apart from x86 on Windows, only 64-bit environments are supported.
