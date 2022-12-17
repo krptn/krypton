@@ -161,12 +161,7 @@ class AuthUser(user):
         )
         self.c.add(userEntry)
         self.c.flush()
-        try:
-            self._key = factors.password.auth(tag, pwd)
-        except ValueError:
-            print("A known error has been reached.")
-            print("We are still trying to fix it.")
-            print("The Auth tag was", tag)
+        self._key = factors.password.auth(tag, pwd)
         self.saved = True
         self.loggedin = True
         self.setData("_userPrivateKey", self._privKey)

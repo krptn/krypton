@@ -49,7 +49,7 @@ py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	ciphertext_len = len;
 	if (1 != EVP_EncryptFinal_ex(ctx, out.get() + len, &len))
 		handleErrors();
-	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, AUTH_TAG_LEN, &tag))
+	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, AUTH_TAG_LEN, tag))
 		handleErrors();
 	ciphertext_len += len;
 	OPENSSL_cleanse(text, msglen);

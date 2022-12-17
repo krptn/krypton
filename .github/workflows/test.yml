@@ -8,7 +8,7 @@ jobs:
       CIBW_ARCHS: native
       CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
       CIBW_TEST_COMMAND: |
-        python -m krptn --clean
+        python -m krypton --clean
         python -m unittest discover -s {project}/tests -p "*test*.py" --verbose
     runs-on: ubuntu-latest
     steps:

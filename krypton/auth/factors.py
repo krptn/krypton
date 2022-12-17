@@ -65,6 +65,7 @@ class password:
             }${
                 configs.defaultIterations
             }"""
+        base.zeromem(key)
         return authTag
 
     @staticmethod
