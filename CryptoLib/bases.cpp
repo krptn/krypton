@@ -7,7 +7,7 @@ using namespace std;
 namespace py = pybind11;
 
 char* encode64(char* data, int length) {
-	int pl = (length+length%3)*4/3;
+	int pl = (length+3-length%3)*4/3;
 	char* output = new char[pl+1];
 	EVP_EncodeBlock(reinterpret_cast<unsigned char *>(output), (const unsigned char*)data, length);
 	return output;
