@@ -127,6 +127,7 @@ jobs:
     env:
       CIBW_ARCHS: arm64
       CIBW_ENVIRONMENT: LD_LIBRARY_PATH=${{ github.workspace }}/kr-openssl-install/lib
+      CIBW_SKIP: pp*
     runs-on: macos-latest
     steps:
       - name: Checkout Repo
