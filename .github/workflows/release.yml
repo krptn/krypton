@@ -5,6 +5,7 @@ on:
     types: [published]
 
 env:
+  CIBW_TEST_SKIP: pp*
   CIBW_TEST_COMMAND: |
     python -m krypton --clean
     python -m unittest discover -s {project}/tests -p "*test*.py" --verbose
@@ -12,7 +13,6 @@ env:
 jobs:
   buildLinux:
     env:
-      CIBW_SKIP: pp*
       CIBW_ARCHS: native
       CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
     runs-on: ubuntu-latest
