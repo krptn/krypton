@@ -171,6 +171,7 @@ def verifyTOTP(secret:bytes, code:str) -> bool:
 
     Arguments:
         secret -- The shared secret
+
         code -- The code to verify
 
     Returns:
