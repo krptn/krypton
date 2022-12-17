@@ -275,6 +275,13 @@ class standardUser(AuthUser, MFAUser, user):
             DBschemas.UserShareTable.shareUid == self.id))
         row:DBschemas.UserShareTable = self.c.scalar(stmt)
         return self.decryptWithUserKey(row.value, row.salt, row.sender)
+    
+    @userExistRequired
+    def shareDelete(self, name:str) -> None:
+        self.c.execute(delete(DBschemas.UserShareTable).where(and_(DBschemas.UserShareTable.name == name,
+            DBschemas.UserShareTable.shareUid == self.id)))
+        self.c.flush()
+        self.c.commit()
 
     @userExistRequired
     def generateNewKeys(self, pwd:str):
