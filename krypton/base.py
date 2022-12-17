@@ -150,7 +150,7 @@ def PBKDF2(text:ByteString, salt:ByteString, iterations:int=configs.defaultItera
     return __CryptoLib.PBKDF2(text, len(text), salt, iterations, len(salt), keylen)
 
 def zeromem(obj:ByteString)->int:
-    """Set the byte/string to \x00
+    """Set the byte/string to \\x00
 
     WARNING! Improper use leads to severe memory corruption.
     Ensure you only use it with bytes and string objects.

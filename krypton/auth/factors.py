@@ -103,6 +103,7 @@ class totp:
 
         Arguments:
             secret -- The Shared secret
+
             otp -- The OTP
 
         Returns:
@@ -122,6 +123,7 @@ class fido:
 
         Arguments:
             userID -- User's ID
+
             userName -- The User's username
 
         Returns:
@@ -142,6 +144,7 @@ class fido:
 
         Arguments:
             credentials -- The user's fido credentials, recieved from the browser
+
             challenge -- The expected challenge
 
         Raises:
@@ -190,7 +193,9 @@ class fido:
 
         Arguments:
             challenge -- The expected challange from authenticate
+
             credential_public_key -- The user's public key
+
             credentials -- The credentials provided by the user
 
         Returns:
