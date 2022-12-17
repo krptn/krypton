@@ -43,11 +43,11 @@ except FileNotFoundError:
     pass
 
 if sys.platform == "linux":
-    subprocess.call(['/sbin/ldconfig', LINUX_OSSL_LIB])
-subprocess.call([OPENSSL_EXE, 'fipsinstall', '-out', OPENSSL_FIPS_CONF,
-    '-module', OPENSSL_FIPS_MODULE])
+    subprocess.call(["/sbin/ldconfig", LINUX_OSSL_LIB])
+subprocess.call([OPENSSL_EXE, "fipsinstall", "-out", OPENSSL_FIPS_CONF,
+    "-module", OPENSSL_FIPS_MODULE])
 
-OSSL_CONF = f"""
+OSSL_CONF = """
 config_diagnostics = 1
 openssl_conf = openssl_init
 

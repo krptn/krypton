@@ -127,7 +127,7 @@ class MFAUser(user):
             values(fidoPub=credKey, fidoID=credID))
         self.c.flush()
         self.c.commit()
-    
+
     @userExistRequired
     def removeFIDO(self):
         """Remove the FIDO Auth from Server

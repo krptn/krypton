@@ -33,8 +33,9 @@ class AuthUser(user):
         """
         if not self.saved:
             raise UserError("User must be saved.")
-        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
-        authTag:DBschemas.UserTable = self.c.scalar(stmt)
+        authTag:DBschemas.UserTable = self.c.scalar(
+            select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
+        )
         if authTag.fidoID != b"*":
             if fido is None or factors.fido.authenticate_verify(authTag.fidoChallenge, authTag.fidoPub, fido) is False:
                 self.FIDORequired = True

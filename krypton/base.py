@@ -17,8 +17,7 @@ try:
 except ImportError as err:
     if sys.platform == "win32" and not os.path.isfile("C:/Windows/System32/MSVCP140.dll"):
         raise RuntimeError("This module requires Microsoft Visual C/C++ runtime. Please download it from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist.") from err
-    else:
-        raise err
+    raise err
 from . import configs, DBschemas, OPENSSL_CONFIG_FILE
 
 Adrr = id
