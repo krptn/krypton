@@ -10,7 +10,7 @@
 namespace py = pybind11;
 
 // General
-char* encode64(char* data, int length);
+py::str encode64(char* data, int length);
 py::bytes decode64(char* input, int length);
 void handleErrors();
 char* pymbToBuffer(py::bytes a);
