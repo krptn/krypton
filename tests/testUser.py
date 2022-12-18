@@ -80,12 +80,16 @@ class UserAuth(unittest.TestCase):
             self.model.shareGet(testName)
         except ValueError:
             self.assertTrue(True)
+        else:
+            self.assertFalse(True)
         user2.setData(testName, "test")
         user2.deleteData(testName)
         try:
             user2.getData(testName)
         except ValueError:
             self.assertTrue(True)
+        else:
+            self.assertFalse(True)
         user2.delete()
 
     def testDB(self):

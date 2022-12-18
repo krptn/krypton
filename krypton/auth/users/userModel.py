@@ -287,7 +287,7 @@ class standardUser(AuthUser, MFAUser, user):
             name -- Name of the data
         """
         self.c.execute(delete(DBschemas.UserShareTable).where(and_(DBschemas.UserShareTable.name == name,
-            DBschemas.UserShareTable.shareUid == self.id)))
+            DBschemas.UserShareTable.sender == self.id)))
         self.c.flush()
         self.c.commit()
 
