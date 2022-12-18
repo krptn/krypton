@@ -58,13 +58,11 @@ class AuthUser(user):
             exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
         )
         self.c.add(token)
-        self.c.flush()
         self.loggedin = True
         time = int(self.getData("_accountKeysCreation").decode())
         if (datetime.datetime.now().year - time) >= 2:
             self.generateNewKeys(pwd)
         self.reload()
-        self.c.flush()
         self.c.commit()
         encoded = base.base64encode(restoreKey)
         base.zeromem(restoreKey)
@@ -78,7 +76,6 @@ class AuthUser(user):
         base.zeromem(self._privKey)
         stmt = delete(DBschemas.SessionKeys).where(DBschemas.SessionKeys.key == self.sessionKey)
         self.c.execute(stmt)
-        self.c.flush()
         self.c.commit()
         self.loggedin = False
 
@@ -92,7 +89,6 @@ class AuthUser(user):
         self.c.execute(delete(DBschemas.UserData).where(DBschemas.UserData.Uid == self.id))
         self.c.execute(delete(DBschemas.UserShareTable).where(DBschemas.UserShareTable.sender == self.userName))
         self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
-        self.c.flush()
         self.c.commit()
         base.zeromem(self._key)
         base.zeromem(self._privKey)
@@ -169,7 +165,6 @@ class AuthUser(user):
         self.setData("_backupKeys", pickle.dumps([]))
         self.setData("_backupAESKeys", pickle.dumps([]))
         self.setData("_accountKeysCreation", str(datetime.datetime.now().year))
-        self.c.flush()
         self.c.commit()
         return self.login(pwd=pwd)
 
@@ -188,6 +183,5 @@ class AuthUser(user):
         stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
             values(name = newUserName)
         self.c.execute(stmt)
-        self.c.flush()
         self.c.commit()
         self.userName = newUserName

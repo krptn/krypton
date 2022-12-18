@@ -77,7 +77,6 @@ class MFAUser(user):
         """Disbale PWD and revoke all codes
         """
         self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
-        self.c.flush()
         self.c.commit()
 
     @userExistRequired
@@ -91,7 +90,6 @@ class MFAUser(user):
         stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
             values(mfa = base.restEncrypt(secret, self._key))
         self.c.execute(stmt)
-        self.c.flush()
         self.c.commit()
         base.zeromem(secret)
         return base32Secret, string
@@ -103,7 +101,6 @@ class MFAUser(user):
         stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
             values(mfa = b"*")
         self.c.execute(stmt)
-        self.c.flush()
         self.c.commit()
 
     @userExistRequired
@@ -126,7 +123,6 @@ class MFAUser(user):
         credID, credKey = factors.fido.register_verification(response, challenge)
         self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
             values(fidoPub=credKey, fidoID=credID))
-        self.c.flush()
         self.c.commit()
 
     @userExistRequired
@@ -135,7 +131,6 @@ class MFAUser(user):
         """
         self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
             values(fidoPub=b"*", fidoID=b"*"))
-        self.c.flush()
         self.c.commit()
 
     def getFIDOOptions(self):
@@ -151,6 +146,5 @@ class MFAUser(user):
         options, challenge = factors.fido.authenticate(authTag.fidoID)
         self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
             values(fidoChallenge = challenge))
-        self.c.flush()
         self.c.commit()
         return options
