@@ -77,6 +77,7 @@ class standardUser(AuthUser, MFAUser, user):
             value = base.restEncrypt(value, self._key)
         )
         self.c.add(entry)
+        self.c.flush()
         self.c.commit()
 
     @userExistRequired
@@ -126,6 +127,7 @@ class standardUser(AuthUser, MFAUser, user):
         stmt = delete(DBschemas.UserData).where(and_(DBschemas.UserData.name == name,
             DBschemas.UserData.Uid == self.id))
         self.c.execute(stmt)
+        self.c.flush()
         self.c.commit()
 
     @userExistRequired
@@ -286,6 +288,7 @@ class standardUser(AuthUser, MFAUser, user):
         """
         self.c.execute(delete(DBschemas.UserShareTable).where(and_(DBschemas.UserShareTable.name == name,
             DBschemas.UserShareTable.shareUid == self.id)))
+        self.c.flush()
         self.c.commit()
 
     @userExistRequired
@@ -305,6 +308,7 @@ class standardUser(AuthUser, MFAUser, user):
         stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
             values(pwdAuthToken = tag)
         self.c.execute(stmt)
+        self.c.flush()
         self.c.commit()
         self._key = factors.password.auth(tag, pwd)
 
@@ -329,6 +333,7 @@ class standardUser(AuthUser, MFAUser, user):
             key = self.pubKey
         )
         self.c.add(row)
+        self.c.flush()
         self.c.commit()
 
         self.setData("_accountKeysCreation", str(datetime.datetime.now().year))
@@ -356,5 +361,6 @@ class standardUser(AuthUser, MFAUser, user):
             base.zeromem(self._privKey)
             base.zeromem(self.backupAESKeys)
             base.zeromem(self.backupKeys)
+            self.c.flush()
             self.c.commit()
             self.c.close()

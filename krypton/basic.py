@@ -7,6 +7,8 @@ from typing import ByteString
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session, scoped_session
 from . import configs, base, DBschemas
+SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
+SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
 from .base import restEncrypt, restDecrypt, zeromem, PBKDF2
 
 class KeyManagementError(Exception):
@@ -70,7 +72,7 @@ class KMS():
         zeromem(key)
         return r
 
-    def __init__(self, keyDB:Session=scoped_session(configs.SQLDefaultKeyDBpath))->None:
+    def __init__(self, keyDB:Session=scoped_session(SQLDefaultKeyDBpath))->None:
         """The title says it all"""
         self.c:Session = keyDB
         self._HSM = False
@@ -155,6 +157,7 @@ class KMS():
             year = year
         )
         self.c.add(key)
+        self.c.flush()
         self.c.commit()
         return k
 
@@ -171,18 +174,18 @@ class KMS():
         stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
         key:DBschemas.KeysTable = self.c.scalar(stmt)
         self.c.delete(key)
+        self.c.flush()
         self.c.commit()
         return
     
     def __del__(self):
-        self.c.commit()
         self.c.close()
 
 class Crypto(KMS):
     '''
     Crypto Class (see Documentation)
     '''
-    def __init__(self, keyDB:Session=scoped_session(configs.SQLDefaultCryptoDBpath)):
+    def __init__(self, keyDB:Session=scoped_session(SQLDefaultCryptoDBpath)):
         """The title says it all"""
         self.c:scoped_session = keyDB
         stmt = select(func.max(DBschemas.CryptoTable.id))
@@ -217,6 +220,7 @@ class Crypto(KMS):
         )
         self.c.add(keyOb)
         zeromem(key)
+        self.c.flush()
         self.c.commit()
         return _num
 
@@ -271,5 +275,5 @@ class Crypto(KMS):
         stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id == num)
         key:DBschemas.CryptoTable = self.c.scalar(stmt)
         self.c.delete(key)
-        self.c.commit()
+        self.c.flush()
         self.removeKey(str(num), pwd)
