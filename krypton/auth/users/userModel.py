@@ -88,9 +88,7 @@ class standardUser(AuthUser, MFAUser, user):
             name -- the key
 
         Raises:
-            AttributeError: if a value is not set
-
-            ValueError: if decryption fails
+            ValueError: if decryption fails, or if a value is not set
 
         Returns:
             The value
@@ -99,7 +97,7 @@ class standardUser(AuthUser, MFAUser, user):
             DBschemas.UserData.Uid == self.id))
         result = self.c.scalar(stmt)
         if result is None:
-            raise AttributeError()
+            raise ValueError("No such data saved.")
         try:
             text = base.restDecrypt(result, self._key)
         except ValueError:
@@ -269,7 +267,7 @@ class standardUser(AuthUser, MFAUser, user):
             name -- The "name of the data"
 
         Raises:
-            ValueError: if decryption fails
+            ValueError: if decryption fails or requested data does not exist
 
         Returns:
             Decrypted data
@@ -277,6 +275,8 @@ class standardUser(AuthUser, MFAUser, user):
         stmt = select(DBschemas.UserShareTable).where(and_(DBschemas.UserShareTable.name == name,
             DBschemas.UserShareTable.shareUid == self.id))
         row:DBschemas.UserShareTable = self.c.scalar(stmt)
+        if row is None:
+            raise ValueError("Such data does not exist.")
         return self.decryptWithUserKey(row.value, row.salt, row.sender)
 
     @userExistRequired

@@ -70,6 +70,24 @@ class UserAuth(unittest.TestCase):
         user2.delete()
         self.assertEqual(value, b"TesT")
 
+    def testDeleteShare(self):
+        user2 = standardUser(None)
+        user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
+        testName = "test"+str(uuid.uuid4())
+        user2.shareSet(testName, "TesT", [self.userName])
+        user2.shareDelete(testName)
+        try:
+            self.model.shareGet(testName)
+        except ValueError:
+            self.assertTrue(True)
+        user2.setData(testName, "test")
+        user2.deleteData(testName)
+        try:
+            user2.getData(testName)
+        except ValueError:
+            self.assertTrue(True)
+        user2.delete()
+
     def testDB(self):
         self.model.setData("test", b"TEST_VALUE")
         result = self.model.getData("test")
