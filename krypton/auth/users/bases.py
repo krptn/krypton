@@ -195,3 +195,34 @@ class user(metaclass=ABCMeta):
         Raises:
             UserError: If the user does not exist
         """
+    @abstractmethod
+    def shareGet(self, name:str) -> bytes:
+        """Get data set by shareSet
+
+        Arguments:
+            name -- The "name of the data"
+
+        Raises:
+            ValueError: if decryption fails
+
+        Returns:
+            Decrypted data
+        """
+    @abstractmethod
+    def shareSet(self, name:str, data:ByteString, otherUsers:list[str]) -> None:
+        """Set data readable by others
+
+        Arguments:
+            name -- The "name" of the data
+
+            data -- The data
+
+            otherUsers -- List of usernames who should read it
+        """
+    @abstractmethod
+    def shareDelete(self, name:str) -> None:
+        """shareDelete Delete data set by shareSet
+
+        Arguments:
+            name -- Name of the data
+        """

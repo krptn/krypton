@@ -281,6 +281,11 @@ class standardUser(AuthUser, MFAUser, user):
 
     @userExistRequired
     def shareDelete(self, name:str) -> None:
+        """shareDelete Delete data set by shareSet
+
+        Arguments:
+            name -- Name of the data
+        """
         self.c.execute(delete(DBschemas.UserShareTable).where(and_(DBschemas.UserShareTable.name == name,
             DBschemas.UserShareTable.shareUid == self.id)))
         self.c.flush()
