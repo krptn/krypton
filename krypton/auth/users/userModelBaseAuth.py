@@ -57,7 +57,6 @@ class AuthUser(user):
             iss = datetime.datetime.now(),
             exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
         )
-        self.c.flush() # Flush to ensure that the session keys are updated.
         self.c.add(token)
         self.loggedin = True
         time = int(self.getData("_accountKeysCreation").decode())
