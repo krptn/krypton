@@ -57,7 +57,6 @@ class AuthUser(user):
             iss = datetime.datetime.now(),
             exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
         )
-        self.c.flush() # Flush to ensure that the session keys are updated.
         self.c.add(token)
         self.c.flush()
         self.loggedin = True
@@ -81,6 +80,7 @@ class AuthUser(user):
         self.c.execute(stmt)
         self.c.flush()
         self.c.commit()
+        self.c.expunge_all()
         self.loggedin = False
 
     @userExistRequired
