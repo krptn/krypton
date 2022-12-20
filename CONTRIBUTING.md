@@ -12,7 +12,7 @@ Naming conventions:
 - PascalCase for class names.
 - UPPER_CASE for constants
 - Variables starting in _ or __ are not to be accessed directly by the users - they are internals.
-- In databases, names starting in _ or __ should only store data required by Krypton - no user data, they are internals.
+- In databases, names starting in _ or __ should only store data required by us - no user data, they are internals.
 
 ## Build/Setup the extension for development, Build from source
 
