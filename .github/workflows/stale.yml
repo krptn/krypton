@@ -19,7 +19,7 @@ jobs:
     steps:
       # Runs a set of commands using the runners shell
       - name: Close Stale Issues
-        uses: actions/stale@v6
+        uses: actions/stale@v7
         with:
           # Token for the repository. Can be passed in using `{{ secrets.GITHUB_TOKEN }}`.
           repo-token: ${{secrets.App}}
