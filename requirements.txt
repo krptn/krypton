@@ -20,7 +20,7 @@ mccabe==0.7.0
 packaging==22.0
 pep517==0.13.0
 platformdirs==2.6.0
-pybind11==2.10.1
+pybind11==2.10.2
 pycparser==2.21
 pydantic==1.10.2
 pyenchant==3.2.2
