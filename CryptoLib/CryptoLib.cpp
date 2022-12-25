@@ -41,7 +41,7 @@ bool fipsInit(char* osslConfig) {
 char* pymbToBuffer(py::bytes a) {
 	py::iterator it = a.begin();
 	int b = a.attr("__len__")().cast<int>();
-	char* buf = new char[b+1];
+	char* buf = new char[b];
 	int i = 0;
 	while (it != py::iterator::sentinel()){
 		buf[i] = (char)((*it).cast<int>());
