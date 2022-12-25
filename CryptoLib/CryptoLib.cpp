@@ -70,7 +70,7 @@ void handleErrors() {
 }
 
 PYBIND11_MODULE(__CryptoLib, m) {
-	m.doc() = "Cryptographical component of Krypton. Only for use inside the Krypton module.";
+	m.doc() = "Cryptographical component of Krptn. Only for use inside the Krptn module.";
 	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext_b"), py::arg("key"));
 	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"), py::arg("msglen"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len"));
