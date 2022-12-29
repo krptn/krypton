@@ -3,16 +3,6 @@
 
 # Krptn
 
-**Quick Install:**
-
-```shell
-pip install krptn
-```
-
-Note: we don't have pre-built extensions for all platforms. Please see the [installation section](https://docs.krptn.dev/README.html#installation) in our documentation for more info.
-
-If after reading this, you like our project, please consider staring!
-
 ## What problem do we solve?
 
 We all love Django and other web frameworks! However, their primary focus is creating websites - not securing them. One example is Django's built-in authentication system. While it hashes the password, it does not encrypt user data for you. Encryption is left to the developer...
@@ -23,11 +13,15 @@ To prove that such is possible, we have a [Flask](https://github.com/krptn/flask
 
 ![Krptn Visual](https://www.krptn.dev/krptnDiagram.webp)
 
-## What is this?
+**Quick Install:**
 
-**Quick notice:** this project will be run for the Microsoft Imagine Cup. However, please use the project as you would otherwise. This warning is only for contributors who may not want their code to be used for such purposes.
+```shell
+pip install krptn
+```
 
-A user authentication and access management system (IAM) with [Zero Knowledge security](https://www.krptn.dev/news/zero-knowledge/). It is available as a python extension module. However we have certain [limitations](https://www.krptn.dev/news/limitations/).
+## What do we do exactly?
+
+We are building a user authentication and access management system (IAM) with [Zero Knowledge security](https://www.krptn.dev/news/zero-knowledge/). It is available as a python extension module. However we have certain [limitations](https://www.krptn.dev/news/limitations/).
 
 How we achieve this?
 
@@ -103,3 +97,7 @@ To see what these settings strings should contain please see [Databases](https:/
 [Configurations](https://docs.krptn.dev/README-CONFIGS.html)
 
 We would love to learn how you use our project! Our email is [contact@krptn.dev](mailto:contact@krptn.dev), and we would appreciate if you could drop us a note about your interactions with Krptn.
+
+## Stargazers
+
+![Stargazers for @Krptn/Krypton](https://reporoster.com/stars/krptn/krypton)
