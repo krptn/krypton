@@ -22,7 +22,7 @@ pep517==0.13.0
 platformdirs==2.6.2
 pybind11==2.10.2
 pycparser==2.21
-pydantic==1.10.3
+pydantic==1.10.4
 pyenchant==3.2.2
 pylint==2.15.9
 pyOpenSSL==22.1.0
