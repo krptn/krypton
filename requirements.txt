@@ -25,7 +25,7 @@ pycparser==2.21
 pydantic==1.10.4
 pyenchant==3.2.2
 pylint==2.15.9
-pyOpenSSL==22.1.0
+pyOpenSSL==23.0.0
 pyparsing==3.0.9
 SQLAlchemy==1.4.45
 sqlparse==0.4.3
