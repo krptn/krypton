@@ -74,10 +74,11 @@ jobs:
           cd ${{ github.workspace }}
           py -m pip install --upgrade pip setuptools wheel
       - name: Build OSSL
+        env:
+          CL: /MP
         run: |
           cd openssl
           perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
-          set CL=/MP
           nmake
           nmake install
       - name: Build Extension
