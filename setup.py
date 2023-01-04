@@ -1,12 +1,11 @@
-import pathlib
-from setuptools import setup, find_packages
-from pybind11.setup_helpers import Pybind11Extension
-from glob import glob
 import os
 import sys
+import pathlib
+from glob import glob
+from setuptools import setup, find_packages
+from pybind11.setup_helpers import Pybind11Extension
 
 folder = pathlib.Path(__file__).parent.as_posix()
-description = open("README.md", "r").read()
 
 DEBUG = sys.argv.count("--debug") >= 1
 
@@ -51,41 +50,10 @@ elif sys.platform == "darwin":
   runtime_libs += [os.path.join(folder, "kr-openssl-install/lib")]
   extra_args += ["-std=c++17", "-O0"] # Disable optimizationas as they trigger segementation faults
 
-setup(name='krptn',
-  version='0.3.2',
-  description='Zero Knowledge security for Python',
-  long_description=description,
-  long_description_content_type="text/markdown",
-  author='Krptn Project',
-  author_email='contact@krptn.dev',
-  project_urls={
-    'Homepage': "https://www.krptn.dev/",
-    'Documentation': "https://docs.krptn.dev/",
-    'GitHub': "https://github.com/krptn/krypton/",
-    'Bug Tracker': "https://github.com/krptn/krypton/issues",
-  },
-  classifiers=[
-      'License :: OSI Approved :: Apache Software License',
-      'Operating System :: OS Independent',
-      'Intended Audience :: Developers',
-      'Intended Audience :: System Administrators',
-      'Topic :: Security',
-      'Topic :: Security :: Cryptography',
-      'Framework :: Django',
-      'Framework :: Flask',
-  ],
+setup(
   package_data={"": package_data},
-  packages=find_packages(),
-  python_requires=">3.9",
-  install_requires=["SQLAlchemy>=1.4.0", "webauthn>=1.6.0", "Django>=4.1.0"],
-  extras_require={
-        "MSSQL": ["pyodbc"],
-        "MySQL": ["mysqlclient"],
-        "PostgreSQL": ["psycopg2"],
-        "Django": ["django"],
-        "Flask": ["flask"]
-  },
   include_package_data=True,
+  packages=find_packages(),
   ext_modules=[Pybind11Extension('__CryptoLib',
     glob("CryptoLib/*.cpp"),
     include_dirs=["kr-openssl-install/include", "CryptoLib"],

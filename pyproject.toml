@@ -1,2 +1,37 @@
 [build-system]
 requires = ["setuptools","wheel","pybind11"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "krptn"
+version = "0.3.2"
+description = "Zero Knowledge security for Python"
+readme = "README.md"
+authors = [
+  { name="Krptn Project", email="contact@krptn.dev" },
+]
+classifiers=[
+    'License :: OSI Approved :: Apache Software License',
+    'Operating System :: OS Independent',
+    'Intended Audience :: Developers',
+    'Intended Audience :: System Administrators',
+    'Topic :: Security',
+    'Topic :: Security :: Cryptography',
+    'Framework :: Django',
+    'Framework :: Flask'
+]
+requires-python=">3.9"
+dependencies=["SQLAlchemy>=1.4.0", "webauthn>=1.6.0", "Django>=4.1.0"]
+
+[project.optional-dependencies]
+"MSSQL" = ["pyodbc"]
+"MySQL" = ["mysqlclient"]
+"PostgreSQL" = ["psycopg2"]
+"Django" = ["django"]
+"Flask" = ["flask"]
+
+[project.urls]
+'Homepage'= "https://www.krptn.dev/"
+'Documentation'= "https://docs.krptn.dev/"
+'GitHub'= "https://github.com/krptn/krypton/"
+'Bug Tracker'= "https://github.com/krptn/krypton/issues"
