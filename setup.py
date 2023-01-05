@@ -41,8 +41,8 @@ package_data = [
 if sys.platform == "linux":
   link_libararies += ["crypto"]
   macros += []
-  library_dirs += ["kr-openssl-install/lib64"]
-  runtime_libs += [os.path.join(folder, "kr-openssl-install/lib64")]
+  library_dirs += ["kr-openssl-install/lib64", "kr-openssl-install/lib"]
+  runtime_libs += [os.path.join(folder, "kr-openssl-install/lib64"), os.path.join(folder, "kr-openssl-install/lib")]
 elif sys.platform == "win32":
   link_libararies += ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
   library_dirs += ["kr-openssl-install/lib"]
