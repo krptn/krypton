@@ -18,6 +18,8 @@ library_dirs = []
 package_data = [
   "../kr-openssl-install/bin/libcrypto-3-x64.dll",
   "../kr-openssl-install/bin/libssl-3-x64.dll",
+  "../kr-openssl-install/bin/libssl-3-arm64.dll",
+  "../kr-openssl-install/bin/libcrypto-3-arm64.dll",
   "../kr-openssl-install/bin/libcrypto-3.dll",
   "../kr-openssl-install/bin/libssl-3.dll",
   "../kr-openssl-install/lib/ossl-modules/fips.dll",
