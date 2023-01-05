@@ -11,7 +11,7 @@ jobs:
   buildLinuxMultiArch:
     strategy:
       matrix:
-        arch: [aarch64, ppc64le, x86_64, s390x]
+        arch: [aarch64, ppc64le, x86_64]
     env:
       CIBW_ARCHS: ${{ matrix.arch }}
       CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64
