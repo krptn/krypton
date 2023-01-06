@@ -30,7 +30,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
-          platforms: arm64, ppc64le
+          platforms: arm64
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
