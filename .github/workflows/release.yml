@@ -91,7 +91,53 @@ jobs:
         with:
           name: AutoBuild-Windows-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
-
+  buildWinARM:
+    env:
+      CIBW_ARCHS: ARM64
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          submodules: "true"
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
+      - name: Install VS Tools
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64_arm64
+      - name: NASM and Perl
+        run: |
+          choco install nasm
+          echo "C:\Program Files\NASM" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          choco install strawberryperl
+      - name: Install dependencies
+        run: |
+          cd ${{ github.workspace }}
+          mkdir kr-openssl-install
+          mkdir kr-openssl-config
+          python -m pip install --upgrade pip setuptools wheel
+      - name: Build OSSL
+        env:
+          CL: /MP
+        run: |
+          cd openssl
+          perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
+          nmake
+          nmake install
+          copy ${{ github.workspace }}\openssl\ms\applink.c ${{ github.workspace }}\kr-openssl-install\include\openssl\
+      - name: Build Extension
+        run: |
+          cd ${{ github.workspace }}
+          python -m pip install cibuildwheel
+          python -m cibuildwheel --output-dir dist
+      - name: Upload Build Result
+        uses: actions/upload-artifact@v3
+        with:
+          name: AutoBuild-Windows-${{ github.event.release.tag_name }}
+          path: ${{ github.workspace }}/dist/*.*
   buildMac:
     env:
       CIBW_ARCHS: native
@@ -125,7 +171,6 @@ jobs:
         with:
           name: AutoBuild-MacOS-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
-
   buildMacARM:
     env:
       CIBW_ARCHS: arm64
@@ -187,10 +232,11 @@ jobs:
           cd ${{ github.workspace }}
           py -m pip install --upgrade pip setuptools wheel
       - name: Build OSSL
+        env:
+          CL: /MP
         run: |
           cd openssl
           perl Configure VC-WIN32 --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
-          set CL=/MP
           nmake
           nmake install
       - name: Build Extension

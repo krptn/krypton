@@ -8,6 +8,7 @@ import os
 import sys
 import pathlib
 import ctypes
+import platform
 import subprocess
 from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
@@ -23,6 +24,8 @@ LINUX_OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib64")
 MAC_OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib")
 RELATIVE_OSSL_MOD = ("kr-openssl-install/lib64/ossl-modules" if sys.platform == "linux"
     else "kr-openssl-install/lib/ossl-modules")
+if platform.uname().machine.lower() == "aarch64":
+    RELATIVE_OSSL_MOD = "kr-openssl-install/lib/ossl-modules"
 OPENSSL_MODULES = os.path.join(SITE_PACKAGE, RELATIVE_OSSL_MOD)
 OPENSSL_FIPS_MODULE = os.path.join(OPENSSL_MODULES, "fips.dll" if sys.platform == "win32" \
     else ("fips.so" if sys.platform == "linux" else "fips.dylib"))
