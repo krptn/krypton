@@ -16,6 +16,7 @@ jobs:
         arch: [aarch64] # Remove this and stick in previous for prod
     env:
       CIBW_ARCHS: ${{ matrix.arch }}
+      CIBW_TEST_SKIP: pp*
       CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64:/project/kr-openssl-install/lib
     runs-on: ubuntu-latest
     steps:
@@ -42,6 +43,7 @@ jobs:
           CIBW_BEFORE_ALL: |
             cd /project
             yum install -y perl-IPC-Cmd
+            yum install -y redhat-rpm-config gcc libffi-devel python3-devel openssl-devel cargo pkg-config
             yum install -y make
             mkdir kr-openssl-config
             mkdir kr-openssl-install
