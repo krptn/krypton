@@ -43,7 +43,6 @@ jobs:
           CIBW_BEFORE_ALL: |
             cd /project
             yum install -y perl-IPC-Cmd
-            yum install -y redhat-rpm-config gcc libffi-devel python3-devel openssl-devel cargo pkg-config
             yum install -y make
             mkdir kr-openssl-config
             mkdir kr-openssl-install
