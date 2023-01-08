@@ -2,7 +2,7 @@
 
 ## Scope of the Project
 
-The scope of this project is an IAM, which ensures proper encryption of any data.
+The scope of this project is an IAM, with the extra feature of encryption of any data.
 
 ## Conventions
 
@@ -14,42 +14,18 @@ Naming conventions:
 - Variables starting in _ or __ are not to be accessed directly by the users - they are internals.
 - In databases, names starting in _ or __ should only store data required by us - no user data, they are internals.
 
-## Build/Setup the extension for development, Build from source
+## Build/Setup the extension for development
 
-*Note:* apart from x86 on Windows, only 64-bit environments are supported.
+First, please build from the git repository as outlined in [our documentation](https://docs.krptn.dev/README-BUILD.html#building-from-source).
 
-After cloning the repo (and checking out your version using git tags), please build and install OpenSSL 3, which is included as a git submodule:
-
-- Install openssl in the `kr-openssl-install/` and place configurations in `kr-openssl-config/` directories.
-  - Therefore, in the configure script, you need `--prefix` and `--openssldir` set.
-- As Krypton uses FIPS, please set `enable-fips` also.
-
-For example (Windows example):
-
-```shell
-perl Configure --prefix="C:\Users\markb\source\repos\krypton\kr-openssl-install" \
-  --openssldir="C:\Users\markb\source\repos\krypton\kr-openssl-config" \
-  enable-fips --debug
-```
-
-You need to both build and install OpenSSL:
-
-```shell
-make
-make install
-```
-
-To install the extension and produce debugging symbols use:
+For development use, it is probably a good idea to install the extension in editable mode (i.e setuptools "develop mode"):
 
 ```shell
 pip install -e .
-python setup.py build_ext --debug --inplace
 ```
 
-To rebuild __CryptoLib extension, only run the second command.
-
-To install the extension and not produce debugging symbols:
+To rebuild __CryptoLib extension with debugging symbols:
 
 ```shell
-pip install .
+python setup.py build_ext --debug --inplace
 ```
