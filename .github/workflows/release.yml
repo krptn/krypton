@@ -266,7 +266,7 @@ jobs:
     env:
       GH_TOKEN: ${{ secrets.App }}
     runs-on: ubuntu-latest
-    needs: [buildLinux, buildWin, buildMac, buildMacARM, buildWin32]
+    needs: [buildLinuxMultiArch, buildWin, buildWinARM, buildMac, buildMacARM, buildWin32]
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
