@@ -11,10 +11,10 @@ folder = pathlib.Path(__file__).parent.as_posix()
 DEBUG = sys.argv.count("--debug") >= 1
 
 macros = []
-link_libararies = []
-runtime_libs = []
+link_libararies = ["crypto"]
+runtime_libs = [os.path.join(folder, "kr-openssl-install/lib")]
 extra_args = []
-library_dirs = []
+library_dirs = ["kr-openssl-install/lib"]
 
 package_data = [
   "../kr-openssl-install/bin/libcrypto-3-x64.dll",
@@ -40,27 +40,20 @@ package_data = [
 ]
 
 if not pathlib.Path(folder, "kr-openssl-install/").exists():
-  warnings.warn("We detected that you may be building Krptn from source in an unsuitable manner. "
+  warnings.warn("We detected that you are likely building Krptn from source in an unsuitable manner. "
     "Do not attempt to build Krptn from source without reading https://docs.krptn.dev/README-BUILD.html first. "
     "Doing so is a terrible mistake and is likely to cause failures and other errors."
     "If you are not building Krptn from source or you don't get any errors, please ignore this false positive.", 
     RuntimeWarning, stacklevel=2)
 
 if sys.platform == "linux":
-  link_libararies += ["crypto"]
-  macros += []
-  library_dirs += ["kr-openssl-install/lib64", "kr-openssl-install/lib"]
-  runtime_libs += [os.path.join(folder, "kr-openssl-install/lib64"), os.path.join(folder, "kr-openssl-install/lib")]
+  library_dirs += ["kr-openssl-install/lib64"]
+  runtime_libs += [os.path.join(folder, "kr-openssl-install/lib64")]
 elif sys.platform == "win32":
-  link_libararies += ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
-  library_dirs += ["kr-openssl-install/lib"]
+  link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
   macros += [("WIN", None)]
-  runtime_libs += []
+  runtime_libs = []
 elif sys.platform == "darwin":
-  link_libararies += ["crypto"]
-  library_dirs += ["kr-openssl-install/lib"]
-  macros += []
-  runtime_libs += [os.path.join(folder, "kr-openssl-install/lib")]
   extra_args += ["-std=c++17", "-O0"] # Disable optimizationas as they trigger segementation faults
 
 setup(
