@@ -1,6 +1,7 @@
 import os
 import sys
 import pathlib
+import warnings
 from glob import glob
 from setuptools import setup, find_packages
 from pybind11.setup_helpers import Pybind11Extension
@@ -37,6 +38,13 @@ package_data = [
   "../kr-openssl-install/lib/libssl.dylib",
   "../kr-openssl-install/lib/ossl-modules/fips.dylib",
 ]
+
+if not pathlib.Path(folder, "kr-openssl-install/").exists():
+  warnings.warn("We detected that you may be building Krptn from source in an unsuitable manner. "
+    "Do not attempt to build Krptn from source without reading https://docs.krptn.dev/README-BUILD.html first. "
+    "Doing so is a terrible mistake and is likely to cause failures and other errors."
+    "If you are not building Krptn from source or you don't get any errors, please ignore this false positive.", 
+    RuntimeWarning, stacklevel=2)
 
 if sys.platform == "linux":
   link_libararies += ["crypto"]
