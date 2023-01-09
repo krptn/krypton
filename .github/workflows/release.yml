@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64]
     env:
       CIBW_ARCHS: ${{ matrix.arch }}
       CIBW_TEST_SKIP: pp* # That would require building of cryptography manually which is tricky
