@@ -17,7 +17,6 @@ jobs:
         arch: [x86_64]
     env:
       CIBW_ARCHS: ${{ matrix.arch }}
-      CIBW_TEST_SKIP: pp* # That would require building of cryptography manually which is tricky
       CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64:/project/kr-openssl-install/lib
     runs-on: ubuntu-latest
     steps:
