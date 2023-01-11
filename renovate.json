@@ -20,11 +20,6 @@
       ]
     },
     {
-      "matchUpdateTypes": ["minor", "patch", "major"],
-      "matchCurrentVersion": "!/^0/",
-      "automerge": true
-    },
-    {
       "matchPackagePatterns": [
         "*"
       ],
