@@ -21,7 +21,7 @@ classifiers=[
     'Framework :: Flask'
 ]
 requires-python=">3.9"
-dependencies=["SQLAlchemy>=1.4.0", "webauthn>=1.6.0", "Django>=4.1.0"]
+dependencies=["SQLAlchemy>=1.4.0", "webauthn>=1.6.0"]
 
 [project.optional-dependencies]
 "MSSQL" = ["pyodbc"]
