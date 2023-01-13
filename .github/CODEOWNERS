@@ -1,8 +1,2 @@
-## requirements.txt and *.txt is not included so that renovate will not trigger this
-
 *.py @MBS9
 *.cpp @MBS9
-*.md @MBS9
-*.in @MBS9 # MANIFEST.in
-*.json @MBS9 # renovate.json
-*.toml @MBS9 # pyproject.toml
