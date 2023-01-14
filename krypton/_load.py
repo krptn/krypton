@@ -47,7 +47,7 @@ OSSL_CONF = f"""
 config_diagnostics = 1
 openssl_conf = openssl_init
 
-.include {OPENSSL_CONFIG}/fipsmodule.cnf
+.include {pathlib.Path(OPENSSL_FIPS_CONF).as_posix()}
 
 [openssl_init]
 providers = provider_sect
