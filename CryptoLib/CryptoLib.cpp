@@ -25,7 +25,7 @@ bool fipsInit(char* osslConfig, char* modulePath) {
 		throw std::runtime_error("Failed to add fips module to search path.");
 		return false;
 	}
-	if (!(NULL, osslConfig)) {
+	if (!OSSL_LIB_CTX_load_config(NULL, osslConfig)) {
 		ERR_print_errors_fp(stderr);
 		throw std::runtime_error("Failed to load openssl configuration.");
 		return false;
