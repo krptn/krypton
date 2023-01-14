@@ -8,7 +8,6 @@ import os
 import sys
 import pathlib
 import ctypes
-import platform
 import subprocess
 from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
@@ -16,19 +15,16 @@ from sqlalchemy.orm import declarative_base, Session, sessionmaker
 SITE_PACKAGE = pathlib.Path(__file__).parent.parent.as_posix()
 USER_DIR = pathlib.Path.home()
 
-OPENSSL_CONFIG = os.path.join(SITE_PACKAGE, "kr-openssl-config")
-OPENSSL_CONFIG_FILE = os.path.join(OPENSSL_CONFIG, "openssl.cnf")
+OPENSSL_CONFIG = pathlib.Path(SITE_PACKAGE, "kr-openssl-config").as_posix()
+OPENSSL_CONFIG_FILE = pathlib.Path(OPENSSL_CONFIG, "openssl.cnf").as_posix()
 OPENSSL_BIN = os.path.join(SITE_PACKAGE, "kr-openssl-install/bin")
 OPENSSL_EXE = os.path.join(OPENSSL_BIN, "openssl.exe" if sys.platform == "win32" else "openssl")
-LINUX_OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib64")
-MAC_OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib")
-RELATIVE_OSSL_MOD = ("kr-openssl-install/lib64/ossl-modules" if sys.platform == "linux"
-    else "kr-openssl-install/lib/ossl-modules")
-if platform.uname().machine.lower() == "aarch64":
-    RELATIVE_OSSL_MOD = "kr-openssl-install/lib/ossl-modules"
-if platform.uname().machine.lower() == "aarch64":
-    LINUX_OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib")
-OPENSSL_MODULES = os.path.join(SITE_PACKAGE, RELATIVE_OSSL_MOD)
+OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib")
+RELATIVE_OSSL_MOD = "kr-openssl-install/lib/ossl-modules"
+if not pathlib.Path(OSSL_LIB).exists() and sys.platform == "linux":
+    RELATIVE_OSSL_MOD = "kr-openssl-install/lib64/ossl-modules"
+    OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib64")
+OPENSSL_MODULES = pathlib.Path(SITE_PACKAGE, RELATIVE_OSSL_MOD).as_posix()
 OPENSSL_FIPS_MODULE = os.path.join(OPENSSL_MODULES, "fips.dll" if sys.platform == "win32" \
     else ("fips.so" if sys.platform == "linux" else "fips.dylib"))
 OPENSSL_FIPS_CONF = os.path.join(OPENSSL_CONFIG, "fipsmodule.cnf")
@@ -37,26 +33,21 @@ KR_DATA = pathlib.Path(pathlib.Path.home(), ".krptn-data/")
 if not KR_DATA.exists():
     os.mkdir(KR_DATA.as_posix())
 
-os.environ["OPENSSL_MODULES"] = OPENSSL_MODULES
-os.environ["OPENSSL_CONF"] = OPENSSL_CONFIG_FILE
-os.environ["OPENSSL_CONF_INCLUDE"] = OPENSSL_CONFIG
-os.environ["OPENSSL"] = OPENSSL_EXE
-
 try:
     os.remove(OPENSSL_CONFIG_FILE)
 except FileNotFoundError:
     pass
 
 if sys.platform == "linux":
-    subprocess.call(["/sbin/ldconfig", LINUX_OSSL_LIB])
+    subprocess.call(["/sbin/ldconfig", OSSL_LIB])
 subprocess.call([OPENSSL_EXE, "fipsinstall", "-out", OPENSSL_FIPS_CONF,
     "-module", OPENSSL_FIPS_MODULE])
 
-OSSL_CONF = """
+OSSL_CONF = f"""
 config_diagnostics = 1
 openssl_conf = openssl_init
 
-.include fipsmodule.cnf
+.include {OPENSSL_CONFIG}/fipsmodule.cnf
 
 [openssl_init]
 providers = provider_sect
@@ -78,9 +69,9 @@ if sys.platform == "win32":
     os.add_dll_directory(OPENSSL_BIN)
     os.add_dll_directory(OPENSSL_MODULES)
 elif sys.platform == "linux":
-    ctypes.CDLL(os.path.join(LINUX_OSSL_LIB, "libcrypto.so.3"))
+    ctypes.CDLL(os.path.join(OSSL_LIB, "libcrypto.so.3"))
 elif sys.platform == "darwin":
-    ctypes.CDLL(os.path.join(MAC_OSSL_LIB, "libcrypto.dylib"))
+    ctypes.CDLL(os.path.join(OSSL_LIB, "libcrypto.dylib"))
 
 Base = declarative_base()
 

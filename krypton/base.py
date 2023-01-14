@@ -18,12 +18,12 @@ except ImportError as err:
     if sys.platform == "win32" and not os.path.isfile("C:/Windows/System32/MSVCP140.dll"):
         raise RuntimeError("This module requires Microsoft Visual C/C++ runtime. Please download it from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist.") from err
     raise err
-from . import configs, DBschemas, OPENSSL_CONFIG_FILE
+from . import configs, DBschemas, OPENSSL_CONFIG_FILE, OPENSSL_MODULES
 
 Adrr = id
 
 #: Load FIPS Validated resolver
-__CryptoLib.fipsInit(OPENSSL_CONFIG_FILE)
+__CryptoLib.fipsInit(OPENSSL_CONFIG_FILE, OPENSSL_MODULES)
 
 #: Wrappers for __CryptoLib #
 #: Help static analyzers automatically figure out function arguments, returns, etc..
