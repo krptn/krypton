@@ -1,5 +1,6 @@
 ![Apache-2.0](https://img.shields.io/pypi/l/Krptn)
 ![Downloads](https://static.pepy.tech/personalized-badge/krptn?period=total&units=international_system&left_color=blue&right_color=orange&left_text=PyPI%20Downloads)
+[![Last Release status](https://github.com/krptn/krypton/actions/workflows/release.yml/badge.svg?event=release)](https://github.com/krptn/krypton/actions/workflows/release.yml)
 
 # Krptn
 

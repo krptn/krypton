@@ -1,4 +1,4 @@
-name: Release Binaries
+name: Release
 on:
   workflow_dispatch:
   release:
