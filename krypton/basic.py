@@ -44,8 +44,6 @@ class KMS():
         Returns:
             Cipher text
         """
-        if self._HSM:
-            return None
         key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
         r = restEncrypt(text, key)
         zeromem(key)
@@ -65,8 +63,6 @@ class KMS():
         Returns:
             Plaintext
         """
-        if self._HSM:
-            return None
         key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
         r = restDecrypt(ctext, key)
         zeromem(key)
@@ -75,7 +71,6 @@ class KMS():
     def __init__(self, keyDB:Session=scoped_session(SQLDefaultKeyDBpath))->None:
         """The title says it all"""
         self.c:Session = keyDB
-        self._HSM = False
 
     def getKey(self, name:str, pwd:ByteString=None, force:bool=False) -> bytes:
         """Get a Key
