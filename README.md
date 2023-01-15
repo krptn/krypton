@@ -10,9 +10,7 @@ pip install krptn
 
 ## What problem do we solve?
 
-**We all love Django and other web frameworks!** However, their primary focus is creating websites - not securing them.
-
-One example is Django's built-in authentication system. While it hashes the password, it does not encrypt user data for you. Encryption is left to the developer...
+**We all love Django and other web frameworks!** However, their primary focus is creating websites - not securing them. One example is Django's built-in authentication system. While it hashes the password, it does not encrypt user data for you. Encryption is left to the developer...
 
 **Wouldn't it be nice if encryption would also be handled by the IAM?** Perhaps it could be handled in a zero knowledge model, such that, without the user entering credentials, not even the database administrator can read it?! This is exactly what we do!
 
