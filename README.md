@@ -31,7 +31,7 @@ This gives you [Zero Knowledge security](https://www.krptn.dev/news/zero-knowled
 
 ## Try it out
 
-Quickly install the package with pip for python>3.9:
+Quickly install the package with pip for Python>3.9:
 
 ```shell
 pip install krptn
