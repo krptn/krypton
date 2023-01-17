@@ -13,9 +13,7 @@ How we achieve this?
 from ._load import *
 from . import basic
 from . import auth
-import importlib.metadata
 
-__version__ = importlib.metadata.version("krptn")
 __all__ = ['basic', 'auth']
 ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__',
     '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__',

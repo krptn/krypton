@@ -10,7 +10,19 @@
 using namespace std;
 namespace py = pybind11;
 
-int ECC_DEFAULT_CURVE = NID_X9_62_prime256v1;
+/*
+NIST P-521 (secp521r1) is used for the following reasoning:
+
+- We use AES-256, so that, in future, top secret classified data can be stored.
+- Therefore, if such level of security is required,
+- we need to protect the key with at least the same level (otherwise 256-bit AES is pointless).
+- Also, though NSA Suite B does not require te use of NIST 521,
+- it is used in the PGP standard,
+- hence to be "more" complaint with "more" standards,
+- we use it.
+*/
+
+int ECC_DEFAULT_CURVE = NID_secp521r1;
 const char* KEY_ENCODE_FORMAT = "PEM";
 
 size_t getPubKey(EVP_PKEY *pkey, char* out) {

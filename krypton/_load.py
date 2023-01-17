@@ -9,8 +9,15 @@ import sys
 import pathlib
 import ctypes
 import subprocess
+import importlib.metadata
 from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
+
+__version__ = importlib.metadata.version("krptn")
+
+print("Hey there! Welcome from Krptn. In case you run into any problems, please read our "
+    "common issues guide: https://docs.krptn.dev/README-FAQ.html. "
+    "It is more complete than you think!")
 
 SITE_PACKAGE = pathlib.Path(__file__).parent.parent.as_posix()
 USER_DIR = pathlib.Path.home()
@@ -112,10 +119,12 @@ class DBschemas(): # pylint: disable=too-few-public-methods
     class PubKeyTable(Base): # pylint: disable=too-few-public-methods
         """Database Schema
         Uid: int
-        key: str"""
+        key: str
+        krVersion: str"""
         __tablename__ = "pubKeys"
         id = Column(Integer, primary_key=True)
         Uid = Column(Integer, index=True)
+        krVersion = Column(Text, default=__version__)
         key = Column(Text)
 
     class UserTable(Base): # pylint: disable=too-few-public-methods
