@@ -39,7 +39,6 @@ OPENSSL_FIPS_CONF = os.path.join(OPENSSL_CONFIG, "fipsmodule.cnf")
 KR_DATA = pathlib.Path(pathlib.Path.home(), ".krptn-data/")
 if not KR_DATA.exists():
     os.mkdir(KR_DATA.as_posix())
-
 try:
     os.remove(OPENSSL_CONFIG_FILE)
 except FileNotFoundError:
