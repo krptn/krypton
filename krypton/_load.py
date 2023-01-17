@@ -311,3 +311,6 @@ configs = ConfigTemp()
 configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/crypto.db")
 configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/altKMS.db")
 configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/users.db")
+
+print("Krptn has been initialized and loaded. In case you run into any problems, please read our "
+    "common issues guide: https://docs.krptn.dev/README-FAQ.html.")
