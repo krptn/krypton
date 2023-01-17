@@ -111,7 +111,7 @@ py::tuple createECCKey() {
 	len = getPrivKey(pkey, NULL);
 	privResult = new char[len];
 	getPrivKey(pkey, privResult);
-	py::str pr = py::str((char*)privResult, len);
+	py::str pr = py::str(privResult, len);
 	OPENSSL_cleanse(privResult, len);
 	delete[] privResult;
 	EVP_PKEY_free(pkey);

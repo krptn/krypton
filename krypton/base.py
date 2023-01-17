@@ -123,12 +123,12 @@ def getSharedKey(privKey:str, peerID:int, salt:bytes, keylen:int=32) -> list[byt
     """
     # pylint: disable=no-member
     session:Session = scoped_session(configs.SQLDefaultUserDBpath)
-    pubKeys = session.scalars(
-        select([DBschemas.PubKeyTable.key, DBschemas.PubKeyTable.krVersion])
+    pubKeys:list[DBschemas.PubKeyTable] = session.scalars(
+        select(DBschemas.PubKeyTable)
         # In future, krVersion can be used to detect compatability issues
         .where(DBschemas.PubKeyTable.Uid == peerID)
-        .order_by(DBschemas.PubKeyTable.id.desc()))
-    results = [__CryptoLib.ECDH(privKey, pubKey[0], salt, keylen) for pubKey in pubKeys]
+        .order_by(DBschemas.PubKeyTable.id.desc())).all()
+    results = [__CryptoLib.ECDH(privKey, pubKey.key, salt, keylen) for pubKey in pubKeys]
     session.close()
     return results
 
