@@ -91,7 +91,7 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 	plaintext_len += len;
 	EVP_CIPHER_CTX_free(ctx);
 	OPENSSL_cleanse(k, AES_KEY_LEN);
-	if (!(ret >= 0)) {
+	if (ret < 0) {
 		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
 	if (out.get()[3] != '\0') {
