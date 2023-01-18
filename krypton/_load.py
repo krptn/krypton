@@ -108,7 +108,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         year: int"""
         __tablename__ = "keys"
         id = Column(Integer, primary_key=True)
-        name = Column(Text, index=True)
+        name = Column(Text(450), index=True)
         key = Column(LargeBinary)
         salt = Column(LargeBinary)
         cipher = Column(Text)
@@ -137,7 +137,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         fidoID: bytes"""
         __tablename__ = "users"
         id = Column(Integer, primary_key=True)
-        name = Column(Text, index=True)
+        name = Column(Text(450), index=True)
         pwdAuthToken = Column(Text)
         mfa = Column(LargeBinary, default=b"*")
         fidoPub = Column(LargeBinary, default=b"*")
@@ -167,7 +167,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         __tablename__ = "userData"
         id = Column(Integer, primary_key=True)
         Uid = Column(Integer, index=True)
-        name = Column(Text, index=True)
+        name = Column(Text(450), index=True)
         value = Column(LargeBinary)
     
     class UserShareTable(Base): # pylint: disable=too-few-public-methods
@@ -180,7 +180,7 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         __tablename__ = "userShareData"
         id = Column(Integer, primary_key=True)
         sender = Column(Integer, index=True)
-        name = Column(Text, index=True)
+        name = Column(Text(450), index=True)
         salt = Column(LargeBinary)
         value = Column(LargeBinary)
         shareUid = Column(Integer, index=True)
@@ -310,3 +310,5 @@ configs = ConfigTemp()
 configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/crypto.db")
 configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/altKMS.db")
 configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/users.db")
+
+#configs.SQLDefaultUserDBpath = "mssql+pyodbc://localhost/userDB?driver=ODBC+Driver+18+for+SQL+Server&encrypt=no"

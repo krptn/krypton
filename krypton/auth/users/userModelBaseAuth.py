@@ -137,6 +137,8 @@ class AuthUser(user):
         Raises:
             ValueError: If user is already saved
         """
+        if len(name) >= 450:
+            raise ValueError("User name must be less then 450 characters.")
         if self.saved:
             raise ValueError("This user is already saved.")
         s = self.c.scalar(select(DBschemas.UserTable).where(DBschemas.UserTable.name == name))
