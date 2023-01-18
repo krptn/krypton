@@ -52,10 +52,14 @@ py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, AUTH_TAG_LEN, tag))
 		handleErrors();
 	ciphertext_len += len;
+	int fflen = ciphertext_len + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN;
+	auto finalOut = unique_ptr<unsigned char[]>(new unsigned char[fflen]);
+	memcpy(finalOut.get(), out.get(), ciphertext_len);
+	memcpy(finalOut.get() + flen - IV_SALT_LEN - AUTH_TAG_LEN, out.get() + ciphertext_len, IV_SALT_LEN + AUTH_TAG_LEN);
 	OPENSSL_cleanse(text, msglen);
 	OPENSSL_cleanse(k, 32);
 	EVP_CIPHER_CTX_free(ctx);
-	py::bytes bresult = py::bytes((const char*)out.get(), flen);
+	py::bytes bresult = py::bytes((const char*)finalOut.get(), fflen);
 	delete[] text;
 	delete[] k;
 	return bresult;
@@ -73,8 +77,8 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 	unsigned char* iv = (unsigned char*)b + input_len - IV_SALT_LEN;
 	unsigned char* tag = (unsigned char*)b + msglen;
 	EVP_CIPHER_CTX* ctx;
-	int len;
-	int plaintext_len;
+	int len = 0;
+	int plaintext_len = 0;
 	if (!(ctx = EVP_CIPHER_CTX_new()))
 		handleErrors();
 	if (!EVP_DecryptInit_ex(ctx, AES_ALGO(), NULL, NULL, NULL))
@@ -101,7 +105,7 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 	}
 	delete[] b;
 	delete[] k;
-	py::bytes bytes = py::bytes((char*)out.get() + 4, plainMsgLen);
+	py::bytes bytes = py::bytes((char*)out.get() + 4, plaintext_len);
 	OPENSSL_cleanse(out.get(), msglen);
 	return bytes;
 }
