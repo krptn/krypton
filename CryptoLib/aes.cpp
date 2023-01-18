@@ -55,7 +55,10 @@ py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	int fflen = ciphertext_len + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN;
 	auto finalOut = unique_ptr<unsigned char[]>(new unsigned char[fflen]);
 	memcpy(finalOut.get(), out.get(), ciphertext_len);
-	memcpy(finalOut.get() + flen - IV_SALT_LEN - AUTH_TAG_LEN, out.get() + ciphertext_len, IV_SALT_LEN + AUTH_TAG_LEN);
+	memcpy(finalOut.get() + ciphertext_len, 
+		out.get() - IV_SALT_LEN -  AUTH_TAG_LEN, 
+		IV_SALT_LEN + AUTH_TAG_LEN
+	);
 	OPENSSL_cleanse(text, msglen);
 	OPENSSL_cleanse(k, 32);
 	EVP_CIPHER_CTX_free(ctx);
