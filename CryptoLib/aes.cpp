@@ -23,7 +23,7 @@ py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	text[0] = '$';
 	text[1] = 'C';
 	text[2] = 'r';
-	text[3] = msglenc;
+	text[3] = '\1'; // This needs keeping to avoid security errors in older version that may decrypt this
 	char* k = pymbToBuffer(key);
 	int finalLen = msglen + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN;
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[finalLen]);
