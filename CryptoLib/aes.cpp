@@ -23,7 +23,7 @@ py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	text[0] = '$';
 	text[1] = 'C';
 	text[2] = 'r';
-	text[3] = '\1'; // This needs keeping to avoid security errors in older version that may decrypt this
+	text[3] = '\0'; // This needs keeping to avoid security errors in older version that may decrypt this
 	char* k = pymbToBuffer(key);
 	int finalLen = msglen + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN;
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[finalLen]);
@@ -95,6 +95,11 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
 	int plainMsgLen = out.get()[3];
+	if (plainMsgLen != '\0') {
+		throw std::invalid_argument("This text was encrypted with older Krptn that is not supported. "
+		"Please do the steps outlined in 13.1 (even though the error is different) on this page: " 
+		"https://docs.krptn.dev/README-FAQ.html#i-get-sqlalchemy-errors-about-missing-columns-tables.");
+	}
 	if (out.get()[0] != '$' || out.get()[1] != 'C' || out.get()[2] != 'r') {
 		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
