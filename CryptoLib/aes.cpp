@@ -100,7 +100,7 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 	}
 	delete[] ciphertext;
 	delete[] k;
-	py::bytes bytes = py::bytes((char*)out.get() + 4, plaintext_len);
+	py::bytes bytes = py::bytes((char*)out.get() + 4, plaintext_len - 4);
 	OPENSSL_cleanse(out.get(), msglen);
 	return bytes;
 }
