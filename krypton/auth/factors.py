@@ -85,7 +85,10 @@ class password:
         salt = base.base64decode(splited[1])
         iter = int(splited[2])
         key = base.PBKDF2(pwd, salt, iter, KEY_LEN)
-        base.restDecrypt(ctext, key) # This raises an error if authentication fails.
+        try:
+            base.restDecrypt(ctext, key) # This raises an error if authentication fails.
+        except ValueError:
+            return None
         return key ## Success
 
 class totp:

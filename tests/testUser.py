@@ -126,7 +126,7 @@ class UserAuth(unittest.TestCase):
         self.model.login("TEST")
         logs = self.model.getLogs()
         self.assertTrue(logs[0][1])
-        self.assertFalse(logs[1][2])
+        self.assertFalse(logs[1][1])
 
 if __name__ == "__main__":
     unittest.main()

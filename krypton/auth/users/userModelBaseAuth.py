@@ -45,7 +45,7 @@ class AuthUser(user):
             self.logFailure()
             raise UserError("User must have a password set.")
         self._key = factors.password.auth(authTag.pwdAuthToken, pwd)
-        if self._key is False:
+        if self._key is None:
             self.logFailure()
             raise UserError("Wrong password")
         if authTag.mfa != b"*":

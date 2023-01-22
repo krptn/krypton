@@ -94,13 +94,13 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 	if (ret < 0) {
 		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
+	if (out.get()[0] != '$' || out.get()[1] != 'C' || out.get()[2] != 'r') {
+		throw std::invalid_argument("Unable to decrypt ciphertext");
+	}
 	if (out.get()[3] != '\0') {
 		throw std::invalid_argument("This text was encrypted with older Krptn that is not supported. "
 		"Please do the steps outlined in 13.1 (even though the error is different) on this page: " 
 		"https://docs.krptn.dev/README-FAQ.html#i-get-sqlalchemy-errors-about-missing-columns-tables.");
-	}
-	if (out.get()[0] != '$' || out.get()[1] != 'C' || out.get()[2] != 'r') {
-		throw std::invalid_argument("Unable to decrypt ciphertext");
 	}
 	delete[] ciphertext;
 	delete[] k;
