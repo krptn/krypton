@@ -5,6 +5,7 @@ You can check this to see the declarations for functions.
 from functools import wraps
 from abc import ABCMeta, abstractmethod
 from typing import ByteString
+from datetime import datetime
 
 from sqlalchemy.orm import Session
 
@@ -231,6 +232,6 @@ class user(metaclass=ABCMeta):
         """logFailure Log a login failure
         """
     @abstractmethod
-    def getLogs(self):
+    def getLogs(self) -> list[list[datetime, bool]]:
         """getLogs Get the login logs for the user
         """
