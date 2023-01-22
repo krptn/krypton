@@ -10,7 +10,7 @@ import pathlib
 import ctypes
 import subprocess
 import importlib.metadata
-from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select
+from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select, Boolean
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
 
 __version__ = importlib.metadata.version("krptn")
@@ -199,6 +199,21 @@ class DBschemas(): # pylint: disable=too-few-public-methods
         iter = Column(Integer)
         salt = Column(LargeBinary)
 
+    class Logs(Base): # pylint: disable=too-few-public-methods
+        """Database Schema
+        logId: int,
+        time: DaeTime,
+        exp: DateTime,
+        success: bool
+        userId: int
+        """
+        __tablename__ = "logs"
+        logId = Column(Integer, primary_key=True)
+        time = Column(DateTime)
+        exp = Column(DateTime)
+        success = Column(Boolean)
+        userId = Column(Integer, index=True)
+
 class ConfigTemp():
     """Configuration templates"""
     defaultAlgorithm = "AES256GCM"
@@ -209,6 +224,7 @@ class ConfigTemp():
     defaultPasswordResetIterations = 550000
     defaultCryptoperiod = 2
     defaultSessionPeriod = 15 # Minutes
+    defaultLogRetentionPeriod = 43200 # Minutes
     _cryptoDB:sessionmaker = None
     _altKeyDB:sessionmaker = None
     _userDB:sessionmaker = None

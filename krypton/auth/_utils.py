@@ -26,5 +26,7 @@ def cleanUpSessions(session:scoped_session, userID:int = None):
         session.flush()
     session.execute(
         delete(DBschemas.SessionKeys).where(DBschemas.SessionKeys.exp <= now))
+    session.execute(
+        delete(DBschemas.Logs).where(DBschemas.Logs.exp <= now))
     session.flush()
     session.commit()

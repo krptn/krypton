@@ -116,6 +116,17 @@ class UserAuth(unittest.TestCase):
             self.assertTrue(True)
         else:
             self.assertTrue(False)
+    
+    def testLogs(self):
+        self.model.logout()
+        try:
+            self.model.login("wrong_password")
+        except UserError:
+            pass
+        self.model.login("TEST")
+        logs = self.model.getLogs()
+        self.assertTrue(logs[0][1])
+        self.assertFalse(logs[1][2])
 
 if __name__ == "__main__":
     unittest.main()

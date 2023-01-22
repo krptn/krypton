@@ -226,3 +226,11 @@ class user(metaclass=ABCMeta):
         Arguments:
             name -- Name of the data
         """
+    @abstractmethod
+    def logFailure(self):
+        """logFailure Log a login failure
+        """
+    @abstractmethod
+    def getLogs(self):
+        """getLogs Get the login logs for the user
+        """

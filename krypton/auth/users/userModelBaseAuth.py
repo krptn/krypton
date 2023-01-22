@@ -39,15 +39,20 @@ class AuthUser(user):
         if authTag.fidoID != b"*":
             if fido is None or factors.fido.authenticate_verify(authTag.fidoChallenge, authTag.fidoPub, fido) is False:
                 self.FIDORequired = True
+                self.logFailure()
                 raise UserError("Failed to verify FIDO credentials.")
         if authTag.pwdAuthToken is None:
+            self.logFailure()
             raise UserError("User must have a password set.")
         self._key = factors.password.auth(authTag.pwdAuthToken, pwd)
-        if self._key is False: raise UserError("Wrong password")
+        if self._key is False:
+            self.logFailure()
+            raise UserError("Wrong password")
         if authTag.mfa != b"*":
             mfa = base.restDecrypt(authTag.mfa, self._key)
             if not factors.totp.verifyTOTP(mfa, mfaToken):
                 base.zeromem(self._key)
+                self.logFailure()
                 raise UserError("Wrong MFA Token")
         restoreKey = os.urandom(32)
         self.sessionKey = base.restEncrypt(self._key, restoreKey)
@@ -65,10 +70,36 @@ class AuthUser(user):
             self.generateNewKeys(pwd)
         self.reload()
         self.c.flush()
-        self.c.commit()
         encoded = base.base64encode(restoreKey)
         base.zeromem(restoreKey)
+        row = DBschemas.Logs(time=datetime.datetime.now(),
+            exp=datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultLogRetentionPeriod),
+            success=True,
+            userId = self.id)
+        self.c.add(row)
+        self.c.flush()
+        self.c.commit()
         return encoded
+    
+    def logFailure(self):
+        """logFailure Log a login failure
+        """
+        row = DBschemas.Logs(time=datetime.datetime.now(),
+            exp=datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultLogRetentionPeriod),
+            success=False,
+            userId = self.id)
+        self.c.add(row)
+        self.c.flush()
+        self.c.commit()
+    
+    @userExistRequired
+    def getLogs(self):
+        """getLogs Get the login logs for the user
+        """
+        logs:list[DBschemas.Logs] = self.c.scalars(select(DBschemas.Logs)\
+            .where(DBschemas.Logs.userId == self.id)\
+            .order_by(DBschemas.Logs.time.desc()))
+        return [[log.time, log.success] for log in logs]
 
     @userExistRequired
     def logout(self):
