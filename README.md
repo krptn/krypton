@@ -27,7 +27,7 @@ How we achieve this?
 - All data is encrypted (any data can be requested by the developer to be secured)
 - Only the appropriate users' credentials can unlock the cryptosystem (this protects you from server-side attacks)
 
-This gives you [Zero Knowledge security](https://www.krptn.dev/news/zero-knowledge/) (one of the most secure available) without ever needing to even notice it! It protects you from server side attacks.s
+This gives you [Zero Knowledge security](https://www.krptn.dev/news/zero-knowledge/) without ever needing to even notice it! It protects you from server side attacks.
 
 ## Try it out
 
