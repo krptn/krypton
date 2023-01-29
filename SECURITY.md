@@ -11,9 +11,10 @@ Email security vulnerabilities to [security@krptn.dev](mailto:security@krptn.dev
 Please make sure the following information is clearly stated:
 
 - What components are affected?
-- How to exploit it?
-- Minimal reproducible example
+- PoC - if any (please see our below notice)
 - Recommendations on fixes, if any
+
+We also welcome vulnerabilities with no existing exploits. That means, for example, a use of an insecure cipher, that cannot be directly exploited, but is better fixed.
 
 ## Vulnerability Publishing
 
