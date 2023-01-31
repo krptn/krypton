@@ -33,6 +33,6 @@ tomli==2.0.1
 tomlkit==0.11.6
 typing_extensions==4.4.0
 tzdata==2022.7
-webauthn==1.6.0
+webauthn==1.7.0
 Werkzeug==2.2.2
 wrapt==1.14.1
