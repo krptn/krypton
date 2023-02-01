@@ -8,7 +8,7 @@ click==8.1.3
 colorama==0.4.6
 cryptography==39.0.0
 dill==0.3.6
-Django==4.1.5
+Django==4.1.6
 Flask==2.2.2
 greenlet==2.0.2
 isort==5.12.0
@@ -24,7 +24,7 @@ pybind11==2.10.3
 pycparser==2.21
 pydantic==1.10.4
 pyenchant==3.2.2
-pylint==2.15.10
+pylint==2.16.0
 pyOpenSSL==23.0.0
 pyparsing==3.0.9
 SQLAlchemy==2.0.0
