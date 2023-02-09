@@ -1,9 +1,4 @@
----
-title: "Security Policy"
-draft: false
-date: "2022-10-14"
-description: "Zero Knowledge security (as a IAM) for Python. This is our security policy."
----
+# "Security Policy"
 
 ## Supported Versions
 
