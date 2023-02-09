@@ -1,4 +1,9 @@
-# Security Policy
+---
+title: "Security Policy"
+draft: false
+date: "2022-10-14"
+description: "Zero Knowledge security (as a IAM) for Python. This is our security policy."
+---
 
 ## Supported Versions
 
@@ -8,11 +13,13 @@ Only the most recent version is supported; however, we are still interested in l
 
 ### Vulnerabilitis affecting the Krptn module
 
-If your vulnerability affects the code that is installed on peoples devices whent he `pip install krptn`, please fill out [this form](https://github.com/krptn/krypton/security/advisories/new).
+If your vulnerability affects the code that is installed on peoples devices when they `pip install krptn`, please fill out [this form](https://github.com/krptn/krypton/security/advisories/new).
 
 We also welcome vulnerabilities with no existing exploits. That means, for example, a use of an insecure cipher, that cannot be directly exploited, but is better fixed.
 
 ### Other vulnerabilites
+
+If your vulnerability is not to do with the Python package (e.g.: XSS vulnerability on our website), please follow the below instructions.
 
 Email security vulnerabilities to [security@krptn.dev](mailto:security@krptn.dev).
 
