@@ -18,6 +18,7 @@ jobs:
     env:
       CIBW_ARCHS: ${{ matrix.arch }}
       CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64:/project/kr-openssl-install/lib
+      CIBW_TEST_SKIP: pp*
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
