@@ -220,8 +220,8 @@ class ConfigTemp():
     APP_NAME = "KryptonApp"
     HOST_NAME = ""
     ORIGIN = ""
-    defaultIterations = 500000
-    defaultPasswordResetIterations = 550000
+    defaultIterations = 700000
+    defaultPasswordResetIterations = 750000
     defaultCryptoperiod = 2
     defaultSessionPeriod = 15 # Minutes
     defaultLogRetentionPeriod = 43200 # Minutes
