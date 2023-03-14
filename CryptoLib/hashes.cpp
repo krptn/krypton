@@ -26,8 +26,10 @@ py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int k
 	py::gil_scoped_release release;
 	char* key = new char[keylen];
 	if (!PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt,
-		saltLen, iter, EVP_sha512(), keylen, (unsigned char*)key))
-		throw std::invalid_argument("Unable to hash data.");
+		saltLen, iter, EVP_sha512(), keylen, (unsigned char*)key)) {
+			py::gil_scoped_acquire acquire;
+			throw std::invalid_argument("Unable to hash data.");
+		}
 	OPENSSL_cleanse(text, len);
 	py::gil_scoped_acquire acquire;
 	py::bytes final = py::bytes(key, keylen);
