@@ -6,6 +6,7 @@ on:
 
 env:
   CIBW_TEST_COMMAND: |
+    python -m krypton --clean
     python -m unittest discover -s {project}/tests -p "*test*.py" --verbose
 
 jobs:
@@ -17,7 +18,7 @@ jobs:
     env:
       CIBW_ARCHS: ${{ matrix.arch }}
       CIBW_ENVIRONMENT: LD_LIBRARY_PATH=/project/kr-openssl-install/lib64:/project/kr-openssl-install/lib
-      CIBW_TEST_SKIP: pp*
+      CIBW_TEST_SKIP: pp* # We do not test PyPy because we don't want to compile cryptography - which is needed for tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
