@@ -1,16 +1,12 @@
 import argparse
-import shutil
-import pathlib
 import sys
-from . import configs
+from . import configs, Base
 
 def cleanDatabase():
-    configs.SQLDefaultCryptoDBpath = 'sqlite+pysqlite://'
-    configs.SQLDefaultUserDBpath = 'sqlite+pysqlite://'
-    configs.SQLDefaultKeyDBpath = 'sqlite+pysqlite://'
-    KR_DATA = pathlib.Path(pathlib.Path.home(), '.krptn-data/')
-    if KR_DATA.exists():
-        shutil.rmtree(KR_DATA.as_posix())
+    Base.metadata.drop_all(configs._cryptoDbEngine)
+    Base.metadata.drop_all(configs._altKeyDbEngine)
+    Base.metadata.drop_all(configs._userDbEngine)
+    print("Cleaning Database completed!")
 
 parser = argparse.ArgumentParser(description='Krptn CLI')
 parser.add_argument('--clean', dest='doAction', const=cleanDatabase, nargs='?',

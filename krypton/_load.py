@@ -226,8 +226,11 @@ class ConfigTemp():
     defaultSessionPeriod = 15 # Minutes
     defaultLogRetentionPeriod = 43200 # Minutes
     _cryptoDB:sessionmaker = None
+    _cryptoDbEngine = None
     _altKeyDB:sessionmaker = None
+    _altKeyDbEngine = None
     _userDB:sessionmaker = None
+    _userDbEngine = None
     @property
     def SQLDefaultCryptoDBpath(self) -> Session:
         """
@@ -263,6 +266,7 @@ class ConfigTemp():
         c.flush()
         c.commit()
         c.close()
+        self._cryptoDbEngine = engine
         self._cryptoDB = sessionmaker(engine, autoflush=True)
 
     @property
@@ -276,14 +280,15 @@ class ConfigTemp():
         """
             Connection to the default database used by the KMS
         """
-        conn = create_engine(path, echo=False, future=True)
-        c = Session(conn)
-        Base.metadata.create_all(conn)
+        engine = create_engine(path, echo=False, future=True)
+        c = Session(engine)
+        Base.metadata.create_all(engine)
         c.autoflush = True
         c.commit()
         c.flush()
         c.close()
-        self._altKeyDB = sessionmaker(conn, autoflush=True)
+        self._altKeyDbEngine = engine
+        self._altKeyDB = sessionmaker(engine, autoflush=True)
 
     @property
     def SQLDefaultUserDBpath(self) -> Session:
@@ -319,6 +324,7 @@ class ConfigTemp():
         c.flush()
         c.commit()
         c.close()
+        self._userDbEngine = engine
         self._userDB = sessionmaker(engine, autoflush=True)
 
 configs = ConfigTemp()
