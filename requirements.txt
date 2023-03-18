@@ -27,7 +27,7 @@ pyenchant==3.2.2
 pylint==2.17.0
 pyOpenSSL==23.0.0
 pyparsing==3.0.9
-SQLAlchemy==2.0.6
+SQLAlchemy==2.0.7
 sqlparse==0.4.3
 tomli==2.0.1
 tomlkit==0.11.6
