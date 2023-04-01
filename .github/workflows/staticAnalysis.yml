@@ -2,10 +2,10 @@ name: Static Analysis
 on:
   workflow_dispatch:
   pull_request:
-   types: [opened, reopened]
+    branches: [ "master" ]
 
 permissions:
-  contents: read
+   contents: read
 jobs:
 # Source repository: https://github.com/actions/dependency-review-action
 # Public documentation: https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-dependency-review#dependency-review-enforcement
