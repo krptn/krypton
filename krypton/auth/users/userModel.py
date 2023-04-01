@@ -12,7 +12,7 @@ import pickle
 from typing import ByteString
 from sqlalchemy import and_, delete, select, update
 from sqlalchemy.orm import scoped_session
-
+from sqlalchemy.exc import PendingRollbackError
 from .. import factors
 from ... import DBschemas, configs
 from ... import base
@@ -193,7 +193,7 @@ class standardUser(AuthUser, MFAUser, user):
                 break
         try: return text
         except NameError as exc:
-            raise ValueError("Unable to decrypt the cipertext") from exc
+            raise ValueError("Unable to decrypt the ciphertext") from exc
 
     @userExistRequired
     def encryptWithUserKey(self,
@@ -361,6 +361,9 @@ class standardUser(AuthUser, MFAUser, user):
             base.zeromem(self._privKey)
             base.zeromem(self.backupAESKeys)
             base.zeromem(self.backupKeys)
-            self.c.flush()
-            self.c.commit()
+            try:
+                self.c.flush()
+                self.c.commit()
+            except PendingRollbackError:
+                self.c.rollback()
             self.c.close()
