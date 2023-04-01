@@ -67,6 +67,7 @@ class standardUser(AuthUser, MFAUser, user):
 
             value -- value
         """
+        assert isinstance(name, str)
         try:
             self.deleteData(name)
         except:
