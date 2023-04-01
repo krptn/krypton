@@ -156,7 +156,6 @@ def zeromem(obj:ByteString)->int:
 
     WARNING! Improper use leads to severe memory corruption.
     Ensure you only use it with bytes and string objects.
-    IT HAS NO ERROR OR TYPE CHECKS!
     Also, on PyPy this function does nothing to avoid corruption.
 
     Arguments:
@@ -165,6 +164,7 @@ def zeromem(obj:ByteString)->int:
     Returns:
         Result from memset.
     """
+    assert (isinstance(obj, str) or isinstance(obj, bytes))
     if "PyPy" not in sys.version:
         return ctypes.memset(id(obj)+(sys.getsizeof(obj)-len(obj)),0,len(obj))
     return None
