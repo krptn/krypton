@@ -40,6 +40,8 @@ class MFAUser(user):
         return PKeys
 
     def resetPWD(self, key:str, newPWD:str):
+        assert isinstance(key, str)
+        assert isinstance(newPWD, str)
         """Reset a PWD using a recovery code
 
         Arguments:

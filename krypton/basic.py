@@ -219,7 +219,7 @@ class Crypto(KMS):
         self.c.commit()
         return _num
 
-    def secureRead(self,num:int, pwd:ByteString):
+    def secureRead(self, num:int, pwd:ByteString):
         """Read data from secureCreate
 
         Arguments:

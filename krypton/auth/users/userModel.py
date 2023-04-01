@@ -123,6 +123,7 @@ class standardUser(AuthUser, MFAUser, user):
         Arguments:
             name -- The key to remove
         """
+        assert isinstance(name, str)
         stmt = delete(DBschemas.UserData).where(and_(DBschemas.UserData.name == name,
             DBschemas.UserData.Uid == self.id))
         self.c.execute(stmt)
@@ -244,6 +245,7 @@ class standardUser(AuthUser, MFAUser, user):
 
             otherUsers -- List of usernames who should read it
         """
+        assert isinstance(name, str)
         keys = self.encryptWithUserKey(data, otherUsers)
         ids = [self.c.scalar(select(DBschemas.UserTable.id)
             .where(DBschemas.UserTable.name == user))
@@ -287,6 +289,7 @@ class standardUser(AuthUser, MFAUser, user):
         Arguments:
             name -- Name of the data
         """
+        assert isinstance(name, str)
         self.c.execute(delete(DBschemas.UserShareTable).where(and_(DBschemas.UserShareTable.name == name,
             DBschemas.UserShareTable.sender == self.id)))
         self.c.flush()

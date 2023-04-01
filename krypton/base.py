@@ -121,6 +121,8 @@ def getSharedKey(privKey:str, peerID:int, salt:bytes, keylen:int=32) -> list[byt
     Returns:
         List of keys as python bytes
     """
+    assert isinstance(privKey, str)
+    assert isinstance(peerID, int)
     # pylint: disable=no-member
     session:Session = scoped_session(configs.SQLDefaultUserDBpath)
     pubKeys:list[DBschemas.PubKeyTable] = session.scalars(
@@ -189,6 +191,7 @@ def createTOTPString(secret:bytes, user:str) -> str:
     Returns:
         The String to be converted to QR code
     """
+    assert isinstance(user, str)
     s = base64.b32encode(secret)
     secret = s.decode()
     stripped = secret.strip("=")

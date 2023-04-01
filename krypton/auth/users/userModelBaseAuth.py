@@ -168,6 +168,7 @@ class AuthUser(user):
         Raises:
             ValueError: If user is already saved
         """
+        assert isinstance(name, str) # No need to assert pwd as it will be done in C++ layer
         if len(name) >= 450:
             raise ValueError("User name must be less then 450 characters.")
         if self.saved:
@@ -219,6 +220,12 @@ class AuthUser(user):
 
     @userExistRequired
     def changeUserName(self, newUserName:str):
+        """changeUserName Change the user's username
+
+        Arguments:
+            newUserName -- The new username (string)
+        """
+        assert isinstance(newUserName, str)
         stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
             values(name = newUserName)
         self.c.execute(stmt)
