@@ -12,6 +12,8 @@ __pycache__/
 *.a
 .*/
 
+scrap_work/
+
 .DS_Store
 
 #VS
