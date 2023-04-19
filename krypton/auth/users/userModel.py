@@ -363,8 +363,8 @@ class standardUser(AuthUser, MFAUser, user):
         if self.loggedin:
             base.zeromem(self._key)
             base.zeromem(self._privKey)
-            base.zeromem(self.backupAESKeys)
-            base.zeromem(self.backupKeys)
+            [base.zeromem(key) for key in self.backupAESKeys]
+            [base.zeromem(key) for key in self.backupKeys]
             try:
                 self.c.flush()
                 self.c.commit()

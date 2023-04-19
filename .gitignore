@@ -10,6 +10,7 @@ __pycache__/
 *.dylib
 *.lib
 *.a
+.*/
 
 .DS_Store
 

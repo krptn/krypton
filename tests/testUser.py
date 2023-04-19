@@ -14,6 +14,7 @@ class UserAuth(unittest.TestCase):
     def tearDown(self) -> None:
         self.model.loggedin = True
         self.model.delete()
+        del self.model
         return super().tearDown()
 
     def testLoginOut(self):
