@@ -1,6 +1,6 @@
 asgiref==3.6.0
 asn1crypto==1.5.1
-astroid==2.15.2
+astroid==2.15.3
 build==0.10.0
 cbor2==5.4.6
 cffi==1.15.1
@@ -28,7 +28,7 @@ pylint==2.17.2
 pyOpenSSL==23.1.1
 pyparsing==3.0.9
 SQLAlchemy==2.0.9
-sqlparse==0.4.3
+sqlparse==0.4.4
 tomli==2.0.1
 tomlkit==0.11.7
 typing_extensions==4.5.0
