@@ -10,15 +10,6 @@
 using namespace std;
 namespace py = pybind11;
 
-/*
-NIST P-521 (secp521r1) is used for the following reasoning:
-
-- We use AES-256, so that, in future, top secret classified data can be stored.
-- Therefore, if such level of security is required,
-- we need to protect the key with at least the same level (otherwise 256-bit AES is pointless).
-- Also, it is used in the PGP standard.
-*/
-
 int ECC_DEFAULT_CURVE = NID_secp521r1;
 const char* KEY_ENCODE_FORMAT = "PEM";
 
