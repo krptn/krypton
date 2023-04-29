@@ -54,7 +54,7 @@ elif sys.platform == "win32":
   macros += [("WIN", None)]
   runtime_libs = []
 elif sys.platform == "darwin":
-  extra_args += ["-std=c++17"] #, "-O0"] # Disable optimizationas as they trigger segementation faults
+  extra_args += ["-std=c++17", "-O0"] # Disable optimizationas as they trigger segementation faults
 
 setup(
   package_data={"": package_data},
