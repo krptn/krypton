@@ -28,28 +28,36 @@ py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	int finalLen = msglen + (long long)AUTH_TAG_LEN + (long long)IV_SALT_LEN;
 	auto out = unique_ptr<unsigned char[]>(new unsigned char[finalLen]);
 	unsigned char* iv = out.get() + finalLen - (long long)IV_SALT_LEN;
-	if (!(RAND_bytes(iv, IV_SALT_LEN) == 1))
+	if (!(RAND_bytes(iv, IV_SALT_LEN) == 1)) {
 		handleErrors();
+	}
 	unsigned char* tag = out.get() + finalLen - (long long)IV_SALT_LEN - (long long)AUTH_TAG_LEN;
 
 	EVP_CIPHER_CTX* ctx;
 	int len;
 	int ciphertext_len;
-	if (!(ctx = EVP_CIPHER_CTX_new()))
+	if (!(ctx = EVP_CIPHER_CTX_new())) {
 		handleErrors();
-	if (1 != EVP_EncryptInit_ex(ctx, AES_ALGO(), NULL, NULL, NULL))
+	}
+	if (1 != EVP_EncryptInit_ex(ctx, AES_ALGO(), NULL, NULL, NULL)) {
 		handleErrors();
-	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL))
+	}
+	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL)) {
 		handleErrors();
-	if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char*)k, iv))
+	}
+	if (1 != EVP_EncryptInit_ex(ctx, NULL, NULL, (unsigned char*)k, iv)) {
 		handleErrors();
-	if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, (unsigned char*)text, msglen))
+	}
+	if (1 != EVP_EncryptUpdate(ctx, out.get(), &len, (unsigned char*)text, msglen)) {
 		handleErrors();
+	}
 	ciphertext_len = len;
-	if (1 != EVP_EncryptFinal_ex(ctx, out.get() + len, &len))
+	if (1 != EVP_EncryptFinal_ex(ctx, out.get() + len, &len)) {
 		handleErrors();
-	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, AUTH_TAG_LEN, tag))
+	}
+	if (1 != EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_GET_TAG, AUTH_TAG_LEN, tag)) {
 		handleErrors();
+	}
 	ciphertext_len += len;
 	OPENSSL_cleanse(text, msglen);
 	OPENSSL_cleanse(k, 32);
@@ -74,19 +82,25 @@ py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key){
 	EVP_CIPHER_CTX* ctx;
 	int len = 0;
 	int plaintext_len = 0;
-	if (!(ctx = EVP_CIPHER_CTX_new()))
+	if (!(ctx = EVP_CIPHER_CTX_new())) {
 		handleErrors();
-	if (!EVP_DecryptInit_ex(ctx, AES_ALGO(), NULL, NULL, NULL))
+	}
+	if (!EVP_DecryptInit_ex(ctx, AES_ALGO(), NULL, NULL, NULL)) {
 		handleErrors();
-	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL))
+	}
+	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_IVLEN, IV_SALT_LEN, NULL)) {
 		handleErrors();
-	if (!EVP_DecryptInit_ex(ctx, NULL, NULL, (unsigned char*)k, iv))
+	}
+	if (!EVP_DecryptInit_ex(ctx, NULL, NULL, (unsigned char*)k, iv)) {
 		handleErrors();
-	if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, (const unsigned char*)ciphertext, msglen))
+	}
+	if (1 != EVP_DecryptUpdate(ctx, out.get(), &len, (const unsigned char*)ciphertext, msglen)) {
 		handleErrors();
+	}
 	plaintext_len = len;
-	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AUTH_TAG_LEN, tag))
+	if (!EVP_CIPHER_CTX_ctrl(ctx, EVP_CTRL_GCM_SET_TAG, AUTH_TAG_LEN, tag)) {
 		handleErrors();
+	}
 	int ret = EVP_DecryptFinal_ex(ctx, out.get() + len, &len);
 	plaintext_len += len;
 	EVP_CIPHER_CTX_free(ctx);

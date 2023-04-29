@@ -51,8 +51,9 @@ py::bytes pyHKDF(char* secret, int len, char* salt, int saltLen, int keylen) {
 	*p++ = OSSL_PARAM_construct_octet_string("key", secret, len);
 	*p++ = OSSL_PARAM_construct_octet_string("key", salt, saltLen);
 	*p = OSSL_PARAM_construct_end();
-	if (EVP_KDF_derive(kctx, out, keylen, params) <= 0)
+	if (EVP_KDF_derive(kctx, out, keylen, params) <= 0) {
 		handleErrors();
+	}
 	EVP_KDF_CTX_free(kctx);
 	py::bytes result = py::bytes((char*)out, keylen);
 	delete[] out;

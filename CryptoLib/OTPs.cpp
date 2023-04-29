@@ -52,8 +52,9 @@ bool verifyTOTP(py::bytes secret, py::str value) {
 
 py::str genOTP() {
   unsigned char binCode[9];
-  if (!(RAND_bytes((unsigned char*)&binCode, sizeof(binCode)) == 1))
-    handleErrors();
+  if (!(RAND_bytes((unsigned char*)&binCode, sizeof(binCode)) == 1)) {
+		handleErrors();
+	}
   char finalCode[sizeof(binCode)*4/3+1];
   EVP_EncodeBlock(reinterpret_cast<unsigned char *>(finalCode), (const unsigned char*)binCode, sizeof(binCode));
   py::str pyCode = py::str(finalCode, sizeof(binCode)*4/3);

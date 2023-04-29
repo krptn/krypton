@@ -23,11 +23,13 @@ py::bytes decode64(char* input, int length) {
 	unsigned char* output = new unsigned char[pl+1];
 	EVP_ENCODE_CTX *ctx = EVP_ENCODE_CTX_new();
 	EVP_DecodeInit(ctx);
-	if (EVP_DecodeUpdate(ctx, output, &outLen, (unsigned char*)input, length) == -1)
+	if (EVP_DecodeUpdate(ctx, output, &outLen, (unsigned char*)input, length) == -1) {
 		handleErrors();
+	}
 	int outputLen = outLen;
-	if (EVP_DecodeFinal(ctx, output, &outLen) == -1)
+	if (EVP_DecodeFinal(ctx, output, &outLen) == -1) {
 		handleErrors();
+	}
 	outputLen = outputLen + outLen;
 	EVP_ENCODE_CTX_free(ctx);
 	py::bytes result = py::bytes((const char*)output, outputLen);
