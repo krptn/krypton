@@ -53,8 +53,8 @@ elif sys.platform == "win32":
   link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32", "CRYPT32"]
   macros += [("WIN", None)]
   runtime_libs = []
-#elif sys.platform == "darwin":
-  #extra_args += ["-std=c++17", "-O0"] # Disable optimizationas as they trigger segementation faults
+elif sys.platform == "darwin":
+  extra_args += ["-std=c++17"] #, "-O0"] # Disable optimizationas as they trigger segementation faults
 
 setup(
   package_data={"": package_data},
