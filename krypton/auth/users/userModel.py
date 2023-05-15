@@ -49,13 +49,13 @@ class standardUser(AuthUser, MFAUser, user):
             self.id = self.c.scalar(stmt)
             self.userName = userName
             if self.id is None:
-                raise UserError("This user does not exist.")
+                return
         else: # that is userID is not None
             stmt = select(DBschemas.UserTable.name).where(DBschemas.UserTable.id == userID).limit(1)
             self.userName = self.c.scalar(stmt)
             self.id = userID
             if self.userName is None:
-                raise UserError("This user does not exist.")
+                return
         self.saved = True
 
     @userExistRequired

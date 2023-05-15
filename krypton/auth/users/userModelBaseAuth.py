@@ -31,8 +31,13 @@ class AuthUser(user):
         Returns:
             Session Key
         """
+        def _finishAuthError():
+            """_finishAuthError Prevent timing attacks
+            """
+            factors.password.auth(base.base64encode(os.urandom(32)), pwd)
         if not self.saved:
-            raise UserError("User must be saved.")
+            _finishAuthError()
+            raise UserError("This user does not exist.")
         authTag:DBschemas.UserTable = self.c.scalar(
             select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
         )
@@ -40,9 +45,11 @@ class AuthUser(user):
             if fido is None or factors.fido.authenticate_verify(authTag.fidoChallenge, authTag.fidoPub, fido) is False:
                 self.FIDORequired = True
                 self.logFailure()
+                _finishAuthError()
                 raise UserError("Failed to verify FIDO credentials.")
         if authTag.pwdAuthToken is None:
             self.logFailure()
+            _finishAuthError()
             raise UserError("User must have a password set.")
         self._key = factors.password.auth(authTag.pwdAuthToken, pwd)
         if self._key is None:
@@ -53,6 +60,7 @@ class AuthUser(user):
             if not factors.totp.verifyTOTP(mfa, mfaToken):
                 base.zeromem(self._key)
                 self.logFailure()
+                # No _finishAuthError() is intentional
                 raise UserError("Wrong MFA Token")
         restoreKey = os.urandom(32)
         self.sessionKey = base.restEncrypt(self._key, restoreKey)
