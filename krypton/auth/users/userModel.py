@@ -41,8 +41,8 @@ class standardUser(AuthUser, MFAUser, user):
         self.loggedin = False
         self.FIDORequired = False
         self.c = scoped_session(configs.SQLDefaultUserDBpath)
+        self.saved = False
         if userID is None and userName is None:
-            self.saved = False
             return
         if userName is not None:
             stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName)

@@ -8,7 +8,7 @@ from sqlalchemy import select, delete, update
 
 from .. import factors
 from ... import DBschemas, configs, base
-from .bases import userExistRequired, user
+from .bases import userExistRequired, user, UserError
 
 class MFAUser(user):
     """MFA for Krypton Users
@@ -146,6 +146,8 @@ class MFAUser(user):
         Returns:
             Fido Options as string, { "error": "No keys availble" } if FIDO is not setup
         """
+        if not self.saved:
+            raise UserError("This user does not exist.")
         stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
         authTag:DBschemas.UserTable = self.c.scalar(stmt)
         if authTag.fidoID == b"*":
