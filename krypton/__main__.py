@@ -10,6 +10,7 @@ def cleanDatabase():
 
 parser = argparse.ArgumentParser(description='Krptn CLI')
 parser.add_argument('--clean', dest='doAction', const=cleanDatabase, nargs='?',
-    default=lambda: 'Not cleaning Krptn database', help='Clean Krptn\'s default database (.krptn-data)')
+    default=lambda: 'Not cleaning Krptn database',
+    help='Clean Krptn\'s default database (.krptn-data)')
 args = parser.parse_args(sys.argv[1:])
 args.doAction()

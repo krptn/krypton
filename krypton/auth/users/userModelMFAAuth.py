@@ -22,7 +22,8 @@ class MFAUser(user):
         """
         # pylint: disable=invalid-name
         PKeys = [base.genOTP() for i in range(10)]
-        self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
+        self.c.execute(delete(DBschemas.PWDReset)\
+                       .where(DBschemas.PWDReset.Uid == self.id))
         for PKey in PKeys:
             salt = os.urandom(32)
             key = base.PBKDF2(PKey, salt, configs.defaultPasswordResetIterations, 32)
@@ -52,7 +53,8 @@ class MFAUser(user):
         Raises:
             ValueError: if the reset fails
         """
-        rows = self.c.execute(select(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id)).scalars().all()
+        rows = self.c.execute(select(DBschemas.PWDReset)\
+                .where(DBschemas.PWDReset.Uid == self.id)).scalars().all()
         reset = False
         for row in rows:
             krKey = base.PBKDF2(key, row.salt, row.iter, 32)
@@ -62,7 +64,8 @@ class MFAUser(user):
                 continue
             base.zeromem(krKey)
             self.loggedin = True
-            self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.id == row.id))
+            self.c.execute(delete(DBschemas.PWDReset)\
+                           .where(DBschemas.PWDReset.id == row.id))
             self.c.flush()
             self.generateNewKeys(newPWD)
             token = self.login(newPWD)
@@ -78,7 +81,8 @@ class MFAUser(user):
     def disablePWDReset(self):
         """Disbale PWD and revoke all codes
         """
-        self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
+        self.c.execute(delete(DBschemas.PWDReset)\
+                       .where(DBschemas.PWDReset.Uid == self.id))
         self.c.flush()
         self.c.commit()
 
@@ -90,7 +94,8 @@ class MFAUser(user):
             base32 encoded shared secret, QR code string
         """
         secret, base32Secret, string = factors.totp.createTOTP(self.userName)
-        stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
+        stmt = update(DBschemas.UserTable)\
+            .where(DBschemas.UserTable.name == self.userName).\
             values(mfa = base.restEncrypt(secret, self._key))
         self.c.execute(stmt)
         self.c.flush()
@@ -102,7 +107,8 @@ class MFAUser(user):
     def disableMFA(self):
         """Disable TOTP based MFA
         """
-        stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
+        stmt = update(DBschemas.UserTable)\
+            .where(DBschemas.UserTable.name == self.userName).\
             values(mfa = b"*")
         self.c.execute(stmt)
         self.c.flush()
@@ -126,7 +132,8 @@ class MFAUser(user):
         challenge = self.getData("_tempFIDORegisterChallenge")
         self.deleteData("_tempFIDORegisterChallenge")
         credID, credKey = factors.fido.register_verification(response, challenge)
-        self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
+        self.c.execute(update(DBschemas.UserTable)\
+            .where(DBschemas.UserTable.name == self.userName).\
             values(fidoPub=credKey, fidoID=credID))
         self.c.flush()
         self.c.commit()
@@ -135,7 +142,8 @@ class MFAUser(user):
     def removeFIDO(self):
         """Remove the FIDO Auth from Server
         """
-        self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
+        self.c.execute(update(DBschemas.UserTable)\
+            .where(DBschemas.UserTable.name == self.userName).\
             values(fidoPub=b"*", fidoID=b"*"))
         self.c.flush()
         self.c.commit()
@@ -148,12 +156,14 @@ class MFAUser(user):
         """
         if not self.saved:
             raise UserError("This user does not exist.")
-        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
+        stmt = select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id)\
+            .limit(1)
         authTag:DBschemas.UserTable = self.c.scalar(stmt)
         if authTag.fidoID == b"*":
             return '{ "error": "No keys availble" }'
         options, challenge = factors.fido.authenticate(authTag.fidoID)
-        self.c.execute(update(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).\
+        self.c.execute(update(DBschemas.UserTable)\
+            .where(DBschemas.UserTable.id == self.id).\
             values(fidoChallenge = challenge))
         self.c.flush()
         self.c.commit()

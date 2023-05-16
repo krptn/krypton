@@ -137,7 +137,8 @@ class user(metaclass=ABCMeta):
             name -- The key to remove
         """
     @abstractmethod
-    def decryptWithUserKey(self, data:ByteString, salt:bytes=None, sender=None) -> bytes:
+    def decryptWithUserKey(self,
+                           data:ByteString, salt:bytes=None, sender=None) -> bytes:
         """Decrypt data with user's key
 
         Arguments:
@@ -159,10 +160,10 @@ class user(metaclass=ABCMeta):
             data -- Plaintext
 
         Keyword Arguments:
-            otherUsers -- List of user names of people who can decrypt it  (default: {None})
+            otherUsers -- List of user nameswho can decrypt it  (default: {None})
 
         Returns:
-            List of tuples of form (user name, ciphertext, salt), which needs to be provided so that user name's user can decrypt it.
+            List of tuples of form (user name, ciphertext, salt), check: https://docs.krptn.dev/README-USER-AUTH.html#encryption.
         """
     @abstractmethod
     def generateNewKeys(self, pwd:str):

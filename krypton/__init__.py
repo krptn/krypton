@@ -22,5 +22,6 @@ ignore = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__',
     '__sizeof__', '__str__', '__subclasshook__', '__weakref__']
 search = 5
 
-print("Krptn has been initialized and loaded. In case you run into any problems, please read our "
+print("Krptn has been initialized and loaded. In case you run into any problems, "
+    "please read our "
     "common issues guide: https://docs.krptn.dev/README-FAQ.html.")

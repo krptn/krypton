@@ -39,10 +39,12 @@ class AuthUser(user):
             _finishAuthError()
             raise UserError("This user does not exist.")
         authTag:DBschemas.UserTable = self.c.scalar(
-            select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id).limit(1)
+            select(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id)
+            .limit(1)
         )
         if authTag.fidoID != b"*":
-            if fido is None or factors.fido.authenticate_verify(authTag.fidoChallenge, authTag.fidoPub, fido) is False:
+            if fido is None or factors.fido.authenticate_verify(authTag.fidoChallenge,
+                                                        authTag.fidoPub, fido) is False:
                 self.FIDORequired = True
                 self.logFailure()
                 _finishAuthError()
@@ -68,7 +70,8 @@ class AuthUser(user):
             Uid = self.id,
             key = self.sessionKey,
             iss = datetime.datetime.now(),
-            exp = datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultSessionPeriod)
+            exp = (datetime.datetime.now() +
+                   datetime.timedelta(minutes=configs.defaultSessionPeriod))
         )
         self.c.add(token)
         self.c.flush()
@@ -81,7 +84,8 @@ class AuthUser(user):
         encoded = base.base64encode(restoreKey)
         base.zeromem(restoreKey)
         row = DBschemas.Logs(time=datetime.datetime.now(),
-            exp=datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultLogRetentionPeriod),
+            exp=(datetime.datetime.now() +
+                 datetime.timedelta(minutes=configs.defaultLogRetentionPeriod)),
             success=True,
             userId = self.id)
         self.c.add(row)
@@ -93,7 +97,8 @@ class AuthUser(user):
         """logFailure Log a login failure
         """
         row = DBschemas.Logs(time=datetime.datetime.now(),
-            exp=datetime.datetime.now() + datetime.timedelta(minutes=configs.defaultLogRetentionPeriod),
+            exp=(datetime.datetime.now()
+                 + datetime.timedelta(minutes=configs.defaultLogRetentionPeriod)),
             success=False,
             userId = self.id)
         self.c.add(row)
@@ -115,7 +120,8 @@ class AuthUser(user):
         """
         base.zeromem(self._key)
         base.zeromem(self._privKey)
-        stmt = delete(DBschemas.SessionKeys).where(DBschemas.SessionKeys.key == self.sessionKey)
+        stmt = delete(DBschemas.SessionKeys)\
+            .where(DBschemas.SessionKeys.key == self.sessionKey)
         self.c.execute(stmt)
         self.c.flush()
         self.c.commit()
@@ -127,11 +133,17 @@ class AuthUser(user):
         """Delete a user
         """
         _utils.cleanUpSessions(self.c, self.id)
-        self.c.execute(delete(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id))
-        self.c.execute(delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.Uid == self.id))
-        self.c.execute(delete(DBschemas.UserData).where(DBschemas.UserData.Uid == self.id))
-        self.c.execute(delete(DBschemas.UserShareTable).where(DBschemas.UserShareTable.sender == self.id))
-        self.c.execute(delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
+        self.c.execute(
+            delete(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id))
+        self.c.execute(
+            delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.Uid == self.id))
+        self.c.execute(
+            delete(DBschemas.UserData).where(DBschemas.UserData.Uid == self.id))
+        self.c.execute(
+            delete(DBschemas.UserShareTable).where(
+                DBschemas.UserShareTable.sender == self.id))
+        self.c.execute(
+            delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id))
         self.c.flush()
         self.c.commit()
         base.zeromem(self._key)
@@ -176,12 +188,13 @@ class AuthUser(user):
         Raises:
             ValueError: If user is already saved
         """
-        assert isinstance(name, str) # No need to assert pwd as it will be done in C++ layer
+        assert isinstance(name, str) # No need to assert pwd as it will be done in C++
         if len(name) >= 450:
             raise ValueError("User name must be less then 450 characters.")
         if self.saved:
             raise ValueError("This user is already saved.")
-        s = self.c.scalar(select(DBschemas.UserTable).where(DBschemas.UserTable.name == name))
+        s = self.c.scalar(select(DBschemas.UserTable).where(
+            DBschemas.UserTable.name == name))
         if s is not None:
             raise ValueError("This user is already exists.")
         self.userName = name

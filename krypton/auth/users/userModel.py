@@ -18,11 +18,11 @@ from ... import DBschemas, configs
 from ... import base
 from .userModelBaseAuth import AuthUser
 from .userModelMFAAuth import MFAUser
-from .bases import UserError, userExistRequired, user
+from .bases import userExistRequired, user
 
 class standardUser(AuthUser, MFAUser, user):
     """User Model for Krypton
-    Please pass None to __init__ to create a new user, after that call saveNewUser with required args.
+    Check documentation.
     """
     userName:str
     _key:bytes
@@ -45,13 +45,15 @@ class standardUser(AuthUser, MFAUser, user):
         if userID is None and userName is None:
             return
         if userName is not None:
-            stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == userName)
+            stmt = select(DBschemas.UserTable.id)\
+                .where(DBschemas.UserTable.name == userName)
             self.id = self.c.scalar(stmt)
             self.userName = userName
             if self.id is None:
                 return
         else: # that is userID is not None
-            stmt = select(DBschemas.UserTable.name).where(DBschemas.UserTable.id == userID).limit(1)
+            stmt = select(DBschemas.UserTable.name)\
+                .where(DBschemas.UserTable.id == userID).limit(1)
             self.userName = self.c.scalar(stmt)
             self.id = userID
             if self.userName is None:
@@ -94,7 +96,8 @@ class standardUser(AuthUser, MFAUser, user):
         Returns:
             The value
         """
-        stmt = select(DBschemas.UserData.value).where(and_(DBschemas.UserData.name == name,
+        stmt = select(DBschemas.UserData.value).where(and_(
+            DBschemas.UserData.name == name,
             DBschemas.UserData.Uid == self.id))
         result = self.c.scalar(stmt)
         if result is None:
@@ -131,7 +134,8 @@ class standardUser(AuthUser, MFAUser, user):
         self.c.commit()
 
     @userExistRequired
-    def decryptWithUserKey(self, data:ByteString, salt:bytes=None, sender=None) -> bytes:
+    def decryptWithUserKey(self, 
+                    data:ByteString, salt:bytes=None, sender=None) -> bytes:
         """Decrypt data with user's key
 
         Arguments:
@@ -164,7 +168,8 @@ class standardUser(AuthUser, MFAUser, user):
                     break
             return text
         if not isinstance(sender, int):
-            stmt = select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == sender)
+            stmt = select(DBschemas.UserTable.id).where(
+                DBschemas.UserTable.name == sender)
             Uid = self.c.scalar(stmt)
         else:
             Uid = sender
@@ -179,7 +184,8 @@ class standardUser(AuthUser, MFAUser, user):
                 base.zeromem(key)
                 if not retry:
                     break
-        except ValueError: pass
+        except ValueError:
+            pass
         for privKey in self.backupKeys:
             keys = base.getSharedKey(privKey, Uid, salt)
             retry = False
@@ -193,7 +199,8 @@ class standardUser(AuthUser, MFAUser, user):
                     break
             if not retry:
                 break
-        try: return text
+        try:
+            return text
         except NameError as exc:
             raise ValueError("Unable to decrypt the ciphertext") from exc
 
@@ -207,12 +214,12 @@ class standardUser(AuthUser, MFAUser, user):
             data -- Plaintext
 
         Keyword Arguments:
-            otherUsers -- List of user names of people who can decrypt it  (default: {None})
+            otherUsers -- List of user names who can decrypt it (default: {None})
 
         Returns:
             If otherUsers is None: ciphertext.
 
-            If otherUsers is not None: list of tuples of form (user name, ciphertext, salt), which needs to be provided so that username's user can decrypt it.
+            If otherUsers is not None: list of tuples (check https://docs.krptn.dev/README-USER-AUTH.html#encryption).
         """
         # pylint: disable=expression-not-assigned
         if otherUsers is None:
@@ -275,7 +282,8 @@ class standardUser(AuthUser, MFAUser, user):
         Returns:
             Decrypted data
         """
-        stmt = select(DBschemas.UserShareTable).where(and_(DBschemas.UserShareTable.name == name,
+        stmt = select(DBschemas.UserShareTable).where(and_(
+            DBschemas.UserShareTable.name == name,
             DBschemas.UserShareTable.shareUid == self.id))
         row:DBschemas.UserShareTable = self.c.scalar(stmt)
         if row is None:
@@ -290,7 +298,8 @@ class standardUser(AuthUser, MFAUser, user):
             name -- Name of the data
         """
         assert isinstance(name, str)
-        self.c.execute(delete(DBschemas.UserShareTable).where(and_(DBschemas.UserShareTable.name == name,
+        self.c.execute(delete(DBschemas.UserShareTable)\
+            .where(and_(DBschemas.UserShareTable.name == name,
             DBschemas.UserShareTable.sender == self.id)))
         self.c.flush()
         self.c.commit()
@@ -309,7 +318,8 @@ class standardUser(AuthUser, MFAUser, user):
         self.backupAESKeys.append(self._key)
 
         tag = factors.password.getAuth(pwd)
-        stmt = update(DBschemas.UserTable).where(DBschemas.UserTable.name == self.userName).\
+        stmt = update(DBschemas.UserTable)\
+            .where(DBschemas.UserTable.name == self.userName).\
             values(pwdAuthToken = tag)
         self.c.execute(stmt)
         self.c.flush()
