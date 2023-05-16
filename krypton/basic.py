@@ -1,6 +1,7 @@
 """
 Basic security related classes.
 """
+from .base import restEncrypt, restDecrypt, zeromem, PBKDF2
 from datetime import datetime
 import os
 from typing import ByteString
@@ -9,7 +10,6 @@ from sqlalchemy.orm import Session, scoped_session
 from . import configs, base, DBschemas
 SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
-from .base import restEncrypt, restDecrypt, zeromem, PBKDF2
 
 class KeyManagementError(Exception):
     """Error in Key Management System
@@ -95,7 +95,8 @@ class KMS():
         Returns:
             The key as python bytes
         """
-        stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
+        stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name)\
+            .limit(1)
         key:DBschemas.KeysTable = self.c.scalar(stmt)
         if key is None:
             raise ValueError("Such key does not exist")
@@ -105,7 +106,7 @@ class KMS():
             raise ValueError("Unsupported Cipher")
         r = self._decipher(key.key, pwd, key.salt, key.saltIter)
         splited = r.split(b"$")
-        if splited[1] != name.encode() or splited[2] != str(key.year).encode(): ## Problem
+        if splited[1] != name.encode() or splited[2] != str(key.year).encode():
             raise ValueError("Wrong passwords have been provided or the database has been tampered with.")
         result = base.base64decode(splited[0])
         zeromem(r)
@@ -135,7 +136,8 @@ class KMS():
         except:
             a=False
         finally:
-            if a: raise KeyError("Such a name already exists")
+            if a:
+                raise KeyError("Such a name already exists")
         k = os.urandom(32)
         s = os.urandom(12)
         rebased = base.base64encode(k)
@@ -166,7 +168,8 @@ class KMS():
             pwd -- Password (default: {None})
         """
         zeromem(self.getKey(name, pwd, True))
-        stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
+        stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name)\
+            .limit(1)
         key:DBschemas.KeysTable = self.c.scalar(stmt)
         self.c.delete(key)
         self.c.flush()
@@ -230,7 +233,8 @@ class Crypto(KMS):
         Returns:
             Plaintext data
         """
-        stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id ==num).limit(1)
+        stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id ==num)\
+            .limit(1)
         ctext = self.c.scalar(stmt)
         reset = False
         try:

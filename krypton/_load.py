@@ -15,7 +15,8 @@ from sqlalchemy.orm import declarative_base, Session, sessionmaker
 
 __version__ = importlib.metadata.version("krptn")
 
-print("Hey there! Welcome from Krptn. We are setting up some things for you. In case you run into any problems, please read our "
+print("Hey there! Welcome from Krptn. We are setting up some things for you. "
+    "In case you run into any problems, please read our "
     "common issues guide: https://docs.krptn.dev/README-FAQ.html. "
     "It is more complete than you think!")
 
@@ -25,14 +26,16 @@ USER_DIR = pathlib.Path.home()
 OPENSSL_CONFIG = pathlib.Path(SITE_PACKAGE, "kr-openssl-config").as_posix()
 OPENSSL_CONFIG_FILE = pathlib.Path(OPENSSL_CONFIG, "openssl.cnf").as_posix()
 OPENSSL_BIN = os.path.join(SITE_PACKAGE, "kr-openssl-install/bin")
-OPENSSL_EXE = os.path.join(OPENSSL_BIN, "openssl.exe" if sys.platform == "win32" else "openssl")
+OPENSSL_EXE = os.path.join(OPENSSL_BIN, "openssl.exe"
+                           if sys.platform == "win32" else "openssl")
 OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib")
 RELATIVE_OSSL_MOD = "kr-openssl-install/lib/ossl-modules"
 if not pathlib.Path(OSSL_LIB).exists() and sys.platform == "linux":
     RELATIVE_OSSL_MOD = "kr-openssl-install/lib64/ossl-modules"
     OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib64")
 OPENSSL_MODULES = pathlib.Path(SITE_PACKAGE, RELATIVE_OSSL_MOD).as_posix()
-OPENSSL_FIPS_MODULE = os.path.join(OPENSSL_MODULES, "fips.dll" if sys.platform == "win32" \
+OPENSSL_FIPS_MODULE = os.path.join(OPENSSL_MODULES, "fips.dll" 
+    if sys.platform == "win32"
     else ("fips.so" if sys.platform == "linux" else "fips.dylib"))
 OPENSSL_FIPS_CONF = os.path.join(OPENSSL_CONFIG, "fipsmodule.cnf")
 
@@ -329,8 +332,11 @@ class ConfigTemp():
 
 configs = ConfigTemp()
 
-configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/crypto.db")
-configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/altKMS.db")
-configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"+os.path.join(USER_DIR, ".krptn-data/users.db")
+configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///"\
+    +os.path.join(USER_DIR, ".krptn-data/crypto.db")
+configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///"\
+    +os.path.join(USER_DIR, ".krptn-data/altKMS.db")
+configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///"\
+    +os.path.join(USER_DIR, ".krptn-data/users.db")
 
 #configs.SQLDefaultUserDBpath = "mssql+pyodbc://localhost/userDB?driver=ODBC+Driver+18+for+SQL+Server&encrypt=no"
