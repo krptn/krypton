@@ -1,0 +1,8 @@
+{
+    "image": "mcr.microsoft.com/devcontainers/python",
+    "customizations": {
+      // Configure properties specific to VS Code.
+      "vscode": {
+      }
+    }
+}

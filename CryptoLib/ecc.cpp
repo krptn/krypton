@@ -10,9 +10,6 @@
 using namespace std;
 namespace py = pybind11;
 
-int ECC_DEFAULT_CURVE = NID_secp521r1;
-const char* KEY_ENCODE_FORMAT = "PEM";
-
 size_t getPubKey(EVP_PKEY *pkey, char* out) {
 	OSSL_ENCODER_CTX *ctx;
 	unsigned char* data = NULL;

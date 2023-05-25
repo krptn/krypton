@@ -11,9 +11,6 @@
 using namespace std;
 namespace py = pybind11;
 
-OSSL_PROVIDER *fips;
-OSSL_PROVIDER *base;
-
 bool init = false;
 
 bool fipsInit(char* osslConfig, char* modulePath) {
@@ -43,6 +40,10 @@ bool fipsInit(char* osslConfig, char* modulePath) {
 		throw std::runtime_error("Failed to load base provider.");
 		return false;
     }
+	KDF = EVP_KDF_fetch(NULL, "HKDF", NULL);
+	PBKDF2_HASH = EVP_sha512();
+	OTP_HASH = EVP_sha1();
+	AES_ALGO = EVP_aes_256_gcm();
 	init = true;
 	return true;
 }

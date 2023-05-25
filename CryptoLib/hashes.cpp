@@ -26,7 +26,7 @@ py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int k
 	py::gil_scoped_release release;
 	char* key = new char[keylen];
 	if (!PKCS5_PBKDF2_HMAC(text, len, (const unsigned char*) salt,
-		saltLen, iter, EVP_sha512(), keylen, (unsigned char*)key)) {
+		saltLen, iter, PBKDF2_HASH, keylen, (unsigned char*)key)) {
 			py::gil_scoped_acquire acquire;
 			throw std::invalid_argument("Unable to hash data.");
 		}
@@ -38,14 +38,11 @@ py::bytes pyPBKDF2(char* text, int len, char* salt, int iter, int saltLen, int k
 }
 
 py::bytes pyHKDF(char* secret, int len, char* salt, int saltLen, int keylen) {
-	EVP_KDF *kdf;
 	EVP_KDF_CTX *kctx;
 	unsigned char* out = new unsigned char[keylen];
 	OSSL_PARAM params[4], *p = params;
 
-	kdf = EVP_KDF_fetch(NULL, "HKDF", NULL);
-	kctx = EVP_KDF_CTX_new(kdf);
-	EVP_KDF_free(kdf);
+	kctx = EVP_KDF_CTX_new(KDF);
 
 	*p++ = OSSL_PARAM_construct_utf8_string("digest", (char*)"SHA512", 6);
 	*p++ = OSSL_PARAM_construct_octet_string("key", secret, len);

@@ -6,8 +6,25 @@
 
 #include <pybind11/pybind11.h>
 #include <openssl/evp.h>
+#include <openssl/ec.h>
 
 namespace py = pybind11;
+
+// Algorithm Prefetch
+
+EVP_KDF *KDF;
+EVP_MD *PBKDF2_HASH;
+EVP_MD *otpHash;
+EVP_CIPHER *AES_ALGO;
+
+const int ECC_DEFAULT_CURVE = NID_secp521r1;
+const char* KEY_ENCODE_FORMAT = "PEM";
+const int AES_KEY_LEN = 32;
+const int IV_SALT_LEN = 12;
+const int AUTH_TAG_LEN = 16;
+
+OSSL_PROVIDER *fips;
+OSSL_PROVIDER *base;
 
 // General
 py::str encode64(char* data, int length);

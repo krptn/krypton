@@ -10,7 +10,7 @@ __pycache__/
 *.dylib
 *.lib
 *.a
-.*/
+.lprof/
 
 scrap_work/
 
