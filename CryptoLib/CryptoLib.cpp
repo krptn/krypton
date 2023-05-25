@@ -2,6 +2,7 @@
 
 #include <pybind11/pybind11.h>
 #include <openssl/provider.h>
+#include <openssl/kdf.h>
 #include <openssl/err.h>
 
 #ifdef WIN
@@ -10,6 +11,13 @@
 
 using namespace std;
 namespace py = pybind11;
+
+EVP_KDF *KDF;
+EVP_MD *PBKDF2_HASH;
+EVP_MD *OTP_HASH;
+EVP_CIPHER *AES_ALGO;
+OSSL_PROVIDER *fips;
+OSSL_PROVIDER *base;
 
 bool init = false;
 
@@ -41,9 +49,9 @@ bool fipsInit(char* osslConfig, char* modulePath) {
 		return false;
     }
 	KDF = EVP_KDF_fetch(NULL, "HKDF", NULL);
-	PBKDF2_HASH = EVP_sha512();
-	OTP_HASH = EVP_sha1();
-	AES_ALGO = EVP_aes_256_gcm();
+	PBKDF2_HASH = (EVP_MD*)EVP_sha512();
+	OTP_HASH = (EVP_MD*)EVP_sha1();
+	AES_ALGO = (EVP_CIPHER*)EVP_aes_256_gcm();
 	init = true;
 	return true;
 }

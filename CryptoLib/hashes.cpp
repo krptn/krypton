@@ -8,6 +8,9 @@
 using namespace std;
 namespace py = pybind11;
 
+extern EVP_KDF *KDF;
+extern EVP_MD *PBKDF2_HASH;
+
 int compHash(const void* a, const void* b, const size_t size)
 {
 	const unsigned char* _a = (const unsigned char*)a;

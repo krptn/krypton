@@ -13,6 +13,8 @@ using namespace std;
 
 namespace py = pybind11;
 
+extern EVP_MD *OTP_HASH;
+
 bool verifyTOTP(py::bytes secret, py::str value) {
   int codeLen = value.attr("__len__")().cast<int>();
   int keylen = secret.attr("__len__")().cast<int>();

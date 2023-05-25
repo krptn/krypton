@@ -8,6 +8,8 @@
 using namespace std;
 namespace py = pybind11;
 
+extern EVP_CIPHER *AES_ALGO;
+
 py::bytes AESEncrypt(char* textc, py::bytes key, int msglenc) {
 	if (key.attr("__len__")().cast<int>() != AES_KEY_LEN) {
 		throw std::invalid_argument("Key is of wrong size");
