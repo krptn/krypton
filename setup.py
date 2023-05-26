@@ -26,8 +26,6 @@ package_data = [
   f"../{OPENSSL_INSTALL_PREFIX}/bin/libssl-3.dll",
   f"../{OPENSSL_INSTALL_PREFIX}/lib/ossl-modules/fips.dll",
   f"../{OPENSSL_INSTALL_PREFIX}/bin/openssl.exe",
-  f"../{OPENSSL_INSTALL_PREFIX}/openssl.cnf",
-  f"../{OPENSSL_INSTALL_PREFIX}/fipsmodule.cnf",
   f"../{OPENSSL_INSTALL_PREFIX}/bin/openssl",
   f"../{OPENSSL_INSTALL_PREFIX}/lib64/libcrypto.so.3",
   f"../{OPENSSL_INSTALL_PREFIX}/lib64/libssl.so.3",
@@ -38,6 +36,8 @@ package_data = [
   f"../{OPENSSL_INSTALL_PREFIX}/lib/libcrypto.dylib",
   f"../{OPENSSL_INSTALL_PREFIX}/lib/libssl.dylib",
   f"../{OPENSSL_INSTALL_PREFIX}/lib/ossl-modules/fips.dylib",
+  "../kr-openssl-config/openssl.cnf",
+  "../kr-openssl-config/fipsmodule.cnf"
 ]
 
 if not pathlib.Path(folder, OPENSSL_INSTALL_PREFIX).exists():
