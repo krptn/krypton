@@ -274,6 +274,7 @@ jobs:
         python-version: '3.10'
     - name: Build
       run: |
+        pip install -r requirements.txt
         cp -r sample-kr-openssl-config kr-openssl-config
         python setup.py sdist
     - name: Upload Build Result
