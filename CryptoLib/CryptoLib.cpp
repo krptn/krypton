@@ -49,9 +49,9 @@ bool fipsInit(char* osslConfig, char* modulePath) {
 		return false;
     }
 	KDF = EVP_KDF_fetch(NULL, "HKDF", NULL);
-	PBKDF2_HASH = (EVP_MD*)EVP_sha512();
-	OTP_HASH = (EVP_MD*)EVP_sha1();
-	AES_ALGO = (EVP_CIPHER*)EVP_aes_256_gcm();
+	PBKDF2_HASH = EVP_MD_fetch(NULL, "SHA2-512", NULL);;
+	OTP_HASH = EVP_MD_fetch(NULL, "SHA1", NULL);
+	AES_ALGO = EVP_CIPHER_fetch(NULL, "AES-256-GCM", NULL);
 	init = true;
 	return true;
 }

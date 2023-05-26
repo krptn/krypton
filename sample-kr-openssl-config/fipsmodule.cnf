@@ -1,0 +1,7 @@
+[fips_sect]
+activate = 1
+install-version = 1
+conditional-errors = 1
+security-checks = 1
+tls1-prf-ems-check = 0
+module-mac = F1:0E:5C:5F:8F:42:29:76:03:6D:05:87:A3:F1:AC:D1:C0:E3:C3:73:70:BC:76:12:68:9E:FC:29:41:46:E2:57

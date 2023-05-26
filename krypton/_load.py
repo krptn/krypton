@@ -10,7 +10,8 @@ import pathlib
 import ctypes
 import subprocess
 import importlib.metadata
-from sqlalchemy import DateTime, Text, create_engine, Column, Integer, LargeBinary, select, Boolean
+from sqlalchemy import DateTime, Text, create_engine, Column, Integer,\
+    LargeBinary, select, Boolean
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
 
 __version__ = importlib.metadata.version("krptn")
@@ -23,17 +24,17 @@ print("Hey there! Welcome from Krptn. We are setting up some things for you. "
 SITE_PACKAGE = pathlib.Path(__file__).parent.parent.as_posix()
 USER_DIR = pathlib.Path.home()
 
+OPENSSL_INSTALL_PREFIX = os.environ.get("KR_OPENSSL_INSTALL", "kr-openssl-install")
+OPENSSL_INSTALL_DIR = os.path.join(SITE_PACKAGE, OPENSSL_INSTALL_PREFIX)
 OPENSSL_CONFIG = pathlib.Path(SITE_PACKAGE, "kr-openssl-config").as_posix()
 OPENSSL_CONFIG_FILE = pathlib.Path(OPENSSL_CONFIG, "openssl.cnf").as_posix()
-OPENSSL_BIN = os.path.join(SITE_PACKAGE, "kr-openssl-install/bin")
+OPENSSL_BIN = os.path.join(OPENSSL_INSTALL_DIR, "bin")
 OPENSSL_EXE = os.path.join(OPENSSL_BIN, "openssl.exe"
                            if sys.platform == "win32" else "openssl")
-OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib")
-RELATIVE_OSSL_MOD = "kr-openssl-install/lib/ossl-modules"
+OSSL_LIB = os.path.join(OPENSSL_INSTALL_DIR, "lib")
 if not pathlib.Path(OSSL_LIB).exists() and sys.platform == "linux":
-    RELATIVE_OSSL_MOD = "kr-openssl-install/lib64/ossl-modules"
-    OSSL_LIB = os.path.join(SITE_PACKAGE, "kr-openssl-install/lib64")
-OPENSSL_MODULES = pathlib.Path(SITE_PACKAGE, RELATIVE_OSSL_MOD).as_posix()
+    OSSL_LIB = os.path.join(OPENSSL_INSTALL_DIR, "lib64")
+OPENSSL_MODULES = os.path.join(OSSL_LIB, "ossl-modules")
 OPENSSL_FIPS_MODULE = os.path.join(OPENSSL_MODULES, "fips.dll" 
     if sys.platform == "win32"
     else ("fips.so" if sys.platform == "linux" else "fips.dylib"))
