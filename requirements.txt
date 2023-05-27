@@ -1,4 +1,4 @@
-asgiref==3.7.1
+asgiref==3.7.2
 asn1crypto==1.5.1
 astroid==2.15.5
 build==0.10.0
