@@ -4,7 +4,6 @@ Loads __CryptoLib and contains wrappers.
 #pylint: disable=import-error
 # disbaled pylint because __CryptoLib is not built in CI/CD tests
 
-
 import ctypes
 import sys
 import base64
@@ -16,7 +15,9 @@ try:
     import __CryptoLib
 except ImportError as err:
     if sys.platform == "win32" and not os.path.isfile("C:/Windows/System32/MSVCP140.dll"):
-        raise RuntimeError("This module requires Microsoft Visual C/C++ runtime. Please download it from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist.") from err
+        raise RuntimeError("This module requires Microsoft Visual C/C++ runtime. "
+            "Please download it from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist."
+            ) from err
     raise err
 from . import configs, DBschemas, OPENSSL_CONFIG_FILE, OPENSSL_MODULES
 
@@ -25,7 +26,7 @@ Adrr = id
 #: Load FIPS Validated resolver
 __CryptoLib.fipsInit(OPENSSL_CONFIG_FILE, OPENSSL_MODULES)
 
-#: Wrappers for __CryptoLib #
+#: Wrappers for __CryptoLib
 #: Help static analyzers automatically figure out function arguments, returns, etc..
 def restEncrypt(data:ByteString, key:bytes) -> bytes:
     """Encrypt Data for at rest storage
