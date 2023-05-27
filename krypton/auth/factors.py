@@ -121,9 +121,7 @@ class totp:
         Returns:
             True if success False otherwise
         """
-        if not base.verifyTOTP(secret, otp):
-            return False
-        return True
+        return base.verifyTOTP(secret, otp)
 
 class fido:
     """
