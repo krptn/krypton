@@ -19,7 +19,7 @@ MarkupSafe==2.1.3
 mccabe==0.7.0
 packaging==23.1
 pep517==0.13.0
-platformdirs==3.5.3
+platformdirs==3.6.0
 pybind11==2.10.4
 pycparser==2.21
 pydantic==1.10.9
