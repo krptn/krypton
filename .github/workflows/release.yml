@@ -136,7 +136,6 @@ jobs:
           perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
           nmake
           nmake install
-          copy ${{ github.workspace }}\openssl\ms\applink.c ${{ github.workspace }}\kr-openssl-install\include\openssl\
       - name: Build Extension
         run: |
           cd ${{ github.workspace }}
