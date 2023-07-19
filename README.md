@@ -14,6 +14,8 @@ pip install krptn
 
 **Wouldn't it be nice if encryption would also be handled?** Perhaps it could be handled in a zero knowledge model, such that, without the user entering credentials, not even the database administrator can read it?! This is exactly what we do!
 
+**Krptn also runs in the same server instance** as your web app. So you don't have to host anything new. Just install the extension for Python.
+
 **To prove that such is possible, we have a [Flask](https://github.com/krptn/flaskExample) and [Django](https://github.com/krptn/djangoExample) example on GitHub.**
 
 ![Krptn Visual](https://www.krptn.dev/krptnDiagram.webp)
