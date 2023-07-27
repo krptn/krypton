@@ -12,7 +12,7 @@ pip install krptn
 
 **We all love Django and other web frameworks!** However, their primary focus is creating websites - not implementing secure storage for user data. One example is Django's built-in authentication system. While it hashes the password, it does not encrypt user data for you. Encryption is left to the developer...
 
-**Wouldn't it be nice if encryption would also be handled?** Perhaps it could be handled in a zero knowledge model, such that, without the user entering credentials, not even the database administrator can read it?! This is exactly what we do!
+**Wouldn't it be nice if encryption would also be handled?** Perhaps it could be handled in a **[zero knowledge model](https://www.krptn.dev/news/zero-knowledge/)**, such that, without the user entering credentials, not even the database administrator can read it?! This is exactly what we do!
 
 **Krptn also runs in the same server instance** as your web app. So you don't have to host anything new. Just install the extension for Python.
 
@@ -22,14 +22,14 @@ pip install krptn
 
 ## What do we do exactly?
 
-We are building a user authentication and access management system (IAM) with [Zero Knowledge security](https://www.krptn.dev/news/zero-knowledge/). It is available as a python extension module. However we have certain [limitations](https://www.krptn.dev/news/limitations/).
+We are building a user authentication and access management system (IAM) with **[Zero Knowledge security](https://www.krptn.dev/news/zero-knowledge/)**. It is available as a python extension module. However we have certain [limitations](https://www.krptn.dev/news/limitations/).
 
 How we achieve this?
 
 - All data is encrypted (any data can be requested by the developer to be secured)
 - Only the appropriate users' credentials can unlock the cryptosystem (this protects you from server-side attacks)
 
-This gives you [Zero Knowledge security](https://www.krptn.dev/news/zero-knowledge/) without ever needing to even notice it! It protects you from server side attacks.
+This gives you *[Zero Knowledge security](https://www.krptn.dev/news/zero-knowledge/)* without ever needing to even notice it! It protects you from server side attacks.
 
 ## Try it out
 
