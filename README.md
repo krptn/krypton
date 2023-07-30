@@ -19,8 +19,6 @@ pip install krptn
 
 **To prove that such is possible, we have a [Flask](https://github.com/krptn/flaskExample) and [Django](https://github.com/krptn/djangoExample) example on GitHub.**
 
-![Krptn Visual](https://www.krptn.dev/krptnDiagram.webp)
-
 ## What do we do exactly?
 
 We are building a user authentication and access management system (IAM) with **[zero-knowledge inspired encryption](https://www.krptn.dev/news/zero-knowledge/)**. It is available as a python extension module. However we have certain [limitations](https://www.krptn.dev/news/limitations/).
@@ -31,6 +29,18 @@ How we achieve this?
 - Only the appropriate users' credentials can unlock the cryptosystem (this protects you from server-side attacks)
 
 This gives you *[security from encryption](https://www.krptn.dev/news/zero-knowledge/)* without ever needing to even notice it! It protects you from server side attacks.
+
+Here is an example usage:
+
+```python
+from krypton.auth.users import userModel
+
+model = userModel.standardUser(None)
+model.saveNewUser("Test_UserName", "Test_Password")
+model.setData("email", "test@example.com") # The email will be encrypted, and securely stored
+```
+
+![Krptn Visualisation](krptnDiagram.webp)
 
 ## Try it out
 
