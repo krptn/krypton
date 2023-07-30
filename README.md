@@ -10,7 +10,7 @@ pip install krptn
 
 ## What problem do we solve?
 
-**We all love Django and other web frameworks!** However, their primary focus is creating websites - not implementing secure storage for user data. One example is Django's built-in authentication system. While it hashes the password, it does not encrypt user data for you. Encryption is left to the developer...
+**We all love Django and other web frameworks!** However, their primary focus is creating websites - not implementing secure storage for user data. Django makes it easy to store data. While it hashes the password, it does not encrypt user data for you. In case of a data breach, malicious actors could access any data from the DB. Encryption is left to the developer...
 
 **Wouldn't it be nice if encryption would also be handled?** Perhaps it could be handled in a **[model inspired by zero knowledge](https://www.krptn.dev/news/zero-knowledge/)**, such that, without the user entering credentials, not even the database administrator can read it?! This is exactly what we do!
 
