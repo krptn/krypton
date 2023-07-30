@@ -3,6 +3,8 @@
 [![Last Release status](https://github.com/krptn/krypton/actions/workflows/release.yml/badge.svg?event=release)](https://github.com/krptn/krypton/actions/workflows/release.yml)
 ![codecov](https://codecov.io/gh/krptn/krypton/branch/master/graph/badge.svg?token=AQPVJXQLRP)
 
+We also have a [homepage](https://www.krptn.dev/) and [documentation](https://docs.krptn.dev/index.html) for you to check out.
+
 # Krptn
 
 ```shell
