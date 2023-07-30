@@ -40,7 +40,7 @@ model.saveNewUser("Test_UserName", "Test_Password")
 model.setData("email", "test@example.com") # The email will be encrypted, and securely stored
 ```
 
-![Krptn Visualisation](krptnDiagram.webp)
+![Krptn Visualisation](https://www.krptn.dev/krptnDiagram.webp)
 
 ## Try it out
 
