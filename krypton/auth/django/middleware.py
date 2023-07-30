@@ -17,7 +17,8 @@ def kryptonLoginMiddleware(get_response):
     Returns:
         Response
     """
-    def KrLoginMiddleWare(request:HttpRequest):
+
+    def KrLoginMiddleWare(request: HttpRequest):
         """Middleware
 
         Arguments:
@@ -27,10 +28,13 @@ def kryptonLoginMiddleware(get_response):
             HttpResponse
         """
         try:
-            user = djangoUser(userID = request.COOKIES["_KryptonUserID"])
+            user = djangoUser(userID=request.COOKIES["_KryptonUserID"])
             user.restoreSession(request.COOKIES["_KryptonSessionToken"])
-        except UserError: return get_response(request)
-        except KeyError: return get_response(request)
+        except UserError:
+            return get_response(request)
+        except KeyError:
+            return get_response(request)
         request.user = user
         return get_response(request)
+
     return KrLoginMiddleWare

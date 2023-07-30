@@ -9,15 +9,19 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
+
 class UserError(Exception):
     """
     Exception to be raised when an error occurs in a user model.
     """
+
     def __init__(self, *args: object) -> None:
         self.message = args[0]
         super().__init__()
+
     def __str__(self) -> str:
         return self.message
+
 
 def userExistRequired(func):
     """User has to be saved in order to run this function
@@ -31,6 +35,7 @@ def userExistRequired(func):
     Returns:
         inner1
     """
+
     @wraps(func)
     def inner1(self, *args, **kwargs):
         """Ensure user is saved
@@ -44,13 +49,17 @@ def userExistRequired(func):
         if self.saved and self.loggedin:
             return func(self, *args, **kwargs)
         raise UserError("This user has not yet been saved or is logged out.")
+
     return inner1
+
 
 class user(metaclass=ABCMeta):
     """Base Class for User Models.
     You can check this to see whether a method is implemented in user models.
     """
-    c:Session
+
+    c: Session
+
     @abstractmethod
     def delete(self):
         """Delete a user
@@ -58,8 +67,9 @@ class user(metaclass=ABCMeta):
         Returns:
             None
         """
+
     @abstractmethod
-    def login(self, pwd:str, mfaToken:str=None, fido:str=None):
+    def login(self, pwd: str, mfaToken: str = None, fido: str = None):
         """Log the user in
 
         Keyword Arguments:
@@ -75,25 +85,29 @@ class user(metaclass=ABCMeta):
         Returns:
             Session Key, None if user is not saved
         """
+
     @abstractmethod
-    def restoreSession(self, key:bytes):
+    def restoreSession(self, key: bytes):
         """Resume session from key
 
         Arguments:
             key -- Session Key
         """
+
     @abstractmethod
     def logout(self):
-        """logout Logout the user and delete the current Session
-        """
+        """logout Logout the user and delete the current Session"""
+
     @abstractmethod
     def enableMFA(self):
         """The method name says it all."""
+
     @abstractmethod
     def disableMFA(self):
         """The method name says it all."""
+
     @abstractmethod
-    def saveNewUser(self, name:str, pwd:str):
+    def saveNewUser(self, name: str, pwd: str):
         """Save a new user
 
         Arguments:
@@ -107,6 +121,7 @@ class user(metaclass=ABCMeta):
         Raises:
             ValueError: If user is already saved
         """
+
     @abstractmethod
     def getData(self, name: str) -> ByteString:
         """Get value set by setData
@@ -120,6 +135,7 @@ class user(metaclass=ABCMeta):
         Returns:
             The value
         """
+
     @abstractmethod
     def setData(self, name: str, value: any) -> None:
         """Store user data as a key-value pair
@@ -129,16 +145,19 @@ class user(metaclass=ABCMeta):
 
             value -- value
         """
+
     @abstractmethod
-    def deleteData(self, name:str) -> None:
+    def deleteData(self, name: str) -> None:
         """Delete key-value pair set by setData
 
         Arguments:
             name -- The key to remove
         """
+
     @abstractmethod
-    def decryptWithUserKey(self,
-                           data:ByteString, salt:bytes=None, sender=None) -> bytes:
+    def decryptWithUserKey(
+        self, data: ByteString, salt: bytes = None, sender=None
+    ) -> bytes:
         """Decrypt data with user's key
 
         Arguments:
@@ -152,8 +171,9 @@ class user(metaclass=ABCMeta):
         Returns:
             Plaintext
         """
+
     @abstractmethod
-    def encryptWithUserKey(self, data:ByteString, otherUsers:list[str]) -> bytes:
+    def encryptWithUserKey(self, data: ByteString, otherUsers: list[str]) -> bytes:
         """Encrypt data with user's key
 
         Arguments:
@@ -165,24 +185,27 @@ class user(metaclass=ABCMeta):
         Returns:
             List of tuples of form (user name, ciphertext, salt), check: https://docs.krptn.dev/README-USER-AUTH.html#encryption.
         """
+
     @abstractmethod
-    def generateNewKeys(self, pwd:str):
+    def generateNewKeys(self, pwd: str):
         """Regenerate Encryption keys
 
         Arguments:
             pwd -- Password
         """
+
     @abstractmethod
-    def resetPWD(self, key:str, newPWD:str):
+    def resetPWD(self, key: str, newPWD: str):
         """Reset Password
 
         Arguments:
             key -- Key as provided to enablePWDReset
         """
+
     @abstractmethod
     def reload(self):
-        """Reload encryption keys. Warning: previous keys are not purged!
-        """
+        """Reload encryption keys. Warning: previous keys are not purged!"""
+
     @abstractmethod
     def enablePWDReset(self):
         """Enable Password Reset
@@ -190,6 +213,7 @@ class user(metaclass=ABCMeta):
         Arguments:
             key -- The key needed to reset
         """
+
     @abstractmethod
     def revokeSessions(self):
         """Revoke all Sessions for this User
@@ -197,8 +221,9 @@ class user(metaclass=ABCMeta):
         Raises:
             UserError: If the user does not exist
         """
+
     @abstractmethod
-    def shareGet(self, name:str) -> bytes:
+    def shareGet(self, name: str) -> bytes:
         """Get data set by shareSet
 
         Arguments:
@@ -210,8 +235,9 @@ class user(metaclass=ABCMeta):
         Returns:
             Decrypted data
         """
+
     @abstractmethod
-    def shareSet(self, name:str, data:ByteString, otherUsers:list[str]) -> None:
+    def shareSet(self, name: str, data: ByteString, otherUsers: list[str]) -> None:
         """Set data readable by others
 
         Arguments:
@@ -221,18 +247,19 @@ class user(metaclass=ABCMeta):
 
             otherUsers -- List of usernames who should read it
         """
+
     @abstractmethod
-    def shareDelete(self, name:str) -> None:
+    def shareDelete(self, name: str) -> None:
         """shareDelete Delete data set by shareSet
 
         Arguments:
             name -- Name of the data
         """
+
     @abstractmethod
     def logFailure(self):
-        """logFailure Log a login failure
-        """
+        """logFailure Log a login failure"""
+
     @abstractmethod
     def getLogs(self) -> list[list[datetime, bool]]:
-        """getLogs Get the login logs for the user
-        """
+        """getLogs Get the login logs for the user"""

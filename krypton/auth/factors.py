@@ -20,17 +20,21 @@ from webauthn.helpers.structs import (
 from .. import base
 from .. import configs
 
-KEY_LEN = 32
+KEY_LEN = configs._aesKeyLen
+
 
 class AuthFailed(Exception):
     """
     Exception to be raised when an error occures in a user model.
     """
+
     def __init__(self, *args: object) -> None:
         self.message = args[0]
         super().__init__()
+
     def __str__(self) -> str:
         return self.message
+
 
 class password:
     """
@@ -45,8 +49,9 @@ class password:
 
     4.) Return the encryption key.
     """
+
     @staticmethod
-    def getAuth(pwd:str):
+    def getAuth(pwd: str):
         """Generate authentication tag for later use
 
         Arguments:
@@ -55,11 +60,11 @@ class password:
         Returns:
             Auth tag
         """
-        salt = os.urandom(12)
+        salt = os.urandom(configs._saltLen)
         key = base.PBKDF2(pwd, salt, keylen=KEY_LEN)
-        text = os.urandom(12)
+        text = os.urandom(configs._saltLen)
         authTag = f"""{
-                base.base64encode(base.restEncrypt(text, key))
+                base.base64encode(base.seal(text, key))
             }${
                 base.base64encode(salt)
             }${
@@ -69,7 +74,7 @@ class password:
         return authTag
 
     @staticmethod
-    def auth(authTag:str, pwd:str) -> bytes:
+    def auth(authTag: str, pwd: str) -> bytes:
         """Authenticate against a tag
 
         Arguments:
@@ -86,17 +91,19 @@ class password:
         iter = int(splited[2])
         key = base.PBKDF2(pwd, salt, iter, KEY_LEN)
         try:
-            base.restDecrypt(ctext, key) # This raises an error if authentication fails.
+            base.unSeal(ctext, key)  # This raises an error if authentication fails.
         except ValueError:
             return None
-        return key ## Success
+        return key  ## Success
+
 
 class totp:
     """
     Simple TOTP authentication
     """
+
     @staticmethod
-    def createTOTP(userName:str):
+    def createTOTP(userName: str):
         """Create parameters for TOTP Generate
 
         Arguments:
@@ -110,7 +117,7 @@ class totp:
         return secret, base32Secret, base.createTOTPString(secret, userName)
 
     @staticmethod
-    def verifyTOTP(secret:bytes, otp:str) -> bool:
+    def verifyTOTP(secret: bytes, otp: str) -> bool:
         """Verify TOTP
 
         Arguments:
@@ -123,12 +130,14 @@ class totp:
         """
         return base.verifyTOTP(secret, otp)
 
+
 class fido:
     """
     FIDO authentication support.
     """
+
     @staticmethod
-    def register(userID:int, userName:str):
+    def register(userID: int, userName: str):
         """Start FIDO auth registration process
 
         Arguments:
@@ -175,8 +184,10 @@ class fido:
             registration_creds.id
         )
         if success:
-            return (registration_verification.credential_id,
-                registration_verification.credential_public_key)
+            return (
+                registration_verification.credential_id,
+                registration_verification.credential_public_key,
+            )
         raise AuthFailed("Cannot create registration for FIDO")
 
     @staticmethod
@@ -199,7 +210,7 @@ class fido:
         return options, authentication_options.challenge
 
     @staticmethod
-    def authenticate_verify(challenge:bytes, credential_public_key, credentials):
+    def authenticate_verify(challenge: bytes, credential_public_key, credentials):
         """Complete Authentication
 
         Arguments:

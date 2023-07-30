@@ -1,15 +1,17 @@
 """
 Basic security related classes.
 """
-from .base import restEncrypt, restDecrypt, zeromem, PBKDF2
+from .base import seal, unSeal, zeromem, PBKDF2
 from datetime import datetime
 import os
 from typing import ByteString
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session, scoped_session
 from . import configs, base, DBschemas
-SQLDefaultCryptoDBpath:Session = configs.SQLDefaultCryptoDBpath
-SQLDefaultKeyDBpath:Session = configs.SQLDefaultKeyDBpath
+
+SQLDefaultCryptoDBpath: Session = configs.SQLDefaultCryptoDBpath
+SQLDefaultKeyDBpath: Session = configs.SQLDefaultKeyDBpath
+
 
 class KeyManagementError(Exception):
     """Error in Key Management System
@@ -19,17 +21,23 @@ class KeyManagementError(Exception):
     Arguments:
         Exception -- Inherits base Exception class
     """
+
     def __init__(self, *args: object) -> None:
         self.message = args[0]
         super().__init__()
+
     def __str__(self) -> str:
         return self.message
 
-class KMS():
+
+class KMS:
     """
     They Key Management System
     """
-    def _cipher(self, text:ByteString, pwd:ByteString, salt:bytes, iterations:int):
+
+    def _encipher(
+        self, text: ByteString, pwd: ByteString, salt: bytes, iterations: int
+    ):
         """Encrypt a string
 
         Arguments:
@@ -45,10 +53,13 @@ class KMS():
             Cipher text
         """
         key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
-        r = restEncrypt(text, key)
+        r = seal(text, key)
         zeromem(key)
         return r
-    def _decipher(self, ctext:ByteString, pwd:ByteString, salt:bytes, iterations:int):
+
+    def _decipher(
+        self, ctext: ByteString, pwd: ByteString, salt: bytes, iterations: int
+    ):
         """Decrypt a string
 
         Arguments:
@@ -56,7 +67,7 @@ class KMS():
 
             pwd -- Password
 
-            salt -- Salt for Hashing
+            salt -- Salt for Hashing (16 bytes)
 
             iterations -- Iterations for hashing
 
@@ -64,15 +75,15 @@ class KMS():
             Plaintext
         """
         key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
-        r = restDecrypt(ctext, key)
+        r = unSeal(ctext, key)
         zeromem(key)
         return r
 
-    def __init__(self, keyDB:Session=scoped_session(SQLDefaultKeyDBpath))->None:
+    def __init__(self, keyDB: Session = scoped_session(SQLDefaultKeyDBpath)) -> None:
         """The title says it all"""
-        self.c:Session = keyDB
+        self.c: Session = keyDB
 
-    def getKey(self, name:str, pwd:ByteString=None, force:bool=False) -> bytes:
+    def getKey(self, name: str, pwd: ByteString = None, force: bool = False) -> bytes:
         """Get a Key
 
         Arguments:
@@ -95,25 +106,30 @@ class KMS():
         Returns:
             The key as python bytes
         """
-        stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name)\
-            .limit(1)
-        key:DBschemas.KeysTable = self.c.scalar(stmt)
+        stmt = (
+            select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
+        )
+        key: DBschemas.KeysTable = self.c.scalar(stmt)
         if key is None:
             raise ValueError("Such key does not exist")
         if datetime.now().year - key.year >= configs.defaultCryptoperiod and not force:
-            raise KeyManagementError("This key has expired. Please add force to the argument to retrieve it anyway.")
+            raise KeyManagementError(
+                "This key has expired. Please add force to the argument to retrieve it anyway."
+            )
         if key.cipher != configs.defaultAlgorithm:
             raise ValueError("Unsupported Cipher")
         r = self._decipher(key.key, pwd, key.salt, key.saltIter)
         splited = r.split(b"$")
         if splited[1] != name.encode() or splited[2] != str(key.year).encode():
-            raise ValueError("Wrong passwords have been provided or the database has been tampered with.")
+            raise ValueError(
+                "Wrong passwords have been provided or the database has been tampered with."
+            )
         result = base.base64decode(splited[0])
         zeromem(r)
         zeromem(splited[0])
         return result
 
-    def createNewKey(self, name:str, pwd:ByteString=None) -> str:
+    def createNewKey(self, name: str, pwd: ByteString = None) -> str:
         """Create a new key and store it
 
         Arguments:
@@ -134,31 +150,31 @@ class KMS():
         try:
             self.c.scalars(stmt).one()
         except:
-            a=False
+            a = False
         finally:
             if a:
                 raise KeyError("Such a name already exists")
-        k = os.urandom(32)
-        s = os.urandom(12)
+        k = os.urandom(configs._aesKeyLen)
+        s = os.urandom(configs._saltLen)
         rebased = base.base64encode(k)
-        editedRebased = rebased+f"${name}${year}"
-        ek = self._cipher(editedRebased, pwd, s, configs.defaultIterations)
+        editedRebased = rebased + f"${name}${year}"
+        ek = self._encipher(editedRebased, pwd, s, configs.defaultIterations)
         zeromem(rebased)
         zeromem(editedRebased)
         key = DBschemas.KeysTable(
-            name = name,
-            key = ek,
-            salt = s,
-            cipher = configs.defaultAlgorithm,
-            saltIter = configs.defaultIterations,
-            year = year
+            name=name,
+            key=ek,
+            salt=s,
+            cipher=configs.defaultAlgorithm,
+            saltIter=configs.defaultIterations,
+            year=year,
         )
         self.c.add(key)
         self.c.flush()
         self.c.commit()
         return k
 
-    def removeKey(self, name:str, pwd:ByteString=None) -> None:
+    def removeKey(self, name: str, pwd: ByteString = None) -> None:
         """Delete a Key
 
         Arguments:
@@ -168,29 +184,32 @@ class KMS():
             pwd -- Password (default: {None})
         """
         zeromem(self.getKey(name, pwd, True))
-        stmt = select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name)\
-            .limit(1)
-        key:DBschemas.KeysTable = self.c.scalar(stmt)
+        stmt = (
+            select(DBschemas.KeysTable).where(DBschemas.KeysTable.name == name).limit(1)
+        )
+        key: DBschemas.KeysTable = self.c.scalar(stmt)
         self.c.delete(key)
         self.c.flush()
         self.c.commit()
         return
-    
+
     def __del__(self):
         self.c.close()
 
+
 class Crypto(KMS):
-    '''
+    """
     Crypto Class (see Documentation)
-    '''
-    def __init__(self, keyDB:Session=scoped_session(SQLDefaultCryptoDBpath)):
+    """
+
+    def __init__(self, keyDB: Session = scoped_session(SQLDefaultCryptoDBpath)):
         """The title says it all"""
-        self.c:scoped_session = keyDB
+        self.c: scoped_session = keyDB
         stmt = select(func.max(DBschemas.CryptoTable.id))
         self.num = self.c.scalar(stmt)
         super().__init__(self.c)
 
-    def secureCreate(self, data:ByteString, pwd:ByteString=None, _num:int=None):
+    def secureCreate(self, data: ByteString, pwd: ByteString = None, _num: int = None):
         """Store Encrypted Data
 
         Arguments:
@@ -199,22 +218,22 @@ class Crypto(KMS):
         Keyword Arguments:
             pwd -- Password To Decrypt (default: {None})
 
-            _num -- Not good idea to set! Id to store in DB (default: {None})
+            _num -- Unless you know what this is, not good idea to set! Id to store in DB (default: {None})
 
         Returns:
             Integer to be passed to secureRead to return data
         """
         if _num is None:
-            self.num+=1
+            self.num += 1
             _num = self.num
         key = self.createNewKey(str(_num), pwd)
-        salt = os.urandom(12)
+        salt = os.urandom(configs._saltLen)
         keyOb = DBschemas.CryptoTable(
-            id = _num,
-            ctext = self._cipher(data, key, salt, 0),
-            salt = salt,
-            cipher = configs.defaultAlgorithm,
-            saltIter = configs.defaultIterations
+            id=_num,
+            ctext=self._encipher(data, key, salt, 0),
+            salt=salt,
+            cipher=configs.defaultAlgorithm,
+            saltIter=configs.defaultIterations,
         )
         self.c.add(keyOb)
         zeromem(key)
@@ -222,7 +241,7 @@ class Crypto(KMS):
         self.c.commit()
         return _num
 
-    def secureRead(self, num:int, pwd:ByteString):
+    def secureRead(self, num: int, pwd: ByteString):
         """Read data from secureCreate
 
         Arguments:
@@ -233,10 +252,14 @@ class Crypto(KMS):
         Returns:
             Plaintext data
         """
-        stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id ==num)\
+        stmt = (
+            select(DBschemas.CryptoTable)
+            .where(DBschemas.CryptoTable.id == num)
             .limit(1)
+        )
         ctext = self.c.scalar(stmt)
         reset = False
+        # Reset indicates whether cryptographic keys need rotating
         try:
             key = self.getKey(str(num), pwd)
         except KeyManagementError:
@@ -248,7 +271,7 @@ class Crypto(KMS):
         zeromem(key)
         return text
 
-    def secureUpdate(self, num:int, new:ByteString, pwd:ByteString):
+    def secureUpdate(self, num: int, new: ByteString, pwd: ByteString):
         """Update Entry Set by secureCreate
 
         Arguments:
@@ -261,7 +284,7 @@ class Crypto(KMS):
         self.secureDelete(num, pwd)
         self.secureCreate(new, pwd, num)
 
-    def secureDelete(self, num:int, pwd:ByteString=None) -> None:
+    def secureDelete(self, num: int, pwd: ByteString = None) -> None:
         """Delete Data set by secureCreate
 
         Arguments:
@@ -272,7 +295,7 @@ class Crypto(KMS):
         """
         zeromem(self.getKey(str(num), pwd, True))
         stmt = select(DBschemas.CryptoTable).where(DBschemas.CryptoTable.id == num)
-        key:DBschemas.CryptoTable = self.c.scalar(stmt)
+        key: DBschemas.CryptoTable = self.c.scalar(stmt)
         self.c.delete(key)
         self.c.flush()
         self.removeKey(str(num), pwd)

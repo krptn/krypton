@@ -6,8 +6,8 @@ from krypton.auth import factors
 class CryptographicUnits(unittest.TestCase):
     def testAES(self):
         k = os.urandom(32)
-        r = base.restEncrypt("Hello", k)
-        fr = base.restDecrypt(r, k)
+        r = base.seal("Hello", k)
+        fr = base.unSeal(r, k)
         self.assertEqual(fr, b"Hello")
     def testPBKDF2(self):
         kb = base.PBKDF2("abcdrf", os.urandom(12), 100000)
