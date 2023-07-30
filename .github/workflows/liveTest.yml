@@ -56,7 +56,7 @@ jobs:
         run: |
           sudo chmod -R a+rwx ${{ github.workspace }}
           pip install coverage
-          python -m coverage run --source krypton -m unittest discover -s tests -p "*test*.py" --verbose
+          python -m coverage run --source krypton --branch -m unittest discover -s tests -p "*test*.py" --verbose
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
