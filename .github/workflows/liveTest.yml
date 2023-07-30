@@ -1,13 +1,49 @@
-name: Live Test and CodeQL CPP
+name: Testing
 on:
   workflow_dispatch:
+  push:
+    branches: [ "master" ]
   pull_request:
    branches: [ "master" ]
-  schedule:
-    - cron: '29 4 * * 5'
 
 jobs:
-  TestAnalysis:
+  static: # Static code analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+      # We will pretend that __CryptoLib and OSSL does not need building.
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v3
+        with:
+          license-check: false
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      # Initializes the CodeQL tools for scanning.
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: "python"
+          config-file: ./.github/code-ql/codeql-config.yml
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+  
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r requirements.txt
+      - name: Lint with pylint
+        run: |
+          pip install pylint
+          pylint krypton/
+
+  test: # run tests
     permissions:
       actions: read
       contents: read
@@ -22,6 +58,7 @@ jobs:
         with:
           languages: 'cpp'
           config-file: ./.github/code-ql/codeql-config.yml
+          queries: security-and-quality
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
