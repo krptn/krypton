@@ -3,6 +3,7 @@
 #include <pybind11/pybind11.h>
 #include <string>
 #include <sodium.h>
+#include <stdint.h>
 
 using namespace std;
 namespace py = pybind11;
@@ -16,7 +17,7 @@ py::bytes encrypt(std::string text, std::string key)
 	auto output = unique_ptr<unsigned char[]>(new unsigned char[crypto_aead_xchacha20poly1305_ietf_NPUBBYTES + text.length() + crypto_aead_xchacha20poly1305_ietf_ABYTES]);
 	unsigned char *nonce = output.get();
 	unsigned char *ciphertext = output.get() + crypto_aead_xchacha20poly1305_ietf_NPUBBYTES;
-	uint64_t ciphertext_len;
+	long long unsigned int ciphertext_len;
 	randombytes_buf(nonce, crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
 	crypto_aead_xchacha20poly1305_ietf_encrypt(ciphertext, &ciphertext_len,
 											   (const unsigned char *)text.c_str(), text.length(),
@@ -32,9 +33,9 @@ py::bytes decrypt(std::string ctext, std::string key)
 	if (key.length() != crypto_aead_xchacha20poly1305_ietf_KEYBYTES)
 		throw std::invalid_argument("Key is of wrong size");
 	auto output = unique_ptr<unsigned char[]>(new unsigned char[ctext.length() - crypto_aead_xchacha20poly1305_ietf_NPUBBYTES - crypto_aead_xchacha20poly1305_ietf_ABYTES]);
-	uint64_t decryptedLen;
+	long long unsigned int decryptedLen;
 	unsigned char *cTextTrimmed = (unsigned char *)ctext.c_str() + crypto_aead_xchacha20poly1305_ietf_NPUBBYTES;
-	uint64_t ctextLen = ctext.length() - crypto_aead_xchacha20poly1305_ietf_NPUBBYTES;
+	size_t ctextLen = ctext.length() - crypto_aead_xchacha20poly1305_ietf_NPUBBYTES;
 	if (crypto_aead_xchacha20poly1305_ietf_decrypt(output.get(), &decryptedLen,
 												   (unsigned char*)NULL,
 												   cTextTrimmed, ctextLen,
