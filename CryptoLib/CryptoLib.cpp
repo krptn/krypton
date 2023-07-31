@@ -4,6 +4,7 @@
 #include <openssl/provider.h>
 #include <openssl/kdf.h>
 #include <openssl/err.h>
+#include "sodium.h"
 
 #ifdef WIN
 #include <openssl/applink.c>
@@ -23,6 +24,9 @@ bool init = false;
 
 bool fipsInit(char *osslConfig, char *modulePath)
 {
+	if (sodium_init() < 0) {
+        throw std::runtime_error("Failed to init libsodium");
+    }
 	if (init)
 	{
 		return true;

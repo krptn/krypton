@@ -76,6 +76,8 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           mkdir kr-openssl-config
           mkdir kr-openssl-install
+          ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/vcpkg install libsodium:x64-linux
       - name: Cache OSSL Build
         id: cache-ossl
         uses: actions/cache@v3
