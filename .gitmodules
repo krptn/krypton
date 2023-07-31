@@ -1,6 +1,3 @@
 [submodule "openssl"]
 	path = openssl
 	url = https://github.com/openssl/openssl.git
-[submodule "libsodium"]
-	path = libsodium
-	url = https://github.com/jedisct1/libsodium
