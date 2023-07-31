@@ -12,8 +12,6 @@ from typing import ByteString
 from sqlalchemy import select
 from sqlalchemy.orm import scoped_session, Session
 
-MEMLIMIT_ARGON = 268435456
-
 try:
     import __CryptoLib
 except ImportError as err:
@@ -172,7 +170,8 @@ def passwordHash(
     Returns:
         The key as python bytes
     """
-    return __CryptoLib.passwordHash(text, salt, opsLimit, MEMLIMIT_ARGON, keylen)
+    return __CryptoLib.passwordHash(text, salt, opsLimit,
+                                    configs._memLimitArgon, keylen)
 
 
 def zeromem(obj: ByteString) -> int:

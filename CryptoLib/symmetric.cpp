@@ -20,8 +20,8 @@ py::bytes encrypt(std::string text, std::string key)
 	randombytes_buf(nonce, crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
 	crypto_aead_xchacha20poly1305_ietf_encrypt(ciphertext, &ciphertext_len,
 											   (const unsigned char *)text.c_str(), text.length(),
-											   NULL, NULL,
-											   NULL, nonce, (const unsigned char *)key.c_str());
+											   (unsigned char*)NULL, (size_t)NULL,
+											   (unsigned char*)NULL, nonce, (const unsigned char *)key.c_str());
 	sodium_memzero((void *)key.c_str(), key.length());
 	sodium_memzero((void *)text.c_str(), text.length());
 	return py::bytes((char *)output.get(), ciphertext_len+crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
@@ -36,10 +36,10 @@ py::bytes decrypt(std::string ctext, std::string key)
 	unsigned char *cTextTrimmed = (unsigned char *)ctext.c_str() + crypto_aead_xchacha20poly1305_ietf_NPUBBYTES;
 	uint64_t ctextLen = ctext.length() - crypto_aead_xchacha20poly1305_ietf_NPUBBYTES;
 	if (crypto_aead_xchacha20poly1305_ietf_decrypt(output.get(), &decryptedLen,
-												   NULL,
+												   (unsigned char*)NULL,
 												   cTextTrimmed, ctextLen,
-												   NULL,
-												   NULL,
+												   (unsigned char*)NULL,
+												   (size_t)NULL,
 												   (unsigned char *)ctext.c_str(), (unsigned char *)key.c_str()) != 0)
 	{
 		sodium_memzero((void *)key.c_str(), key.length());

@@ -259,7 +259,10 @@ class ConfigTemp:
     APP_NAME = "KryptonApp"
     HOST_NAME = ""
     ORIGIN = ""
+    # The below options for Argon2 are based on RFC-9106
+    # They are higher then the recomended values
     defaultArgonOps = 3
+    _memLimitArgon = 268435456
     defaultPasswordResetArgonOps = 4
     defaultCryptoperiod = 2
     defaultSessionPeriod = 15  # Minutes
