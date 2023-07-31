@@ -4,6 +4,8 @@
 #include <openssl/kdf.h>
 #include <openssl/rand.h>
 #include <pybind11/pybind11.h>
+#include <sodium.h>
+#include <string>
 
 using namespace std;
 namespace py = pybind11;
@@ -26,20 +28,19 @@ int compHash(const void *a, const void *b, const size_t size)
 	return result; /* returns 0 if equal, nonzero otherwise */
 }
 
-py::bytes pyPBKDF2(char *text, int len, char *salt, int iter, int saltLen, int keylen)
+py::bytes passwordHash(std::string text, std::string salt, int opsLimit, int memLimit, int keylen)
 {
+	if (salt.length() != crypto_pwhash_SALTBYTES) throw std::invalid_argument("Salt is of wrong length");
 	py::gil_scoped_release release;
-	char *key = new char[keylen];
-	if (!PKCS5_PBKDF2_HMAC(text, len, (const unsigned char *)salt,
-						   saltLen, iter, PBKDF2_HASH, keylen, (unsigned char *)key))
-	{
-		py::gil_scoped_acquire acquire;
-		throw std::invalid_argument("Unable to hash data.");
-	}
-	OPENSSL_cleanse(text, len);
+	auto key = unique_ptr<unsigned char[]>(new unsigned char[keylen]);
+	if (crypto_pwhash(key.get(), keylen, text.c_str(), text.length(), (const unsigned char *)salt.c_str(),
+					  opsLimit, memLimit,
+					  crypto_pwhash_ALG_ARGON2ID13) != 0)
+		throw std::runtime_error("Out of memory while hashing");
 	py::gil_scoped_acquire acquire;
-	py::bytes final = py::bytes(key, keylen);
-	delete[] key;
+	py::bytes final = py::bytes((char *)key.get(), keylen);
+	sodium_memzero((void*)key.get(), keylen);
+	sodium_memzero((void*)text.c_str(), text.length());
 	return final;
 }
 

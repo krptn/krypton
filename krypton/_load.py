@@ -259,8 +259,8 @@ class ConfigTemp:
     APP_NAME = "KryptonApp"
     HOST_NAME = ""
     ORIGIN = ""
-    defaultIterations = 800000
-    defaultPasswordResetIterations = 850000
+    defaultArgonOps = 3
+    defaultPasswordResetArgonOps = 4
     defaultCryptoperiod = 2
     defaultSessionPeriod = 15  # Minutes
     defaultLogRetentionPeriod = 43200  # Minutes

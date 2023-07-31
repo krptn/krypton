@@ -61,14 +61,14 @@ class password:
             Auth tag
         """
         salt = os.urandom(configs._saltLen)
-        key = base.PBKDF2(pwd, salt, keylen=KEY_LEN)
+        key = base.passwordHash(pwd, salt, keylen=KEY_LEN)
         text = os.urandom(configs._saltLen)
         authTag = f"""{
                 base.base64encode(base.seal(text, key))
             }${
                 base.base64encode(salt)
             }${
-                configs.defaultIterations
+                configs.defaultArgonOps
             }"""
         base.zeromem(key)
         return authTag
@@ -89,7 +89,7 @@ class password:
         ctext = base.base64decode(splited[0])
         salt = base.base64decode(splited[1])
         iter = int(splited[2])
-        key = base.PBKDF2(pwd, salt, iter, KEY_LEN)
+        key = base.passwordHash(pwd, salt, iter, KEY_LEN)
         try:
             base.unSeal(ctext, key)  # This raises an error if authentication fails.
         except ValueError:

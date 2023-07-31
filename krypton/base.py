@@ -12,6 +12,8 @@ from typing import ByteString
 from sqlalchemy import select
 from sqlalchemy.orm import scoped_session, Session
 
+MEMLIMIT_ARGON = 268435456
+
 try:
     import __CryptoLib
 except ImportError as err:
@@ -44,7 +46,7 @@ def seal(data: ByteString, key: bytes) -> bytes:
     Returns:
         Cipher text
     """
-    return __CryptoLib.AESEncrypt(data, key, len(data))
+    return __CryptoLib.encrypt(data, key)
 
 
 def unSeal(data: bytes, key: bytes) -> bytes:
@@ -58,7 +60,7 @@ def unSeal(data: bytes, key: bytes) -> bytes:
     Returns:
         Plain text
     """
-    return __CryptoLib.AESDecrypt(data, key)
+    return __CryptoLib.decrypt(data, key)
 
 
 def base64encode(data: ByteString) -> str:
@@ -70,8 +72,7 @@ def base64encode(data: ByteString) -> str:
     Returns:
         Base64 encoded string
     """
-    return __CryptoLib.base64encode(data, len(data))
-
+    return __CryptoLib.base64encode(data)
 
 def base64decode(data: ByteString) -> ByteString:
     """Decode base64
@@ -82,8 +83,7 @@ def base64decode(data: ByteString) -> ByteString:
     Returns:
         Base64 decoded bytes
     """
-    return __CryptoLib.base64decode(data, len(data))
-
+    return __CryptoLib.base64decode(data)
 
 def createECCKey() -> tuple[str, str]:
     """create an Eliptic Curve Key
@@ -153,27 +153,26 @@ def getSharedKey(
     return results
 
 
-def PBKDF2(
+def passwordHash(
     text: ByteString,
     salt: ByteString,
-    iterations: int = configs.defaultIterations,
-    keylen: int = 32,
+    opsLimit: int = configs.defaultArgonOps,
+    keylen: int = configs._aesKeyLen,
 ) -> bytes:
-    """PBKDF2 with SHA512
+    """Argon2id
 
     Arguments:
         text -- Plain text
         salt -- Salt
 
     Keyword Arguments:
-        iterations -- Iteration count (default: {configs.defaultIterations})
-
         keylen -- Len of key to return (default: {32})
+        opsLimit -- Ops Limit for Argon2id
 
     Returns:
         The key as python bytes
     """
-    return __CryptoLib.PBKDF2(text, len(text), salt, iterations, len(salt), keylen)
+    return __CryptoLib.passwordHash(text, salt, opsLimit, MEMLIMIT_ARGON, keylen)
 
 
 def zeromem(obj: ByteString) -> int:

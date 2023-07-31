@@ -18,19 +18,19 @@ namespace py = pybind11;
 #define AUTH_TAG_LEN 16
 
 // General
-py::str encode64(char *data, int length);
-py::bytes decode64(char *input, int length);
+py::str encode64(std::string data);
+py::bytes decode64(std::string input);
 void handleErrors();
 char *pymbToBuffer(py::bytes a);
 char *pyStrToBuffer(py::str a);
 
 // AES
-py::bytes AESEncrypt(char *textc, py::bytes key, int msglenc);
-py::bytes AESDecrypt(py::bytes ctext_b, py::bytes key);
+py::bytes encrypt(std::string text, std::string key);
+py::bytes decrypt(std::string ctext, std::string key);
 
 // Hashes
 int compHash(const void *a, const void *b, const size_t size);
-py::bytes pyPBKDF2(char *text, int len, char *salt, int iter, int saltLen, int keylen = 32);
+py::bytes passwordHash(std::string text, std::string salt, int opsLimit, int memLimit, int keylen);
 py::bytes pyHKDF(char *secret, int len, char *salt, int saltLen, int keylen);
 
 // ECC

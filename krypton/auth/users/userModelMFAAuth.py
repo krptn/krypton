@@ -27,14 +27,14 @@ class MFAUser(user):
             delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id)
         )
         for PKey in PKeys:
-            salt = os.urandom(32)
-            key = base.PBKDF2(PKey, salt, configs.defaultPasswordResetIterations, 32)
+            salt = os.urandom(configs._saltLen)
+            key = base.passwordHash(PKey, salt, configs.defaultPasswordResetArgonOps, 32)
             skey = base.seal(self._key, key)
             base.zeromem(key)
             row = DBschemas.PWDReset(
                 Uid=self.id,
                 key=skey,
-                iter=configs.defaultPasswordResetIterations,
+                iter=configs.defaultPasswordResetArgonOps,
                 salt=salt,
             )
             self.c.add(row)
@@ -64,7 +64,7 @@ class MFAUser(user):
         )
         reset = False
         for row in rows:
-            krKey = base.PBKDF2(key, row.salt, row.iter, 32)
+            krKey = base.passwordHash(key, row.salt, row.iter, 32)
             try:
                 self._key = base.unSeal(row.key, krKey)
             except ValueError:

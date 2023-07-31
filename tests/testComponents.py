@@ -9,8 +9,8 @@ class CryptographicUnits(unittest.TestCase):
         r = base.seal("Hello", k)
         fr = base.unSeal(r, k)
         self.assertEqual(fr, b"Hello")
-    def testPBKDF2(self):
-        kb = base.PBKDF2("abcdrf", os.urandom(12), 100000)
+    def testPasswordHash(self):
+        kb = base.passwordHash("abcdrf", os.urandom(16), 3)
         self.assertIsInstance(kb, bytes)
         self.assertEqual(len(kb), 32)
     def testECCKeyGen(self):

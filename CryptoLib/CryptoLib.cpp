@@ -106,18 +106,17 @@ void handleErrors()
 PYBIND11_MODULE(__CryptoLib, m)
 {
 	m.doc() = "Cryptographical component of Krptn. Only for use inside the Krptn module.";
-	m.def("AESDecrypt", &AESDecrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext_b"), py::arg("key"));
-	m.def("AESEncrypt", &AESEncrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"), py::arg("msglen"));
+	m.def("decrypt", &decrypt, "A function which decrypts the data. Args: text, key.", py::arg("ctext"), py::arg("key"));
+	m.def("encrypt", &encrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len"));
-	m.def("PBKDF2", &pyPBKDF2, "Performs PBKDF2 on text and salt", py::arg("text"), py::arg("textLen"), py::arg("salt"),
-		  py::arg("iter"), py::arg("saltLen"), py::arg("keylen"));
+	m.def("passwordHash", &passwordHash, "Performs password hashing on text and salt", py::arg("text"), py::arg("salt"), py::arg("opsLimit"), py::arg("memLimit"), py::arg("keyLen"));
 	m.def("HKDF", &pyHKDF, py::arg("secret"), py::arg("len"), py::arg("salt"), py::arg("saltLen"), py::arg("keyLen"));
 	m.def("fipsInit", &fipsInit, "Initialises OpenSSL 3 FIPS module. Repeated calls do nothing.", py::arg("osslConfig"), py::arg("modulePath"));
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("ECDH", &ECDH, "Uses ECDH to get a shared 256-bit key", py::arg("privKey"), py::arg("pubKey"),
 		  py::arg("salt"), py::arg("keylen"));
-	m.def("base64encode", &encode64, "Base 64 encode data with length.", py::arg("data"), py::arg("length"));
-	m.def("base64decode", &decode64, "Base 64 decode data with length.", py::arg("data"), py::arg("length"));
+	m.def("base64encode", &encode64, "Base 64 encode data with length.", py::arg("data"));
+	m.def("base64decode", &decode64, "Base 64 decode data with length.", py::arg("data"));
 	m.def("totpVerify", &verifyTOTP, "Verify TOTP with params", py::arg("secret"), py::arg("code"));
 	m.def("genOTP", &genOTP, "Create a random PIN/OTP");
 	m.def("sleepOutOfGIL", &sleepOutOfGIL, "Sleep for specified seconds while releasing the GIL.", py::arg("seconds") = 5);
