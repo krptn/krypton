@@ -6,9 +6,9 @@ cbor2==5.4.6
 cffi==1.15.1
 click==8.1.6
 colorama==0.4.6
-cryptography==41.0.2
+cryptography==41.0.3
 dill==0.3.7
-Django==4.2.3
+Django==4.2.4
 Flask==2.3.2
 greenlet==2.0.2
 isort==5.12.0
