@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip'
-      # We will pretend that __CryptoLib and OSSL does not need building.
+      # We will pretend that __CryptoLib does not need building.
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v3
         if: github.event_name != 'pull_request'
@@ -72,26 +72,9 @@ jobs:
           cache: 'pip'
       - name: Pre-run Tasks
         run: |
-          sudo apt install libsqlite3-dev
           python -m pip install --upgrade pip setuptools wheel
-          mkdir kr-openssl-config
-          mkdir kr-openssl-install
           ./vcpkg/bootstrap-vcpkg.sh
           ./vcpkg/vcpkg install libsodium:x64-linux
-      - name: Cache OSSL Build
-        id: cache-ossl
-        uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/kr-openssl-*
-          key: ubuntu-ossl-build
-      - name: Build OSSL
-        if: steps.cache-ossl.outputs.cache-hit != 'true'
-        run: |
-          cd openssl
-          perl Configure --prefix=${{ github.workspace }}/kr-openssl-install --openssldir=${{ github.workspace }}/kr-openssl-config enable-fips
-          make -j3
-          make -j3 install
-          cd ${{ github.workspace }}
       - name: Install extension
         run: |
           pip install .
@@ -109,8 +92,5 @@ jobs:
         run: python -m pip install pybind11
       - name: Autobuild
         uses: github/codeql-action/autobuild@v2
-      - name: Clean OSSL
-        run: |
-          sudo rm -r openssl
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2

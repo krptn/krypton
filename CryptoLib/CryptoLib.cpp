@@ -8,7 +8,7 @@ namespace py = pybind11;
 
 bool initHappened = false;
 
-bool init(char *osslConfig, char *modulePath)
+bool init()
 {
 	if (init)
 		return true;
@@ -26,7 +26,7 @@ PYBIND11_MODULE(__CryptoLib, m)
 	m.def("passwordHash", &passwordHash, "Performs password hashing on text and salt", py::arg("text"), py::arg("salt"), py::arg("opsLimit"), py::arg("memLimit"), py::arg("keyLen"));
 	m.def("encryptEcc", &encryptEcc, "Encrypts data using public/private keys", py::arg("privKey"), py::arg("pubKey"), py::arg("data"));
 	m.def("decryptEcc", &decryptEcc, "Decrypts data using public/private keys", py::arg("privKey"), py::arg("pubKey"), py::arg("data"));
-	m.def("init", &init, "Initialises OpenSSL 3 FIPS module. Repeated calls do nothing.", py::arg("osslConfig"), py::arg("modulePath"));
+	m.def("init", &init, "Initialises OpenSSL 3 FIPS module. Repeated calls do nothing.");
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("base64encode", &encode64, "Base 64 encode data with length.", py::arg("data"));
 	m.def("base64decode", &decode64, "Base 64 decode data with length.", py::arg("data"));

@@ -25,6 +25,5 @@ py::bytes encryptEcc(std::string privKey, std::string pubKey, std::string data);
 py::bytes decryptEcc(std::string privKey, std::string pubKey, std::string data);
 
 // OTPs
-bool verifyTOTP(std::string secret,  std::string value);
 py::str genOTP();
 bool sleepOutOfGIL(int seconds = 5);

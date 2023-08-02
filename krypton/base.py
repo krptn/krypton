@@ -21,12 +21,12 @@ except ImportError as err:
             "Please download it from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist."
         ) from err
     raise err
-from . import configs, OPENSSL_CONFIG_FILE, OPENSSL_MODULES
+from . import configs
 
 Adrr = id
 
 #: Load FIPS Validated resolver
-__CryptoLib.init(OPENSSL_CONFIG_FILE, OPENSSL_MODULES)
+__CryptoLib.init()
 
 
 #: Wrappers for __CryptoLib
@@ -176,7 +176,7 @@ def verifyTOTP(secret: bytes, code: str) -> bool:
     Returns:
         True is success false otherwise
     """
-    return __CryptoLib.totpVerify(secret, code)
+    return NotImplementedError("Not yet implemented") ## TODO: fix this
 
 
 def createTOTPString(secret: bytes, user: str) -> str:

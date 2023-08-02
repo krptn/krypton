@@ -9,68 +9,33 @@ from pybind11.setup_helpers import Pybind11Extension
 folder = pathlib.Path(__file__).parent.as_posix()
 
 DEBUG = sys.argv.count("--debug") >= 1
-OPENSSL_INSTALL_PREFIX = os.environ.get("KR_OPENSSL_INSTALL", "kr-openssl-install")
 
 macros = []
-link_libararies = ["crypto", "sodium"]
-runtime_libs = [os.path.join(folder, f"{OPENSSL_INSTALL_PREFIX}/lib")]
+link_libararies = ["sodium"]
+runtime_libs = []
 extra_args = []
 extra_link_args = []
-library_dirs = [f"{OPENSSL_INSTALL_PREFIX}/lib"]
-include_dirs = [f"{OPENSSL_INSTALL_PREFIX}/include", "CryptoLib"]
-
-package_data = [
-  f"../{OPENSSL_INSTALL_PREFIX}/bin/libcrypto-3-x64.dll",
-  f"../{OPENSSL_INSTALL_PREFIX}/bin/libssl-3-x64.dll",
-  f"../{OPENSSL_INSTALL_PREFIX}/bin/libssl-3-arm64.dll",
-  f"../{OPENSSL_INSTALL_PREFIX}/bin/libcrypto-3-arm64.dll",
-  f"../{OPENSSL_INSTALL_PREFIX}/bin/libcrypto-3.dll",
-  f"../{OPENSSL_INSTALL_PREFIX}/bin/libssl-3.dll",
-  f"../{OPENSSL_INSTALL_PREFIX}/lib/ossl-modules/fips.dll",
-  f"../{OPENSSL_INSTALL_PREFIX}/bin/openssl.exe",
-  f"../{OPENSSL_INSTALL_PREFIX}/bin/openssl",
-  f"../{OPENSSL_INSTALL_PREFIX}/lib64/libcrypto.so.3",
-  f"../{OPENSSL_INSTALL_PREFIX}/lib64/libssl.so.3",
-  f"../{OPENSSL_INSTALL_PREFIX}/lib64/ossl-modules/fips.so",
-  f"../{OPENSSL_INSTALL_PREFIX}/lib/libcrypto.so.3",
-  f"../{OPENSSL_INSTALL_PREFIX}/lib/libssl.so.3",
-  f"../{OPENSSL_INSTALL_PREFIX}/lib/ossl-modules/fips.so",
-  f"../{OPENSSL_INSTALL_PREFIX}/lib/libcrypto.dylib",
-  f"../{OPENSSL_INSTALL_PREFIX}/lib/libssl.dylib",
-  f"../{OPENSSL_INSTALL_PREFIX}/lib/ossl-modules/fips.dylib",
-  "../kr-openssl-config/openssl.cnf",
-  "../kr-openssl-config/fipsmodule.cnf"
-]
-
-if not pathlib.Path(folder, OPENSSL_INSTALL_PREFIX).exists():
-  warnings.warn("We detected that you are likely building Krptn from source in an unsuitable manner. "
-    "Do not attempt to build Krptn from source without reading https://docs.krptn.dev/README-BUILD.html first. "
-    "Doing so is a terrible mistake and is likely to cause failures and other errors."
-    "If you are not building Krptn from source or you don't get any errors, please ignore this false positive.", 
-    RuntimeWarning, stacklevel=2)
+library_dirs = []
+include_dirs = ["CryptoLib"]
 
 if sys.platform == "linux":
   LIBSODIUM_BASE_PATH = "vcpkg/packages/libsodium_x64-linux/"
   include_dirs += [LIBSODIUM_BASE_PATH + "include/"]
-  library_dirs += [f"{OPENSSL_INSTALL_PREFIX}/lib64",
-    LIBSODIUM_BASE_PATH + "lib/"]
-  runtime_libs += [os.path.join(folder, f"{OPENSSL_INSTALL_PREFIX}/lib64")]
+  library_dirs += [LIBSODIUM_BASE_PATH + "lib/"]
 elif sys.platform == "win32":
-  link_libararies = ["libcrypto", "user32", "WS2_32", "GDI32", "ADVAPI32",
-                     "CRYPT32", "libsodium"]
-  macros += [("WIN", None), ("SODIUM_STATIC", 1), ("SODIUM_EXPORT", None)]
+  LIBSODIUM_BASE_PATH = "vcpkg/packages/libsodium_x64-windows-static/"
+  link_libararies = ["libsodium"]
+  macros += [("SODIUM_STATIC", 1), ("SODIUM_EXPORT", None)]
   runtime_libs = []
-  library_dirs += ["vcpkg/packages/libsodium_x64-windows-static/lib"]
-  include_dirs += ["vcpkg/packages/libsodium_x64-windows-static/include"]
+  library_dirs += [f"${LIBSODIUM_BASE_PATH}lib"]
+  include_dirs += [f"${LIBSODIUM_BASE_PATH}include"]
 elif sys.platform == "darwin":
   LIBSODIUM_BASE_PATH = "vcpkg/packages/libsodium_x64-darwin/"
   include_dirs += [LIBSODIUM_BASE_PATH + "include/"]
   library_dirs += [LIBSODIUM_BASE_PATH + "lib/"]
-  extra_args += ["-std=c++17", "-O0"] # Disable optimizationas as they trigger segementation faults
+  extra_args += ["-std=c++17"]
 
 setup(
-  package_data={"": package_data},
-  include_package_data=True,
   packages=find_packages(),
   ext_modules=[Pybind11Extension('__CryptoLib',
     glob("CryptoLib/*.cpp"),
