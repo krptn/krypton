@@ -1,19 +1,18 @@
 #include "CryptoLib.h"
 
 #include <pybind11/pybind11.h>
-#include <openssl/evp.h>
-#include <openssl/hmac.h>
-#include <openssl/obj_mac.h>
-#include <openssl/rand.h>
 #include <iostream>
 #include <thread>
 #include <chrono>
 
+#include <openssl/evp.h>
+#include <openssl/hmac.h>
+#include <openssl/obj_mac.h>
+#include <openssl/rand.h>
+
 using namespace std;
 
 namespace py = pybind11;
-
-extern EVP_MD *OTP_HASH;
 
 bool verifyTOTP(py::bytes secret, py::str value)
 {
@@ -33,7 +32,7 @@ bool verifyTOTP(py::bytes secret, py::str value)
   }
   char md[20];
   unsigned int mdLen;
-  HMAC(OTP_HASH, key, keylen, (const unsigned char *)&counter, sizeof(counter), (unsigned char *)&md, &mdLen);
+  HMAC(EVP_sha1(), key, keylen, (const unsigned char *)&counter, sizeof(counter), (unsigned char *)&md, &mdLen);
   OPENSSL_cleanse(key, keylen);
   int offset = md[19] & 0x0f;
   int bin_code = (md[offset] & 0x7f) << 24 | (md[offset + 1] & 0xff) << 16 | (md[offset + 2] & 0xff) << 8 | (md[offset + 3] & 0xff);
@@ -49,21 +48,6 @@ bool verifyTOTP(py::bytes secret, py::str value)
   }
   sleepOutOfGIL(5);
   return false;
-}
-
-py::str genOTP()
-{
-  unsigned char binCode[9];
-  if (!(RAND_bytes((unsigned char *)&binCode, sizeof(binCode)) == 1))
-  {
-    handleErrors();
-  }
-  char finalCode[sizeof(binCode) * 4 / 3 + 1];
-  EVP_EncodeBlock(reinterpret_cast<unsigned char *>(finalCode), (const unsigned char *)binCode, sizeof(binCode));
-  py::str pyCode = py::str(finalCode, sizeof(binCode) * 4 / 3);
-  OPENSSL_cleanse(&binCode, sizeof(binCode));
-  OPENSSL_cleanse(&finalCode, sizeof(finalCode));
-  return pyCode;
 }
 
 bool sleepOutOfGIL(int seconds)

@@ -1,7 +1,6 @@
 #include "CryptoLib.h"
 
 #include "sodium.h"
-#include <openssl/evp.h>
 #include <pybind11/pybind11.h>
 
 using namespace std;

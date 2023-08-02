@@ -155,7 +155,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         id = Column(Integer, primary_key=True)
         Uid = Column(Integer, index=True)
         krVersion = Column(Text, default=__version__)
-        key = Column(Text)
+        key = Column(LargeBinary)
 
     class UserTable(Base):  # pylint: disable=too-few-public-methods
         """Database

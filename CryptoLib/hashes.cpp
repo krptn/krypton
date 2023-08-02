@@ -1,17 +1,11 @@
 #include "CryptoLib.h"
 
-#include <openssl/evp.h>
-#include <openssl/kdf.h>
-#include <openssl/rand.h>
 #include <pybind11/pybind11.h>
 #include <sodium.h>
 #include <string>
 
 using namespace std;
 namespace py = pybind11;
-
-extern EVP_KDF *KDF;
-extern EVP_MD *PBKDF2_HASH;
 
 int compHash(const void *a, const void *b, const size_t size)
 {
@@ -42,26 +36,4 @@ py::bytes passwordHash(std::string text, std::string salt, int opsLimit, int mem
 	sodium_memzero((void*)key.get(), keylen);
 	sodium_memzero((void*)text.c_str(), text.length());
 	return final;
-}
-
-py::bytes pyHKDF(char *secret, int len, char *salt, int saltLen, int keylen)
-{
-	EVP_KDF_CTX *kctx;
-	unsigned char *out = new unsigned char[keylen];
-	OSSL_PARAM params[4], *p = params;
-
-	kctx = EVP_KDF_CTX_new(KDF);
-
-	*p++ = OSSL_PARAM_construct_utf8_string("digest", (char *)"SHA512", 6);
-	*p++ = OSSL_PARAM_construct_octet_string("key", secret, len);
-	*p++ = OSSL_PARAM_construct_octet_string("key", salt, saltLen);
-	*p = OSSL_PARAM_construct_end();
-	if (EVP_KDF_derive(kctx, out, keylen, params) <= 0)
-	{
-		handleErrors();
-	}
-	EVP_KDF_CTX_free(kctx);
-	py::bytes result = py::bytes((char *)out, keylen);
-	delete[] out;
-	return result;
 }
