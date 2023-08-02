@@ -89,7 +89,7 @@ class AuthUser(user):
         time = int(self.getData("_accountKeysCreation").decode())
         if (datetime.datetime.now().year - time) >= 2:
             self.generateNewKeys(pwd)
-        self.reload()
+        self.reload() # This call loads up the other cryptographic keys
         self.c.flush()
         encoded = base.base64encode(restoreKey)
         base.zeromem(restoreKey)

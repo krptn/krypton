@@ -10,9 +10,6 @@ namespace py = pybind11;
 // General
 py::str encode64(std::string data);
 py::bytes decode64(std::string input);
-void handleErrors();
-char *pymbToBuffer(py::bytes a);
-char *pyStrToBuffer(py::str a);
 
 // AES
 py::bytes encrypt(std::string text, std::string key);
@@ -28,6 +25,6 @@ py::bytes encryptEcc(std::string privKey, std::string pubKey, std::string data);
 py::bytes decryptEcc(std::string privKey, std::string pubKey, std::string data);
 
 // OTPs
-bool verifyTOTP(py::bytes secret, py::str value);
+bool verifyTOTP(std::string secret,  std::string value);
 py::str genOTP();
 bool sleepOutOfGIL(int seconds = 5);

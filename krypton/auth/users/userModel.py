@@ -139,15 +139,32 @@ class standardUser(AuthUser, MFAUser, user):
         self.c.commit()
 
     @userExistRequired
+    def _getPublicKey(self, userId: int) -> list[bytes]:
+        """Get a user's public key
+
+        Args:
+            userId (int): User Id
+
+        Returns:
+            bytes: User's public key
+        """
+        pubKeys: list[DBschemas.PubKeyTable] = self.c.scalars(
+            select(DBschemas.PubKeyTable)
+            # In future, krVersion can be used to detect compatability issues
+            .where(DBschemas.PubKeyTable.Uid == userId).order_by(
+                DBschemas.PubKeyTable.id.desc()
+            )
+        ).all()
+        return [keys.key for keys in pubKeys]
+
+    @userExistRequired
     def decryptWithUserKey(
-        self, data: ByteString, salt: bytes = None, sender=None
+        self, data: ByteString, sender=None
     ) -> bytes:
         """Decrypt data with user's key
 
         Arguments:
             data -- Ciphertext
-
-            salt -- Salt
 
         Keyword Arguments:
             sender -- If applicable sender's user name (default: {None})
@@ -159,7 +176,7 @@ class standardUser(AuthUser, MFAUser, user):
             Plaintext
         """
         # Will also need to check the backup keys if decryption fails
-        if salt is None and sender is None:
+        if sender is None:
             try:
                 text = base.unSeal(data, self._key)
             except ValueError:
@@ -180,12 +197,16 @@ class standardUser(AuthUser, MFAUser, user):
             Uid = self.c.scalar(stmt)
         else:
             Uid = sender
-        keys = base.getSharedKey(self._privKey, Uid, salt)
+        keys = self._getPublicKey(Uid)
         try:
             for key in keys:
                 retry = False
                 try:
-                    text = base.unSeal(data, key)
+                    text = base.decryptEcc(
+                        self._privKey,
+                        key,
+                        data
+                    )
                 except ValueError:
                     retry = True
                 base.zeromem(key)
@@ -194,11 +215,15 @@ class standardUser(AuthUser, MFAUser, user):
         except ValueError:
             pass
         for privKey in self.backupKeys:
-            keys = base.getSharedKey(privKey, Uid, salt)
+            keys = self._getPublicKey(Uid)
             retry = False
             for key in keys:
                 try:
-                    text = base.unSeal(data, key)
+                    text = base.decryptEcc(
+                        privKey,
+                        key,
+                        data
+                    )
                 except ValueError:
                     retry = True
                 base.zeromem(key)
@@ -232,8 +257,7 @@ class standardUser(AuthUser, MFAUser, user):
         if otherUsers is None:
             ctext = base.seal(data, self._key)
             return ctext
-        salts = [os.urandom(configs._saltLen) for i in otherUsers]
-        AESKeys = []
+        publicKeys = []
         otherUsers = [
             self.c.scalar(
                 select(DBschemas.UserTable.id).where(DBschemas.UserTable.name == name)
@@ -241,12 +265,10 @@ class standardUser(AuthUser, MFAUser, user):
             for name in otherUsers
         ]
         for i, Uid in enumerate(otherUsers):
-            temp = base.getSharedKey(self._privKey, Uid, salts[i])
-            [base.zeromem(x) for x in temp[1:]]
-            AESKeys.append(temp[0])
-        results = [base.seal(data, key) for key in AESKeys]
-        [base.zeromem(x) for x in AESKeys]
-        return list(zip(otherUsers, results, salts))
+            temp = self._getPublicKey(Uid)
+            publicKeys.append(temp[0])
+        results = [base.encryptEcc(self._privKey, key, data) for key in publicKeys]
+        return list(zip(otherUsers, results))
 
     @userExistRequired
     def shareSet(self, name: str, data: ByteString, otherUsers: list[str]) -> None:
@@ -269,7 +291,7 @@ class standardUser(AuthUser, MFAUser, user):
         ]
         for i, key in enumerate(keys):
             row = DBschemas.UserShareTable(
-                sender=self.id, name=name, salt=key[2], value=key[1], shareUid=ids[i]
+                sender=self.id, name=name, value=key[1], shareUid=ids[i]
             )
             self.c.add(row)
             self.c.flush()
@@ -297,7 +319,7 @@ class standardUser(AuthUser, MFAUser, user):
         row: DBschemas.UserShareTable = self.c.scalar(stmt)
         if row is None:
             raise ValueError("Such data does not exist.")
-        return self.decryptWithUserKey(row.value, row.salt, row.sender)
+        return self.decryptWithUserKey(row.value, row.sender)
 
     @userExistRequired
     def shareDelete(self, name: str) -> None:
@@ -371,8 +393,8 @@ class standardUser(AuthUser, MFAUser, user):
         """Reload encryption keys. Warning: previous keys are not purged!"""
         _privKey = self.getData("_userPrivateKey")
         pubKey = self.getData("_userPublicKey")
-        self._privKey = _privKey.decode()
-        self.pubKey = pubKey.decode()
+        self._privKey = _privKey
+        self.pubKey = pubKey
         base.zeromem(_privKey)
         keys = self.getData("_backupAESKeys")
         self.backupAESKeys = pickle.loads(keys)

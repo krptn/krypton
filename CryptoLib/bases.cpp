@@ -23,13 +23,14 @@ py::bytes decode64(std::string input)
 {
 	size_t len = input.length()/4 * 3;
 	auto output = unique_ptr<unsigned char[]>(new unsigned char[len]);
-	size_t trueLen;
-	sodium_base642bin(output.get(), len,
+	size_t trueLen = 0;
+	const int status = sodium_base642bin(output.get(), len,
                       input.c_str(), input.length(),
                       NULL, &trueLen,
                       NULL, sodium_base64_VARIANT_ORIGINAL);
 	py::bytes pythonBytes = py::bytes((char*)output.get(), trueLen);
 	sodium_memzero((void*)input.c_str(), input.length());
 	sodium_memzero((void*)output.get(), len);
+	if (status != 0) throw std::invalid_argument("Unable to base64 decode data.");
 	return pythonBytes;
 }

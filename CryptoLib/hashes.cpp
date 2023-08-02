@@ -27,13 +27,14 @@ py::bytes passwordHash(std::string text, std::string salt, int opsLimit, int mem
 	if (salt.length() != crypto_pwhash_SALTBYTES) throw std::invalid_argument("Salt is of wrong length");
 	py::gil_scoped_release release;
 	auto key = unique_ptr<unsigned char[]>(new unsigned char[keylen]);
-	if (crypto_pwhash(key.get(), keylen, text.c_str(), text.length(), (const unsigned char *)salt.c_str(),
+	const int hashStatus = crypto_pwhash(key.get(), keylen, text.c_str(), text.length(), (const unsigned char *)salt.c_str(),
 					  opsLimit, memLimit,
-					  crypto_pwhash_ALG_ARGON2ID13) != 0)
-		throw std::runtime_error("Out of memory while hashing");
+					  crypto_pwhash_ALG_ARGON2ID13);
 	py::gil_scoped_acquire acquire;
 	py::bytes final = py::bytes((char *)key.get(), keylen);
 	sodium_memzero((void*)key.get(), keylen);
 	sodium_memzero((void*)text.c_str(), text.length());
+	if (hashStatus != 0)
+		throw std::runtime_error("Out of memory while hashing");
 	return final;
 }

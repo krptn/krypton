@@ -9,8 +9,6 @@ import sys
 import base64
 import os
 from typing import ByteString
-from sqlalchemy import select
-from sqlalchemy.orm import scoped_session, Session
 
 try:
     import __CryptoLib
@@ -23,12 +21,12 @@ except ImportError as err:
             "Please download it from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist."
         ) from err
     raise err
-from . import configs, DBschemas, OPENSSL_CONFIG_FILE, OPENSSL_MODULES
+from . import configs, OPENSSL_CONFIG_FILE, OPENSSL_MODULES
 
 Adrr = id
 
 #: Load FIPS Validated resolver
-__CryptoLib.fipsInit(OPENSSL_CONFIG_FILE, OPENSSL_MODULES)
+__CryptoLib.init(OPENSSL_CONFIG_FILE, OPENSSL_MODULES)
 
 
 #: Wrappers for __CryptoLib
@@ -72,6 +70,7 @@ def base64encode(data: ByteString) -> str:
     """
     return __CryptoLib.base64encode(data)
 
+
 def base64decode(data: ByteString) -> ByteString:
     """Decode base64
 
@@ -82,6 +81,7 @@ def base64decode(data: ByteString) -> ByteString:
         Base64 decoded bytes
     """
     return __CryptoLib.base64decode(data)
+
 
 def createECCKey() -> tuple[str, str]:
     """create an Eliptic Curve Key
@@ -94,61 +94,32 @@ def createECCKey() -> tuple[str, str]:
     return __CryptoLib.createECCKey()
 
 
-def ECDH(privKey: str, peerPubKey: str, salt: bytes, keylen: int = 32) -> bytes:
-    """Elliptic Curve Diffie-Helman
+def encryptEcc(privKey: bytes, pubKey: bytes, data: ByteString) -> bytes:
+    """Encrypt data using public/private keys
 
-    Arguments:
-        privKey -- P.E.M. Encoded private key
-
-        peerPubKey -- P.E.M. Encoded public key
-
-        salt -- Salt used for Key Derivation Function
-
-    Keyword Arguments:
-        keylen -- Len of the key (default: {32})
+    Args:
+        privKey (bytes): Private Key
+        pubKey (bytes): Public Key
+        data (ByteString): Data to encrypt
 
     Returns:
-        Key as python bytes
+        bytes: the encrypted data
     """
-    return __CryptoLib.ECDH(privKey, peerPubKey, salt, keylen)
+    return __CryptoLib.encryptEcc(privKey, pubKey, data)
 
 
-def getSharedKey(
-    privKey: str, peerID: int, salt: bytes, keylen: int = 32
-) -> list[bytes]:
-    """Get users' shared key
+def decryptEcc(privKey: bytes, pubKey: bytes, data: ByteString) -> bytes:
+    """Decrypt data using public/private keys
 
-    Get a shared key for two users using ECDH.
-
-    Arguments:
-        privKey -- User's private EC Key (in P.E.M. format)
-
-        peerID -- Other User's ID
-
-        salt -- Salt used for KDF
-
-    Keyword Arguments:
-        keylen -- Len of key to return (default: {32})
+    Args:
+        privKey (bytes): Private Key
+        pubKey (bytes): Public Key
+        data (ByteString): Data to decrypt
 
     Returns:
-        List of keys as python bytes
+        bytes: the decrypted data
     """
-    assert isinstance(privKey, str)
-    assert isinstance(peerID, int)
-    # pylint: disable=no-member
-    session: Session = scoped_session(configs.SQLDefaultUserDBpath)
-    pubKeys: list[DBschemas.PubKeyTable] = session.scalars(
-        select(DBschemas.PubKeyTable)
-        # In future, krVersion can be used to detect compatability issues
-        .where(DBschemas.PubKeyTable.Uid == peerID).order_by(
-            DBschemas.PubKeyTable.id.desc()
-        )
-    ).all()
-    results = [
-        __CryptoLib.ECDH(privKey, pubKey.key, salt, keylen) for pubKey in pubKeys
-    ]
-    session.close()
-    return results
+    return __CryptoLib.decryptEcc(privKey, pubKey, data)
 
 
 def passwordHash(
@@ -170,8 +141,9 @@ def passwordHash(
     Returns:
         The key as python bytes
     """
-    return __CryptoLib.passwordHash(text, salt, opsLimit,
-                                    configs._memLimitArgon, keylen)
+    return __CryptoLib.passwordHash(
+        text, salt, opsLimit, configs._memLimitArgon, keylen
+    )
 
 
 def zeromem(obj: ByteString) -> int:

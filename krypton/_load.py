@@ -216,7 +216,6 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         id = Column(Integer, primary_key=True)
         sender = Column(Integer, index=True)
         name = Column(Text(450), index=True)
-        salt = Column(LargeBinary)
         value = Column(LargeBinary)
         shareUid = Column(Integer, index=True)
 

@@ -6,20 +6,15 @@
 using namespace std;
 namespace py = pybind11;
 
-bool init = false;
+bool initHappened = false;
 
-bool fipsInit(char *osslConfig, char *modulePath)
+bool init(char *osslConfig, char *modulePath)
 {
 	if (init)
 		return true;
 	if (sodium_init() < 0)
         throw std::runtime_error("Failed to init libsodium");
-	init = true;
-}
-
-void handleErrors()
-{
-	throw invalid_argument("Unable to perform cryptographic operation");
+	initHappened = true;
 }
 
 PYBIND11_MODULE(__CryptoLib, m)
@@ -29,8 +24,9 @@ PYBIND11_MODULE(__CryptoLib, m)
 	m.def("encrypt", &encrypt, "A function which encrypts the data. Args: text, key.", py::arg("text"), py::arg("key"));
 	m.def("compHash", &compHash, "Compares hashes", py::arg("a"), py::arg("a"), py::arg("len"));
 	m.def("passwordHash", &passwordHash, "Performs password hashing on text and salt", py::arg("text"), py::arg("salt"), py::arg("opsLimit"), py::arg("memLimit"), py::arg("keyLen"));
-	m.def("HKDF", &pyHKDF, py::arg("secret"), py::arg("len"), py::arg("salt"), py::arg("saltLen"), py::arg("keyLen"));
-	m.def("fipsInit", &fipsInit, "Initialises OpenSSL 3 FIPS module. Repeated calls do nothing.", py::arg("osslConfig"), py::arg("modulePath"));
+	m.def("encryptEcc", &encryptEcc, "Encrypts data using public/private keys", py::arg("privKey"), py::arg("pubKey"), py::arg("data"));
+	m.def("decryptEcc", &decryptEcc, "Decrypts data using public/private keys", py::arg("privKey"), py::arg("pubKey"), py::arg("data"));
+	m.def("init", &init, "Initialises OpenSSL 3 FIPS module. Repeated calls do nothing.", py::arg("osslConfig"), py::arg("modulePath"));
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("base64encode", &encode64, "Base 64 encode data with length.", py::arg("data"));
 	m.def("base64decode", &decode64, "Base 64 decode data with length.", py::arg("data"));

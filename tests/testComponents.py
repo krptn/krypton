@@ -15,15 +15,13 @@ class CryptographicUnits(unittest.TestCase):
         self.assertEqual(len(kb), 32)
     def testECCKeyGen(self):
         keys = base.createECCKey()
-        self.assertTrue(keys[0].startswith("-----BEGIN EC PRIVATE KEY-----\n") and keys[0].endswith("\n-----END EC PRIVATE KEY-----\n"))
-        self.assertTrue(keys[1].startswith("-----BEGIN PUBLIC KEY-----\n") and keys[1].endswith("\n-----END PUBLIC KEY-----\n"))
-    def testECDH(self):
+        self.assertEqual(len(keys), 2)
+    def testEccEncrypt(self):
         keys = base.createECCKey()
         keys2 = base.createECCKey()
-        salt = os.urandom(12)
-        key = base.ECDH(keys[0], keys2[1], salt, keylen=32)
-        self.assertEqual(len(key), 32)
-        self.assertEqual(key, base.ECDH(keys[0], keys2[1], salt, keylen=32))
+        text = 'Hello World'
+        ctext = base.encryptEcc(keys[0], keys2[1], text)
+        self.assertEqual(base.decryptEcc(keys2[0], keys[1], ctext), text)
     def testBase64(self):
         text = "fdgdfgfdgdfsr"
         b64 = base.base64encode(text)
