@@ -11,6 +11,7 @@ __pycache__/
 *.lib
 *.a
 .lprof/
+vcpkg_installed/
 
 scrap_work/
 

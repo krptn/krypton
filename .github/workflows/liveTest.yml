@@ -74,7 +74,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip setuptools wheel
           ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/vcpkg install libsodium:x64-linux
+          ./vcpkg/vcpkg install --triplet x64-linux
       - name: Install extension
         run: |
           pip install .

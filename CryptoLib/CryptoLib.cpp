@@ -15,6 +15,7 @@ bool init()
 	if (sodium_init() < 0)
         throw std::runtime_error("Failed to init libsodium");
 	initHappened = true;
+	return true;
 }
 
 PYBIND11_MODULE(__CryptoLib, m)
