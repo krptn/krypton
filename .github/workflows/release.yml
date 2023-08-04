@@ -33,7 +33,6 @@ jobs:
           python3 -m cibuildwheel --output-dir dist
         env:
           CIBW_BEFORE_ALL: |
-            yum update
             yum install -y curl zip unzip tar ninja-build
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet x64-linux
@@ -70,7 +69,6 @@ jobs:
           python3 -m cibuildwheel --output-dir dist
         env:
           CIBW_BEFORE_ALL: |
-            yum update
             yum install -y curl zip unzip tar ninja-build
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-linux
