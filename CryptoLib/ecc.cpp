@@ -12,8 +12,9 @@ py::tuple createECCKey()
 	unsigned char secretkey[crypto_box_SECRETKEYBYTES];
 	crypto_box_keypair(publickey, secretkey);
 	py::tuple finalTuple = py::make_tuple(
-		py::bytes((char *)&publickey, crypto_box_PUBLICKEYBYTES),
-		py::bytes((char *)&secretkey, crypto_box_SECRETKEYBYTES));
+		py::bytes((char *)&secretkey, crypto_box_SECRETKEYBYTES),
+		py::bytes((char *)&publickey, crypto_box_PUBLICKEYBYTES));
+	sodium_memzero(&secretkey, crypto_box_SECRETKEYBYTES);
 	return finalTuple;
 }
 

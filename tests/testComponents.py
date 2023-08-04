@@ -19,7 +19,7 @@ class CryptographicUnits(unittest.TestCase):
     def testEccEncrypt(self):
         keys = base.createECCKey()
         keys2 = base.createECCKey()
-        text = 'Hello World'
+        text = b'Hello World'
         ctext = base.encryptEcc(keys[0], keys2[1], text)
         self.assertEqual(base.decryptEcc(keys2[0], keys[1], ctext), text)
     def testBase64(self):
