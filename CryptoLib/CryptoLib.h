@@ -11,7 +11,7 @@ namespace py = pybind11;
 py::str encode64(std::string data);
 py::bytes decode64(std::string input);
 
-// AES
+// Symmetric
 py::bytes encrypt(std::string text, std::string key);
 py::bytes decrypt(std::string ctext, std::string key);
 
