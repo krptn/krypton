@@ -23,7 +23,7 @@ jobs:
       # We will pretend that __CryptoLib does not need building.
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v3
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'pull_request'
         with:
           license-check: false
       - name: Checkout repository
