@@ -10,7 +10,7 @@ bool initHappened = false;
 
 bool init()
 {
-	if (init)
+	if (initHappened)
 		return true;
 	if (sodium_init() < 0)
         throw std::runtime_error("Failed to init libsodium");
@@ -30,7 +30,6 @@ PYBIND11_MODULE(__CryptoLib, m)
 	m.def("createECCKey", &createECCKey, "Create a new ECC private key");
 	m.def("base64encode", &encode64, "Base 64 encode data with length.", py::arg("data"));
 	m.def("base64decode", &decode64, "Base 64 decode data with length.", py::arg("data"));
-	m.def("totpVerify", &verifyTOTP, "Verify TOTP with params", py::arg("secret"), py::arg("code"));
 	m.def("genOTP", &genOTP, "Create a random PIN/OTP");
 	m.def("sleepOutOfGIL", &sleepOutOfGIL, "Sleep for specified seconds while releasing the GIL.", py::arg("seconds") = 5);
 }

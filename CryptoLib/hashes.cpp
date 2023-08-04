@@ -7,7 +7,7 @@
 using namespace std;
 namespace py = pybind11;
 
-int compHash(const void *a, const void *b, const size_t size)
+int compHash(char *a, char *b, const size_t size)
 {
 	const volatile unsigned char *_a = (const unsigned char *)a;
 	const volatile unsigned char *_b = (const unsigned char *)b;

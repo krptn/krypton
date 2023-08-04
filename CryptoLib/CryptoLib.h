@@ -16,7 +16,7 @@ py::bytes encrypt(std::string text, std::string key);
 py::bytes decrypt(std::string ctext, std::string key);
 
 // Hashes
-int compHash(const void *a, const void *b, const size_t size);
+int compHash(char *a, char *b, const size_t size);
 py::bytes passwordHash(std::string text, std::string salt, int opsLimit, int memLimit, int keylen);
 
 // ECC

@@ -189,6 +189,7 @@ class ConfigTemp:
     defaultSessionPeriod = 15  # Minutes
     defaultLogRetentionPeriod = 43200  # Minutes
     _saltLen = 16
+    _totpSecretLen = 20
     _aesKeyLen = 32
     _cryptoDB: sessionmaker = None
     _cryptoDbEngine = None

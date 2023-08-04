@@ -5,9 +5,12 @@ Loads __CryptoLib and contains wrappers.
 # disbaled pylint because __CryptoLib is not built in CI/CD tests
 
 import ctypes
+import hmac
 import sys
 import base64
 import os
+import datetime
+import hashlib
 from typing import ByteString
 
 try:
@@ -25,7 +28,9 @@ from . import configs
 
 Adrr = id
 
-#: Load FIPS Validated resolver
+TOTP_SECRET_LEN = configs._totpSecretLen
+TOTP_CODE_LEN = 6
+
 __CryptoLib.init()
 
 
@@ -174,9 +179,30 @@ def verifyTOTP(secret: bytes, code: str) -> bool:
         code -- The code to verify
 
     Returns:
-        True is success false otherwise
+        True is success False otherwise
     """
-    return NotImplementedError("Not yet implemented") ## TODO: fix this
+    if len(secret) != TOTP_SECRET_LEN or len(code) != TOTP_CODE_LEN:
+        raise ValueError("Incorrect secret or code len in verifyTOTP")
+    counter = datetime.datetime.now().timestamp() / 30
+    byteCounter = int(counter).to_bytes(8, "big")
+    md = hmac.digest(secret, byteCounter, hashlib.sha1)
+    offset = md[19] & 0x0F
+    bin_code = (
+        (md[offset] & 0x7F) << 24
+        | (md[offset + 1] & 0xFF) << 16
+        | (md[offset + 2] & 0xFF) << 8
+        | (md[offset + 3] & 0xFF)
+    )
+    bin_code = bin_code % 1000000
+    if (
+        __CryptoLib.compHash(
+            format(bin_code, f"0{TOTP_CODE_LEN}d"), code, TOTP_CODE_LEN
+        )
+        == 0
+    ):
+        return True
+    sleepOutOfGIL(5)
+    return False
 
 
 def createTOTPString(secret: bytes, user: str) -> str:
@@ -192,7 +218,7 @@ def createTOTPString(secret: bytes, user: str) -> str:
     s = base64.b32encode(secret)
     secret = s.decode()  # This is not base64 decoding. It is bytes -> string decoding.
     stripped = secret.strip("=")
-    string = f"otpauth://totp/{configs.APP_NAME}:{user}?secret={stripped}&issuer=KryptonAuth&algorithm=SHA1&digits=6&period=30"
+    string = f"otpauth://totp/{configs.APP_NAME}:{user}?secret={stripped}&issuer=KryptonAuth&algorithm=SHA1&digits={TOTP_CODE_LEN}&period=30"
     zeromem(s)
     zeromem(secret)
     zeromem(stripped)

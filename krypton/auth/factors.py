@@ -112,7 +112,7 @@ class totp:
         Returns:
             shared secret, base32 encoded shared secret, totp uri
         """
-        secret = os.urandom(20)
+        secret = os.urandom(configs._totpSecretLen)
         base32Secret = base64.b32encode(secret)
         return secret, base32Secret, base.createTOTPString(secret, userName)
 

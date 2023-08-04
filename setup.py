@@ -1,7 +1,5 @@
-import os
 import sys
 import pathlib
-import warnings
 from glob import glob
 from setuptools import setup, find_packages
 from pybind11.setup_helpers import Pybind11Extension
@@ -27,8 +25,8 @@ elif sys.platform == "win32":
   link_libararies = ["libsodium"]
   macros += [("SODIUM_STATIC", 1), ("SODIUM_EXPORT", None)]
   runtime_libs = []
-  library_dirs += [f"${LIBSODIUM_BASE_PATH}lib"]
-  include_dirs += [f"${LIBSODIUM_BASE_PATH}include"]
+  library_dirs += [f"{LIBSODIUM_BASE_PATH}lib"]
+  include_dirs += [f"{LIBSODIUM_BASE_PATH}include/"]
 elif sys.platform == "darwin":
   LIBSODIUM_BASE_PATH = "vcpkg/packages/libsodium_x64-darwin/"
   include_dirs += [LIBSODIUM_BASE_PATH + "include/"]
