@@ -3,11 +3,9 @@ import pathlib
 import os
 from glob import glob
 from setuptools import setup, find_packages
-from pybind11.setup_helpers import Pybind11Extension
+from pybind11.setup_helpers import Pybind11Extension, build_ext
 
 folder = pathlib.Path(__file__).parent.as_posix()
-
-DEBUG = sys.argv.count("--debug") >= 1
 
 macros = []
 link_libararies = ["sodium"]
@@ -24,11 +22,10 @@ VCPKG_PORT_BASE_PATH = (
 print("Found VCPKG_PORT_PATH: ", VCPKG_PORT_BASE_PATH)
 
 if sys.platform == "win32":
+    # Windows specific setup
     link_libararies = ["libsodium"]
     macros += [("SODIUM_STATIC", 1), ("SODIUM_EXPORT", None)]
     runtime_libs = []
-elif sys.platform == "darwin":
-    extra_args += ["-std=c++17"]
 
 include_dirs += [os.path.join(VCPKG_PORT_BASE_PATH, "include/")]
 library_dirs += [os.path.join(VCPKG_PORT_BASE_PATH, "lib/")]
@@ -48,4 +45,5 @@ setup(
             define_macros=macros,
         )
     ],
+    cmdclass={"build_ext": build_ext}
 )
