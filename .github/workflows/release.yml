@@ -33,7 +33,7 @@ jobs:
           python3 -m cibuildwheel --output-dir dist
         env:
           CIBW_BEFORE_ALL: |
-            yum install -y curl zip unzip tar make make gcc gcc-c++ g++
+            yum install -y curl zip unzip tar make make gcc gcc-c++
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet x64-linux
       - name: Upload Build Result
@@ -69,7 +69,7 @@ jobs:
           python3 -m cibuildwheel --output-dir dist
         env:
           CIBW_BEFORE_ALL: |
-            yum install -y curl zip unzip tar make make gcc gcc-c++ g++
+            yum install -y curl zip unzip tar make make gcc gcc-c++
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-linux
       - name: Upload Build Result
