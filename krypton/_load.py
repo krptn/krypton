@@ -1,5 +1,5 @@
 """
-Load up databases, and configure OSSL FIPS module.
+Load up databases, and configure Krptn.
 """
 # pylint: disable=cyclic-import
 # pylint: disable=invalid-name

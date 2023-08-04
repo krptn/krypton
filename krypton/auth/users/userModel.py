@@ -7,7 +7,6 @@ Note for developer's working on Krypton: this only contains user model cryptogra
 # pylint: disable=attribute-defined-outside-init
 
 import datetime
-import os
 import pickle
 from typing import ByteString
 from sqlalchemy import and_, delete, select, update
@@ -16,6 +15,7 @@ from sqlalchemy.exc import PendingRollbackError
 from .. import factors
 from ... import DBschemas, configs
 from ... import base
+from . import bases
 from .userModelBaseAuth import AuthUser
 from .userModelMFAAuth import MFAUser
 from .bases import userExistRequired, user
@@ -40,6 +40,11 @@ class standardUser(AuthUser, MFAUser, user):
         super().__init__()
         self.backupAESKeys = []
         self.backupKeys = []
+
+        # The below two will be filled out to their actual values later
+        self._privKey = b"emtpy"
+        self.pubKey = b"empty"
+
         self.loggedin = False
         self.FIDORequired = False
         self.c = scoped_session(configs.SQLDefaultUserDBpath)
@@ -158,9 +163,7 @@ class standardUser(AuthUser, MFAUser, user):
         return [keys.key for keys in pubKeys]
 
     @userExistRequired
-    def decryptWithUserKey(
-        self, data: ByteString, sender=None
-    ) -> bytes:
+    def decryptWithUserKey(self, data: ByteString, sender=None) -> bytes:
         """Decrypt data with user's key
 
         Arguments:
@@ -202,11 +205,7 @@ class standardUser(AuthUser, MFAUser, user):
             for key in keys:
                 retry = False
                 try:
-                    text = base.decryptEcc(
-                        self._privKey,
-                        key,
-                        data
-                    )
+                    text = base.decryptEcc(self._privKey, key, data)
                 except ValueError:
                     retry = True
                 base.zeromem(key)
@@ -219,11 +218,7 @@ class standardUser(AuthUser, MFAUser, user):
             retry = False
             for key in keys:
                 try:
-                    text = base.decryptEcc(
-                        privKey,
-                        key,
-                        data
-                    )
+                    text = base.decryptEcc(privKey, key, data)
                 except ValueError:
                     retry = True
                 base.zeromem(key)
@@ -365,21 +360,21 @@ class standardUser(AuthUser, MFAUser, user):
         self._key = factors.password.auth(tag, pwd)
 
         backups = pickle.dumps(self.backupAESKeys)
-        self.setData("_backupAESKeys", backups)
+        self.setData(bases.BACKUP_AES_KEY, backups)
         base.zeromem(backups)
 
         keys = base.createECCKey()
-        backups = self.getData("_backupKeys")
+        backups = self.getData(bases.BACKUP_ECC_KEY)
         self.backupKeys: list[bytes] = pickle.loads(backups)
         base.zeromem(backups)
         self.backupKeys.append(self._privKey)
         backups = pickle.dumps(self.backupKeys)
-        self.setData("_backupKeys", backups)
+        self.setData(bases.BACKUP_ECC_KEY, backups)
         base.zeromem(backups)
         self._privKey = keys[0]
         self.pubKey = keys[1]
-        self.setData("_userPrivateKey", self._privKey)
-        self.setData("_userPublicKey", self.pubKey)
+        self.setData(bases.PRIVATE_KEY, self._privKey)
+        self.setData(bases.PUBLIC_KEY, self.pubKey)
         row = DBschemas.PubKeyTable(Uid=self.id, key=self.pubKey)
         self.c.add(row)
         self.c.flush()
@@ -391,15 +386,13 @@ class standardUser(AuthUser, MFAUser, user):
     @userExistRequired
     def reload(self):
         """Reload encryption keys. Warning: previous keys are not purged!"""
-        _privKey = self.getData("_userPrivateKey")
-        pubKey = self.getData("_userPublicKey")
-        self._privKey = _privKey
-        self.pubKey = pubKey
-        base.zeromem(_privKey)
-        keys = self.getData("_backupAESKeys")
+        base.zeromem(self._privKey)
+        self._privKey = self.getData(bases.PRIVATE_KEY)
+        self.pubKey = self.getData(bases.PUBLIC_KEY)
+        keys = self.getData(bases.BACKUP_AES_KEY)
         self.backupAESKeys = pickle.loads(keys)
         base.zeromem(keys)
-        keys = self.getData("_backupKeys")
+        keys = self.getData(bases.BACKUP_ECC_KEY)
         self.backupKeys = pickle.loads(keys)
         base.zeromem(keys)
 

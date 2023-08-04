@@ -10,6 +10,7 @@ from sqlalchemy import delete, select, func, update
 from .. import factors, _utils
 from ... import DBschemas, configs
 from ... import base
+from . import bases
 from .bases import userExistRequired, UserError, user
 
 
@@ -89,7 +90,7 @@ class AuthUser(user):
         time = int(self.getData("_accountKeysCreation").decode())
         if (datetime.datetime.now().year - time) >= 2:
             self.generateNewKeys(pwd)
-        self.reload() # This call loads up the other cryptographic keys
+        self.reload()  # This call loads up the other cryptographic keys
         self.c.flush()
         encoded = base.base64encode(restoreKey)
         base.zeromem(restoreKey)
@@ -237,11 +238,11 @@ class AuthUser(user):
         self._key = factors.password.auth(tag, pwd)
         self.saved = True
         self.loggedin = True
-        self.setData("_userPrivateKey", self._privKey)
-        self.setData("_userPublicKey", self.pubKey)
-        self.setData("_backupKeys", pickle.dumps([]))
-        self.setData("_backupAESKeys", pickle.dumps([]))
-        self.setData("_accountKeysCreation", str(datetime.datetime.now().year))
+        self.setData(bases.PRIVATE_KEY, self._privKey)
+        self.setData(bases.PUBLIC_KEY, self.pubKey)
+        self.setData(bases.BACKUP_ECC_KEY, pickle.dumps([]))
+        self.setData(bases.BACKUP_AES_KEY, pickle.dumps([]))
+        self.setData(bases.KEY_CREATION_YEAR, str(datetime.datetime.now().year))
         self.c.flush()
         self.c.commit()
         return self.login(pwd=pwd)

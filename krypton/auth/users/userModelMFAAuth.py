@@ -28,7 +28,9 @@ class MFAUser(user):
         )
         for PKey in PKeys:
             salt = os.urandom(configs._saltLen)
-            key = base.passwordHash(PKey, salt, configs.defaultPasswordResetArgonOps, 32)
+            key = base.passwordHash(
+                PKey, salt, configs.defaultPasswordResetArgonOps, 32
+            )
             skey = base.seal(self._key, key)
             base.zeromem(key)
             row = DBschemas.PWDReset(
