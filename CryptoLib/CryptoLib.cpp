@@ -13,7 +13,7 @@ bool init()
 	if (initHappened)
 		return true;
 	if (sodium_init() < 0)
-        throw std::runtime_error("Failed to init libsodium");
+        throw std::runtime_error("Failed to init LibSodium");
 	initHappened = true;
 	return true;
 }
