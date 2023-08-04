@@ -146,7 +146,7 @@ jobs:
 
   buildMac:
     env:
-      CIBW_ARCHS: native
+      CIBW_ARCHS: x86_64
       CIBW_ENVIRONMENT: LD_LIBRARY_PATH=${{ github.workspace }}/kr-openssl-install/lib
     runs-on: macos-latest
     steps:
