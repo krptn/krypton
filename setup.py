@@ -1,11 +1,8 @@
 import sys
-import pathlib
 import os
 from glob import glob
 from setuptools import setup, find_packages
 from pybind11.setup_helpers import Pybind11Extension, build_ext
-
-folder = pathlib.Path(__file__).parent.as_posix()
 
 macros = []
 link_libararies = ["sodium"]
