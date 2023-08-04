@@ -30,6 +30,7 @@ Adrr = id
 
 TOTP_SECRET_LEN = configs._totpSecretLen
 TOTP_CODE_LEN = 6
+WRONG_TOTP_DELAY = 5
 
 __CryptoLib.init()
 
@@ -201,7 +202,7 @@ def verifyTOTP(secret: bytes, code: str) -> bool:
         == 0
     ):
         return True
-    sleepOutOfGIL(5)
+    sleepOutOfGIL(WRONG_TOTP_DELAY)
     return False
 
 
