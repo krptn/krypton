@@ -1,7 +1,7 @@
 """
 Basic security related classes.
 """
-from .base import seal, unSeal, zeromem, PBKDF2
+from .base import seal, unSeal, zeromem, passwordHash
 from datetime import datetime
 import os
 from typing import ByteString
@@ -52,7 +52,7 @@ class KMS:
         Returns:
             Cipher text
         """
-        key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
+        key = passwordHash(pwd, salt, iterations) if iterations > 0 else pwd
         r = seal(text, key)
         zeromem(key)
         return r
@@ -74,7 +74,7 @@ class KMS:
         Returns:
             Plaintext
         """
-        key = PBKDF2(pwd, salt, iterations) if iterations > 0 else pwd
+        key = passwordHash(pwd, salt, iterations) if iterations > 0 else pwd
         r = unSeal(ctext, key)
         zeromem(key)
         return r
@@ -158,7 +158,7 @@ class KMS:
         s = os.urandom(configs._saltLen)
         rebased = base.base64encode(k)
         editedRebased = rebased + f"${name}${year}"
-        ek = self._encipher(editedRebased, pwd, s, configs.defaultIterations)
+        ek = self._encipher(editedRebased, pwd, s, configs.defaultArgonOps)
         zeromem(rebased)
         zeromem(editedRebased)
         key = DBschemas.KeysTable(
@@ -166,7 +166,7 @@ class KMS:
             key=ek,
             salt=s,
             cipher=configs.defaultAlgorithm,
-            saltIter=configs.defaultIterations,
+            saltIter=configs.defaultArgonOps,
             year=year,
         )
         self.c.add(key)
@@ -233,7 +233,7 @@ class Crypto(KMS):
             ctext=self._encipher(data, key, salt, 0),
             salt=salt,
             cipher=configs.defaultAlgorithm,
-            saltIter=configs.defaultIterations,
+            saltIter=configs.defaultArgonOps,
         )
         self.c.add(keyOb)
         zeromem(key)

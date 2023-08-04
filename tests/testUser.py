@@ -44,7 +44,7 @@ class UserAuth(unittest.TestCase):
         test = user2.encryptWithUserKey("data", [self.userName])
         user2.generateNewKeys("pwd")
         self.model.generateNewKeys("TEST")
-        result = self.model.decryptWithUserKey(test[0][1], test[0][2], user2Name)
+        result = self.model.decryptWithUserKey(test[0][1], user2Name)
         user2.delete()
         self.assertEqual(result, b"data")
 
@@ -58,7 +58,7 @@ class UserAuth(unittest.TestCase):
         user2Name = "user3"+str(uuid.uuid4())
         user2.saveNewUser(user2Name, "pwd")
         test = user2.encryptWithUserKey("data", [self.userName])
-        result = self.model.decryptWithUserKey(test[0][1], test[0][2], user2Name)
+        result = self.model.decryptWithUserKey(test[0][1], user2Name)
         user2.delete()
         self.assertEqual(result, b"data")
 

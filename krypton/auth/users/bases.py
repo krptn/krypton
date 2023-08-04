@@ -9,6 +9,11 @@ from datetime import datetime
 
 from sqlalchemy.orm import Session
 
+PRIVATE_KEY = "_userPrivateKey"
+PUBLIC_KEY = "_userPublicKey"
+BACKUP_ECC_KEY = "_backupKeys"
+BACKUP_AES_KEY = "_backupAESKeys"
+KEY_CREATION_YEAR = "_accountKeysCreation"
 
 class UserError(Exception):
     """

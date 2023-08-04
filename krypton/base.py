@@ -5,12 +5,13 @@ Loads __CryptoLib and contains wrappers.
 # disbaled pylint because __CryptoLib is not built in CI/CD tests
 
 import ctypes
+import hmac
 import sys
 import base64
 import os
+import datetime
+import hashlib
 from typing import ByteString
-from sqlalchemy import select
-from sqlalchemy.orm import scoped_session, Session
 
 try:
     import __CryptoLib
@@ -23,12 +24,15 @@ except ImportError as err:
             "Please download it from https://learn.microsoft.com/en-US/cpp/windows/latest-supported-vc-redist."
         ) from err
     raise err
-from . import configs, DBschemas, OPENSSL_CONFIG_FILE, OPENSSL_MODULES
+from . import configs
 
 Adrr = id
 
-#: Load FIPS Validated resolver
-__CryptoLib.fipsInit(OPENSSL_CONFIG_FILE, OPENSSL_MODULES)
+TOTP_SECRET_LEN = configs._totpSecretLen
+TOTP_CODE_LEN = 6
+WRONG_TOTP_DELAY = 5
+
+__CryptoLib.init()
 
 
 #: Wrappers for __CryptoLib
@@ -44,7 +48,7 @@ def seal(data: ByteString, key: bytes) -> bytes:
     Returns:
         Cipher text
     """
-    return __CryptoLib.AESEncrypt(data, key, len(data))
+    return __CryptoLib.encrypt(data, key)
 
 
 def unSeal(data: bytes, key: bytes) -> bytes:
@@ -58,7 +62,7 @@ def unSeal(data: bytes, key: bytes) -> bytes:
     Returns:
         Plain text
     """
-    return __CryptoLib.AESDecrypt(data, key)
+    return __CryptoLib.decrypt(data, key)
 
 
 def base64encode(data: ByteString) -> str:
@@ -70,7 +74,7 @@ def base64encode(data: ByteString) -> str:
     Returns:
         Base64 encoded string
     """
-    return __CryptoLib.base64encode(data, len(data))
+    return __CryptoLib.base64encode(data)
 
 
 def base64decode(data: ByteString) -> ByteString:
@@ -82,7 +86,7 @@ def base64decode(data: ByteString) -> ByteString:
     Returns:
         Base64 decoded bytes
     """
-    return __CryptoLib.base64decode(data, len(data))
+    return __CryptoLib.base64decode(data)
 
 
 def createECCKey() -> tuple[str, str]:
@@ -96,84 +100,56 @@ def createECCKey() -> tuple[str, str]:
     return __CryptoLib.createECCKey()
 
 
-def ECDH(privKey: str, peerPubKey: str, salt: bytes, keylen: int = 32) -> bytes:
-    """Elliptic Curve Diffie-Helman
+def encryptEcc(privKey: bytes, pubKey: bytes, data: ByteString) -> bytes:
+    """Encrypt data using public/private keys
 
-    Arguments:
-        privKey -- P.E.M. Encoded private key
-
-        peerPubKey -- P.E.M. Encoded public key
-
-        salt -- Salt used for Key Derivation Function
-
-    Keyword Arguments:
-        keylen -- Len of the key (default: {32})
+    Args:
+        privKey (bytes): Private Key
+        pubKey (bytes): Public Key
+        data (ByteString): Data to encrypt
 
     Returns:
-        Key as python bytes
+        bytes: the encrypted data
     """
-    return __CryptoLib.ECDH(privKey, peerPubKey, salt, keylen)
+    return __CryptoLib.encryptEcc(privKey, pubKey, data)
 
 
-def getSharedKey(
-    privKey: str, peerID: int, salt: bytes, keylen: int = 32
-) -> list[bytes]:
-    """Get users' shared key
+def decryptEcc(privKey: bytes, pubKey: bytes, data: ByteString) -> bytes:
+    """Decrypt data using public/private keys
 
-    Get a shared key for two users using ECDH.
-
-    Arguments:
-        privKey -- User's private EC Key (in P.E.M. format)
-
-        peerID -- Other User's ID
-
-        salt -- Salt used for KDF
-
-    Keyword Arguments:
-        keylen -- Len of key to return (default: {32})
+    Args:
+        privKey (bytes): Private Key
+        pubKey (bytes): Public Key
+        data (ByteString): Data to decrypt
 
     Returns:
-        List of keys as python bytes
+        bytes: the decrypted data
     """
-    assert isinstance(privKey, str)
-    assert isinstance(peerID, int)
-    # pylint: disable=no-member
-    session: Session = scoped_session(configs.SQLDefaultUserDBpath)
-    pubKeys: list[DBschemas.PubKeyTable] = session.scalars(
-        select(DBschemas.PubKeyTable)
-        # In future, krVersion can be used to detect compatability issues
-        .where(DBschemas.PubKeyTable.Uid == peerID).order_by(
-            DBschemas.PubKeyTable.id.desc()
-        )
-    ).all()
-    results = [
-        __CryptoLib.ECDH(privKey, pubKey.key, salt, keylen) for pubKey in pubKeys
-    ]
-    session.close()
-    return results
+    return __CryptoLib.decryptEcc(privKey, pubKey, data)
 
 
-def PBKDF2(
+def passwordHash(
     text: ByteString,
     salt: ByteString,
-    iterations: int = configs.defaultIterations,
-    keylen: int = 32,
+    opsLimit: int = configs.defaultArgonOps,
+    keylen: int = configs._aesKeyLen,
 ) -> bytes:
-    """PBKDF2 with SHA512
+    """Argon2id
 
     Arguments:
         text -- Plain text
         salt -- Salt
 
     Keyword Arguments:
-        iterations -- Iteration count (default: {configs.defaultIterations})
-
         keylen -- Len of key to return (default: {32})
+        opsLimit -- Ops Limit for Argon2id
 
     Returns:
         The key as python bytes
     """
-    return __CryptoLib.PBKDF2(text, len(text), salt, iterations, len(salt), keylen)
+    return __CryptoLib.passwordHash(
+        text, salt, opsLimit, configs._memLimitArgon, keylen
+    )
 
 
 def zeromem(obj: ByteString) -> int:
@@ -204,9 +180,30 @@ def verifyTOTP(secret: bytes, code: str) -> bool:
         code -- The code to verify
 
     Returns:
-        True is success false otherwise
+        True is success False otherwise
     """
-    return __CryptoLib.totpVerify(secret, code)
+    if len(secret) != TOTP_SECRET_LEN or len(code) != TOTP_CODE_LEN:
+        raise ValueError("Incorrect secret or code len in verifyTOTP")
+    counter = datetime.datetime.now().timestamp() / 30
+    byteCounter = int(counter).to_bytes(8, "big")
+    md = hmac.digest(secret, byteCounter, hashlib.sha1)
+    offset = md[19] & 0x0F
+    bin_code = (
+        (md[offset] & 0x7F) << 24
+        | (md[offset + 1] & 0xFF) << 16
+        | (md[offset + 2] & 0xFF) << 8
+        | (md[offset + 3] & 0xFF)
+    )
+    bin_code = bin_code % 1000000
+    if (
+        __CryptoLib.compHash(
+            format(bin_code, f"0{TOTP_CODE_LEN}d"), code, TOTP_CODE_LEN
+        )
+        == 0
+    ):
+        return True
+    sleepOutOfGIL(WRONG_TOTP_DELAY)
+    return False
 
 
 def createTOTPString(secret: bytes, user: str) -> str:
@@ -222,7 +219,7 @@ def createTOTPString(secret: bytes, user: str) -> str:
     s = base64.b32encode(secret)
     secret = s.decode()  # This is not base64 decoding. It is bytes -> string decoding.
     stripped = secret.strip("=")
-    string = f"otpauth://totp/{configs.APP_NAME}:{user}?secret={stripped}&issuer=KryptonAuth&algorithm=SHA1&digits=6&period=30"
+    string = f"otpauth://totp/{configs.APP_NAME}:{user}?secret={stripped}&issuer=KryptonAuth&algorithm=SHA1&digits={TOTP_CODE_LEN}&period=30"
     zeromem(s)
     zeromem(secret)
     zeromem(stripped)

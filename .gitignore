@@ -11,9 +11,10 @@ __pycache__/
 *.lib
 *.a
 .lprof/
+vcpkg_installed/
+*.whl
 
 scrap_work/
-
 .DS_Store
 
 #VS

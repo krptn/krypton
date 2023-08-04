@@ -1,44 +1,36 @@
 #include "CryptoLib.h"
 
-#include <openssl/evp.h>
+#include "sodium.h"
 #include <pybind11/pybind11.h>
 
 using namespace std;
 namespace py = pybind11;
 
-py::str encode64(char *data, int length)
+py::str encode64(std::string data)
 {
-	int pl = (length + 3 - length % 3) * 4 / 3;
-	char *output = new char[pl + 1];
-	pl = EVP_EncodeBlock(reinterpret_cast<unsigned char *>(output), (const unsigned char *)data, length);
-	OPENSSL_cleanse(data, length);
-	py::str result = py::str((const char *)output, pl);
-	OPENSSL_cleanse(output, pl + 1);
-	delete[] output;
-	return result;
+	size_t len = sodium_base64_encoded_len(data.length(), sodium_base64_VARIANT_ORIGINAL);
+	auto output = unique_ptr<char[]>(new char[len]);
+	sodium_bin2base64(output.get(), len,
+                        (const unsigned char*)data.c_str(), data.length(),
+                        sodium_base64_VARIANT_ORIGINAL);
+	py::str finalResult = py::str(output.get());
+	sodium_memzero((void*)data.c_str(), data.length());
+	sodium_memzero((void*)output.get(), len);
+	return finalResult;
 }
 
-py::bytes decode64(char *input, int length)
+py::bytes decode64(std::string input)
 {
-	const auto pl = (length / 4) * 3;
-	int outLen;
-	unsigned char *output = new unsigned char[pl + 1];
-	EVP_ENCODE_CTX *ctx = EVP_ENCODE_CTX_new();
-	EVP_DecodeInit(ctx);
-	if (EVP_DecodeUpdate(ctx, output, &outLen, (unsigned char *)input, length) == -1)
-	{
-		handleErrors();
-	}
-	int outputLen = outLen;
-	if (EVP_DecodeFinal(ctx, output, &outLen) == -1)
-	{
-		handleErrors();
-	}
-	outputLen = outputLen + outLen;
-	EVP_ENCODE_CTX_free(ctx);
-	py::bytes result = py::bytes((const char *)output, outputLen);
-	OPENSSL_cleanse(output, pl + 1);
-	OPENSSL_cleanse(input, length);
-	delete[] output;
-	return result;
+	size_t len = input.length()/4 * 3;
+	auto output = unique_ptr<unsigned char[]>(new unsigned char[len]);
+	size_t trueLen = 0;
+	const int status = sodium_base642bin(output.get(), len,
+                      input.c_str(), input.length(),
+                      NULL, &trueLen,
+                      NULL, sodium_base64_VARIANT_ORIGINAL);
+	py::bytes pythonBytes = py::bytes((char*)output.get(), trueLen);
+	sodium_memzero((void*)input.c_str(), input.length());
+	sodium_memzero((void*)output.get(), len);
+	if (status != 0) throw std::invalid_argument("Unable to base64 decode data.");
+	return pythonBytes;
 }
