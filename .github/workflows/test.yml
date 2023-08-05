@@ -36,15 +36,24 @@ jobs:
               python3 -m pip install cibuildwheel
               python3 -m cibuildwheel --output-dir dist
             env:
-              CIBW_ENVIRONMENT: VCPKG_USE_SYSTEM_BINARIES=1
+              CIBW_ENVIRONMENT: VCPKG_FORCE_SYSTEM_BINARIES=1
               CIBW_BEFORE_ALL: |
                 yum install -y curl zip unzip tar make gcc gcc-c++ cmake
-                mkdir out
-                cmake -S ./vcpkg/toolsrc -B ./vcpkg/out
-                cd out
-                make
-                cd ..
-                cp out/vcpkg vcpkg/vcpkg
+                curl -o setupCmake.sh -sSSL https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-aarch64.sh
+                chmod a+rx setupCmake.sh --exclude-subdir
+                ./setupCmake.sh --skip-license
+                export PATH="{package}/bin:$PATH"
+                git clone git://github.com/ninja-build/ninja.git && cd ninja
+                git checkout release
+                cmake -Bbuild-cmake
+                cmake --build build-cmake
+                cp -r build-cmake/* bin/
+                cd vcpkg/buildtrees/_vcpkg/build
+                cmake "../src/$(ls ../src)" -DCMAKE_BUILD_TYPE=Release -G 'Unix Makefiles' -DVCPKG_DEVELOPMENT_WARNINGS=OFF
+                cmake --build . -j 3 --target vcpkg
+                cd {package}
+                cp vcpkg/buildtrees/_vcpkg/build/vcpkg vcpkg/vcpkg
+                yum remove -y cmake
                 ./vcpkg/vcpkg install --triplet arm64-linux
           - name: Upload Build Result
             uses: actions/upload-artifact@v3
