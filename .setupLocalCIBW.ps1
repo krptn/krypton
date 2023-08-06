@@ -7,3 +7,7 @@ chmod a+x vcpkg/bootstrap-vcpkg.sh
 $Env:CIBW_PLATFORM="linux"
 $Env:CIBW_TEST_SKIP="pp*"
 $Env:CIBW_BUILD_VERBOSITY=3
+$Env:CIBW_TEST_COMMAND=@"
+python -m krypton --clean
+python -m unittest discover -s {project}/tests -p "*test*.py" --verbose
+"@

@@ -11,7 +11,7 @@
 using namespace std;
 namespace py = pybind11;
 
-py::bytes encrypt(std::string text, std::string key)
+py::bytes encryptWithSecret(std::string text, std::string key)
 {
 	if (key.length() != crypto_aead_xchacha20poly1305_ietf_KEYBYTES)
 		throw std::invalid_argument("Key is of wrong size");
@@ -29,7 +29,7 @@ py::bytes encrypt(std::string text, std::string key)
 	return py::bytes((char *)output.get(), ciphertext_len + crypto_aead_xchacha20poly1305_ietf_NPUBBYTES);
 }
 
-py::bytes decrypt(std::string ctext, std::string key)
+py::bytes decryptWithSecret(std::string ctext, std::string key)
 {
 	if (key.length() != crypto_aead_xchacha20poly1305_ietf_KEYBYTES)
 		throw std::invalid_argument("Key is of wrong size");

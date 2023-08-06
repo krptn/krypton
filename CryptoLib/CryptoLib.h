@@ -13,8 +13,8 @@ py::str encode64(std::string data);
 py::bytes decode64(std::string input);
 
 // Symmetric
-py::bytes encrypt(std::string text, std::string key);
-py::bytes decrypt(std::string ctext, std::string key);
+py::bytes encryptWithSecret(std::string text, std::string key);
+py::bytes decryptWithSecret(std::string ctext, std::string key);
 
 // Hashes
 int compHash(char *a, char *b, const size_t size);
