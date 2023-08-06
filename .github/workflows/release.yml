@@ -33,7 +33,13 @@ jobs:
           python3 -m cibuildwheel --output-dir dist
         env:
           CIBW_BEFORE_ALL: |
-            yum install -y curl zip unzip tar
+            if type apk &> /dev/null; then
+              apk add build-base cmake ninja zip unzip curl git
+              export VCPKG_FORCE_SYSTEM_BINARIES=1
+            fi
+            if type yum &> /dev/null; then
+              yum install -y curl zip unzip tar
+            fi
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet x64-linux
       - name: Upload Build Result
@@ -70,17 +76,22 @@ jobs:
         env:
           CIBW_ENVIRONMENT: VCPKG_FORCE_SYSTEM_BINARIES=1
           CIBW_BEFORE_ALL: |
-            yum install -y curl zip unzip tar
-            curl -o setupCmake.sh -sSSL https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-aarch64.sh
-            chmod a+rx setupCmake.sh
-            ./setupCmake.sh --skip-license --exclude-subdir
-            export PATH="{package}/bin:$PATH"
-            git clone https://github.com/ninja-build/ninja.git && cd ninja
-            git checkout release
-            cmake -Bbuild-cmake
-            cmake --build build-cmake
-            cd ..
-            cp -r ninja/build-cmake/* bin/
+            if type apk &> /dev/null; then
+              apk add build-base cmake ninja zip unzip curl git
+            fi
+            if type yum &> /dev/null; then
+              yum install -y curl zip unzip tar
+              curl -o setupCmake.sh -sSSL https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-aarch64.sh
+              chmod a+rx setupCmake.sh
+              ./setupCmake.sh --skip-license --exclude-subdir
+              export PATH="{package}/bin:$PATH"
+              git clone https://github.com/ninja-build/ninja.git && cd ninja
+              git checkout release
+              cmake -Bbuild-cmake
+              cmake --build build-cmake
+              cd ..
+              cp -r ninja/build-cmake/* bin/
+            fi
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-linux
       - name: Upload Build Result
