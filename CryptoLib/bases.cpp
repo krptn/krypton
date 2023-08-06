@@ -1,7 +1,12 @@
 #include "CryptoLib.h"
 
-#include "sodium.h"
+#include <sodium.h>
 #include <pybind11/pybind11.h>
+
+#include <memory>
+#include <string>
+#include <stdexcept>
+#include <cstddef>
 
 using namespace std;
 namespace py = pybind11;

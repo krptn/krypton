@@ -3,6 +3,11 @@
 #include <pybind11/pybind11.h>
 #include <sodium.h>
 
+#include <string>
+#include <memory>
+#include <stdexcept>
+#include <cstddef>
+
 using namespace std;
 namespace py = pybind11;
 

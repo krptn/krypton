@@ -1,0 +1,41 @@
+name: TestReleaseCode
+on:
+  workflow_dispatch:
+
+env:
+  CIBW_TEST_COMMAND: |
+    python -m krypton --clean
+    python -m unittest discover -s {project}/tests -p "*test*.py" --verbose
+
+jobs:
+  buildLinuxIntel:
+    env:
+      CIBW_ARCHS: x86_64
+      CIBW_TEST_SKIP: pp* # We do not test PyPy because we don't want to compile cryptography - which is needed for tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+        with:
+          submodules: "true"
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+      - name: Build Extension
+        run: |
+          python3 -m pip install cibuildwheel
+          python3 -m cibuildwheel --output-dir dist
+        env:
+          CIBW_BEFORE_ALL: |
+            yum install -y curl zip unzip tar
+            ./vcpkg/bootstrap-vcpkg.sh
+            ./vcpkg/vcpkg install --triplet x64-linux
+      - name: Upload Build Result
+        uses: actions/upload-artifact@v3
+        with:
+          name: AutoBuild-Linux
+          path: ${{ github.workspace }}/dist/*.*

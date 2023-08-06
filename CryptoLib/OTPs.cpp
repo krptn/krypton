@@ -1,10 +1,14 @@
 #include "CryptoLib.h"
 
 #include <pybind11/pybind11.h>
+#include <sodium.h>
+
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <sodium.h>
+#include <memory>
+#include <stdexcept>
+#include <cstddef>
 
 using namespace std;
 
