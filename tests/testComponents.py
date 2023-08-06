@@ -4,7 +4,7 @@ from krypton import base
 from krypton.auth import factors
 
 class CryptographicUnits(unittest.TestCase):
-    def testAES(self):
+    def testSymmetric(self):
         k = os.urandom(32)
         r = base.seal("Hello", k)
         fr = base.unSeal(r, k)
