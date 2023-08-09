@@ -1,7 +1,7 @@
 ﻿"""
 https://www.krptn.dev/
 
-A user authentication and access management system (IAM) with [Zero Knowledge security](/news/zero-knowledge/).
+A user authentication and access management system (IAM) with [Encryption at rest derived from credentials](https://www.krptn.dev/news/zero-knowledge/).
 
 How we achieve this?
 
