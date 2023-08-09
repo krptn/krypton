@@ -10,6 +10,7 @@ from .. import factors
 from ... import DBschemas, configs, base
 from .bases import userExistRequired, user, UserError
 
+FIDO_TEMP_CHALLANGE = "_tempFIDORegisterChallenge"
 
 class MFAUser(user):
     """MFA for Krypton Users"""
@@ -131,7 +132,7 @@ class MFAUser(user):
     def beginFIDOSetup(self):
         """Being FIDO Registration"""
         options, challenge = factors.fido.register(self.id, self.userName)
-        self.setData("_tempFIDORegisterChallenge", challenge)
+        self.setData(FIDO_TEMP_CHALLANGE, challenge)
         return options
 
     @userExistRequired
@@ -141,8 +142,8 @@ class MFAUser(user):
         Arguments:
             repsonse -- The response from the client
         """
-        challenge = self.getData("_tempFIDORegisterChallenge")
-        self.deleteData("_tempFIDORegisterChallenge")
+        challenge = self.getData(FIDO_TEMP_CHALLANGE)
+        self.deleteData(FIDO_TEMP_CHALLANGE)
         credID, credKey = factors.fido.register_verification(response, challenge)
         self.c.execute(
             update(DBschemas.UserTable)
