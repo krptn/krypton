@@ -251,11 +251,6 @@ jobs:
         with:
           name: AutoBuild-MacOS-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
-      - name: Download Built Sdist Extension
-        uses: actions/download-artifact@v3
-        with:
-          name: AutoBuild-Source-${{ github.event.release.tag_name }}
-          path: ${{ github.workspace }}/dist
       - name: Download Built Windows Extensions
         uses: actions/download-artifact@v3
         with:
