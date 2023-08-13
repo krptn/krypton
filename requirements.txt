@@ -1,3 +1,4 @@
+cibuildwheel
 asgiref==3.7.2
 asn1crypto==1.5.1
 astroid==2.15.6
