@@ -41,7 +41,7 @@ from krypton.auth.users import userModel
 
 model = userModel.standardUser(None)
 model.saveNewUser("Test_UserName", "Test_Password")
-model.setData("email", "test@example.com") # The email will be encrypted, and securely stored
+model.data.email = "test@example.com" # The email will be encrypted, and securely stored
 ```
 
 ![Krptn Visualisation](https://www.krptn.dev/krptnDiagram.webp)
