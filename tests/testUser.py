@@ -103,8 +103,10 @@ class UserAuth(unittest.TestCase):
         VALUE = b"TEST_VALUE"
         self.model.data.test = VALUE
         result = self.model.data.test
+        result2 = self.model.getData("test")
         del self.model.data.test
         self.assertEqual(result, VALUE)
+        self.assertEqual(result2, VALUE)
 
     def testSessions(self):
         self.model.logout()
