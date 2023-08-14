@@ -5,7 +5,7 @@ on:
     types: [published]
 
 env:
-  CIBW_TEST_SKIP: cp312-* # we don't want to build greenlet
+  CIBW_SKIP: cp312-* # we don't want to build greenlet
   CIBW_TEST_COMMAND: |
     python -m krypton --clean
     python -m unittest discover -s {project}/tests -p "*test*.py" --verbose
