@@ -48,9 +48,9 @@ class _userData(object):
             user (standardUser): The user object to bind to
         """
         self._user = user
-        self._getter = staticmethod(getter)
-        self._setter = staticmethod(setter)
-        self._deleter = staticmethod(deleter)
+        self._getter = getter
+        self._setter = setter
+        self._deleter = deleter
 
 
 class standardUser(AuthUser, MFAUser, user):
