@@ -99,6 +99,13 @@ class UserAuth(unittest.TestCase):
         self.model.deleteData("test")
         self.assertEqual(result, b"TEST_VALUE")
 
+    def testDBOtherWay(self):
+        VALUE = b"TEST_VALUE"
+        self.model.data.test = VALUE
+        result = self.model.data.test
+        del self.model.data.test
+        self.assertEqual(result, VALUE)
+
     def testSessions(self):
         self.model.logout()
         key = self.model.login(pwd="TEST")

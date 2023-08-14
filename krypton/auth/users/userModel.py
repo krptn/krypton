@@ -8,7 +8,7 @@ Note for developer's working on Krypton: this only contains user model cryptogra
 
 import datetime
 import pickle
-from typing import ByteString
+from typing import Any, ByteString
 from sqlalchemy import and_, delete, select, update
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.exc import PendingRollbackError
@@ -19,6 +19,38 @@ from . import bases
 from .userModelBaseAuth import AuthUser
 from .userModelMFAAuth import MFAUser
 from .bases import userExistRequired, user
+
+class _userData(object):
+    """User Data getter and setter"""
+
+    def __getattribute__(self, __name: str) -> Any:
+        if __name.startswith("_"):
+            return object.__getattribute__(self, __name)
+        return self._getter(__name)
+
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        if __name.startswith("_"):
+            return object.__setattr__(self, __name, __value)
+        return self._setter(__name, __value)
+
+    def __delattr__(self, __name: str) -> None:
+        if __name.startswith("_"):
+            return object.__delattr__(self, __name)
+        return self._deleter(__name)
+
+    def __init__(self, getter, setter, deleter, user) -> None:
+        """__init__
+
+        Args:
+            getter (function): A function which can be used to get user data
+            setter (function): A function which can be used to set user data
+            deleter (function): A function which can be used to delete user data
+            user (standardUser): The user object to bind to
+        """
+        self._user = user
+        self._getter = staticmethod(getter)
+        self._setter = staticmethod(setter)
+        self._deleter = staticmethod(deleter)
 
 
 class standardUser(AuthUser, MFAUser, user):
@@ -35,9 +67,11 @@ class standardUser(AuthUser, MFAUser, user):
     loggedin: bool
     backupKeys: list[str]
     backupAESKeys: list[bytes]
+    data: _userData
 
     def __init__(self, userName: str = None, userID: int = None) -> None:
         super().__init__()
+        self.data = _userData(self.getData, self.setData, self.deleteData, self)
         self.backupAESKeys = []
         self.backupKeys = []
 
