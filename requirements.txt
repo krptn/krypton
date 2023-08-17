@@ -5,7 +5,7 @@ astroid==2.15.6
 build==0.10.0
 cbor2==5.4.6
 cffi==1.15.1
-click==8.1.6
+click==8.1.7
 colorama==0.4.6
 cryptography==41.0.3
 dill==0.3.7
