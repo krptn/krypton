@@ -13,7 +13,7 @@ SQLDefaultCryptoDBpath: Session = configs.SQLDefaultCryptoDBpath
 SQLDefaultKeyDBpath: Session = configs.SQLDefaultKeyDBpath
 
 
-class KeyManagementError(Exception):
+class KeyManagementError(RuntimeError):
     """Error in Key Management System
 
     For example, compliance issues
@@ -116,8 +116,6 @@ class KMS:
             raise KeyManagementError(
                 "This key has expired. Please add force to the argument to retrieve it anyway."
             )
-        if key.cipher != configs.defaultAlgorithm:
-            raise ValueError("Unsupported Cipher")
         r = self._decipher(key.key, pwd, key.salt, key.saltIter)
         splited = r.split(b"$")
         if splited[1] != name.encode() or splited[2] != str(key.year).encode():
@@ -165,7 +163,6 @@ class KMS:
             name=name,
             key=ek,
             salt=s,
-            cipher=configs.defaultAlgorithm,
             saltIter=configs.defaultArgonOps,
             year=year,
         )
@@ -232,7 +229,6 @@ class Crypto(KMS):
             id=_num,
             ctext=self._encipher(data, key, salt, 0),
             salt=salt,
-            cipher=configs.defaultAlgorithm,
             saltIter=configs.defaultArgonOps,
         )
         self.c.add(keyOb)

@@ -38,14 +38,12 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         - id: int
         - ctext: bytes
         - salt: bytes
-        - cipher: str
         - saltIter: int"""
 
         __tablename__ = "crypto"
         id = Column(Integer, primary_key=True)
         ctext = Column(LargeBinary)
         salt = Column(LargeBinary)
-        cipher = Column(Text)
         saltIter = Column(Integer)
 
     class KeysTable(Base):  # pylint: disable=too-few-public-methods
@@ -54,7 +52,6 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         name: str
         key: bytes
         salt: bytes
-        cipher: str
         saltIter: int
         year: int"""
 
@@ -63,7 +60,6 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         name = Column(Text(450), index=True)
         key = Column(LargeBinary)
         salt = Column(LargeBinary)
-        cipher = Column(Text)
         saltIter = Column(Integer)
         year = Column(Integer)
 
@@ -176,7 +172,6 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 class ConfigTemp:
     """Configuration templates"""
 
-    defaultAlgorithm = "AES256GCM"
     APP_NAME = "KryptonApp"
     HOST_NAME = ""
     ORIGIN = ""
@@ -225,7 +220,6 @@ class ConfigTemp:
                 id=1,
                 ctext=b"Position Reserved",
                 salt=b"Position Reserved",
-                cipher="None",
                 saltIter=0,
             )
             c.add(stmt)
