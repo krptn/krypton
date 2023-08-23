@@ -15,7 +15,7 @@ pip install krptn
 
 **We all love Django and other web frameworks!** However, their primary focus is creating websites - not implementing secure storage for user data. Django makes it easy to store data. While it hashes the password, it does not encrypt user data for you. In case of a data breach, malicious actors could access any data from the DB. Encryption is left to the developer...
 
-**Wouldn't it be nice if encryption would also be handled?** Perhaps it could be handled in a **[way that keys are derived from credentials](https://www.krptn.dev/news/zero-knowledge/)**, such that, without the user entering credentials, not even the database administrator can read it?! This is exactly what we do!
+**Wouldn't it be nice if encryption would also be handled?** Perhaps it could be handled in a **[way that keys are derived from credentials](https://www.krptn.dev/news/security-model/)**, such that, without the user entering credentials, not even the database administrator can read it?! This is exactly what we do!
 
 **We also handle user authentication, including MFA, and passwordless authentication.**
 
@@ -25,14 +25,14 @@ pip install krptn
 
 ## What do we do exactly?
 
-We are building a user authentication and access management system (IAM) with **[data encryption at rest derived from credentials](https://www.krptn.dev/news/zero-knowledge/)**. It is available as a python extension module. However we have certain [limitations](https://www.krptn.dev/news/limitations/).
+We are building a user authentication and access management system (IAM) with **[data encryption at rest derived from credentials](https://www.krptn.dev/news/security-model/)**. It is available as a python extension module. However we have certain [limitations](https://www.krptn.dev/news/limitations/).
 
 How we achieve this?
 
 - All data is encrypted (any data can be requested by the developer to be secured)
 - Only the appropriate users' credentials can unlock the cryptosystem (this protects you from server-side attacks)
 
-This gives you *[security from encryption](https://www.krptn.dev/news/zero-knowledge/)* without ever needing to even notice it! It protects you from server side attacks.
+This gives you *[security from encryption](https://www.krptn.dev/news/security-model/)* without ever needing to even notice it! It protects you from server side attacks.
 
 Here is an example usage:
 
