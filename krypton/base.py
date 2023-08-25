@@ -227,7 +227,7 @@ def createTOTPString(secret: bytes, user: str) -> str:
 
 
 def genOTP() -> str:
-    """Generate an 12-digit OTP/PIN.
+    """Generate an 20-digit OTP/PIN.
 
     Returns:
         The OTP/PIN as python string

@@ -14,7 +14,7 @@ using namespace std;
 
 namespace py = pybind11;
 
-#define OTP_BUFFER_RAND_LEN 12
+#define OTP_BUFFER_RAND_LEN 20
 
 py::str genOTP()
 {
