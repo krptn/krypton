@@ -10,6 +10,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+concurrency:
+  group: ci-tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   static: # Static code analysis
     runs-on: ubuntu-latest

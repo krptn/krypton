@@ -7,6 +7,10 @@ env:
     python -m krypton --clean
     python -m unittest discover -s {project}/tests -p "*test*.py" --verbose
 
+concurrency:
+  group: ci-tests-release-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   buildLinuxIntel:
     env:
