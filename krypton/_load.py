@@ -73,7 +73,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "pubKeys"
         id = Column(Integer, primary_key=True)
-        Uid = Column(Integer, index=True, unique=True)
+        Uid = Column(Integer, index=True)
         krVersion = Column(Text, default=__version__)
         key = Column(LargeBinary)
 
@@ -121,7 +121,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         __tablename__ = "userData"
         id = Column(Integer, primary_key=True)
         Uid = Column(Integer, index=True)
-        name = Column(Text(MAX_USER_NAME_LEN), index=True, unique=True)
+        name = Column(Text(MAX_USER_NAME_LEN), index=True)
         value = Column(LargeBinary)
 
     class UserShareTable(Base):  # pylint: disable=too-few-public-methods
@@ -135,7 +135,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         __tablename__ = "userShareData"
         id = Column(Integer, primary_key=True)
         sender = Column(Integer, index=True)
-        name = Column(Text(MAX_USER_NAME_LEN), index=True, unique=True)
+        name = Column(Text(MAX_USER_NAME_LEN), index=True)
         value = Column(LargeBinary)
         shareUid = Column(Integer, index=True)
 

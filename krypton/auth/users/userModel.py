@@ -312,6 +312,10 @@ class standardUser(AuthUser, MFAUser, user):
             otherUsers -- List of usernames who should read it
         """
         assert isinstance(name, str)
+        try:
+            self.shareDelete(name)
+        except:
+            pass
         keys = self.encryptWithUserKey(data, otherUsers)
         ids = [
             self.c.scalar(
