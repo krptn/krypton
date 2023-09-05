@@ -20,6 +20,7 @@ from .userModelBaseAuth import AuthUser
 from .userModelMFAAuth import MFAUser
 from .bases import userExistRequired, user
 
+
 class _userData(object):
     """User Data getter and setter"""
 
@@ -442,3 +443,49 @@ class standardUser(AuthUser, MFAUser, user):
             except PendingRollbackError:
                 self.c.rollback()
             self.c.close()
+
+    def setUnsafe(self, name: str, data: ByteString):
+        """setUnsafe
+
+        Args:
+            name (str): Data identification
+            data (ByteString): data
+        """
+        try:
+            self.deleteUnsafe(name)
+        except:
+            pass
+        row = DBschemas.UnsafeShare(sender=self.id, name=name, value=data)
+        self.c.add(row)
+        self.c.flush()
+        self.c.commit()
+
+    def getUnsafe(self, name: str):
+        """setUnsafe
+
+        Args:
+            name (str): Data identification
+        """
+        query = select(DBschemas.UnsafeShare.value).where(
+            DBschemas.UnsafeShare.name == name
+        )
+        result = self.c.scalar(query)
+        if result is None:
+            raise ValueError("No such data saved.")
+        return result
+
+    def deleteUnsafe(self, name: str):
+        """setUnsafe
+
+        Args:
+            name (str): Data identification
+        """
+        query = delete(DBschemas.UnsafeShare).where(
+            and_(
+                DBschemas.UnsafeShare.name == name,
+                DBschemas.UnsafeShare.sender == self.id,
+            )
+        )
+        self.c.execute(query)
+        self.c.flush()
+        self.c.commit()

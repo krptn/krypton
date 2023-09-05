@@ -99,6 +99,14 @@ class UserAuth(unittest.TestCase):
         self.model.deleteData("test")
         self.assertEqual(result, b"TEST_VALUE")
 
+    def testUnsafeDB(self):
+        user2 = standardUser(None)
+        user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
+        self.model.setUnsafe("test", b"TEST_VALUE")
+        result = user2.getUnsafe("test")
+        self.model.deleteData("test")
+        self.assertEqual(result, b"TEST_VALUE")
+
     def testDBOtherWay(self):
         VALUE = b"TEST_VALUE"
         self.model.data.test = VALUE

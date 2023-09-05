@@ -23,6 +23,8 @@ __version__ = importlib.metadata.version("krptn")
 
 USER_DIR = pathlib.Path.home()
 
+MAX_USER_NAME_LEN = 450
+
 KR_DATA = pathlib.Path(USER_DIR, ".krptn-data/")
 if not KR_DATA.exists():
     os.mkdir(KR_DATA.as_posix())
@@ -57,7 +59,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "keys"
         id = Column(Integer, primary_key=True)
-        name = Column(Text(450), index=True)
+        name = Column(Text(MAX_USER_NAME_LEN), index=True, unique=True)
         key = Column(LargeBinary)
         salt = Column(LargeBinary)
         saltIter = Column(Integer)
@@ -71,7 +73,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "pubKeys"
         id = Column(Integer, primary_key=True)
-        Uid = Column(Integer, index=True)
+        Uid = Column(Integer, index=True, unique=True)
         krVersion = Column(Text, default=__version__)
         key = Column(LargeBinary)
 
@@ -87,7 +89,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "users"
         id = Column(Integer, primary_key=True)
-        name = Column(Text(450), index=True)
+        name = Column(Text(MAX_USER_NAME_LEN), index=True, unique=True)
         pwdAuthToken = Column(Text)
         mfa = Column(LargeBinary, default=b"*")
         fidoPub = Column(LargeBinary, default=b"*")
@@ -119,7 +121,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         __tablename__ = "userData"
         id = Column(Integer, primary_key=True)
         Uid = Column(Integer, index=True)
-        name = Column(Text(450), index=True)
+        name = Column(Text(MAX_USER_NAME_LEN), index=True, unique=True)
         value = Column(LargeBinary)
 
     class UserShareTable(Base):  # pylint: disable=too-few-public-methods
@@ -133,9 +135,21 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         __tablename__ = "userShareData"
         id = Column(Integer, primary_key=True)
         sender = Column(Integer, index=True)
-        name = Column(Text(450), index=True)
+        name = Column(Text(MAX_USER_NAME_LEN), index=True, unique=True)
         value = Column(LargeBinary)
         shareUid = Column(Integer, index=True)
+
+    class UnsafeShare(Base):  # pylint: disable=too-few-public-methods
+        """Database Schema
+        sender: int
+        name: string
+        value: bytes"""
+
+        __tablename__ = "unsafeShare"
+        id = Column(Integer, primary_key=True)
+        sender = Column(Integer, index=True)
+        name = Column(Text(MAX_USER_NAME_LEN), index=True, unique=True)
+        value = Column(LargeBinary)
 
     class PWDReset(Base):  # pylint: disable=too-few-public-methods
         """Database Schema

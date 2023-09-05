@@ -268,3 +268,28 @@ class user(metaclass=ABCMeta):
     @abstractmethod
     def getLogs(self) -> list[list[datetime, bool]]:
         """getLogs Get the login logs for the user"""
+    
+    @abstractmethod
+    def setUnsafe(self, name: str, data: ByteString):
+        """setUnsafe
+
+        Args:
+            name (str): Data identification
+            data (ByteString): data
+        """
+
+    @abstractmethod
+    def getUnsafe(self, name: str):
+        """setUnsafe
+
+        Args:
+            name (str): Data identification
+        """
+
+    @abstractmethod
+    def deleteUnsafe(self, name: str):
+        """setUnsafe
+
+        Args:
+            name (str): Data identification
+        """
