@@ -459,6 +459,8 @@ class standardUser(AuthUser, MFAUser, user):
             self.deleteUnsafe(name)
         except:
             pass
+        if isinstance(data, str):
+            data = data.encode()
         row = DBschemas.UnsafeShare(sender=self.id, name=name, value=data)
         self.c.add(row)
         self.c.flush()
