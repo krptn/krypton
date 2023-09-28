@@ -3,7 +3,7 @@ asgiref==3.7.2
 asn1crypto==1.5.1
 astroid==2.15.8
 cbor2==5.4.6
-cffi==1.15.1
+cffi==1.16.0
 click==8.1.7
 colorama==0.4.6
 cryptography==41.0.4
