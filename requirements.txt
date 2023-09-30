@@ -24,7 +24,7 @@ pybind11==2.11.1
 pycparser==2.21
 pydantic==2.4.2
 pyenchant==3.2.2
-pylint==2.17.6
+pylint==2.17.7
 pyOpenSSL==23.2.0
 pyparsing==3.1.1
 SQLAlchemy==2.0.21
