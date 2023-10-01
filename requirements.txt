@@ -34,5 +34,5 @@ tomlkit==0.12.1
 typing_extensions==4.8.0
 tzdata==2023.3
 webauthn==1.11.0
-Werkzeug==2.3.7
+Werkzeug==3.0.0
 wrapt==1.15.0
