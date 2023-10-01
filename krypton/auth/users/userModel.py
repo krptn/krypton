@@ -71,6 +71,9 @@ class standardUser(AuthUser, MFAUser, user):
     data: _userData
 
     def __init__(self, userName: str = None, userID: int = None) -> None:
+        assert isinstance(userName, str) or userName is None
+        assert isinstance(userID, int) or userID is None
+
         super().__init__()
         self.data = _userData(self.getData, self.setData, self.deleteData, self)
         self.backupAESKeys = []
