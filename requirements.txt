@@ -1,8 +1,8 @@
 cibuildwheel
 asgiref==3.7.2
 asn1crypto==1.5.1
-astroid==3.0.0
-cbor2==5.4.6
+astroid==3.0.1
+cbor2==5.5.0
 cffi==1.16.0
 click==8.1.7
 colorama==0.4.6
