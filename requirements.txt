@@ -35,4 +35,4 @@ typing_extensions==4.8.0
 tzdata==2023.3
 webauthn==1.11.1
 Werkzeug==3.0.1
-wrapt==1.15.0
+wrapt==1.16.0
