@@ -43,7 +43,7 @@ jobs:
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet x64-linux
       - name: Upload Build Result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: AutoBuild-Linux-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -95,7 +95,7 @@ jobs:
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-linux
       - name: Upload Build Result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: AutoBuild-Linux-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -127,7 +127,7 @@ jobs:
           python -m pip install cibuildwheel
           python -m cibuildwheel --output-dir dist
       - name: Upload Build Result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: AutoBuild-Windows-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -161,7 +161,7 @@ jobs:
           python -m pip install cibuildwheel
           python -m cibuildwheel --output-dir dist
       - name: Upload Build Result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: AutoBuild-Windows-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -192,7 +192,7 @@ jobs:
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet x64-osx
       - name: Upload Build Result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: AutoBuild-MacOS-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -223,7 +223,7 @@ jobs:
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-osx
       - name: Upload Build Result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: AutoBuild-MacOS-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
