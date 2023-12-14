@@ -168,6 +168,9 @@ class AuthUser(user):
         self.c.execute(
             delete(DBschemas.PWDReset).where(DBschemas.PWDReset.Uid == self.id)
         )
+        self.c.execute(
+            delete(DBschemas.UnsafeShare).where(DBschemas.UnsafeShare.sender == self.id)
+        )
         self.c.flush()
         self.c.commit()
         base.zeromem(self._key)

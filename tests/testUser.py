@@ -101,10 +101,11 @@ class UserAuth(unittest.TestCase):
 
     def testUnsafeDB(self):
         user2 = standardUser(None)
+        testName = "test"+str(uuid.uuid4())
         user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
-        self.model.setUnsafe("test", b"TEST_VALUE")
-        result = user2.getUnsafe("test")
-        self.model.deleteData("test")
+        self.model.setUnsafe(testName, b"TEST_VALUE")
+        result = user2.getUnsafe(testName)
+        self.model.deleteData(testName)
         self.assertEqual(result, b"TEST_VALUE")
 
     def testDBOtherWay(self):

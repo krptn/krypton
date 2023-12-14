@@ -16,6 +16,7 @@ from sqlalchemy import (
     LargeBinary,
     select,
     Boolean,
+    ForeignKey
 )
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
 
@@ -31,6 +32,7 @@ if not KR_DATA.exists():
 
 Base = declarative_base()
 
+USER_TABLE_NAME = "users"
 
 class DBschemas:  # pylint: disable=too-few-public-methods
     """Database Schema"""
@@ -65,18 +67,6 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         saltIter = Column(Integer)
         year = Column(Integer)
 
-    class PubKeyTable(Base):  # pylint: disable=too-few-public-methods
-        """Database Schema
-        Uid: int
-        key: str
-        krVersion: str"""
-
-        __tablename__ = "pubKeys"
-        id = Column(Integer, primary_key=True)
-        Uid = Column(Integer, index=True)
-        krVersion = Column(Text, default=__version__)
-        key = Column(LargeBinary)
-
     class UserTable(Base):  # pylint: disable=too-few-public-methods
         """Database
         id: int
@@ -95,6 +85,18 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         fidoPub = Column(LargeBinary, default=b"*")
         fidoID = Column(LargeBinary, default=b"*")
         fidoChallenge = Column(LargeBinary, default=b"*")
+    
+    class PubKeyTable(Base):  # pylint: disable=too-few-public-methods
+        """Database Schema
+        Uid: int
+        key: str
+        krVersion: str"""
+
+        __tablename__ = "pubKeys"
+        id = Column(Integer, primary_key=True)
+        Uid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True,)
+        krVersion = Column(Text, default=__version__)
+        key = Column(LargeBinary)
 
     class SessionKeys(Base):  # pylint: disable=too-few-public-methods
         """Database Schema
@@ -106,7 +108,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "sessions"
         id = Column(Integer, primary_key=True)
-        Uid = Column(Integer, index=True)
+        Uid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True)
         key = Column(LargeBinary)
         exp = Column(DateTime, index=True)
         iss = Column(DateTime)
@@ -120,7 +122,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "userData"
         id = Column(Integer, primary_key=True)
-        Uid = Column(Integer, index=True)
+        Uid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id") ,index=True)
         name = Column(Text(MAX_USER_NAME_LEN), index=True)
         value = Column(LargeBinary)
 
@@ -134,10 +136,10 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "userShareData"
         id = Column(Integer, primary_key=True)
-        sender = Column(Integer, index=True)
+        sender = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True)
         name = Column(Text(MAX_USER_NAME_LEN), index=True)
         value = Column(LargeBinary)
-        shareUid = Column(Integer, index=True)
+        shareUid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True)
 
     class UnsafeShare(Base):  # pylint: disable=too-few-public-methods
         """Database Schema
@@ -147,7 +149,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "unsafeShare"
         id = Column(Integer, primary_key=True)
-        sender = Column(Integer, index=True)
+        sender = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True)
         name = Column(Text(MAX_USER_NAME_LEN), index=True, unique=True)
         value = Column(LargeBinary)
 
@@ -161,7 +163,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "pwdReset"
         id = Column(Integer, primary_key=True)
-        Uid = Column(Integer, index=True)
+        Uid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True)
         key = Column(LargeBinary)
         iter = Column(Integer)
         salt = Column(LargeBinary)
@@ -180,7 +182,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         time = Column(DateTime)
         exp = Column(DateTime)
         success = Column(Boolean)
-        userId = Column(Integer, index=True)
+        userId = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True)
 
 
 class ConfigTemp:
