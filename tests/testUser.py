@@ -71,26 +71,26 @@ class UserAuth(unittest.TestCase):
         user2.delete()
         self.assertEqual(value, b"TesT")
 
+    def testShareSameName(self):
+        user2 = standardUser(None)
+        user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
+        testName = "test"+str(uuid.uuid4())
+        user2.shareSet(testName, "TesT", [self.userName])
+        self.assertRaises(Exception, lambda: user2.shareSet(testName, "TesT", [self.userName]))
+        value = self.model.shareGet(testName)
+        user2.delete()
+        self.assertEqual(value, b"TesT")
+
     def testDeleteShare(self):
         user2 = standardUser(None)
         user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
         testName = "test"+str(uuid.uuid4())
         user2.shareSet(testName, "TesT", [self.userName])
         user2.shareDelete(testName)
-        try:
-            self.model.shareGet(testName)
-        except ValueError:
-            self.assertTrue(True)
-        else:
-            self.assertFalse(True)
+        self.assertRaises(ValueError, lambda: self.model.shareGet(testName))
         user2.setData(testName, "test")
         user2.deleteData(testName)
-        try:
-            user2.getData(testName)
-        except ValueError:
-            self.assertTrue(True)
-        else:
-            self.assertFalse(True)
+        self.assertRaises(ValueError, lambda: user2.getData(testName))
         user2.delete()
 
     def testDB(self):
@@ -129,19 +129,11 @@ class UserAuth(unittest.TestCase):
         key = self.model.login(pwd="TEST")
         self.model.logout()
         newMod = standardUser(userName=self.userName)
-        try:
-            newMod.restoreSession(key)
-        except UserError:
-            self.assertTrue(True)
-        else:
-            self.assertTrue(False)
+        self.assertRaises(UserError, lambda: newMod.restoreSession(key))
     
     def testLogs(self):
         self.model.logout()
-        try:
-            self.model.login("wrong_password")
-        except UserError:
-            pass
+        self.assertRaises(UserError, lambda: self.model.login("wrong_password"))
         self.model.login("TEST")
         logs = self.model.getLogs()
         self.assertTrue(logs[0][1])

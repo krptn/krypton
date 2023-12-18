@@ -121,7 +121,7 @@ class standardUser(AuthUser, MFAUser, user):
         assert isinstance(name, str)
         try:
             self.deleteData(name)
-        except:
+        except Exception:
             pass
         entry = DBschemas.UserData(
             Uid=self.id, name=name, value=base.seal(value, self._key)
@@ -315,10 +315,6 @@ class standardUser(AuthUser, MFAUser, user):
             otherUsers -- List of usernames who should read it
         """
         assert isinstance(name, str)
-        try:
-            self.shareDelete(name)
-        except:
-            pass
         keys = self.encryptWithUserKey(data, otherUsers)
         ids = [
             self.c.scalar(
@@ -460,7 +456,7 @@ class standardUser(AuthUser, MFAUser, user):
         """
         try:
             self.deleteUnsafe(name)
-        except:
+        except Exception:
             pass
         if isinstance(data, str):
             data = data.encode()

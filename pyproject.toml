@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "krptn"
-version = "0.8.3"
+version = "0.8.4"
 description = "IAM and data encryption at rest"
 readme = "README.md"
 authors = [

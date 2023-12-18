@@ -147,7 +147,7 @@ class KMS:
         a = True
         try:
             self.c.scalars(stmt).one()
-        except:
+        except Exception:
             a = False
         finally:
             if a:

@@ -35,12 +35,7 @@ class CryptoClass(unittest.TestCase):
         test = Crypto()
         a = test.secureCreate(TEST_TEXT, TEST_PWD)
         test.secureDelete(a, TEST_PWD)
-        working = False
-        try:
-            test.secureRead(a, TEST_PWD)
-        except:
-            working = True
-        self.assertTrue(working)
+        self.assertRaises(Exception, lambda: test.secureRead(a, TEST_PWD))
 
 if __name__ == "__main__":
     unittest.main()

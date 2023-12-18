@@ -9,14 +9,16 @@ import pathlib
 import importlib.metadata
 from sqlalchemy import (
     DateTime,
+    Index,
     Text,
+    UniqueConstraint,
     create_engine,
     Column,
     Integer,
     LargeBinary,
     select,
     Boolean,
-    ForeignKey
+    ForeignKey,
 )
 from sqlalchemy.orm import declarative_base, Session, sessionmaker
 
@@ -125,6 +127,8 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         Uid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id") ,index=True)
         name = Column(Text(MAX_USER_NAME_LEN), index=True)
         value = Column(LargeBinary)
+        __table_args__ = (Index('_name_Uid_index', 'Uid', 'name'),
+                          UniqueConstraint('name', 'Uid', name='uc_name_uid'))
 
     class UserShareTable(Base):  # pylint: disable=too-few-public-methods
         """Database Schema
@@ -140,6 +144,9 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         name = Column(Text(MAX_USER_NAME_LEN), index=True)
         value = Column(LargeBinary)
         shareUid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True)
+        __table_args__ = (
+            Index('_name_suid_index', 'sender', 'name', 'shareUid'),
+            UniqueConstraint('sender', 'name', 'shareUid', name='uc_sender_name_suid'))
 
     class UnsafeShare(Base):  # pylint: disable=too-few-public-methods
         """Database Schema
@@ -229,7 +236,7 @@ class ConfigTemp:
         test = None
         try:
             test = c.scalar(stmt)
-        except:
+        except Exception:
             error = True
         if test is None or error:
             stmt = DBschemas.CryptoTable(
@@ -291,7 +298,7 @@ class ConfigTemp:
         test = None
         try:
             test = c.scalar(stmt)
-        except:
+        except Exception:
             error = True
         if test is None or error:
             stmt = DBschemas.UserTable(
