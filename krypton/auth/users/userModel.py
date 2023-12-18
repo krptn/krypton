@@ -326,8 +326,12 @@ class standardUser(AuthUser, MFAUser, user):
             row = DBschemas.UserShareTable(
                 sender=self.id, name=name, value=key[1], shareUid=ids[i]
             )
-            self.c.add(row)
-            self.c.flush()
+            try:
+                self.c.add(row)
+                self.c.flush()
+            except Exception:
+                self.c.rollback()
+                raise ValueError("Unable to commit to DB - perhaps you have already shared this data with one of the recepient users?")
         self.c.commit()
 
     @userExistRequired
