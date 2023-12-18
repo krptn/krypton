@@ -152,9 +152,6 @@ class AuthUser(user):
         """Delete a user"""
         _utils.cleanUpSessions(self.c, self.id)
         self.c.execute(
-            delete(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id)
-        )
-        self.c.execute(
             delete(DBschemas.PubKeyTable).where(DBschemas.PubKeyTable.Uid == self.id)
         )
         self.c.execute(
@@ -170,6 +167,9 @@ class AuthUser(user):
         )
         self.c.execute(
             delete(DBschemas.UnsafeShare).where(DBschemas.UnsafeShare.sender == self.id)
+        )
+        self.c.execute(
+            delete(DBschemas.UserTable).where(DBschemas.UserTable.id == self.id)
         )
         self.c.flush()
         self.c.commit()

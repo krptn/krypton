@@ -329,9 +329,11 @@ class standardUser(AuthUser, MFAUser, user):
             try:
                 self.c.add(row)
                 self.c.flush()
-            except Exception:
+            except Exception as exc:
                 self.c.rollback()
-                raise ValueError("Unable to commit to DB - perhaps you have already shared this data with one of the recepient users?")
+                raise ValueError(
+                    "Unable to commit to DB - perhaps you have already shared this data with one of the recepient users?"
+                    ) from exc
         self.c.commit()
 
     @userExistRequired
