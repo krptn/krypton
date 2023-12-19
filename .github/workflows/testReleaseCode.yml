@@ -47,5 +47,5 @@ jobs:
       - name: Upload Build Result
         uses: actions/upload-artifact@v3
         with:
-          name: AutoBuild-Linux
+          name: AutoBuild-Linux-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
