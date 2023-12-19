@@ -165,7 +165,7 @@ def zeromem(obj: ByteString) -> int:
     Returns:
         Result from memset.
     """
-    assert isinstance(obj, str) or isinstance(obj, bytes)
+    assert isinstance(obj, (str, bytes))
     if "PyPy" not in sys.version:
         return ctypes.memset(id(obj) + (sys.getsizeof(obj) - len(obj)), 0, len(obj))
     return None

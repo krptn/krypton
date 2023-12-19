@@ -161,17 +161,18 @@ class user(metaclass=ABCMeta):
 
     @abstractmethod
     def decryptWithUserKey(
-        self, data: ByteString, salt: bytes = None, sender=None
+        self, data: ByteString, sender=None
     ) -> bytes:
         """Decrypt data with user's key
 
         Arguments:
             data -- Ciphertext
 
-            salt -- Salt
-
         Keyword Arguments:
             sender -- If applicable sender's user name (default: {None})
+
+        Raises:
+            ValueError: if decryption fails
 
         Returns:
             Plaintext
@@ -268,7 +269,7 @@ class user(metaclass=ABCMeta):
     @abstractmethod
     def getLogs(self) -> list[list[datetime, bool]]:
         """getLogs Get the login logs for the user"""
-    
+
     @abstractmethod
     def setUnsafe(self, name: str, data: ByteString):
         """setUnsafe

@@ -1,12 +1,12 @@
 """
 Basic security related classes.
 """
-from .base import seal, unSeal, zeromem, passwordHash
-from datetime import datetime
 import os
+from datetime import datetime
 from typing import ByteString
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session, scoped_session
+from .base import seal, unSeal, zeromem, passwordHash
 from . import configs, base, DBschemas
 
 SQLDefaultCryptoDBpath: Session = configs.SQLDefaultCryptoDBpath
@@ -188,7 +188,6 @@ class KMS:
         self.c.delete(key)
         self.c.flush()
         self.c.commit()
-        return
 
     def __del__(self):
         self.c.close()

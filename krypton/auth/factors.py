@@ -88,8 +88,8 @@ class password:
         splited = authTag.split("$")
         ctext = base.base64decode(splited[0])
         salt = base.base64decode(splited[1])
-        iter = int(splited[2])
-        key = base.passwordHash(pwd, salt, iter, KEY_LEN)
+        iterations = int(splited[2])
+        key = base.passwordHash(pwd, salt, iterations, KEY_LEN)
         try:
             base.unSeal(ctext, key)  # This raises an error if authentication fails.
         except ValueError:

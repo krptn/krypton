@@ -297,7 +297,7 @@ class standardUser(AuthUser, MFAUser, user):
             )
             for name in otherUsers
         ]
-        for i, Uid in enumerate(otherUsers):
+        for Uid in otherUsers:
             temp = self._getPublicKey(Uid)
             publicKeys.append(temp[0])
         results = [base.encryptEcc(self._privKey, key, data) for key in publicKeys]
