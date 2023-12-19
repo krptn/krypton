@@ -19,5 +19,6 @@ parser.add_argument(
     default=lambda: "Not cleaning Krptn database",
     help="Clean Krptn's default database (.krptn-data)",
 )
-args = parser.parse_args(sys.argv[1:])
-args.doAction()
+if __name__ == "__main__":
+    args = parser.parse_args(sys.argv[1:])
+    args.doAction()

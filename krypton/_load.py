@@ -36,6 +36,7 @@ Base = declarative_base()
 
 USER_TABLE_NAME = "users"
 
+
 class DBschemas:  # pylint: disable=too-few-public-methods
     """Database Schema"""
 
@@ -87,7 +88,7 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         fidoPub = Column(LargeBinary, default=b"*")
         fidoID = Column(LargeBinary, default=b"*")
         fidoChallenge = Column(LargeBinary, default=b"*")
-    
+
     class PubKeyTable(Base):  # pylint: disable=too-few-public-methods
         """Database Schema
         Uid: int
@@ -96,7 +97,11 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "pubKeys"
         id = Column(Integer, primary_key=True)
-        Uid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True,)
+        Uid = Column(
+            Integer,
+            ForeignKey(f"{USER_TABLE_NAME}.id"),
+            index=True,
+        )
         krVersion = Column(Text, default=__version__)
         key = Column(LargeBinary)
 
@@ -124,11 +129,13 @@ class DBschemas:  # pylint: disable=too-few-public-methods
 
         __tablename__ = "userData"
         id = Column(Integer, primary_key=True)
-        Uid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id") ,index=True)
+        Uid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True)
         name = Column(Text(MAX_USER_NAME_LEN), index=True)
         value = Column(LargeBinary)
-        __table_args__ = (Index('_name_Uid_index', 'Uid', 'name'),
-                          UniqueConstraint('name', 'Uid', name='uc_name_uid'))
+        __table_args__ = (
+            Index("_name_Uid_index", "Uid", "name"),
+            UniqueConstraint("name", "Uid", name="uc_name_uid"),
+        )
 
     class UserShareTable(Base):  # pylint: disable=too-few-public-methods
         """Database Schema
@@ -145,8 +152,9 @@ class DBschemas:  # pylint: disable=too-few-public-methods
         value = Column(LargeBinary)
         shareUid = Column(Integer, ForeignKey(f"{USER_TABLE_NAME}.id"), index=True)
         __table_args__ = (
-            Index('_name_suid_index', 'sender', 'name', 'shareUid'),
-            UniqueConstraint('sender', 'name', 'shareUid', name='uc_sender_name_suid'))
+            Index("_name_suid_index", "sender", "name", "shareUid"),
+            UniqueConstraint("sender", "name", "shareUid", name="uc_sender_name_suid"),
+        )
 
     class UnsafeShare(Base):  # pylint: disable=too-few-public-methods
         """Database Schema
@@ -217,7 +225,7 @@ class ConfigTemp:
     _userDbEngine = None
 
     @property
-    def SQLDefaultCryptoDBpath(self) -> Session:
+    def SQLDefaultCryptoDBpath(self) -> sessionmaker:
         """
         Connection to the default database used with Crypto Class
         """
@@ -254,7 +262,7 @@ class ConfigTemp:
         self._cryptoDB = sessionmaker(engine, autoflush=True)
 
     @property
-    def SQLDefaultKeyDBpath(self) -> Session:
+    def SQLDefaultKeyDBpath(self) -> sessionmaker:
         """
         Connection to the default database used by the KMS
         """
@@ -276,7 +284,7 @@ class ConfigTemp:
         self._altKeyDB = sessionmaker(engine, autoflush=True)
 
     @property
-    def SQLDefaultUserDBpath(self) -> Session:
+    def SQLDefaultUserDBpath(self) -> sessionmaker:
         """
         Connection to the default database used to store User Data.
         """
@@ -315,14 +323,18 @@ class ConfigTemp:
 
 configs = ConfigTemp()
 
-configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///" + os.path.join(
-    USER_DIR, ".krptn-data/crypto.db"
-)
-configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///" + os.path.join(
-    USER_DIR, ".krptn-data/altKMS.db"
-)
-configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///" + os.path.join(
-    USER_DIR, ".krptn-data/users.db"
-)
 
-# configs.SQLDefaultUserDBpath = "mssql+pyodbc://localhost/userDB?driver=ODBC+Driver+18+for+SQL+Server&encrypt=no"
+def setupDatabase():
+    """This function setups the SQL Database to Krptn's default SQLite files"""
+    configs.SQLDefaultCryptoDBpath = "sqlite+pysqlite:///" + os.path.join(
+        USER_DIR, ".krptn-data/crypto.db"
+    )
+    configs.SQLDefaultKeyDBpath = "sqlite+pysqlite:///" + os.path.join(
+        USER_DIR, ".krptn-data/altKMS.db"
+    )
+    configs.SQLDefaultUserDBpath = "sqlite+pysqlite:///" + os.path.join(
+        USER_DIR, ".krptn-data/users.db"
+    )
+
+
+setupDatabase()

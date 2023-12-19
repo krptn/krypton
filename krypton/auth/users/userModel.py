@@ -333,7 +333,7 @@ class standardUser(AuthUser, MFAUser, user):
                 self.c.rollback()
                 raise ValueError(
                     "Unable to commit to DB - perhaps you have already shared this data with one of the recepient users?"
-                    ) from exc
+                ) from exc
         self.c.commit()
 
     @userExistRequired

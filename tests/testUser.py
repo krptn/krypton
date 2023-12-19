@@ -3,10 +3,11 @@ import uuid
 from krypton.auth.users.bases import UserError
 from krypton.auth.users.userModel import standardUser
 
+
 class UserAuth(unittest.TestCase):
     def setUp(self) -> None:
         self.model = standardUser(None)
-        self.userName = "Test"+str(uuid.uuid4())
+        self.userName = "Test" + str(uuid.uuid4())
         self.model.saveNewUser(str(uuid.uuid4()), "TEST")
         self.model.changeUserName(self.userName)
         return super().setUp()
@@ -39,7 +40,7 @@ class UserAuth(unittest.TestCase):
 
     def testKeyGenCrossUser(self):
         user2 = standardUser(None)
-        user2Name = "user3"+str(uuid.uuid4())
+        user2Name = "user3" + str(uuid.uuid4())
         user2.saveNewUser(user2Name, "pwd")
         test = user2.encryptWithUserKey("data", [self.userName])
         user2.generateNewKeys("pwd")
@@ -55,7 +56,7 @@ class UserAuth(unittest.TestCase):
 
     def testCrossUserEncrypt(self):
         user2 = standardUser(None)
-        user2Name = "user3"+str(uuid.uuid4())
+        user2Name = "user3" + str(uuid.uuid4())
         user2.saveNewUser(user2Name, "pwd")
         test = user2.encryptWithUserKey("data", [self.userName])
         result = self.model.decryptWithUserKey(test[0][1], user2Name)
@@ -64,8 +65,8 @@ class UserAuth(unittest.TestCase):
 
     def testShare(self):
         user2 = standardUser(None)
-        user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
-        testName = "test"+str(uuid.uuid4())
+        user2.saveNewUser("user4" + str(uuid.uuid4()), "pwd")
+        testName = "test" + str(uuid.uuid4())
         user2.shareSet(testName, "TesT", [self.userName])
         value = self.model.shareGet(testName)
         user2.delete()
@@ -73,18 +74,20 @@ class UserAuth(unittest.TestCase):
 
     def testShareSameName(self):
         user2 = standardUser(None)
-        user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
-        testName = "test"+str(uuid.uuid4())
+        user2.saveNewUser("user4" + str(uuid.uuid4()), "pwd")
+        testName = "test" + str(uuid.uuid4())
         user2.shareSet(testName, "TesT", [self.userName])
-        self.assertRaises(Exception, lambda: user2.shareSet(testName, "TesT", [self.userName]))
+        self.assertRaises(
+            Exception, lambda: user2.shareSet(testName, "TesT", [self.userName])
+        )
         value = self.model.shareGet(testName)
         user2.delete()
         self.assertEqual(value, b"TesT")
 
     def testDeleteShare(self):
         user2 = standardUser(None)
-        user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
-        testName = "test"+str(uuid.uuid4())
+        user2.saveNewUser("user4" + str(uuid.uuid4()), "pwd")
+        testName = "test" + str(uuid.uuid4())
         user2.shareSet(testName, "TesT", [self.userName])
         user2.shareDelete(testName)
         self.assertRaises(ValueError, lambda: self.model.shareGet(testName))
@@ -101,8 +104,8 @@ class UserAuth(unittest.TestCase):
 
     def testUnsafeDB(self):
         user2 = standardUser(None)
-        testName = "test"+str(uuid.uuid4())
-        user2.saveNewUser("user4"+str(uuid.uuid4()), "pwd")
+        testName = "test" + str(uuid.uuid4())
+        user2.saveNewUser("user4" + str(uuid.uuid4()), "pwd")
         self.model.setUnsafe(testName, b"TEST_VALUE")
         result = user2.getUnsafe(testName)
         self.model.deleteData(testName)
@@ -130,7 +133,7 @@ class UserAuth(unittest.TestCase):
         self.model.logout()
         newMod = standardUser(userName=self.userName)
         self.assertRaises(UserError, lambda: newMod.restoreSession(key))
-    
+
     def testLogs(self):
         self.model.logout()
         self.assertRaises(UserError, lambda: self.model.login("wrong_password"))
@@ -138,6 +141,7 @@ class UserAuth(unittest.TestCase):
         logs = self.model.getLogs()
         self.assertTrue(logs[0][1])
         self.assertFalse(logs[1][1])
+
 
 if __name__ == "__main__":
     unittest.main()

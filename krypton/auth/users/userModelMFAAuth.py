@@ -12,6 +12,7 @@ from .bases import userExistRequired, user, UserError
 
 FIDO_TEMP_CHALLANGE = "_tempFIDORegisterChallenge"
 
+
 class MFAUser(user):
     """MFA for Krypton Users"""
 
