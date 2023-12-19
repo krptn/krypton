@@ -242,32 +242,32 @@ jobs:
           cd ${{ github.workspace }}
           mkdir dist
       - name: Download Built Linux Intel Extension
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: AutoBuild-Linux-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
       - name: Download Built Linux ARM Extensions
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: AutoBuild-Linux-Arm-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
       - name: Download Built MacOS Intel Extension
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: AutoBuild-MacOS-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
       - name: Download Built MacOS ARM Extensions
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: AutoBuild-MacOS-ARM-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist 
       - name: Download Built Windows Intel Extensions
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: AutoBuild-Windows-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
       - name: Download Built Windows ARM Extensions
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: AutoBuild-Windows-ARM-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
