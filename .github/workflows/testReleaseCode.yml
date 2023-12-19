@@ -45,7 +45,7 @@ jobs:
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet x64-linux
       - name: Upload Build Result
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: AutoBuild-Linux-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
