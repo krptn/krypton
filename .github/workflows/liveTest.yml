@@ -81,7 +81,7 @@ jobs:
           ./vcpkg/vcpkg install --triplet x64-linux
       - name: Install extension
         run: |
-          pip install . [tests]
+          pip install .[tests]
       - name: Run Test
         id: test
         run: |
