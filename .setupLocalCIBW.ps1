@@ -18,3 +18,4 @@ $Env:CIBW_TEST_COMMAND=@"
 python -m krypton --clean
 python -m unittest discover -s {project}/tests -p "*test*.py" --verbose
 "@
+$Env:CIBW_TEST_EXTRAS="tests"

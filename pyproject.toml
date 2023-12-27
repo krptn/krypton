@@ -29,6 +29,7 @@ dependencies=["SQLAlchemy>=1.4.0", "webauthn>=1.6.0"]
 "PostgreSQL" = ["psycopg2"]
 "Django" = ["django"]
 "Flask" = ["flask"]
+"tests" = ["django"]
 
 [project.urls]
 'Homepage'= "https://www.krptn.dev/"
