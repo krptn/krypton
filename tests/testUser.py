@@ -2,6 +2,7 @@ import unittest
 import uuid
 from krypton.auth.users.bases import UserError
 from krypton.auth.users.userModel import standardUser
+from krypton.auth.django.middleware import kryptonLoginMiddleware
 
 
 class UserAuth(unittest.TestCase):
@@ -141,6 +142,36 @@ class UserAuth(unittest.TestCase):
         logs = self.model.getLogs()
         self.assertTrue(logs[0][1])
         self.assertFalse(logs[1][1])
+
+class Django(unittest.TestCase):
+    def setUp(self) -> None:
+        self.model = standardUser(None)
+        self.userName = "Test" + str(uuid.uuid4())
+        self.token = self.model.saveNewUser(str(uuid.uuid4()), "TEST")
+        self.model.changeUserName(self.userName)
+        return super().setUp()
+
+    def tearDown(self) -> None:
+        self.model.loggedin = True
+        self.model.delete()
+        del self.model
+        return super().tearDown()
+    
+    def test(self) -> None:
+        request = type("Request", (object,), 
+                    {
+                        "COOKIES": 
+                        {
+                            "_KryptonUserID": self.model.id, 
+                            "_KryptonSessionToken": self.token
+                        }
+                    }
+                )
+        ()
+        kryptonLoginMiddleware(
+            lambda x: self.assertTrue(x.user.is_authenticated)
+            )
+        (request)
 
 
 if __name__ == "__main__":

@@ -2,12 +2,13 @@
 Django middleware to add user object as needed to the request.
 """
 
-from django.http import HttpRequest
+from typing import Callable
+from django.http import HttpRequest, HttpResponse
 from .users import djangoUser
 from ..users.bases import UserError
+from . types import KrHttpRequest
 
-
-def kryptonLoginMiddleware(get_response):
+def kryptonLoginMiddleware(get_response: Callable[[KrHttpRequest], HttpResponse]):
     """Django middleware to add user object as needed to the request.
 
 
@@ -18,7 +19,7 @@ def kryptonLoginMiddleware(get_response):
         Response
     """
 
-    def KrLoginMiddleWare(request: HttpRequest):
+    def KrLoginMiddleWare(request: HttpRequest) -> HttpResponse:
         """Middleware
 
         Arguments:
