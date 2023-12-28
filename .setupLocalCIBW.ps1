@@ -1,5 +1,7 @@
 $Env:CIBW_ARCHS="x86_64"
 $Env:CIBW_BEFORE_ALL=@"
+which gcc
+which g++
 if type apk &> /dev/null; then
     apk add build-base cmake ninja zip unzip curl git
     export VCPKG_FORCE_SYSTEM_BINARIES=1
@@ -9,8 +11,6 @@ if type yum &> /dev/null; then
 fi
 chmod a+rx vcpkg/bootstrap-vcpkg.sh
 ./vcpkg/bootstrap-vcpkg.sh
-which gcc
-which g++
 ./vcpkg/vcpkg install --triplet x64-linux
 "@
 $Env:CIBW_PLATFORM="linux"

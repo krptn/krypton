@@ -85,7 +85,6 @@ jobs:
               curl -o setupCmake.sh -sSSL https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-aarch64.sh
               chmod a+rx setupCmake.sh
               ./setupCmake.sh --skip-license --exclude-subdir
-              export PATH="{package}/bin:$PATH"
               git clone https://github.com/ninja-build/ninja.git && cd ninja
               git checkout release
               cmake -Bbuild-cmake
