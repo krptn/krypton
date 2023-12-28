@@ -60,6 +60,12 @@ jobs:
             export PATH="/usr/bin:$PATH"
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-linux
+      - name: Get Logs
+        if: always()
+        run: |
+          cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-CMakeCache.txt.log
+          cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-out.log
+          cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-err.log
       - name: Upload Build Result
         uses: actions/upload-artifact@v4
         with:
