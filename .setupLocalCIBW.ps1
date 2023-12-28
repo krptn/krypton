@@ -9,6 +9,8 @@ if type yum &> /dev/null; then
 fi
 chmod a+rx vcpkg/bootstrap-vcpkg.sh
 ./vcpkg/bootstrap-vcpkg.sh
+which gcc
+which g++
 ./vcpkg/vcpkg install --triplet x64-linux
 "@
 $Env:CIBW_PLATFORM="linux"

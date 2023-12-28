@@ -13,9 +13,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  buildLinuxIntel:
+  buildLinuxArm:
     env:
-      CIBW_ARCHS: x86_64
+      CIBW_ARCHS: aarch64
       CIBW_TEST_SKIP: pp* # We do not test PyPy because we don't want to compile cryptography - which is needed for tests
     runs-on: ubuntu-latest
     steps:
@@ -27,6 +27,10 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
@@ -35,18 +39,29 @@ jobs:
           python3 -m pip install cibuildwheel
           python3 -m cibuildwheel --output-dir dist
         env:
+          CIBW_ENVIRONMENT: VCPKG_FORCE_SYSTEM_BINARIES=1
           CIBW_BEFORE_ALL: |
             if type apk &> /dev/null; then
               apk add build-base cmake ninja zip unzip curl git
-              export VCPKG_FORCE_SYSTEM_BINARIES=1
             fi
             if type yum &> /dev/null; then
               yum install -y curl zip unzip tar
+              curl -o setupCmake.sh -sSSL https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-aarch64.sh
+              chmod a+rx setupCmake.sh
+              ./setupCmake.sh --skip-license --exclude-subdir
+              export PATH="{package}/bin:$PATH"
+              git clone https://github.com/ninja-build/ninja.git && cd ninja
+              git checkout release
+              cmake -Bbuild-cmake
+              cmake --build build-cmake
+              cd ..
+              cp -r ninja/build-cmake/* bin/
             fi
+            export PATH="/usr/bin:$PATH"
             ./vcpkg/bootstrap-vcpkg.sh
-            ./vcpkg/vcpkg install --triplet x64-linux
+            ./vcpkg/vcpkg install --triplet arm64-linux
       - name: Upload Build Result
         uses: actions/upload-artifact@v4
         with:
-          name: AutoBuild-Linux-Intel-${{ github.event.release.tag_name }}
+          name: AutoBuild-Linux-Arm-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
