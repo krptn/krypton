@@ -45,7 +45,7 @@ jobs:
               apk add build-base cmake ninja zip unzip curl git
             fi
             if type yum &> /dev/null; then
-              yum install -y curl zip unzip tar gcc-aarch64-linux-gnu
+              yum install -y curl zip unzip tar
               curl -o setupCmake.sh -sSSL https://github.com/Kitware/CMake/releases/download/v3.27.1/cmake-3.27.1-linux-aarch64.sh
               chmod a+rx setupCmake.sh
               ./setupCmake.sh --skip-license --exclude-subdir
@@ -57,17 +57,14 @@ jobs:
               cp -r ninja/build-cmake/* bin/
             fi
             export PATH="{package}/bin:$PATH"
+            export CXX="g++"
+            export CC="gcc"
             ./vcpkg/bootstrap-vcpkg.sh
+            cp linux.cmake vcpkg/scripts/toolchains
             ./vcpkg/vcpkg install --triplet arm64-linux
             cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-CMakeCache.txt.log
             cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-out.log
             cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-err.log
-      - name: Get Logs
-        if: always()
-        run: |
-          cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-CMakeCache.txt.log
-          cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-out.log
-          cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-err.log
       - name: Upload Build Result
         uses: actions/upload-artifact@v4
         with:

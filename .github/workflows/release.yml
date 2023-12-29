@@ -92,7 +92,9 @@ jobs:
               cd ..
               cp -r ninja/build-cmake/* bin/
             fi
-            export PATH="{package}/bin:/usr/bin:$PATH"
+            export PATH="{package}/bin:$PATH"
+            export CXX="g++"
+            export CC="gcc"
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-linux
       - name: Upload Build Result
