@@ -17,6 +17,7 @@ jobs:
     env:
       CIBW_ARCHS: aarch64
       CIBW_TEST_SKIP: pp* # We do not test PyPy because we don't want to compile cryptography - which is needed for tests
+      CC: gcc ## use manylinux gcc not some wierd cross-compiler
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
@@ -41,7 +42,6 @@ jobs:
         env:
           CIBW_ENVIRONMENT: VCPKG_FORCE_SYSTEM_BINARIES=1
           CIBW_BEFORE_ALL: |
-            which gcc
             if type apk &> /dev/null; then
               apk add build-base cmake ninja zip unzip curl git
             fi
@@ -57,7 +57,7 @@ jobs:
               cd ..
               cp -r ninja/build-cmake/* bin/
             fi
-            export PATH="{package}/bin:/usr/bin:$PATH"
+            export PATH="{package}/bin:$PATH"
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-linux
             cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-CMakeCache.txt.log
