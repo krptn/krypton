@@ -60,6 +60,9 @@ jobs:
             export PATH="{package}/bin:/usr/bin:$PATH"
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-linux
+            cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-CMakeCache.txt.log
+            cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-out.log
+            cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-err.log
       - name: Get Logs
         if: always()
         run: |
