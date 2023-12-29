@@ -39,9 +39,7 @@ jobs:
           python3 -m pip install cibuildwheel
           python3 -m cibuildwheel --output-dir dist
         env:
-          CIBW_ENVIRONMENT: |
-            VCPKG_FORCE_SYSTEM_BINARIES=1
-            CC=gcc
+          CIBW_ENVIRONMENT: VCPKG_FORCE_SYSTEM_BINARIES=1 CC='gcc' CXX='g++'
           CIBW_BEFORE_ALL: |
             if type apk &> /dev/null; then
               apk add build-base cmake ninja zip unzip curl git
