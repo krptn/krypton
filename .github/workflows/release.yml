@@ -96,6 +96,7 @@ jobs:
             export CXX="g++"
             export CC="gcc"
             ./vcpkg/bootstrap-vcpkg.sh
+            cp linux.cmake vcpkg/scripts/toolchains
             ./vcpkg/vcpkg install --triplet arm64-linux
       - name: Upload Build Result
         uses: actions/upload-artifact@v4
