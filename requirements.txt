@@ -7,7 +7,7 @@ cffi==1.16.0
 click==8.1.7
 colorama==0.4.6
 cryptography==41.0.7
-dill==0.3.7
+dill==0.3.8
 Django==4.2.9
 Flask==3.0.1
 greenlet==3.0.3
