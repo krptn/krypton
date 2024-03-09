@@ -32,7 +32,7 @@ sqlparse==0.4.4
 tomli==2.0.1
 tomlkit==0.12.4
 typing_extensions==4.10.0
-tzdata==2023.4
+tzdata==2024.1
 webauthn==1.11.1
 Werkzeug==3.0.1
 wrapt==1.16.0
