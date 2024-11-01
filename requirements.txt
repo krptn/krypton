@@ -6,7 +6,7 @@ cbor2==5.6.3
 cffi==1.16.0
 click==8.1.7
 colorama==0.4.6
-cryptography==42.0.7
+cryptography==43.0.3
 dill==0.3.8
 Django==4.2.13
 Flask==3.0.3
