@@ -9,7 +9,7 @@ colorama==0.4.6
 cryptography==42.0.7
 dill==0.3.8
 Django==4.2.13
-Flask==3.0.3
+Flask==3.1.0
 greenlet==3.0.3
 isort==5.13.2
 itsdangerous==2.2.0
