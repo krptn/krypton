@@ -11,7 +11,7 @@ dill==0.3.8
 Django==4.2.13
 Flask==3.0.3
 greenlet==3.0.3
-isort==5.13.2
+isort==6.0.1
 itsdangerous==2.2.0
 Jinja2==3.1.4
 lazy-object-proxy==1.10.0
