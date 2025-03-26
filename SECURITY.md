@@ -6,7 +6,7 @@ Only the most recent version is supported; however, we are still interested in l
 
 ## Reporting a Vulnerability
 
-### Vulnerabilitis affecting the Krptn module
+### Vulnerabilities affecting the Krptn module
 
 If your vulnerability affects the code that is installed on peoples devices when they `pip install krptn`, please fill out [this form](https://github.com/krptn/krypton/security/advisories/new).
 
