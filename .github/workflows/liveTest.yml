@@ -22,7 +22,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.13'
           cache: 'pip'
       # We will pretend that __CryptoLib does not need building.
       - name: 'Dependency Review'
@@ -71,7 +71,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13'
           architecture: 'x64'
           cache: 'pip'
       - name: Pre-run Tasks
