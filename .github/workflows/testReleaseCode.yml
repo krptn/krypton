@@ -60,7 +60,6 @@ jobs:
             export CXX="g++"
             export CC="gcc"
             ./vcpkg/bootstrap-vcpkg.sh
-            cp linux.cmake vcpkg/scripts/toolchains
             ./vcpkg/vcpkg install --triplet arm64-linux
             cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-CMakeCache.txt.log
             cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-out.log
