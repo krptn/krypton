@@ -16,7 +16,7 @@ Naming conventions:
 
 ## Build/Setup the extension for development
 
-First, please build from the git repository as outlined in [our documentation](https://docs.krptn.dev/README-BUILD.html#building-from-source).
+First, please build from the git repository as outlined in [our documentation](https://docs.krptn.mbs9.org/README-BUILD.html#building-from-source).
 
 For development use, it is probably a good idea to install the extension in editable mode (i.e setuptools "develop mode"):
 

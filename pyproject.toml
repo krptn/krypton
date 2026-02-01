@@ -8,7 +8,7 @@ version = "0.8.7"
 description = "IAM and data encryption at rest"
 readme = "README.md"
 authors = [
-  { name="Krptn Project", email="contact@krptn.dev" },
+  { name="Krptn Project" },
 ]
 classifiers=[
     'License :: OSI Approved :: Apache Software License',
@@ -32,7 +32,7 @@ dependencies=["SQLAlchemy>=1.4.0,<2", "webauthn>=1.6.0,<2"]
 "tests" = ["django"]
 
 [project.urls]
-'Homepage'= "https://www.krptn.dev/"
-'Documentation'= "https://docs.krptn.dev/"
+'Homepage'= "https://krptn.mbs9.org/"
+'Documentation'= "https://docs.krptn.mbs9.org/"
 'GitHub'= "https://github.com/krptn/krypton/"
 'Bug Tracker'= "https://github.com/krptn/krypton/issues"

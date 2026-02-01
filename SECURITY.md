@@ -16,8 +16,6 @@ We also welcome vulnerabilities with no existing exploits. That means, for examp
 
 If your vulnerability is not to do with the Python package (e.g.: XSS vulnerability on our website), please follow the below instructions.
 
-Email security vulnerabilities to [security@krptn.dev](mailto:security@krptn.dev).
-
 Please make sure the following information is clearly stated:
 
 - What components are affected?
@@ -30,4 +28,4 @@ We also welcome vulnerabilities with no existing exploits. That means, for examp
 
 Any published vulnerabilities will be available under the Security tab of affected GitHub repositories. To view them, click on the tab and select advisories under the reporting section.
 
-Important vulnerabilities will also appear under our news on our [homepage](https://www.krptn.dev/news/).
+Important vulnerabilities will also appear under our news on our [homepage](https://krptn.mbs9.org/news/).

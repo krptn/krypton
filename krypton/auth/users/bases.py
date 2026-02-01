@@ -189,7 +189,7 @@ class user(metaclass=ABCMeta):
             otherUsers -- List of user nameswho can decrypt it  (default: {None})
 
         Returns:
-            List of tuples of form (user name, ciphertext, salt), check: https://docs.krptn.dev/README-USER-AUTH.html#encryption.
+            List of tuples of form (user name, ciphertext, salt), check: https://docs.krptn.mbs9.org/README-USER-AUTH.html#encryption.
         """
 
     @abstractmethod

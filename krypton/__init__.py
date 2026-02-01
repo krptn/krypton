@@ -1,7 +1,7 @@
 ﻿"""
-https://www.krptn.dev/
+https://krptn.mbs9.org/
 
-A user authentication and access management system (IAM) with [Encryption at rest derived from credentials](https://www.krptn.dev/news/zero-knowledge/).
+A user authentication and access management system (IAM) with [Encryption at rest derived from credentials](https://krptn.mbs9.org/news/zero-knowledge/).
 
 How we achieve this?
 
@@ -48,5 +48,5 @@ search = 5
 print(
     "Krptn has been initialized and loaded. In case you run into any problems, "
     "please read our "
-    "common issues guide: https://docs.krptn.dev/README-FAQ.html."
+    "common issues guide: https://docs.krptn.mbs9.org/README-FAQ.html."
 )

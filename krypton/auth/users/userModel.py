@@ -284,7 +284,7 @@ class standardUser(AuthUser, MFAUser, user):
         Returns:
             If otherUsers is None: ciphertext.
 
-            If otherUsers is not None: list of tuples (check https://docs.krptn.dev/README-USER-AUTH.html#encryption).
+            If otherUsers is not None: list of tuples (check https://docs.krptn.mbs9.org/README-USER-AUTH.html#encryption).
         """
         # pylint: disable=expression-not-assigned
         if otherUsers is None:
