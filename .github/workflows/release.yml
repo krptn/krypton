@@ -44,7 +44,7 @@ jobs:
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet x64-linux
       - name: Upload Build Result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: AutoBuild-Linux-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -98,7 +98,7 @@ jobs:
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-linux
       - name: Upload Build Result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: AutoBuild-Linux-Arm-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -130,7 +130,7 @@ jobs:
           python -m pip install cibuildwheel
           python -m cibuildwheel --output-dir dist
       - name: Upload Build Result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: AutoBuild-Windows-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -164,7 +164,7 @@ jobs:
           python -m pip install cibuildwheel
           python -m cibuildwheel --output-dir dist
       - name: Upload Build Result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: AutoBuild-Windows-ARM-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -195,7 +195,7 @@ jobs:
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet x64-osx
       - name: Upload Build Result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: AutoBuild-MacOS-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -226,7 +226,7 @@ jobs:
             ./vcpkg/bootstrap-vcpkg.sh
             ./vcpkg/vcpkg install --triplet arm64-osx
       - name: Upload Build Result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: AutoBuild-MacOS-ARM-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
@@ -245,32 +245,32 @@ jobs:
           cd ${{ github.workspace }}
           mkdir dist
       - name: Download Built Linux Intel Extension
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: AutoBuild-Linux-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
       - name: Download Built Linux ARM Extensions
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: AutoBuild-Linux-Arm-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
       - name: Download Built MacOS Intel Extension
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: AutoBuild-MacOS-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
       - name: Download Built MacOS ARM Extensions
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: AutoBuild-MacOS-ARM-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist 
       - name: Download Built Windows Intel Extensions
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: AutoBuild-Windows-Intel-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
       - name: Download Built Windows ARM Extensions
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: AutoBuild-Windows-ARM-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist
