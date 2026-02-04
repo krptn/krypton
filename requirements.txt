@@ -10,7 +10,7 @@ cryptography==42.0.7
 dill==0.3.8
 Django==4.2.28
 Flask==3.0.3
-greenlet==3.0.3
+greenlet==3.2.4
 isort==5.13.2
 itsdangerous==2.2.0
 Jinja2==3.1.4
