@@ -65,7 +65,7 @@ jobs:
             cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-out.log
             cat /project/vcpkg/buildtrees/detect_compiler/config-arm64-linux-rel-err.log
       - name: Upload Build Result
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: AutoBuild-Linux-Arm-${{ github.event.release.tag_name }}
           path: ${{ github.workspace }}/dist/*.*
