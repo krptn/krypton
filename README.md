@@ -6,6 +6,8 @@ We also have a [homepage](https://krptn.mbs9.org/) and [documentation](https://d
 
 # Krptn
 
+**This project is archived, and not developed further. It was a developed for my personal education/entertainment.**
+
 ```shell
 pip install krptn
 ```
