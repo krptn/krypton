@@ -24,7 +24,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
@@ -62,7 +62,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -115,7 +115,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Install dependencies
         run: |
           cd ${{ github.workspace }}
@@ -147,7 +147,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Install dependencies
         run: |
           cd ${{ github.workspace }}
@@ -182,7 +182,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
@@ -213,7 +213,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.14'
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
